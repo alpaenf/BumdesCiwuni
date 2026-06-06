@@ -119,6 +119,24 @@ rm -rf "$PUBLIC_HTML_PATH/storage"
 # Ke:   ../simpan-pinjam/storage/app/public
 ln -s "../$PROJECT_FOLDER/storage/app/public" "$PUBLIC_HTML_PATH/storage"
 
+# 4.2. Fix Uploads Symlink
+echo "🔗 4.2. Memperbaiki Symbolic Link Uploads..."
+# Pastikan folder target di project root ada
+mkdir -p public/uploads/pinjaman public/uploads/nasabah public/uploads/kwitansi public/uploads/news public/uploads/portal
+
+# Jika public_html/uploads adalah folder asli (bukan symlink) dan berisi data, pindahkan ke project root
+if [ -d "$PUBLIC_HTML_PATH/uploads" ] && [ ! -L "$PUBLIC_HTML_PATH/uploads" ]; then
+    echo "   Memindahkan file upload yang ada di public_html/uploads ke project root..."
+    cp -rn "$PUBLIC_HTML_PATH/uploads"/* public/uploads/ 2>/dev/null
+    rm -rf "$PUBLIC_HTML_PATH/uploads"
+else
+    # Jika itu link atau folder kosong, hapus saja untuk dibuat ulang
+    rm -rf "$PUBLIC_HTML_PATH/uploads"
+fi
+
+# Buat symlink baru yang benar
+ln -s "../$PROJECT_FOLDER/public/uploads" "$PUBLIC_HTML_PATH/uploads"
+
 # 5. Composer Install (skip dev, ignore platform reqs karena perbedaan versi PHP)
 echo "📦 5. Menjalankan Composer Install..."
 if command -v php84 > /dev/null 2>&1; then
