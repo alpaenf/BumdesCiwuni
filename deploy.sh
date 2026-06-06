@@ -119,9 +119,25 @@ rm -rf "$PUBLIC_HTML_PATH/storage"
 # Ke:   ../simpan-pinjam/storage/app/public
 ln -s "../$PROJECT_FOLDER/storage/app/public" "$PUBLIC_HTML_PATH/storage"
 
-# 5. Clear Laravel caches
-echo "🧹 5. Membersihkan cache Laravel..."
+# 5. Composer Install (skip dev, ignore platform reqs karena perbedaan versi PHP)
+echo "📦 5. Menjalankan Composer Install..."
+if command -v php84 > /dev/null 2>&1; then
+    php84 composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs 2>/dev/null || \
+    php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs
+else
+    php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs
+fi
+
+# 6. Jalankan Database Migration
+echo "🗃️  6. Menjalankan Database Migration..."
+php artisan migrate --force
+
+# 7. Clear & Cache Laravel
+echo "🧹 7. Membersihkan dan re-cache Laravel..."
 php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 echo "========================================"
 echo "✅ Deployment simpan-pinjam Selesai!"
