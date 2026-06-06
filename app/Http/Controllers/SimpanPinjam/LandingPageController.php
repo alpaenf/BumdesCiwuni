@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SimpanPinjam;
 
 use App\Http\Controllers\Controller;
 
+use App\Models\GaleriUnit;
 use App\Models\LandingPageSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -85,10 +86,16 @@ class LandingPageController extends Controller
             }
         }
 
+        $galeri = GaleriUnit::where('unit', 'simpan-pinjam')
+            ->orderBy('urutan')
+            ->orderByDesc('id')
+            ->get();
+
         return Inertia::render('SimpanPinjam/Welcome', [
-            'canLogin' => Route::has('login'),
+            'canLogin'    => Route::has('login'),
             'canRegister' => Route::has('register'),
-            'settings' => $settings,
+            'settings'    => $settings,
+            'galeri'      => $galeri,
         ]);
     }
 
