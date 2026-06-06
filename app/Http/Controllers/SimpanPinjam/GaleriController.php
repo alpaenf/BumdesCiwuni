@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SimpanPinjam;
 use App\Http\Controllers\Controller;
 use App\Models\GaleriUnit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,30 +32,67 @@ class GaleriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'foto'       => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'foto'       => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
             'keterangan' => 'nullable|string|max:255',
         ]);
 
-        $file     = $request->file('foto');
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $path     = public_path('uploads/galeri');
+        $file = $request->file('foto');
+        $tempPath = $file->getRealPath();
+        $info = getimagesize($tempPath);
+        
+        $filename = time() . '_' . uniqid() . '.webp';
+        $path = 'galeri/' . $filename;
 
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
+        $image = null;
+        if ($info['mime'] == 'image/jpeg') $image = imagecreatefromjpeg($tempPath);
+        elseif ($info['mime'] == 'image/png') $image = imagecreatefrompng($tempPath);
+        elseif ($info['mime'] == 'image/webp') $image = imagecreatefromwebp($tempPath);
+
+        if ($image) {
+            // Resize max width 1200px
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $newWidth = $width > 1200 ? 1200 : $width;
+            $newHeight = intval($height * ($newWidth / $width));
+
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+            // Handle transparency
+            if ($info['mime'] == 'image/png' || $info['mime'] == 'image/webp') {
+                imagealphablending($newImage, false);
+                imagesavealpha($newImage, true);
+                $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+            }
+
+            imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+            // Kompres dan simpan ke Storage (quality 70%)
+            ob_start();
+            imagewebp($newImage, null, 70);
+            $imageContent = ob_get_clean();
+            
+            Storage::disk('public')->put($path, $imageContent);
+
+            imagedestroy($image);
+            imagedestroy($newImage);
+        } else {
+            // Fallback simpan original jika gagal kompres
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = 'galeri/' . $filename;
+            Storage::disk('public')->put($path, file_get_contents($tempPath));
         }
-
-        $file->move($path, $filename);
 
         $urutan = GaleriUnit::where('unit', 'simpan-pinjam')->max('urutan') + 1;
 
         GaleriUnit::create([
             'unit'       => 'simpan-pinjam',
-            'foto'       => '/uploads/galeri/' . $filename,
+            'foto'       => '/storage/' . $path,
             'keterangan' => $request->keterangan,
             'urutan'     => $urutan,
         ]);
 
-        return redirect()->back()->with('success', 'Foto berhasil ditambahkan ke galeri.');
+        return redirect()->back()->with('success', 'Foto berhasil diupload dan dikompres (WebP)!');
     }
 
     /**
@@ -77,10 +115,10 @@ class GaleriController extends Controller
      */
     public function destroy(GaleriUnit $galeri)
     {
-        // Hapus file fisik jika ada
-        $filePath = public_path($galeri->foto);
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        // Hapus file fisik dari Storage
+        $path = str_replace('/storage/', '', $galeri->foto);
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
 
         $galeri->delete();
