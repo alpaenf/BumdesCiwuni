@@ -107,12 +107,19 @@ const submit = () => {
                         <input
                             v-model="form.nomor_rekening"
                             type="text"
+                            :disabled="isUpdate"
                             placeholder="Masukkan nomor rekening (opsional, kosongkan untuk otomatis)"
                             class="w-full rounded-lg border px-4 py-2.5 text-sm font-mono focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/20"
-                            :class="form.errors.nomor_rekening ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'"
+                            :class="[
+                                form.errors.nomor_rekening ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]',
+                                isUpdate ? 'bg-slate-100 cursor-not-allowed opacity-70' : 'bg-white'
+                            ]"
                         />
-                        <p class="mt-1 text-xs text-[color:var(--color-secondary)]">
+                        <p v-if="!isUpdate" class="mt-1 text-xs text-[color:var(--color-secondary)]">
                             Kosongkan saat pendaftaran untuk membuat nomor rekening otomatis (Format: 00001.YYYY).
+                        </p>
+                        <p v-else class="mt-1 text-xs text-orange-500 font-medium">
+                            <span class="material-symbols-outlined text-[10px] align-middle">lock</span> Nomor rekening sudah terkunci dan tidak dapat diubah.
                         </p>
                         <p v-if="form.errors.nomor_rekening" class="mt-1 text-xs text-red-500">{{ form.errors.nomor_rekening }}</p>
                     </div>

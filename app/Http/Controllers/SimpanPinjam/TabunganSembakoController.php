@@ -20,7 +20,9 @@ class TabunganSembakoController extends Controller
 
     public function index(Request $request): Response
     {
-        $query = Nasabah::with(['tabungan' => function ($q) {
+        $query = Nasabah::whereHas('tabungan', function ($q) {
+            $q->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO);
+        })->with(['tabungan' => function ($q) {
             $q->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO);
         }]);
 
@@ -42,7 +44,10 @@ class TabunganSembakoController extends Controller
 
     public function setor(Nasabah $nasabah): Response
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrCreate(
+            ['jenis_tabungan' => Tabungan::JENIS_SEMBAKO],
+            ['saldo' => 0]
+        );
 
         return Inertia::render('SimpanPinjam/TabunganSembako/Setor', [
             'nasabah'  => $nasabah,
@@ -52,7 +57,10 @@ class TabunganSembakoController extends Controller
 
     public function storeSetor(StoreTransaksiRequest $request, Nasabah $nasabah)
     {
-        $tabungan  = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrCreate(
+            ['jenis_tabungan' => Tabungan::JENIS_SEMBAKO],
+            ['saldo' => 0]
+        );
         $transaksi = $this->tabunganService->setor($tabungan, $request->validated());
 
         return redirect()->route('tabungan-sembako.index')
@@ -62,7 +70,10 @@ class TabunganSembakoController extends Controller
 
     public function ambil(Nasabah $nasabah): Response
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrCreate(
+            ['jenis_tabungan' => Tabungan::JENIS_SEMBAKO],
+            ['saldo' => 0]
+        );
 
         $unitId = auth()->user()->unit_id;
         $prefix = $unitId ? "unit_{$unitId}_" : "global_";
@@ -77,7 +88,10 @@ class TabunganSembakoController extends Controller
 
     public function storeAmbil(StoreTransaksiRequest $request, Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrCreate(
+            ['jenis_tabungan' => Tabungan::JENIS_SEMBAKO],
+            ['saldo' => 0]
+        );
 
         try {
             $transaksi = $this->tabunganService->ambilSembako($tabungan, $request->validated());
@@ -99,7 +113,10 @@ class TabunganSembakoController extends Controller
 
     public function riwayat(Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrCreate(
+            ['jenis_tabungan' => Tabungan::JENIS_SEMBAKO],
+            ['saldo' => 0]
+        );
         $transaksi = $tabungan->transaksi()
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
