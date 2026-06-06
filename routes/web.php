@@ -3,6 +3,7 @@
 use App\Http\Controllers\SimpanPinjam\AngsuranController;
 use App\Http\Controllers\SimpanPinjam\BukuTabunganController;
 use App\Http\Controllers\SimpanPinjam\DashboardController;
+use App\Http\Controllers\SimpanPinjam\GaleriController;
 use App\Http\Controllers\SimpanPinjam\KwitansiController;
 use App\Http\Controllers\SimpanPinjam\LaporanController;
 use App\Http\Controllers\SimpanPinjam\NasabahController;
@@ -190,6 +191,12 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
         Route::get('/admin/landing-page', [LandingPageController::class, 'editSettings'])->name('admin.landing-page.edit');
         Route::post('/admin/landing-page', [LandingPageController::class, 'updateSettings'])->name('admin.landing-page.update');
         Route::post('/admin/landing-page/upload-image', [LandingPageController::class, 'uploadImage'])->name('admin.landing-page.upload-image');
+
+        // Galeri Unit
+        Route::get('/admin/galeri', [GaleriController::class, 'index'])->name('admin.galeri.index');
+        Route::post('/admin/galeri', [GaleriController::class, 'store'])->name('admin.galeri.store');
+        Route::put('/admin/galeri/{galeri}', [GaleriController::class, 'update'])->name('admin.galeri.update');
+        Route::delete('/admin/galeri/{galeri}', [GaleriController::class, 'destroy'])->name('admin.galeri.destroy');
     });
 });
 

@@ -13,10 +13,25 @@ defineProps({
         type: Object,
         required: true,
     },
+    galeri: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const activeFaqIndex = ref(null);
 const isMobileMenuOpen = ref(false);
+const lightboxFoto = ref(null);
+const lightboxKeterangan = ref(null);
+
+const openLightbox = (foto, keterangan) => {
+    lightboxFoto.value = foto;
+    lightboxKeterangan.value = keterangan;
+};
+const closeLightbox = () => {
+    lightboxFoto.value = null;
+    lightboxKeterangan.value = null;
+};
 
 const toggleFaq = (index) => {
     if (activeFaqIndex.value === index) {
@@ -67,6 +82,7 @@ onMounted(() => {
                     <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Tentang</a>
                     <a href="#layanan" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Layanan</a>
                     <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Struktur</a>
+                    <a href="#galeri" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Galeri</a>
                     <a href="#faq" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">FAQ</a>
                     <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Kontak</a>
                     
@@ -384,6 +400,55 @@ onMounted(() => {
                 </div>
             </div>
         </section>
+
+        <!-- Galeri Section -->
+        <section id="galeri" class="py-20 bg-slate-50 border-b border-[#bfc9bd]">
+            <div class="max-w-6xl mx-auto px-6 space-y-12">
+                <div class="text-center space-y-3 scroll-animate scroll-fade-up">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Dokumentasi</span>
+                    <h3 class="text-2xl font-bold text-slate-800">Galeri Unit Simpan Pinjam</h3>
+                    <p class="text-xs text-[#404940] max-w-md mx-auto">Dokumentasi kegiatan dan aktivitas pelayanan Unit Simpan Pinjam BUMDesa Dammar Wulan.</p>
+                </div>
+
+                <!-- Grid Galeri -->
+                <div v-if="galeri.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div
+                        v-for="(item, idx) in galeri" :key="item.id"
+                        class="scroll-animate scroll-scale-in group relative rounded-xl overflow-hidden aspect-square cursor-pointer shadow-sm border border-[#bfc9bd] hover:border-emerald-400 hover:shadow-md transition-all duration-300"
+                        :style="{ transitionDelay: `${(idx % 8) * 60}ms` }"
+                        @click="openLightbox(item.foto, item.keterangan)"
+                    >
+                        <img :src="item.foto" :alt="item.keterangan || 'Galeri'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                            <p v-if="item.keterangan" class="text-white text-[10px] font-semibold leading-tight line-clamp-2">{{ item.keterangan }}</p>
+                            <span v-else class="text-white/70 text-[10px]">Lihat foto</span>
+                        </div>
+                        <div class="absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="material-symbols-outlined text-sm text-slate-700">zoom_in</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div v-else class="text-center py-16 scroll-animate scroll-fade-up">
+                    <span class="material-symbols-outlined text-5xl text-slate-300">photo_library</span>
+                    <p class="mt-3 text-sm text-slate-400">Belum ada foto di galeri.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lightbox -->
+        <Teleport to="body">
+            <div v-if="lightboxFoto" class="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4" @click.self="closeLightbox">
+                <button @click="closeLightbox" class="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                    <span class="material-symbols-outlined text-white">close</span>
+                </button>
+                <div class="max-w-4xl w-full">
+                    <img :src="lightboxFoto" alt="Galeri" class="w-full max-h-[80vh] object-contain rounded-xl" />
+                    <p v-if="lightboxKeterangan" class="mt-3 text-center text-sm text-white/80">{{ lightboxKeterangan }}</p>
+                </div>
+            </div>
+        </Teleport>
 
         <!-- FAQ Section -->
         <section id="faq" class="py-20 bg-[#ffffff] border-b border-[#bfc9bd]">

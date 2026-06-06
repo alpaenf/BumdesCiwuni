@@ -36,6 +36,7 @@ const reportNav = [
 const adminNav = [
     { name: 'Biaya Administrasi', route: 'pengaturan.biaya', icon: 'tune' },
     { name: 'Landing Page Unit', route: 'admin.landing-page.edit', icon: 'web' },
+    { name: 'Galeri Unit', route: 'admin.galeri.index', icon: 'photo_library' },
 ];
 </script>
 
