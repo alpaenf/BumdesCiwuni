@@ -145,6 +145,11 @@ class BukuTabunganController extends Controller
 
     private function resolveNasabahTabungan(Request $request): array
     {
+        // Hanya resolve nasabah/tabungan spesifik jika ada filter nasabah
+        if (!$request->filled('nasabah_id') && !$request->filled('nomor_rekening')) {
+            return [null, null];
+        }
+
         $tabunganQuery = Tabungan::query()->with('nasabah');
 
         if ($request->filled('nasabah_id')) {
