@@ -84,7 +84,10 @@ class PinjamanController extends Controller
 
     public function create(): Response
     {
-        $nasabah = Nasabah::where('status', 'aktif')->orderBy('nama')->get(['id', 'nama', 'nomor_rekening']);
+        $nasabah = Nasabah::where('status', 'aktif')
+            ->whereJsonContains('kategori', 'pinjaman')
+            ->orderBy('nama')
+            ->get(['id', 'nama', 'nomor_rekening']);
 
         return Inertia::render('SimpanPinjam/Pinjaman/Create', [
             'nasabahOptions' => $nasabah,

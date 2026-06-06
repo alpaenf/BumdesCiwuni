@@ -19,6 +19,7 @@ class StoreTransaksiRequest extends FormRequest
             'nominal'          => ['required', 'numeric', 'min:1000'],
             'keterangan'       => ['nullable', 'string', 'max:255'],
             'jenis_transaksi'  => ['nullable', 'in:tarik_tunai,tarik_sembako'],
+            'is_tutup_buku'    => ['nullable', 'boolean'],
         ];
     }
 }

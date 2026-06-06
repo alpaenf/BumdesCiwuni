@@ -45,8 +45,12 @@ const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage',
                         <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Pinjaman Pokok</span><span class="font-semibold">{{ formatCurrency(pinjaman.pinjaman_pokok) }}</span></div>
                         <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Bunga</span><span class="font-semibold">{{ pinjaman.bunga }}%</span></div>
                         <div class="flex justify-between border-t pt-3"><span class="text-[color:var(--color-secondary)]">Total Tagihan</span><span class="font-bold text-[color:var(--color-on-surface)]">{{ formatCurrency(pinjaman.total_tagihan) }}</span></div>
-                        <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Setoran / Angsuran</span><span class="font-semibold">{{ formatCurrency(pinjaman.nominal_setoran) }}</span></div>
-                        <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Jumlah Angsuran</span><span class="font-semibold">{{ pinjaman.jumlah_angsuran }} kali</span></div>
+                        <div class="flex flex-col gap-1 mt-1 bg-[color:var(--color-surface-container-low)] p-2 rounded-lg text-xs">
+                            <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Setoran / Angsuran</span><span class="font-semibold">{{ formatCurrency(pinjaman.nominal_setoran) }}</span></div>
+                            <div class="flex justify-between border-t border-dashed border-[color:var(--color-outline-variant)] pt-1"><span class="text-[color:var(--color-secondary)]">↳ Pokok</span><span class="font-medium">{{ formatCurrency((pinjaman.pinjaman_pokok / pinjaman.total_tagihan) * pinjaman.nominal_setoran) }}</span></div>
+                            <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">↳ Bunga</span><span class="font-medium">{{ formatCurrency(((pinjaman.pinjaman_pokok * pinjaman.bunga / 100) / pinjaman.total_tagihan) * pinjaman.nominal_setoran) }}</span></div>
+                        </div>
+                        <div class="flex justify-between mt-2"><span class="text-[color:var(--color-secondary)]">Jumlah Angsuran</span><span class="font-semibold">{{ pinjaman.jumlah_angsuran }} kali</span></div>
                         <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Terbayar</span><span class="font-semibold text-emerald-600">{{ pinjaman.angsuran?.length ?? 0 }} kali</span></div>
                         <div class="flex justify-between border-t pt-3"><span class="text-[color:var(--color-secondary)]">Sisa Pinjaman</span><span class="font-bold text-red-600">{{ formatCurrency(pinjaman.sisa_pinjaman) }}</span></div>
                     </div>

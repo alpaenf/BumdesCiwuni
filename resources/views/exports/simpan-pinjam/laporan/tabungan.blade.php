@@ -24,7 +24,7 @@
             <th>No. Rekening</th>
             <th class="text-center">Jenis</th>
             <th class="text-right">Nominal (Rp)</th>
-            <th class="text-right">Administrasi (Rp)</th>
+            <th class="text-right">Laba Unit (Rp)</th>
             <th class="text-right">Saldo Sesudah (Rp)</th>
         </tr>
     </thead>

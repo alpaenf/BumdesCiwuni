@@ -46,12 +46,31 @@ class TabunganService
             $unitId = auth()->check() ? auth()->user()->unit_id : null;
             $prefix = $unitId ? "unit_{$unitId}_" : "global_";
             $endapanWajib = \App\Models\Setting::get($prefix . 'endapan_wajib_tabungan', 20000);
+            
+            $isTutupBuku = !empty($data['is_tutup_buku']);
 
-            if ($tabungan->saldo - $nominal < $endapanWajib) {
-                throw new \RuntimeException('Penarikan gagal. Saldo harus tersisa minimal Rp ' . number_format($endapanWajib, 0, ',', '.') . ' (Endapan Wajib).');
+            if ($isTutupBuku) {
+                // Saat tutup buku, tarik SEMUA saldo yang ada.
+                $nominal = $tabungan->saldo;
+                if ($nominal < $endapanWajib) {
+                    throw new \RuntimeException('Tutup buku gagal. Saldo tidak mencukupi untuk biaya administrasi (Rp ' . number_format($endapanWajib, 0, ',', '.') . ').');
+                }
+                
+                $administrasi = $endapanWajib;
+                $nominalKeluar = $nominal - $administrasi;
+                $saldoBaru = 0;
+                $keterangan = 'Ambil (Tutup Buku)';
+                $jenisTransaksi = 'tutup_periode'; // Marker for Buku Tabungan
+            } else {
+                if ($tabungan->saldo - $nominal < $endapanWajib) {
+                    throw new \RuntimeException('Penarikan gagal. Saldo harus tersisa minimal Rp ' . number_format($endapanWajib, 0, ',', '.') . ' (Endapan Wajib).');
+                }
+                $administrasi = 0;
+                $nominalKeluar = $nominal;
+                $saldoBaru = $tabungan->saldo - $nominal;
+                $keterangan = $data['keterangan'] ?? 'Penarikan Tunai';
             }
 
-            $saldoBaru = $tabungan->saldo - $nominal;
             $tabungan->update(['saldo' => $saldoBaru]);
 
             return TransaksiTabungan::create([
@@ -59,9 +78,9 @@ class TabunganService
                 'tanggal'         => $data['tanggal'],
                 'nomor_transaksi' => $this->nomorService->generateNomorTransaksi(),
                 'jenis_transaksi' => $jenisTransaksi,
-                'keterangan'      => $data['keterangan'] ?? ($jenisTransaksi === TransaksiTabungan::JENIS_TARIK_SEMBAKO ? 'Penarikan Sembako' : 'Penarikan Tunai'),
-                'nominal'         => $nominal,
-                'administrasi'    => 0, // Tidak ada potongan per transaksi
+                'keterangan'      => $keterangan,
+                'nominal'         => $nominalKeluar,
+                'administrasi'    => $administrasi,
                 'saldo_setelah'   => $saldoBaru,
             ]);
         });
