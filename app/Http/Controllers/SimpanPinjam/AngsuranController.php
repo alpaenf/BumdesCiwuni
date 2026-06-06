@@ -95,8 +95,9 @@ class AngsuranController extends Controller
         $pinjaman  = Pinjaman::findOrFail($request->pinjaman_id);
         $angsuran  = $this->angsuranService->bayar($pinjaman, $request->validated());
 
-        return redirect()->route('angsuran.struk', $angsuran)
-            ->with('success', 'Angsuran berhasil dicatat.');
+        return redirect()->route('angsuran.index')
+            ->with('success', 'Angsuran berhasil dicatat.')
+            ->with('struk_url', route('angsuran.struk', $angsuran));
     }
 
     public function struk(Angsuran $angsuran)
