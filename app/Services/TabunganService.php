@@ -43,7 +43,9 @@ class TabunganService
         return DB::transaction(function () use ($tabungan, $data) {
             $nominal = (float) $data['nominal'];
             $jenisTransaksi = $data['jenis_transaksi'] ?? TransaksiTabungan::JENIS_TARIK_TUNAI;
-            $endapanWajib = 20000;
+            $unitId = auth()->check() ? auth()->user()->unit_id : null;
+            $prefix = $unitId ? "unit_{$unitId}_" : "global_";
+            $endapanWajib = \App\Models\Setting::get($prefix . 'endapan_wajib_tabungan', 20000);
 
             if ($tabungan->saldo - $nominal < $endapanWajib) {
                 throw new \RuntimeException('Penarikan gagal. Saldo harus tersisa minimal Rp ' . number_format($endapanWajib, 0, ',', '.') . ' (Endapan Wajib).');

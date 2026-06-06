@@ -90,7 +90,7 @@ function openWaModal(row) {
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">Nama Lengkap</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">NIK</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">No. WA</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">Bergabung</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">Program</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">Status</th>
                                 <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">Aksi</th>
                             </tr>
@@ -121,7 +121,14 @@ function openWaModal(row) {
                                         {{ row.no_hp }}
                                     </button>
                                 </td>
-                                <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal_bergabung) }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-wrap gap-1">
+                                        <span v-if="!row.kategori || row.kategori.length === 0" class="text-xs text-gray-400">-</span>
+                                        <span v-if="row.kategori && row.kategori.includes('tabungan')" class="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Tabungan</span>
+                                        <span v-if="row.kategori && row.kategori.includes('sembako')" class="inline-flex rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-semibold text-orange-700">Sembako</span>
+                                        <span v-if="row.kategori && row.kategori.includes('pinjaman')" class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">Pinjaman</span>
+                                    </div>
+                                </td>
                                 <td class="px-4 py-3">
                                     <span
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"

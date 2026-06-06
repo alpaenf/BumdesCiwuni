@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps({ nasabah: Object, tabungan: Object, defaultAdminFee: { type: Number, default: 0 } });
+const props = defineProps({ nasabah: Object, tabungan: Object, endapanWajib: { type: Number, default: 20000 } });
 
 const form = useForm({
     nasabah_id:   props.nasabah.id,
@@ -20,7 +20,7 @@ const saldoBaru = computed(() => {
     return Number(props.tabungan.saldo) - n;
 });
 
-const isInvalid = computed(() => saldoBaru.value < 20000);
+const isInvalid = computed(() => saldoBaru.value < props.endapanWajib);
 
 const submit = () => form.post(route('tabungan.tarik.store', props.nasabah.id));
 </script>

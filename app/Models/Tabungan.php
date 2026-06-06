@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tabungan extends Model
 {
+    public const JENIS_REGULER = 'reguler';
+    public const JENIS_SEMBAKO = 'sembako';
+
     protected $table = 'tabungan';
 
     protected $fillable = [

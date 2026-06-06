@@ -21,10 +21,12 @@ class Nasabah extends Model
         'tanggal_bergabung',
         'status',
         'foto',
+        'kategori',
     ];
 
     protected $casts = [
         'tanggal_bergabung' => 'date',
+        'kategori' => 'array',
     ];
 
     protected $appends = ['foto_url'];

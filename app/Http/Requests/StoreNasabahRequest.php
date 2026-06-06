@@ -20,10 +20,12 @@ class StoreNasabahRequest extends FormRequest
             'alamat'           => ['required', 'string'],
             'no_hp'            => ['required', 'string', 'max:20'],
             'pekerjaan'        => ['nullable', 'string', 'max:100'],
-            'jaminan'          => ['nullable', 'string', 'max:255'],
+            'jaminan'          => ['nullable', 'required_if:kategori.*,pinjaman', 'string', 'max:255'],
             'tanggal_bergabung'=> ['nullable', 'date'],
             'status'           => ['nullable', 'in:aktif,tidak aktif'],
             'foto'             => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'kategori'         => ['nullable', 'array'],
+            'kategori.*'       => ['string', 'in:tabungan,sembako,pinjaman'],
         ];
     }
 

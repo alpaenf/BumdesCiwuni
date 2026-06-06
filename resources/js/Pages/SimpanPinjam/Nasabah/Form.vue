@@ -20,6 +20,7 @@ const form = useForm({
     jaminan:           props.nasabah?.jaminan ?? '',
     tanggal_bergabung: props.nasabah?.tanggal_bergabung ?? '',
     status:            props.nasabah?.status ?? 'aktif',
+    kategori:          props.nasabah?.kategori ?? [],
     foto:              null,
 });
 
@@ -167,16 +168,40 @@ const submit = () => {
                         </div>
                     </div>
 
+                    <!-- Kategori Nasabah -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Program / Kategori yang Diikuti</label>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" value="tabungan" v-model="form.kategori" class="rounded border-gray-300 text-[color:var(--color-primary)] focus:ring-[color:var(--color-primary)]">
+                                <span class="text-sm">Tabungan</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" value="sembako" v-model="form.kategori" class="rounded border-gray-300 text-[color:var(--color-primary)] focus:ring-[color:var(--color-primary)]">
+                                <span class="text-sm">Tabungan Sembako</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" value="pinjaman" v-model="form.kategori" class="rounded border-gray-300 text-[color:var(--color-primary)] focus:ring-[color:var(--color-primary)]">
+                                <span class="text-sm">Pinjaman</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Jaminan & Tanggal -->
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Jaminan</label>
+                            <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">
+                                Data Jaminan <span v-if="form.kategori.includes('pinjaman')" class="text-red-500">*</span>
+                            </label>
                             <input
                                 v-model="form.jaminan"
                                 type="text"
                                 placeholder="Misal: BPKB Motor, Sertifikat"
-                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
+                                class="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
+                                :class="form.errors.jaminan ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'"
+                                :required="form.kategori.includes('pinjaman')"
                             />
+                            <p v-if="form.errors.jaminan" class="mt-1 text-xs text-red-500">{{ form.errors.jaminan }}</p>
                         </div>
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Tanggal Bergabung</label>
