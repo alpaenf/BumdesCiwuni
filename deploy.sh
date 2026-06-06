@@ -5,8 +5,8 @@
 # Pastikan script ini dijalankan dari dalam root folder project (simpan-pinjam)
 
 # Konfigurasi Path (Sesuaikan jika perlu)
-# Asumsi: Folder project 'simpan-pinjam' dan 'public_html' berada di level yang sama di hosting
-PROJECT_FOLDER="simpan-pinjam"
+# Asumsi: Folder project dan 'public_html' berada di level yang sama di hosting
+PROJECT_FOLDER=$(basename "$PWD")
 PUBLIC_HTML_PATH="../public_html"
 
 echo "========================================"
