@@ -22,7 +22,6 @@ const mainNav = [
     { name: 'Data Nasabah', route: 'nasabah.index', icon: 'people' },
     { name: 'Tabungan Reguler', route: 'tabungan.index', icon: 'savings' },
     { name: 'Tabungan Sembako', route: 'tabungan-sembako.index', icon: 'shopping_basket' },
-    { name: 'Periode Tabungan', route: 'periode-tabungan.index', icon: 'date_range' },
     { name: 'Pinjaman', route: 'pinjaman.index', icon: 'account_balance' },
     { name: 'Angsuran', route: 'angsuran.index', icon: 'payments' },
 ];

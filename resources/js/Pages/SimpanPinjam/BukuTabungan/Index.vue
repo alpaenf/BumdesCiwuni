@@ -181,15 +181,15 @@ const formatCurrency = (value) =>
 
             <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div class="rounded-2xl bg-white p-5 shadow-sm">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-900">Total Setoran</p>
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-900">Total Masuk</p>
                     <p class="mt-2 text-xl font-semibold">{{ formatCurrency(summary.total_setoran) }}</p>
                 </div>
                 <div class="rounded-2xl bg-white p-5 shadow-sm">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-900">Total Penarikan</p>
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-900">Total Keluar</p>
                     <p class="mt-2 text-xl font-semibold">{{ formatCurrency(summary.total_penarikan) }}</p>
                 </div>
                 <div class="rounded-2xl bg-white p-5 shadow-sm">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-900">Total Administrasi</p>
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-900">Total Laba Unit</p>
                     <p class="mt-2 text-xl font-semibold">{{ formatCurrency(summary.total_administrasi) }}</p>
                 </div>
                 <div class="rounded-2xl bg-white p-5 shadow-sm">
@@ -242,22 +242,22 @@ const formatCurrency = (value) =>
                             <tr class="border-b text-left text-xs uppercase tracking-[0.2em] text-slate-900">
                                 <th class="py-3 pe-4">Tanggal</th>
                                 <th class="py-3 pe-4">Nomor Transaksi</th>
-                                <th class="py-3 pe-4">Keterangan</th>
-                                <th class="py-3 pe-4">Setoran</th>
-                                <th class="py-3 pe-4">Penarikan</th>
-                                <th class="py-3 pe-4">Administrasi</th>
-                                <th class="py-3">Saldo</th>
+                                <th class="py-3 pe-4">Uraian</th>
+                                <th class="py-3 pe-4">Masuk</th>
+                                <th class="py-3 pe-4">Keluar</th>
+                                <th class="py-3 pe-4">Saldo</th>
+                                <th class="py-3">Laba</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="item in transactions" :key="item.id" class="border-b last:border-none">
                                 <td class="py-3 pe-4">{{ item.tanggal }}</td>
                                 <td class="py-3 pe-4">{{ item.nomor_transaksi }}</td>
-                                <td class="py-3 pe-4">{{ item.keterangan }}</td>
-                                <td class="py-3 pe-4">{{ formatCurrency(item.setoran) }}</td>
-                                <td class="py-3 pe-4">{{ formatCurrency(item.penarikan) }}</td>
-                                <td class="py-3 pe-4">{{ formatCurrency(item.administrasi) }}</td>
-                                <td class="py-3">{{ formatCurrency(item.saldo) }}</td>
+                                <td class="py-3 pe-4">{{ item.uraian }}</td>
+                                <td class="py-3 pe-4">{{ formatCurrency(item.masuk) }}</td>
+                                <td class="py-3 pe-4">{{ formatCurrency(item.keluar) }}</td>
+                                <td class="py-3 pe-4">{{ formatCurrency(item.saldo) }}</td>
+                                <td class="py-3">{{ formatCurrency(item.laba) }}</td>
                             </tr>
                             <tr v-if="!transactions.length">
                                 <td colspan="7" class="py-6 text-center text-sm text-slate-500">Belum ada transaksi.</td>

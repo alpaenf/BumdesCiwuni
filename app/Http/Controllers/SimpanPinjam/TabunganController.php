@@ -30,7 +30,8 @@ class TabunganController extends Controller
             $search = '%' . $request->search . '%';
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', $search)
-                  ->orWhere('nomor_rekening', 'like', $search);
+                  ->orWhere('nomor_rekening', 'like', $search)
+                  ->orWhere('nomor_registrasi', 'like', $search);
             });
         }
 
