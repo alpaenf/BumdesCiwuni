@@ -20,7 +20,9 @@ class TabunganController extends Controller
 
     public function index(Request $request): Response
     {
-        $query = Nasabah::with('tabungan');
+        $query = Nasabah::with(['tabungan' => function($q) {
+            $q->where('jenis_tabungan', Tabungan::JENIS_REGULER);
+        }]);
 
         if ($request->filled('search')) {
             $search = '%' . $request->search . '%';
@@ -40,7 +42,7 @@ class TabunganController extends Controller
 
     public function setor(Request $request, Nasabah $nasabah): Response
     {
-        $tabungan = $nasabah->tabungan()->firstOrFail();
+        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
 
         return Inertia::render('SimpanPinjam/Tabungan/Setor', [
             'nasabah'  => $nasabah,
@@ -50,7 +52,7 @@ class TabunganController extends Controller
 
     public function storeSetor(StoreTransaksiRequest $request, Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->firstOrFail();
+        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
         $transaksi = $this->tabunganService->setor($tabungan, $request->validated());
 
         return redirect()->route('tabungan.index')
@@ -60,17 +62,22 @@ class TabunganController extends Controller
 
     public function tarik(Request $request, Nasabah $nasabah): Response
     {
-        $tabungan = $nasabah->tabungan()->firstOrFail();
+        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
+
+        $unitId = auth()->user()->unit_id;
+        $prefix = $unitId ? "unit_{$unitId}_" : "global_";
+        $endapanWajib = \App\Models\Setting::get($prefix . 'endapan_wajib_tabungan', 20000);
 
         return Inertia::render('SimpanPinjam/Tabungan/Tarik', [
             'nasabah'         => $nasabah,
             'tabungan'        => $tabungan,
+            'endapanWajib'    => $endapanWajib,
         ]);
     }
 
     public function storeTarik(StoreTransaksiRequest $request, Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->firstOrFail();
+        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
 
         try {
             $transaksi = $this->tabunganService->tarik($tabungan, $request->validated());
@@ -92,7 +99,7 @@ class TabunganController extends Controller
 
     public function riwayat(Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->firstOrFail();
+        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
         $transaksi = $tabungan->transaksi()
             ->orderByDesc('tanggal')
             ->orderByDesc('id')

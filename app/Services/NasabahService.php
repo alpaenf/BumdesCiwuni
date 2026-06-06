@@ -25,8 +25,13 @@ class NasabahService
 
         $nasabah = Nasabah::create($data);
 
-        // Buat akun tabungan terintegrasi (tunai & sembako)
-        Tabungan::create(['nasabah_id' => $nasabah->id, 'saldo' => 0]);
+        $kategori = $data['kategori'] ?? [];
+        if (in_array('tabungan', $kategori)) {
+            Tabungan::create(['nasabah_id' => $nasabah->id, 'jenis_tabungan' => 'reguler', 'saldo' => 0]);
+        }
+        if (in_array('sembako', $kategori)) {
+            Tabungan::create(['nasabah_id' => $nasabah->id, 'jenis_tabungan' => 'sembako', 'saldo' => 0]);
+        }
 
         return $nasabah;
     }

@@ -60,8 +60,12 @@ class PeriodeTabunganController extends Controller
             $tabungans = Tabungan::where('saldo', '>', 0)->get();
             $totalPendapatan = 0;
 
+            $unitId = auth()->user()->unit_id;
+            $prefix = $unitId ? "unit_{$unitId}_" : "global_";
+            $endapanWajib = \App\Models\Setting::get($prefix . 'endapan_wajib_tabungan', 20000);
+
             foreach ($tabungans as $tabungan) {
-                $potongan = min(20000, $tabungan->saldo);
+                $potongan = min($endapanWajib, $tabungan->saldo);
                 $saldoBaru = $tabungan->saldo - $potongan;
 
                 $tabungan->update(['saldo' => $saldoBaru]);

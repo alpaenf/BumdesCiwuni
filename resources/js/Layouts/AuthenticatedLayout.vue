@@ -19,8 +19,9 @@ const isAdmin = computed(() => isSuperAdmin.value || user.value?.role === 'admin
 
 const mainNav = [
     { name: 'Dashboard', route: 'dashboard', icon: 'dashboard' },
-    { name: 'Nasabah', route: 'nasabah.index', icon: 'people' },
-    { name: 'Tabungan', route: 'tabungan.index', icon: 'savings' },
+    { name: 'Data Nasabah', route: 'nasabah.index', icon: 'people' },
+    { name: 'Tabungan Reguler', route: 'tabungan.index', icon: 'savings' },
+    { name: 'Tabungan Sembako', route: 'tabungan-sembako.index', icon: 'shopping_basket' },
     { name: 'Periode Tabungan', route: 'periode-tabungan.index', icon: 'date_range' },
     { name: 'Pinjaman', route: 'pinjaman.index', icon: 'account_balance' },
     { name: 'Angsuran', route: 'angsuran.index', icon: 'payments' },
@@ -34,7 +35,7 @@ const reportNav = [
 ];
 
 const adminNav = [
-    { name: 'Biaya Administrasi', route: 'pengaturan.biaya', icon: 'tune' },
+    { name: 'Pengaturan Tabungan', route: 'pengaturan.tabungan', icon: 'tune' },
     { name: 'Landing Page Unit', route: 'admin.landing-page.edit', icon: 'web' },
     { name: 'Galeri Unit', route: 'admin.galeri.index', icon: 'photo_library' },
 ];
