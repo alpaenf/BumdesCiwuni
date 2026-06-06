@@ -1,0 +1,46 @@
+@php
+    $headerColor = '#1B5E20';
+    $reportTitle = 'Laporan Data Nasabah';
+    $periodLabel = $filters['start_date'] ?? $filters['end_date']
+        ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
+        : 'Semua periode';
+    $summaryItems = [
+        ['label' => 'Total Nasabah',   'value' => $summary['total']],
+        ['label' => 'Aktif',           'value' => $summary['aktif']],
+        ['label' => 'Tidak Aktif',     'value' => $summary['tidak_aktif']],
+    ];
+@endphp
+@include('exports.laporan.layout')
+
+<table>
+    <thead>
+        <tr>
+            <th class="text-center" style="width:28px">No</th>
+            <th>No. Registrasi</th>
+            <th>No. Rekening</th>
+            <th>Nama Lengkap</th>
+            <th>NIK</th>
+            <th>No. HP</th>
+            <th>Alamat</th>
+            <th>Tgl. Bergabung</th>
+            <th class="text-center">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($data as $i => $row)
+        <tr>
+            <td class="text-center">{{ $i + 1 }}</td>
+            <td>{{ $row->nomor_registrasi }}</td>
+            <td>{{ $row->nomor_rekening }}</td>
+            <td>{{ $row->nama }}</td>
+            <td>{{ $row->nik }}</td>
+            <td>{{ $row->no_hp }}</td>
+            <td>{{ $row->alamat }}</td>
+            <td>{{ $row->tanggal_bergabung ? \Carbon\Carbon::parse($row->tanggal_bergabung)->format('d/m/Y') : '-' }}</td>
+            <td class="text-center">{{ ucfirst($row->status) }}</td>
+        </tr>
+        @empty
+        <tr><td colspan="9" class="text-center">Tidak ada data</td></tr>
+        @endforelse
+    </tbody>
+</table>
