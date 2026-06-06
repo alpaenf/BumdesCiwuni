@@ -92,26 +92,47 @@ class TabunganService
     public function ambilSembako(Tabungan $tabungan, array $data): TransaksiTabungan
     {
         return DB::transaction(function () use ($tabungan, $data) {
-            $nominal = (float) $data['nominal'];
             $unitId = auth()->check() ? auth()->user()->unit_id : null;
             $prefix = $unitId ? "unit_{$unitId}_" : "global_";
-            $administrasi = (float) \App\Models\Setting::get($prefix . 'biaya_admin_sembako', 20000);
-            $totalKurang = $nominal + $administrasi;
+            $endapanWajib = (float) \App\Models\Setting::get($prefix . 'biaya_admin_sembako', 20000);
 
-            if ($tabungan->saldo < $totalKurang) {
-                throw new \RuntimeException('Saldo tidak mencukupi.');
+            $isTutupBuku = !empty($data['is_tutup_buku']);
+
+            if ($isTutupBuku) {
+                $nominal = $tabungan->saldo;
+                if ($nominal < $endapanWajib) {
+                    throw new \RuntimeException('Tutup buku gagal. Saldo tidak mencukupi untuk biaya administrasi (Rp ' . number_format($endapanWajib, 0, ',', '.') . ').');
+                }
+
+                $administrasi = $endapanWajib;
+                $nominalKeluar = $nominal - $administrasi;
+                $saldoBaru = 0;
+                $keterangan = 'Ambil Sembako (Tutup Buku)';
+                $jenisTransaksi = 'tutup_periode';
+            } else {
+                $nominal = (float) $data['nominal'];
+                $administrasi = $endapanWajib;
+                $totalKurang = $nominal + $administrasi;
+
+                if ($tabungan->saldo < $totalKurang) {
+                    throw new \RuntimeException('Saldo tidak mencukupi.');
+                }
+
+                $nominalKeluar = $nominal;
+                $saldoBaru = $tabungan->saldo - $totalKurang;
+                $keterangan = 'Pengambilan Sembako' . (($data['jenis_pengambilan'] ?? '') === 'barang' ? ' (Barang)' : ' (Uang)');
+                $jenisTransaksi = TransaksiTabungan::JENIS_TARIK_SEMBAKO;
             }
 
-            $saldoBaru = $tabungan->saldo - $totalKurang;
             $tabungan->update(['saldo' => $saldoBaru]);
 
             return TransaksiTabungan::create([
                 'tabungan_id'     => $tabungan->id,
                 'tanggal'         => $data['tanggal'],
                 'nomor_transaksi' => $this->nomorService->generateNomorTransaksi(),
-                'jenis_transaksi' => TransaksiTabungan::JENIS_TARIK_SEMBAKO,
-                'keterangan'      => 'Pengambilan Sembako' . (($data['jenis_pengambilan'] ?? '') === 'barang' ? ' (Barang)' : ' (Uang)'),
-                'nominal'         => $nominal,
+                'jenis_transaksi' => $jenisTransaksi,
+                'keterangan'      => $keterangan,
+                'nominal'         => $nominalKeluar,
                 'administrasi'    => $administrasi,
                 'saldo_setelah'   => $saldoBaru,
             ]);
