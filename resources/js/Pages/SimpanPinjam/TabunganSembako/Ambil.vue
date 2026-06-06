@@ -5,7 +5,7 @@ import { computed } from 'vue';
 
 const props = defineProps({ nasabah: Object, tabungan: Object, biayaAdmin: { type: Number, default: 20000 } });
 const ADMIN = props.biayaAdmin;
-const form = useForm({ nasabah_id: props.nasabah.id, tanggal: new Date().toISOString().split('T')[0], nominal: '', jenis_pengambilan: 'uang', keterangan: '', is_tutup_buku: false });
+const form = useForm({ nasabah_id: props.nasabah.id, tanggal: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0], nominal: '', jenis_pengambilan: 'uang', keterangan: '', is_tutup_buku: false });
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
 const saldoBaru = computed(() => {

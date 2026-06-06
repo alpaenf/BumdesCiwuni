@@ -8,7 +8,7 @@ const form = useForm({
     nasabah_id: '',
     nominal:    '',
     keperluan:  '',
-    tanggal:    new Date().toISOString().split('T')[0],
+    tanggal:    new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0],
     foto:       null,
 });
 

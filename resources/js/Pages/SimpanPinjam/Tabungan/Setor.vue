@@ -9,7 +9,7 @@ const props = defineProps({
 
 const form = useForm({
     nasabah_id: props.nasabah.id,
-    tanggal:    new Date().toISOString().split('T')[0],
+    tanggal:    new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0],
     nominal:    '',
     keterangan: '',
 });
