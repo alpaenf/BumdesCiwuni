@@ -100,11 +100,20 @@
     </header>
     <!-- END: MainHeader -->
 
+    @php
+        $lembarLabels = [
+            1 => 'Lembar Nasabah',
+            2 => 'Lembar BUMDes',
+            3 => 'Lembar Arsip'
+        ];
+    @endphp
+
     @for ($i = 1; $i <= 3; $i++)
         <!-- BEGIN: Receipt Section {{ $i }} -->
         <section class="receipt-section" data-purpose="receipt-unit">
             <div class="text-center mb-3">
                 <h2 class="title-receipt uppercase">Struk Transaksi Pinjaman</h2>
+                <div class="text-[9px] font-semibold text-gray-500 italic mt-0.5">({{ $lembarLabels[$i] }})</div>
             </div>
             <div class="space-y-0.5 mb-2" data-purpose="customer-info">
                 <div class="flex">
