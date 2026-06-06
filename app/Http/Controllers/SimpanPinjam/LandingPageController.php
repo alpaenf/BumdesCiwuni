@@ -114,8 +114,14 @@ class LandingPageController extends Controller
             }
         }
 
+        $galeri = GaleriUnit::where('unit', 'simpan-pinjam')
+            ->orderBy('urutan')
+            ->orderByDesc('id')
+            ->get();
+
         return Inertia::render('SimpanPinjam/Admin/LandingPageSettings', [
             'settings' => $settings,
+            'galeri'   => $galeri,
         ]);
     }
 

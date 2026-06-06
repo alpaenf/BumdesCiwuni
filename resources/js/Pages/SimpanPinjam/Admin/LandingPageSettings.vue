@@ -9,6 +9,10 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    galeri: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const form = useForm({
@@ -89,6 +93,36 @@ const submit = () => {
             }, 3000);
         },
     });
+};
+
+// === Galeri Management ===
+const galeriUploadForm = useForm({ foto: null, keterangan: '' });
+const isUploadingGaleri = ref(false);
+
+const triggerGaleriUpload = () => {
+    document.getElementById('galeri-file-input')?.click();
+};
+
+const handleGaleriFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    galeriUploadForm.foto = file;
+    isUploadingGaleri.value = true;
+    galeriUploadForm.post(route('admin.galeri.store'), {
+        forceFormData: true,
+        preserveScroll: true,
+        onFinish: () => {
+            isUploadingGaleri.value = false;
+            galeriUploadForm.reset();
+            e.target.value = '';
+        },
+    });
+};
+
+const deleteGaleri = (id) => {
+    if (!confirm('Hapus foto ini dari galeri?')) return;
+    const delForm = useForm({});
+    delForm.delete(route('admin.galeri.destroy', id), { preserveScroll: true });
 };
 </script>
 
@@ -325,6 +359,35 @@ const submit = () => {
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Email Kantor Unit</label>
                             <input v-model="form.contact_email" type="email" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary" />
                             <span v-if="form.errors.contact_email" class="text-[10px] text-red-600 font-bold mt-1 block">{{ form.errors.contact_email }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GALERI SECTION -->
+                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">photo_library</span>
+                            Galeri Unit
+                        </h3>
+                        <button type="button" @click="triggerGaleriUpload" :disabled="isUploadingGaleri" class="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline disabled:opacity-50">
+                            <span class="material-symbols-outlined text-[14px]">add_photo_alternate</span>
+                            {{ isUploadingGaleri ? 'Mengupload...' : 'Upload Foto' }}
+                        </button>
+                        <input id="galeri-file-input" type="file" accept="image/*" class="hidden" @change="handleGaleriFile" />
+                    </div>
+                    <div v-if="galeri.length === 0" class="text-xs text-slate-400 py-6 text-center">
+                        Belum ada foto di galeri. Klik "Upload Foto" untuk menambahkan.
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div v-for="item in galeri" :key="item.id" class="relative group rounded-lg overflow-hidden border border-slate-200">
+                            <img :src="item.foto" class="w-full h-32 object-cover" />
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <button type="button" @click="deleteGaleri(item.id)" class="flex items-center gap-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                    <span class="material-symbols-outlined text-xs">delete</span> Hapus
+                                </button>
+                            </div>
+                            <p v-if="item.keterangan" class="text-[10px] text-slate-600 px-2 py-1 truncate">{{ item.keterangan }}</p>
                         </div>
                     </div>
                 </div>

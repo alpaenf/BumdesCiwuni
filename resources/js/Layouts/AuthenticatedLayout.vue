@@ -36,7 +36,6 @@ const reportNav = [
 const adminNav = [
     { name: 'Pengaturan Tabungan', route: 'pengaturan.tabungan', icon: 'tune' },
     { name: 'Landing Page Unit', route: 'admin.landing-page.edit', icon: 'web' },
-    { name: 'Galeri Unit', route: 'admin.galeri.index', icon: 'photo_library' },
 ];
 </script>
 
@@ -137,22 +136,6 @@ const adminNav = [
                     >
                         <span class="material-symbols-outlined text-[18px]">edit_note</span>
                         <span>Kelola Website</span>
-                    </NavLink>
-                </div>
-
-                <div v-if="isSuperAdmin" class="mt-4 px-3">
-                    <p class="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-[color:var(--color-secondary)]">Pengaturan</p>
-                    <NavLink
-                        :href="route('admin.landing-page.edit')"
-                        :active="route().current('admin.landing-page.edit')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                        :class="route().current('admin.landing-page.edit')
-                            ? 'bg-primary text-white font-semibold shadow-sm'
-                            : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
-                        @click="showingSidebar = false"
-                    >
-                        <span class="material-symbols-outlined text-[18px]">settings_applications</span>
-                        <span>Konten Landing Page</span>
                     </NavLink>
                 </div>
             </nav>
