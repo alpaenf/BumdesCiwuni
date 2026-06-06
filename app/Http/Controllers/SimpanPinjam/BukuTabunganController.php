@@ -104,7 +104,9 @@ class BukuTabunganController extends Controller
     {
         $query = TransaksiTabungan::query()
             ->with(['tabungan.nasabah'])
-            ->orderBy('tanggal');
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->limit(20);
 
         if ($request->filled('nasabah_id')) {
             $query->whereHas('tabungan', fn (Builder $builder) => $builder->where('nasabah_id', $request->nasabah_id));
