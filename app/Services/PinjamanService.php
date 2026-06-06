@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Nasabah;
+use App\Models\Pinjaman;
+use Illuminate\Support\Facades\DB;
+
+class PinjamanService
+{
+    /**
+     * Buat pinjaman baru dengan kalkulasi otomatis.
+     */
+    public function buat(Nasabah $nasabah, array $data): Pinjaman
+    {
+        return DB::transaction(function () use ($nasabah, $data) {
+            $pokok         = (float) $data['pinjaman_pokok'];
+            $bunga         = (float) ($data['bunga'] ?? 10); // default 10%
+            $nominalSetor  = (float) $data['nominal_setoran'];
+
+            $totalTagihan    = $pokok + ($pokok * $bunga / 100);
+            $jumlahAngsuran  = (int) ceil($totalTagihan / max(1, $nominalSetor));
+
+            $foto_perjanjian = null;
+            if (isset($data['foto_perjanjian']) && $data['foto_perjanjian'] instanceof \Illuminate\Http\UploadedFile) {
+                $file = $data['foto_perjanjian'];
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/pinjaman'), $filename);
+                $foto_perjanjian = $filename;
+            }
+
+            return Pinjaman::create([
+                'nasabah_id'      => $nasabah->id,
+                'tanggal_akad'    => $data['tanggal_akad'],
+                'pinjaman_pokok'  => $pokok,
+                'bunga'           => $bunga,
+                'total_tagihan'   => $totalTagihan,
+                'nominal_setoran' => $nominalSetor,
+                'jumlah_angsuran' => $jumlahAngsuran,
+                'sisa_pinjaman'   => $totalTagihan,
+                'status'          => 'aktif',
+                'foto_perjanjian' => $foto_perjanjian,
+            ]);
+        });
+    }
+
+    /**
+     * Hitung preview angsuran sebelum disimpan.
+     */
+    public function kalkulasi(float $pokok, float $bunga, float $nominalSetor): array
+    {
+        $totalTagihan   = $pokok + ($pokok * $bunga / 100);
+        $jumlahAngsuran = $nominalSetor > 0 ? (int) ceil($totalTagihan / $nominalSetor) : 0;
+
+        return [
+            'pinjaman_pokok'  => $pokok,
+            'bunga'           => $bunga,
+            'total_tagihan'   => $totalTagihan,
+            'nominal_setoran' => $nominalSetor,
+            'jumlah_angsuran' => $jumlahAngsuran,
+        ];
+    }
+}
