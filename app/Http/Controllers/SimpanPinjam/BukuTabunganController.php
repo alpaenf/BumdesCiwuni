@@ -38,10 +38,10 @@ class BukuTabunganController extends Controller
                 'id' => $transaksi->id,
                 'tanggal' => $transaksi->tanggal->format('Y-m-d'),
                 'nomor_transaksi' => $transaksi->nomor_transaksi,
-                'keterangan' => $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
-                'setoran' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
-                'penarikan' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_TARIK_TUNAI ? $transaksi->nominal : 0,
-                'administrasi' => $transaksi->administrasi,
+                'uraian' => $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
+                'masuk' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
+                'keluar' => in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0,
+                'laba' => $transaksi->administrasi,
                 'saldo' => $transaksi->saldo_setelah,
             ]),
         ]);
@@ -75,11 +75,11 @@ class BukuTabunganController extends Controller
             fputcsv($handle, [
                 'Tanggal',
                 'Nomor Transaksi',
-                'Keterangan',
-                'Setoran',
-                'Penarikan',
-                'Administrasi',
+                'Uraian',
+                'Masuk',
+                'Keluar',
                 'Saldo',
+                'Laba',
             ]);
 
             foreach ($transactions as $transaksi) {
@@ -88,9 +88,9 @@ class BukuTabunganController extends Controller
                     $transaksi->nomor_transaksi,
                     $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
                     $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
-                    $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_TARIK_TUNAI ? $transaksi->nominal : 0,
-                    $transaksi->administrasi,
+                    in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0,
                     $transaksi->saldo_setelah,
+                    $transaksi->administrasi,
                 ]);
             }
 
@@ -115,7 +115,7 @@ class BukuTabunganController extends Controller
         }
 
         if ($request->filled('jenis_tabungan')) {
-            // removed
+            $query->whereHas('tabungan', fn (Builder $builder) => $builder->where('jenis_tabungan', $request->jenis_tabungan));
         }
 
         if ($request->filled('start_date')) {
@@ -130,9 +130,11 @@ class BukuTabunganController extends Controller
             $query->whereHas('tabungan.nasabah', function (Builder $builder) use ($request) {
                 $search = '%'.$request->search.'%';
 
-                $builder->where('nama', 'like', $search)
-                    ->orWhere('nomor_rekening', 'like', $search)
-                    ->orWhere('nomor_registrasi', 'like', $search);
+                $builder->where(function ($q) use ($search) {
+                    $q->where('nama', 'like', $search)
+                      ->orWhere('nomor_rekening', 'like', $search)
+                      ->orWhere('nomor_registrasi', 'like', $search);
+                });
             });
         }
 
@@ -152,7 +154,7 @@ class BukuTabunganController extends Controller
         }
 
         if ($request->filled('jenis_tabungan')) {
-            // removed
+            $tabunganQuery->where('jenis_tabungan', $request->jenis_tabungan);
         }
 
         $tabungan = $tabunganQuery->first();
@@ -163,7 +165,7 @@ class BukuTabunganController extends Controller
     private function summaryFromTransactions($transactions, ?Tabungan $tabungan = null): array
     {
         $totalSetoran = $transactions->where('jenis_transaksi', TransaksiTabungan::JENIS_SETOR)->sum('nominal');
-        $totalPenarikan = $transactions->where('jenis_transaksi', TransaksiTabungan::JENIS_TARIK_TUNAI)->sum('nominal');
+        $totalPenarikan = $transactions->whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako', 'tutup_periode'])->sum('nominal');
         $totalAdministrasi = $transactions->sum('administrasi');
         $saldoSaatIni = $transactions->last()?->saldo_setelah ?? ($tabungan?->saldo ?? 0);
 

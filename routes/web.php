@@ -113,10 +113,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::get('/nasabah/{nasabah}/print', [NasabahController::class, 'print'])->name('nasabah.print');
     Route::get('/nasabah/{nasabah}/pinjaman-aktif', [NasabahController::class, 'pinjamanAktif'])->name('nasabah.pinjaman-aktif');
 
-    // Tabungan - Periode Management (Admin Unit Only)
-    Route::get('/periode-tabungan', [PeriodeTabunganController::class, 'index'])->name('periode-tabungan.index')->middleware('role:admin_unit');
-    Route::post('/periode-tabungan', [PeriodeTabunganController::class, 'store'])->name('periode-tabungan.store')->middleware('role:admin_unit');
-    Route::post('/periode-tabungan/{periode}/tutup', [PeriodeTabunganController::class, 'tutup'])->name('periode-tabungan.tutup')->middleware('role:admin_unit');
+
 
     // Tabungan — static routes FIRST, then dynamic {nasabah}
     Route::get('/tabungan', [TabunganController::class, 'index'])->name('tabungan.index');
