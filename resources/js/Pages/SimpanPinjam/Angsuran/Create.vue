@@ -28,31 +28,30 @@ const selectedPinjaman = ref(null);
 watch(selectedNasabahId, async (id) => {
     form.pinjaman_id = '';
     selectedPinjaman.value = null;
-    if (!id) { pinjamanList.value = []; return; }
+    form.jumlah_bayar = '';
+    if (!id) {
+        pinjamanList.value = [];
+        return;
+    }
     loadingPinjaman.value = true;
     try {
-        const res = await axios.get(route('pinjaman.index'), { params: { nasabah_id: id, status: 'aktif', per_page: 100 } });
-        // Fetch directly
-        const r2 = await axios.get('/pinjaman', { params: { search: '', status: 'aktif', nasabah_id: id } });
-        // Use pinjaman options from props filtered
-        pinjamanList.value = props.nasabahOptions ? [] : [];
+        const res = await axios.get(route('nasabah.pinjaman-aktif', { nasabah: id }));
+        pinjamanList.value = res.data;
+    } catch (err) {
+        console.error(err);
+        pinjamanList.value = [];
     } finally {
         loadingPinjaman.value = false;
     }
 });
 
 watch(() => form.pinjaman_id, (id) => {
-    selectedPinjaman.value = pinjamanList.value.find(p => p.id == id) ?? null;
-});
-
-// Also check from pinjamanOptions
-watch(selectedNasabahId, async (id) => {
-    if (!id) return;
-    try {
-        const res = await axios.get(`/nasabah/${id}/pinjaman-aktif`);
-        pinjamanList.value = res.data;
-    } catch {
-        pinjamanList.value = [];
+    const found = pinjamanList.value.find(p => p.id == id);
+    selectedPinjaman.value = found ?? null;
+    if (found) {
+        form.jumlah_bayar = Math.round(parseFloat(found.nominal_setoran));
+    } else {
+        form.jumlah_bayar = '';
     }
 });
 
@@ -93,18 +92,33 @@ const submit = () => form.post(route('angsuran.store'));
                     </div>
 
                     <!-- Info Pinjaman -->
-                    <div v-if="selectedPinjaman" class="rounded-lg bg-[color:var(--color-surface-container-low)] p-4 text-sm grid grid-cols-2 gap-2">
-                        <div>
-                            <p class="text-xs text-[color:var(--color-secondary)]">Sisa Pinjaman</p>
-                            <p class="font-bold text-red-600">{{ formatCurrency(selectedPinjaman.sisa_pinjaman) }}</p>
+                    <div v-if="selectedPinjaman" class="rounded-lg bg-[color:var(--color-surface-container-low)] p-4 text-sm space-y-3 border border-[color:var(--color-outline-variant)]">
+                        <div class="border-b border-[color:var(--color-outline-variant)] pb-2">
+                            <h4 class="font-semibold text-emerald-800">Detail Pinjaman Aktif</h4>
                         </div>
-                        <div>
-                            <p class="text-xs text-[color:var(--color-secondary)]">Setoran Normal</p>
-                            <p class="font-bold">{{ formatCurrency(selectedPinjaman.nominal_setoran) }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-[color:var(--color-secondary)]">Tenor</p>
-                            <p class="font-bold">{{ selectedPinjaman.jumlah_angsuran }} kali</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <p class="text-xs text-[color:var(--color-secondary)]">Pokok Pinjaman</p>
+                                <p class="font-semibold text-[color:var(--color-on-surface)]">{{ formatCurrency(selectedPinjaman.pinjaman_pokok) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-[color:var(--color-secondary)]">Total Tagihan (+Bunga)</p>
+                                <p class="font-semibold text-[color:var(--color-on-surface)]">{{ formatCurrency(selectedPinjaman.total_tagihan) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-[color:var(--color-secondary)]">Sisa Pinjaman</p>
+                                <p class="font-bold text-red-600">{{ formatCurrency(selectedPinjaman.sisa_pinjaman) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-[color:var(--color-secondary)]">Setoran Normal / Bulan</p>
+                                <p class="font-bold text-emerald-700">{{ formatCurrency(selectedPinjaman.nominal_setoran) }}</p>
+                            </div>
+                            <div class="col-span-2">
+                                <p class="text-xs text-[color:var(--color-secondary)]">Status Pembayaran</p>
+                                <p class="font-semibold text-[color:var(--color-on-surface)]">
+                                    Angsuran Ke-{{ selectedPinjaman.angsuran_ke }} dari {{ selectedPinjaman.jumlah_angsuran }} kali
+                                </p>
+                            </div>
                         </div>
                     </div>
 

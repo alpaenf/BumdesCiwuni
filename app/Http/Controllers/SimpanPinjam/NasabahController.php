@@ -97,4 +97,19 @@ class NasabahController extends Controller
 
         return view('exports.simpan-pinjam.nasabah', ['nasabah' => $nasabah]);
     }
+
+    public function pinjamanAktif(Nasabah $nasabah)
+    {
+        $pinjaman = $nasabah->pinjaman()
+            ->where('status', 'aktif')
+            ->get(['id', 'pinjaman_pokok', 'total_tagihan', 'sisa_pinjaman', 'nominal_setoran', 'jumlah_angsuran']);
+            
+        $pinjaman->map(function($p) {
+            $countPaid = $p->angsuran()->count();
+            $p->angsuran_ke = $countPaid + 1;
+            return $p;
+        });
+
+        return response()->json($pinjaman);
+    }
 }
