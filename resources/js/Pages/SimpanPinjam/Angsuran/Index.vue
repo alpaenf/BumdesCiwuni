@@ -1,25 +1,42 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
-const props = defineProps({ angsuran: Object, nasabahOptions: Array, filters: Object });
+const props = defineProps({
+    angsuran: Object,
+    nasabahOptions: Array,
+    filters: Object,
+    summary: Object,
+    summaryAll: Object,
+    availableBulan: Array,
+});
+
 const search = ref(props.filters?.search ?? '');
-const startDate = ref(props.filters?.start_date ?? '');
-const endDate   = ref(props.filters?.end_date ?? '');
+const bulan  = ref(props.filters?.bulan  ?? '');
 
 let timeout;
-const applyFilter = () => {
+watch([search, bulan], () => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-        router.get(route('angsuran.index'), { search: search.value, start_date: startDate.value, end_date: endDate.value }, { preserveState: true, replace: true });
+        router.get(route('angsuran.index'), {
+            search: search.value,
+            bulan:  bulan.value,
+        }, { preserveState: true, replace: true });
     }, 400);
-};
-watch([search, startDate, endDate], applyFilter);
+});
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID') : '-';
 const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage', kliwon: 'Kliwon' };
+
+const formatBulanLabel = (val) => {
+    if (!val) return '';
+    const [y, m] = val.split('-');
+    return new Date(y, parseInt(m) - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+};
+
+const isFiltered = computed(() => !!bulan.value);
 </script>
 
 <template>
@@ -30,21 +47,49 @@ const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage',
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-lg font-semibold">Riwayat Angsuran</h2>
-                    <p class="text-sm text-[color:var(--color-secondary)]">Total {{ angsuran.total }} transaksi</p>
+                    <p class="text-sm text-[color:var(--color-secondary)]">Total {{ angsuran.total }} transaksi{{ bulan ? ' pada ' + formatBulanLabel(bulan) : '' }}</p>
                 </div>
                 <Link :href="route('angsuran.create')" class="inline-flex items-center gap-2 rounded-lg bg-[color:var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90">
                     <span class="material-symbols-outlined text-base">payments</span> Bayar Angsuran
                 </Link>
             </div>
 
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <!-- Filter aktif: summary bulan -->
+                <template v-if="isFiltered">
+                    <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ formatBulanLabel(bulan) }} — Transaksi</p>
+                        <p class="mt-1 text-lg font-bold text-[color:var(--color-on-surface)]">{{ summary?.total_transaksi ?? 0 }}</p>
+                    </div>
+                    <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ formatBulanLabel(bulan) }} — Total Bayar</p>
+                        <p class="mt-1 text-base font-bold text-emerald-700">{{ formatCurrency(summary?.total_bayar) }}</p>
+                    </div>
+                </template>
+
+                <!-- Summary keseluruhan (selalu tampil) -->
+                <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4">
+                    <p class="text-xs text-[color:var(--color-secondary)]">Semua Bulan — Transaksi</p>
+                    <p class="mt-1 text-lg font-bold text-[color:var(--color-on-surface)]">{{ summaryAll?.total_transaksi ?? 0 }}</p>
+                </div>
+                <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4">
+                    <p class="text-xs text-[color:var(--color-secondary)]">Semua Bulan — Total Bayar</p>
+                    <p class="mt-1 text-base font-bold text-emerald-700">{{ formatCurrency(summaryAll?.total_bayar) }}</p>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
             <div class="flex flex-col gap-3 sm:flex-row">
                 <div class="relative flex-1">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-base text-[color:var(--color-on-surface-variant)]">search</span>
                     <input v-model="search" type="text" placeholder="Cari nama nasabah..."
                         class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
                 </div>
-                <input v-model="startDate" type="date" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
-                <input v-model="endDate" type="date" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
+                <select v-model="bulan" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none">
+                    <option value="">Semua Bulan</option>
+                    <option v-for="b in availableBulan" :key="b" :value="b">{{ formatBulanLabel(b) }}</option>
+                </select>
             </div>
 
             <div class="overflow-hidden rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">

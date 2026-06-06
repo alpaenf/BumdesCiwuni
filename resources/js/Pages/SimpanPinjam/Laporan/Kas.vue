@@ -5,21 +5,39 @@ import { ref, watch, computed } from 'vue';
 import ExportButtons from '@/Components/ExportButtons.vue';
 
 const props = defineProps({ summary: Object, filters: Object });
-const startDate = ref(props.filters?.start_date ?? '');
-const endDate   = ref(props.filters?.end_date ?? '');
+const bulan = ref(props.filters?.bulan ?? '');
+
+const formatBulanLabel = (val) => {
+    if (!val) return '';
+    const [y, m] = val.split('-');
+    return new Date(y, parseInt(m) - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+};
 
 let timeout;
-watch([startDate, endDate], () => {
+watch(bulan, () => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-        router.get(route('laporan.kas'), { start_date: startDate.value, end_date: endDate.value }, { preserveState: true, replace: true });
+        const params = {};
+        if (bulan.value) {
+            const [y, m] = bulan.value.split('-');
+            const lastDay = new Date(y, m, 0).getDate();
+            params.start_date = `${y}-${m}-01`;
+            params.end_date   = `${y}-${m}-${lastDay}`;
+            params.bulan      = bulan.value;
+        }
+        router.get(route('laporan.kas'), params, { preserveState: true, replace: true });
     }, 400);
 });
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
-const buildQuery = () => new URLSearchParams({ start_date: startDate.value, end_date: endDate.value }).toString();
-const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery()}`);
+const buildQuery = computed(() => {
+    if (!bulan.value) return '';
+    const [y, m] = bulan.value.split('-');
+    const lastDay = new Date(y, m, 0).getDate();
+    return new URLSearchParams({ start_date: `${y}-${m}-01`, end_date: `${y}-${m}-${lastDay}`, bulan: bulan.value }).toString();
+});
+const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`);
 </script>
 
 <template>
@@ -36,9 +54,12 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery()}`);
 
             <!-- Filters + Export -->
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex flex-col gap-3 sm:flex-row">
-                    <input v-model="startDate" type="date" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
-                    <input v-model="endDate" type="date" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
+                <div class="flex flex-col gap-3 sm:flex-row items-center">
+                    <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Bulan:</label>
+                    <input v-model="bulan" type="month"
+                        class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                    <button v-if="bulan" @click="bulan = ''" class="text-xs text-[color:var(--color-secondary)] hover:text-red-500">✕ Reset</button>
+                    <span v-if="bulan" class="text-sm font-semibold text-[color:var(--color-primary)]">{{ formatBulanLabel(bulan) }}</span>
                 </div>
                 <ExportButtons :pdf-url="pdfUrl" />
             </div>

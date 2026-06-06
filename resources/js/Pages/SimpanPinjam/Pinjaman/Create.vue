@@ -44,8 +44,8 @@ watch([() => form.pinjaman_pokok, () => form.bunga], ([newPokok, newBunga]) => {
         const pokok = parseFloat(newPokok) || 0;
         const bunga = parseFloat(newBunga) || 0;
         const total = pokok + (pokok * bunga / 100);
-        // Default ke 10 kali angsuran
-        form.nominal_setoran = Math.ceil(total / 10);
+        // Default ke 22 kali angsuran
+        form.nominal_setoran = Math.ceil(total / 22);
     }
 });
 

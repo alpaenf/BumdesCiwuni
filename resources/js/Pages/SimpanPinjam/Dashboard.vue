@@ -1,27 +1,36 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import LoanStatusChart from '@/Components/Charts/LoanStatusChart.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
-    stats: {
-        type: Object,
-        required: true,
-    },
-    loanChart: {
-        type: Object,
-        required: true,
-    },
-    recentTransactions: {
-        type: Array,
-        default: () => [],
-    }
+    stats: { type: Object, required: true },
+    loanChart: { type: Object, required: true },
+    recentTransactions: { type: Array, default: () => [] },
+    availableBulan: { type: Array, default: () => [] },
+    filters: { type: Object, default: () => ({}) },
 });
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const isAdmin = computed(() => user.value?.role === 'admin');
+
+const bulan = ref(props.filters?.bulan ?? '');
+
+let timeout;
+watch(bulan, () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        router.get(route('dashboard'), { bulan: bulan.value }, { preserveState: true, replace: true });
+    }, 300);
+});
+
+const formatBulanLabel = (val) => {
+    if (!val) return 'Hari Ini';
+    const [y, m] = val.split('-');
+    return new Date(y, parseInt(m) - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+};
 
 const formatCurrency = (value) =>
     new Intl.NumberFormat('id-ID', {
@@ -39,12 +48,17 @@ const formatCurrency = (value) =>
 
         <!-- Dashboard Content -->
         <div class="space-y-6">
-            <!-- Header Section -->
+        <!-- Header Section -->
             <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                     <h2 class="text-2xl font-bold text-primary">Operasional Harian</h2>
-                    <p class="text-sm text-secondary">Selamat datang kembali, berikut ringkasan transaksi hari ini.</p>
+                    <p class="text-sm text-secondary">Selamat datang kembali, berikut ringkasan transaksi {{ bulan ? formatBulanLabel(bulan) : 'hari ini' }}.</p>
                 </div>
+                <!-- Filter Bulan -->
+                <select v-model="bulan" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none shadow-sm">
+                    <option value="">Hari Ini</option>
+                    <option v-for="b in availableBulan" :key="b" :value="b">{{ formatBulanLabel(b) }}</option>
+                </select>
             </div>
 
             <!-- Bento Grid Stats -->
@@ -134,23 +148,23 @@ const formatCurrency = (value) =>
                     </div>
                 </div>
 
-                <!-- Info summary / Today's Stats -->
+                <!-- Info summary / Period Stats -->
                 <div class="col-span-12 lg:col-span-4 bg-white border border-outline-variant rounded-xl p-5 shadow-sm">
-                    <h4 class="text-base font-bold text-slate-800 mb-4">Hari Ini</h4>
+                    <h4 class="text-base font-bold text-slate-800 mb-4">{{ bulan ? formatBulanLabel(bulan) : 'Hari Ini' }}</h4>
                     <div class="space-y-4">
                         <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-outline-variant">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary text-xl">sync_alt</span>
                                 <span class="text-sm font-medium text-slate-700">Transaksi Tabungan</span>
                             </div>
-                            <span class="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-outline-variant text-xs">{{ stats.transaksiHariIni }}</span>
+                            <span class="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-outline-variant text-xs">{{ stats.transaksiPeriode }}</span>
                         </div>
                         <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-outline-variant">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-emerald-700 text-xl">payments</span>
                                 <span class="text-sm font-medium text-slate-700">Angsuran Pinjaman</span>
                             </div>
-                            <span class="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-outline-variant text-xs">{{ stats.angsuranHariIni }}</span>
+                            <span class="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-outline-variant text-xs">{{ stats.angsuranPeriode }}</span>
                         </div>
                     </div>
                 </div>
