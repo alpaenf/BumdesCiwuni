@@ -66,4 +66,36 @@ class TabunganService
             ]);
         });
     }
+
+    /**
+     * Ambil tabungan sembako (administrasi Rp20.000 otomatis).
+     */
+    public function ambilSembako(Tabungan $tabungan, array $data): TransaksiTabungan
+    {
+        return DB::transaction(function () use ($tabungan, $data) {
+            $nominal = (float) $data['nominal'];
+            $unitId = auth()->check() ? auth()->user()->unit_id : null;
+            $prefix = $unitId ? "unit_{$unitId}_" : "global_";
+            $administrasi = (float) \App\Models\Setting::get($prefix . 'biaya_admin_sembako', 20000);
+            $totalKurang = $nominal + $administrasi;
+
+            if ($tabungan->saldo < $totalKurang) {
+                throw new \RuntimeException('Saldo tidak mencukupi.');
+            }
+
+            $saldoBaru = $tabungan->saldo - $totalKurang;
+            $tabungan->update(['saldo' => $saldoBaru]);
+
+            return TransaksiTabungan::create([
+                'tabungan_id'     => $tabungan->id,
+                'tanggal'         => $data['tanggal'],
+                'nomor_transaksi' => $this->nomorService->generateNomorTransaksi(),
+                'jenis_transaksi' => TransaksiTabungan::JENIS_TARIK_SEMBAKO,
+                'keterangan'      => 'Pengambilan Sembako' . (($data['jenis_pengambilan'] ?? '') === 'barang' ? ' (Barang)' : ' (Uang)'),
+                'nominal'         => $nominal,
+                'administrasi'    => $administrasi,
+                'saldo_setelah'   => $saldoBaru,
+            ]);
+        });
+    }
 }

@@ -15,6 +15,7 @@ class Tabungan extends Model
 
     protected $fillable = [
         'nasabah_id',
+        'jenis_tabungan',
         'saldo',
     ];
 

@@ -45,13 +45,8 @@ const submit = () => form.post(route('tabungan.tarik.store', props.nasabah.id));
                         <label class="mb-1.5 block text-sm font-medium">Tanggal Penarikan <span class="text-red-500">*</span></label>
                         <input v-model="form.tanggal" type="date" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
                     </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium">Jenis Penarikan <span class="text-red-500">*</span></label>
-                        <select v-model="form.jenis_transaksi" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none">
-                            <option value="tarik_tunai">Tarik Tunai</option>
-                            <option value="tarik_sembako">Pencairan Sembako/Barang</option>
-                        </select>
-                    </div>
+                    <!-- Jenis Penarikan is now fixed to Tarik Tunai for Tabungan Reguler -->
+                    <input type="hidden" v-model="form.jenis_transaksi" />
                     <div>
                         <label class="mb-1.5 block text-sm font-medium">Nominal Penarikan <span class="text-red-500">*</span></label>
                         <div class="relative">
