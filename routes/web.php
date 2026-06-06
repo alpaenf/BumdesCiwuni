@@ -111,36 +111,36 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::delete('/nasabah/{nasabah}', [NasabahController::class, 'destroy'])->name('nasabah.destroy')->middleware('role:admin_unit');
     Route::get('/nasabah/{nasabah}/print', [NasabahController::class, 'print'])->name('nasabah.print');
 
-    // Tabungan Reguler
+    // Tabungan Reguler — static routes FIRST, then dynamic {nasabah}
     Route::get('/tabungan', [TabunganController::class, 'index'])->name('tabungan.index');
+    Route::get('/tabungan/struk/{transaksi}', [TabunganController::class, 'struk'])->name('tabungan.struk');
     Route::get('/tabungan/{nasabah}/setor', [TabunganController::class, 'setor'])->name('tabungan.setor')->middleware('role:admin_unit');
     Route::post('/tabungan/{nasabah}/setor', [TabunganController::class, 'storeSetor'])->name('tabungan.setor.store')->middleware('role:admin_unit');
     Route::get('/tabungan/{nasabah}/tarik', [TabunganController::class, 'tarik'])->name('tabungan.tarik')->middleware('role:admin_unit');
     Route::post('/tabungan/{nasabah}/tarik', [TabunganController::class, 'storeTarik'])->name('tabungan.tarik.store')->middleware('role:admin_unit');
-    Route::get('/tabungan/struk/{transaksi}', [TabunganController::class, 'struk'])->name('tabungan.struk');
     Route::get('/tabungan/{nasabah}/riwayat', [TabunganController::class, 'riwayat'])->name('tabungan.riwayat');
 
-    // Tabungan Sembako
+    // Tabungan Sembako — static routes FIRST, then dynamic {nasabah}
     Route::get('/tabungan-sembako', [TabunganSembakoController::class, 'index'])->name('tabungan-sembako.index');
+    Route::get('/tabungan-sembako/struk/{transaksi}', [TabunganSembakoController::class, 'struk'])->name('tabungan-sembako.struk');
     Route::get('/tabungan-sembako/{nasabah}/setor', [TabunganSembakoController::class, 'setor'])->name('tabungan-sembako.setor')->middleware('role:admin_unit');
     Route::post('/tabungan-sembako/{nasabah}/setor', [TabunganSembakoController::class, 'storeSetor'])->name('tabungan-sembako.setor.store')->middleware('role:admin_unit');
     Route::get('/tabungan-sembako/{nasabah}/ambil', [TabunganSembakoController::class, 'ambil'])->name('tabungan-sembako.ambil')->middleware('role:admin_unit');
     Route::post('/tabungan-sembako/{nasabah}/ambil', [TabunganSembakoController::class, 'storeAmbil'])->name('tabungan-sembako.ambil.store')->middleware('role:admin_unit');
-    Route::get('/tabungan-sembako/struk/{transaksi}', [TabunganSembakoController::class, 'struk'])->name('tabungan-sembako.struk');
     Route::get('/tabungan-sembako/{nasabah}/riwayat', [TabunganSembakoController::class, 'riwayat'])->name('tabungan-sembako.riwayat');
 
-    // Pinjaman
+    // Pinjaman — static routes FIRST, then dynamic {pinjaman}
     Route::get('/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman.index');
     Route::get('/pinjaman/tambah', [PinjamanController::class, 'create'])->name('pinjaman.create')->middleware('role:admin_unit');
-    Route::post('/pinjaman', [PinjamanController::class, 'store'])->name('pinjaman.store')->middleware('role:admin_unit');
     Route::post('/pinjaman/kalkulasi', [PinjamanController::class, 'kalkulasi'])->name('pinjaman.kalkulasi');
+    Route::post('/pinjaman', [PinjamanController::class, 'store'])->name('pinjaman.store')->middleware('role:admin_unit');
     Route::get('/pinjaman/{pinjaman}', [PinjamanController::class, 'show'])->name('pinjaman.show');
 
-    // Angsuran
+    // Angsuran — static routes FIRST, then dynamic {angsuran}
     Route::get('/angsuran', [AngsuranController::class, 'index'])->name('angsuran.index');
     Route::get('/angsuran/bayar', [AngsuranController::class, 'create'])->name('angsuran.create')->middleware('role:admin_unit');
-    Route::post('/angsuran', [AngsuranController::class, 'store'])->name('angsuran.store')->middleware('role:admin_unit');
     Route::get('/angsuran/struk/{angsuran}', [AngsuranController::class, 'struk'])->name('angsuran.struk');
+    Route::post('/angsuran', [AngsuranController::class, 'store'])->name('angsuran.store')->middleware('role:admin_unit');
 
     // Buku Tabungan
     Route::get('/buku-tabungan', [BukuTabunganController::class, 'index'])->name('buku-tabungan.index');
