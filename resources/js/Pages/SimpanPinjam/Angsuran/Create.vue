@@ -139,9 +139,9 @@ const submit = () => form.post(route('angsuran.store'));
                     </div>
 
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium">Hari Pasaran <span class="text-red-500">*</span></label>
+                        <label class="mb-1.5 block text-sm font-medium">Hari Pasaran</label>
                         <div class="grid grid-cols-5 gap-2">
-                            <button v-for="p in PASARAN" :key="p" type="button" @click="form.pasaran = p"
+                            <button v-for="p in PASARAN" :key="p" type="button" @click="form.pasaran = form.pasaran === p ? '' : p"
                                 class="rounded-lg border py-2 text-xs font-semibold capitalize transition"
                                 :class="form.pasaran === p
                                     ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)] text-white'
