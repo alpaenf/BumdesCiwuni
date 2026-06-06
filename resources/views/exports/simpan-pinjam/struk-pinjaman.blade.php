@@ -100,95 +100,81 @@
     </header>
     <!-- END: MainHeader -->
 
-    @php
-        $lembarLabels = [
-            1 => 'Lembar Nasabah',
-            2 => 'Lembar BUMDes',
-            3 => 'Lembar Arsip'
-        ];
-    @endphp
-
-    @for ($i = 1; $i <= 3; $i++)
-        <!-- BEGIN: Receipt Section {{ $i }} -->
-        <section class="receipt-section" data-purpose="receipt-unit">
-            <div class="text-center mb-3">
-                <h2 class="title-receipt uppercase">Struk Transaksi Pinjaman</h2>
-                <div class="text-[9px] font-semibold text-gray-500 italic mt-0.5">({{ $lembarLabels[$i] }})</div>
+    <!-- BEGIN: Receipt Section -->
+    <section class="receipt-section" data-purpose="receipt-unit">
+        <div class="text-center mb-3">
+            <h2 class="title-receipt uppercase">Struk Transaksi Pinjaman</h2>
+        </div>
+        <div class="space-y-0.5 mb-2" data-purpose="customer-info">
+            <div class="flex">
+                <span class="label-col label-text">NOMER REKENING</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">{{ $angsuran->pinjaman->nasabah->nomor_rekening }}</span>
             </div>
-            <div class="space-y-0.5 mb-2" data-purpose="customer-info">
-                <div class="flex">
-                    <span class="label-col label-text">NOMER REKENING</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">{{ $angsuran->pinjaman->nasabah->nomor_rekening }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">NAMA</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text uppercase">{{ $angsuran->pinjaman->nasabah->nama }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">ALAMAT</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">{{ $angsuran->pinjaman->nasabah->alamat }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">NOMER WA</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">{{ $angsuran->pinjaman->nasabah->no_hp }}</span>
-                </div>
+            <div class="flex">
+                <span class="label-col label-text">NAMA</span>
+                <span class="colon-col">:</span>
+                <span class="data-text uppercase">{{ $angsuran->pinjaman->nasabah->nama }}</span>
             </div>
-            <hr class="border-black border-t my-2">
-            <div class="space-y-0.5 mb-2" data-purpose="transaction-meta">
-                <div class="flex">
-                    <span class="label-col label-text">NO. TRANSAKSI</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">#St.{{ sprintf('%04d', $angsuran->id) }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">TANGGAL</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">
-                        {{ \Carbon\Carbon::parse($angsuran->tanggal)->isoFormat('D MMMM Y') }}
-                        @if($angsuran->pasaran)
-                            ({{ ucfirst($angsuran->pasaran) }})
-                        @endif
-                    </span>
-                </div>
+            <div class="flex">
+                <span class="label-col label-text">ALAMAT</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">{{ $angsuran->pinjaman->nasabah->alamat }}</span>
             </div>
-            <hr class="border-black border-t my-2">
-            <div class="space-y-0.5" data-purpose="financial-details">
-                <div class="flex">
-                    <span class="label-col label-text">Total Pinjaman + Bunga</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">Rp. {{ number_format($angsuran->pinjaman->total_tagihan, 0, ',', '.') }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">Setoran ke</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">{{ $angsuran->angsuran_ke }} / {{ $angsuran->pinjaman->jumlah_angsuran }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">Jumlah Setoran</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text">Rp. {{ number_format($angsuran->jumlah_bayar, 0, ',', '.') }}</span>
-                </div>
-                <div class="flex">
-                    <span class="label-col label-text">Sisa Pinjaman</span>
-                    <span class="colon-col">:</span>
-                    <span class="data-text font-bold {{ $angsuran->sisa_pinjaman <= 0 ? 'text-emerald-700' : 'text-red-600' }}">
-                        Rp. {{ number_format($angsuran->sisa_pinjaman, 0, ',', '.') }}
-                        @if($angsuran->sisa_pinjaman <= 0)
-                            <span class="ml-2 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">LUNAS</span>
-                        @endif
-                    </span>
-                </div>
+            <div class="flex">
+                <span class="label-col label-text">NOMER WA</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">{{ $angsuran->pinjaman->nasabah->no_hp }}</span>
             </div>
-        </section>
-        <!-- END: Receipt Section {{ $i }} -->
-        @if ($i < 3)
-            <div class="my-8 border-t border-dashed border-gray-400 no-print"></div> <!-- Perforation Line -->
-        @endif
-    @endfor
+        </div>
+        <hr class="border-black border-t my-2">
+        <div class="space-y-0.5 mb-2" data-purpose="transaction-meta">
+            <div class="flex">
+                <span class="label-col label-text">NO. TRANSAKSI</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">#St.{{ sprintf('%04d', $angsuran->id) }}</span>
+            </div>
+            <div class="flex">
+                <span class="label-col label-text">TANGGAL</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">
+                    {{ \Carbon\Carbon::parse($angsuran->tanggal)->isoFormat('D MMMM Y') }}
+                    @if($angsuran->pasaran)
+                        ({{ ucfirst($angsuran->pasaran) }})
+                    @endif
+                </span>
+            </div>
+        </div>
+        <hr class="border-black border-t my-2">
+        <div class="space-y-0.5" data-purpose="financial-details">
+            <div class="flex">
+                <span class="label-col label-text">Total Pinjaman + Bunga</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">Rp. {{ number_format($angsuran->pinjaman->total_tagihan, 0, ',', '.') }}</span>
+            </div>
+            <div class="flex">
+                <span class="label-col label-text">Setoran ke</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">{{ $angsuran->angsuran_ke }} / {{ $angsuran->pinjaman->jumlah_angsuran }}</span>
+            </div>
+            <div class="flex">
+                <span class="label-col label-text">Jumlah Setoran</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">Rp. {{ number_format($angsuran->jumlah_bayar, 0, ',', '.') }}</span>
+            </div>
+            <div class="flex">
+                <span class="label-col label-text">Sisa Pinjaman</span>
+                <span class="colon-col">:</span>
+                <span class="data-text font-bold {{ $angsuran->sisa_pinjaman <= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                    Rp. {{ number_format($angsuran->sisa_pinjaman, 0, ',', '.') }}
+                    @if($angsuran->sisa_pinjaman <= 0)
+                        <span class="ml-2 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">LUNAS</span>
+                    @endif
+                </span>
+            </div>
+        </div>
+    </section>
+    <!-- END: Receipt Section -->
 </div>
 <!-- END: Page Layout -->
 
