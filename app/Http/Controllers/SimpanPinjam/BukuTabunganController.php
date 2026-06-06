@@ -18,7 +18,7 @@ class BukuTabunganController extends Controller
     {
         $transactions = $this->queryTransactions($request)->get();
         [$nasabah, $tabungan] = $this->resolveNasabahTabungan($request);
-        $summary = $this->summaryFromTransactions($transactions, $tabungan);
+        $summary = $this->summaryFromTransactions($transactions, $tabungan, $request);
 
         return Inertia::render('SimpanPinjam/BukuTabungan/Index', [
             'filters' => $request->only([
@@ -51,7 +51,7 @@ class BukuTabunganController extends Controller
     {
         $transactions = $this->queryTransactions($request)->get();
         [$nasabah, $tabungan] = $this->resolveNasabahTabungan($request);
-        $summary = $this->summaryFromTransactions($transactions, $tabungan);
+        $summary = $this->summaryFromTransactions($transactions, $tabungan, $request);
 
         return view('exports.simpan-pinjam.buku-tabungan', [
             'nasabah' => $nasabah,
@@ -162,12 +162,24 @@ class BukuTabunganController extends Controller
         return [$tabungan?->nasabah, $tabungan];
     }
 
-    private function summaryFromTransactions($transactions, ?Tabungan $tabungan = null): array
+    private function summaryFromTransactions($transactions, ?Tabungan $tabungan = null, ?Request $request = null): array
     {
         $totalSetoran = $transactions->where('jenis_transaksi', TransaksiTabungan::JENIS_SETOR)->sum('nominal');
         $totalPenarikan = $transactions->whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako', 'tutup_periode'])->sum('nominal');
         $totalAdministrasi = $transactions->sum('administrasi');
-        $saldoSaatIni = $transactions->last()?->saldo_setelah ?? ($tabungan?->saldo ?? 0);
+
+        // Saldo: jika nasabah spesifik dipilih, ambil saldo tabungan mereka.
+        // Jika melihat semua, hitung total saldo semua tabungan yang relevan.
+        if ($tabungan) {
+            $saldoSaatIni = $tabungan->saldo;
+        } else {
+            // Sum saldo dari semua tabungan yang relevan
+            $saldoQuery = Tabungan::query();
+            if ($request && $request->filled('jenis_tabungan')) {
+                $saldoQuery->where('jenis_tabungan', $request->jenis_tabungan);
+            }
+            $saldoSaatIni = $saldoQuery->sum('saldo');
+        }
 
         return [
             'total_setoran' => $totalSetoran,
