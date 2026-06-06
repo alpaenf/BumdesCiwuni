@@ -16,7 +16,7 @@ const loadingPinjaman = ref(false);
 
 const form = useForm({
     pinjaman_id:  '',
-    tanggal:      new Date().toISOString().split('T')[0],
+    tanggal:      new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0],
     jumlah_bayar: '',
     pasaran:      '',
 });

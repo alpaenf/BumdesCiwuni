@@ -8,7 +8,7 @@ const props = defineProps({ nasabahOptions: Array });
 
 const form = useForm({
     nasabah_id:      '',
-    tanggal_akad:    new Date().toISOString().split('T')[0],
+    tanggal_akad:    new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0],
     pinjaman_pokok:  '',
     bunga:           10,
     nominal_setoran: '',

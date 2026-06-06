@@ -28,6 +28,7 @@ const mainNav = [
 
 const reportNav = [
     { name: 'Buku Tabungan', route: 'buku-tabungan.index', icon: 'menu_book' },
+    { name: 'Pendapatan Kotor', route: 'pendapatan.index', icon: 'account_balance_wallet' },
     { name: 'Tunggakan', route: 'tunggakan.index', icon: 'warning' },
     { name: 'Kwitansi', route: 'kwitansi.index', icon: 'receipt_long' },
     { name: 'Laporan', route: 'laporan.index', icon: 'bar_chart' },

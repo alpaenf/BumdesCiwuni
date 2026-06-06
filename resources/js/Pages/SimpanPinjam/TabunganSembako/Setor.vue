@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({ nasabah: Object, tabungan: Object });
-const form = useForm({ nasabah_id: props.nasabah.id, tanggal: new Date().toISOString().split('T')[0], nominal: '', keterangan: '' });
+const form = useForm({ nasabah_id: props.nasabah.id, tanggal: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0], nominal: '', keterangan: '' });
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 const submit = () => form.post(route('tabungan-sembako.setor.store', props.nasabah.id));
 </script>

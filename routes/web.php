@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SimpanPinjam\TabunganController;
 use App\Http\Controllers\SimpanPinjam\PeriodeTabunganController;
 use App\Http\Controllers\SimpanPinjam\LandingPageController;
+use App\Http\Controllers\SimpanPinjam\PendapatanController;
 
 use App\Http\Controllers\SimpanPinjam\TunggakanPinjamanController;
 use App\Http\Controllers\SimpanPinjam\PengaturanTabunganController;
@@ -164,6 +165,9 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::get('/kwitansi/buat', [KwitansiController::class, 'create'])->name('kwitansi.create')->middleware('role:admin_unit');
     Route::post('/kwitansi', [KwitansiController::class, 'store'])->name('kwitansi.store')->middleware('role:admin_unit');
     Route::get('/kwitansi/{kwitansi}/print', [KwitansiController::class, 'print'])->name('kwitansi.print');
+
+    // Pendapatan Kotor
+    Route::get('/pendapatan', [PendapatanController::class, 'index'])->name('pendapatan.index');
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
