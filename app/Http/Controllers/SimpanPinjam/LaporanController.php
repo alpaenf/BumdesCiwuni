@@ -29,6 +29,11 @@ class LaporanController extends Controller
         return Inertia::render('SimpanPinjam/Laporan/Index');
     }
 
+    private function logRequest(Request $request, string $source)
+    {
+        \Illuminate\Support\Facades\Log::info("LaporanController::{$source} - Request: " . json_encode($request->all()));
+    }
+
     // =====================================================================
     // NASABAH
     // =====================================================================
@@ -215,6 +220,7 @@ class LaporanController extends Controller
     // =====================================================================
     public function kas(Request $request): Response
     {
+        $this->logRequest($request, 'kas');
         [$summary] = $this->buildKasSummary($request);
 
         return Inertia::render('SimpanPinjam/Laporan/Kas', [
@@ -240,8 +246,21 @@ class LaporanController extends Controller
     // =====================================================================
     private function applyDateFilter($query, Request $request, string $field): void
     {
-        if ($request->filled('start_date')) $query->whereDate($field, '>=', $request->start_date);
-        if ($request->filled('end_date'))   $query->whereDate($field, '<=', $request->end_date);
+        if ($request->filled('bulan')) {
+            try {
+                $date = \Carbon\Carbon::createFromFormat('Y-m', $request->bulan);
+                $query->whereBetween($field, [
+                    $date->copy()->startOfMonth()->toDateString(),
+                    $date->copy()->endOfMonth()->toDateString()
+                ]);
+                return;
+            } catch (\Exception $e) {
+                // Fallback to start_date and end_date
+            }
+        }
+
+        if ($request->filled('start_date')) $query->where($field, '>=', $request->start_date);
+        if ($request->filled('end_date'))   $query->where($field, '<=', $request->end_date);
     }
 
     private function buildKasSummary(Request $request): array
