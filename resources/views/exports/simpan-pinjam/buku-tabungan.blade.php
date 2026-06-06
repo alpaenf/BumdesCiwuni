@@ -114,7 +114,7 @@
                     <td>{{ $transaksi->nomor_transaksi }}</td>
                     <td>{{ $transaksi->keterangan ?: ($transaksi->jenis_transaksi === 'setor' ? 'Setoran' : 'Penarikan') }}</td>
                     <td class="angka">Rp{{ number_format($transaksi->jenis_transaksi === 'setor' ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
-                    <td class="angka">Rp{{ number_format($transaksi->jenis_transaksi === 'tarik' ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
+                    <td class="angka">Rp{{ number_format(in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
                     <td class="angka">Rp{{ number_format($transaksi->administrasi, 0, ',', '.') }}</td>
                     <td class="angka">Rp{{ number_format($transaksi->saldo_setelah, 0, ',', '.') }}</td>
                 </tr>

@@ -40,7 +40,7 @@ class BukuTabunganController extends Controller
                 'nomor_transaksi' => $transaksi->nomor_transaksi,
                 'keterangan' => $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
                 'setoran' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
-                'penarikan' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_TARIK ? $transaksi->nominal : 0,
+                'penarikan' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_TARIK_TUNAI ? $transaksi->nominal : 0,
                 'administrasi' => $transaksi->administrasi,
                 'saldo' => $transaksi->saldo_setelah,
             ]),
@@ -88,7 +88,7 @@ class BukuTabunganController extends Controller
                     $transaksi->nomor_transaksi,
                     $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
                     $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
-                    $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_TARIK ? $transaksi->nominal : 0,
+                    $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_TARIK_TUNAI ? $transaksi->nominal : 0,
                     $transaksi->administrasi,
                     $transaksi->saldo_setelah,
                 ]);
@@ -115,7 +115,7 @@ class BukuTabunganController extends Controller
         }
 
         if ($request->filled('jenis_tabungan')) {
-            $query->whereHas('tabungan', fn (Builder $builder) => $builder->where('jenis_tabungan', $request->jenis_tabungan));
+            // removed
         }
 
         if ($request->filled('start_date')) {
@@ -152,7 +152,7 @@ class BukuTabunganController extends Controller
         }
 
         if ($request->filled('jenis_tabungan')) {
-            $tabunganQuery->where('jenis_tabungan', $request->jenis_tabungan);
+            // removed
         }
 
         $tabungan = $tabunganQuery->first();
@@ -163,7 +163,7 @@ class BukuTabunganController extends Controller
     private function summaryFromTransactions($transactions, ?Tabungan $tabungan = null): array
     {
         $totalSetoran = $transactions->where('jenis_transaksi', TransaksiTabungan::JENIS_SETOR)->sum('nominal');
-        $totalPenarikan = $transactions->where('jenis_transaksi', TransaksiTabungan::JENIS_TARIK)->sum('nominal');
+        $totalPenarikan = $transactions->where('jenis_transaksi', TransaksiTabungan::JENIS_TARIK_TUNAI)->sum('nominal');
         $totalAdministrasi = $transactions->sum('administrasi');
         $saldoSaatIni = $transactions->last()?->saldo_setelah ?? ($tabungan?->saldo ?? 0);
 

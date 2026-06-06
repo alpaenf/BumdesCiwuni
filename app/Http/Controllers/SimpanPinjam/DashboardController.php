@@ -18,9 +18,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request, PinjamanStatusService $statusService): Response
     {
-        $totalTabunganReguler = Tabungan::where('jenis_tabungan', Tabungan::JENIS_REGULER)->sum('saldo');
-        $totalTabunganSembako = Tabungan::where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->sum('saldo');
-        $totalSaldoKas = Tabungan::sum('saldo');
+        $totalTabungan = Tabungan::sum('saldo');
+        $totalSaldoKas = $totalTabungan;
 
         $pinjamanAktif = Pinjaman::where('status', 'aktif')->get();
         $pinjamanLunas = Pinjaman::where('status', 'lunas')->count();
@@ -78,8 +77,7 @@ class DashboardController extends Controller
         return Inertia::render('SimpanPinjam/Dashboard', [
             'stats' => [
                 'totalNasabah'        => Nasabah::count(),
-                'totalTabunganReguler'=> $totalTabunganReguler,
-                'totalTabunganSembako'=> $totalTabunganSembako,
+                'totalTabungan'       => $totalTabungan,
                 'totalPinjamanAktif'  => $pinjamanAktif->count(),
                 'totalPiutangBerjalan'=> Pinjaman::where('status', 'aktif')->sum('sisa_pinjaman'),
                 'totalSaldoKas'       => $totalSaldoKas,
