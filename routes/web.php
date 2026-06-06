@@ -110,6 +110,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::put('/nasabah/{nasabah}', [NasabahController::class, 'update'])->name('nasabah.update')->middleware('role:admin_unit');
     Route::delete('/nasabah/{nasabah}', [NasabahController::class, 'destroy'])->name('nasabah.destroy')->middleware('role:admin_unit');
     Route::get('/nasabah/{nasabah}/print', [NasabahController::class, 'print'])->name('nasabah.print');
+    Route::get('/nasabah/{nasabah}/pinjaman-aktif', [NasabahController::class, 'pinjamanAktif'])->name('nasabah.pinjaman-aktif');
 
     // Tabungan Reguler — static routes FIRST, then dynamic {nasabah}
     Route::get('/tabungan', [TabunganController::class, 'index'])->name('tabungan.index');
