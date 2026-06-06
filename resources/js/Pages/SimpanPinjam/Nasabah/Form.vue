@@ -13,6 +13,7 @@ const form = useForm({
     _method: isEdit.value ? 'PUT' : undefined,
     nama:              props.nasabah?.nama ?? '',
     nik:               props.nasabah?.nik ?? '',
+    nomor_rekening:    props.nasabah?.nomor_rekening ?? '',
     alamat:            props.nasabah?.alamat ?? '',
     no_hp:             props.nasabah?.no_hp ?? '',
     pekerjaan:         props.nasabah?.pekerjaan ?? '',
@@ -97,6 +98,22 @@ const submit = () => {
                             :class="form.errors.nama ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'"
                         />
                         <p v-if="form.errors.nama" class="mt-1 text-xs text-red-500">{{ form.errors.nama }}</p>
+                    </div>
+
+                    <!-- Nomor Rekening -->
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Nomor Rekening</label>
+                        <input
+                            v-model="form.nomor_rekening"
+                            type="text"
+                            placeholder="Masukkan nomor rekening (opsional, kosongkan untuk otomatis)"
+                            class="w-full rounded-lg border px-4 py-2.5 text-sm font-mono focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/20"
+                            :class="form.errors.nomor_rekening ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'"
+                        />
+                        <p class="mt-1 text-xs text-[color:var(--color-secondary)]">
+                            Kosongkan saat pendaftaran untuk membuat nomor rekening otomatis (Format: 00001.YYYY).
+                        </p>
+                        <p v-if="form.errors.nomor_rekening" class="mt-1 text-xs text-red-500">{{ form.errors.nomor_rekening }}</p>
                     </div>
 
                     <!-- NIK -->

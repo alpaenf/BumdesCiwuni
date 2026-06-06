@@ -16,6 +16,7 @@ class StoreNasabahRequest extends FormRequest
         return [
             'nama'             => ['required', 'string', 'max:255'],
             'nik'              => ['required', 'string', 'size:16', 'unique:nasabah,nik'],
+            'nomor_rekening'   => ['nullable', 'string', 'max:50', 'unique:nasabah,nomor_rekening'],
             'alamat'           => ['required', 'string'],
             'no_hp'            => ['required', 'string', 'max:20'],
             'pekerjaan'        => ['nullable', 'string', 'max:100'],

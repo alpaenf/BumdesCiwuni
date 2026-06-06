@@ -12,7 +12,7 @@ class NasabahService
     public function create(array $data): Nasabah
     {
         $data['nomor_registrasi'] = $this->nomorService->generateNomorRegistrasi();
-        $data['nomor_rekening']   = $this->nomorService->generateNomorRekening();
+        $data['nomor_rekening']   = empty($data['nomor_rekening']) ? $this->nomorService->generateNomorRekening() : $data['nomor_rekening'];
         $data['tanggal_bergabung'] = $data['tanggal_bergabung'] ?? now()->toDateString();
         $data['status'] = $data['status'] ?? 'aktif';
 
