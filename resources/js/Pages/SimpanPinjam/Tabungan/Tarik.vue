@@ -9,7 +9,7 @@ const form = useForm({
     nasabah_id:   props.nasabah.id,
     tanggal:      new Date().toISOString().split('T')[0],
     nominal:      '',
-    administrasi: props.defaultAdminFee || '',
+    jenis_transaksi: 'tarik_tunai',
     keterangan:   '',
 });
 
@@ -17,9 +17,10 @@ const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency'
 
 const saldoBaru = computed(() => {
     const n = Number(form.nominal) || 0;
-    const a = Number(form.administrasi) || 0;
-    return Number(props.tabungan.saldo) - n - a;
+    return Number(props.tabungan.saldo) - n;
 });
+
+const isInvalid = computed(() => saldoBaru.value < 20000);
 
 const submit = () => form.post(route('tabungan.tarik.store', props.nasabah.id));
 </script>
@@ -45,6 +46,13 @@ const submit = () => form.post(route('tabungan.tarik.store', props.nasabah.id));
                         <input v-model="form.tanggal" type="date" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
                     </div>
                     <div>
+                        <label class="mb-1.5 block text-sm font-medium">Jenis Penarikan <span class="text-red-500">*</span></label>
+                        <select v-model="form.jenis_transaksi" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none">
+                            <option value="tarik_tunai">Tarik Tunai</option>
+                            <option value="tarik_sembako">Pencairan Sembako/Barang</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="mb-1.5 block text-sm font-medium">Nominal Penarikan <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-[color:var(--color-secondary)]">Rp</span>
@@ -55,30 +63,21 @@ const submit = () => form.post(route('tabungan.tarik.store', props.nasabah.id));
                         <p v-if="form.errors.nominal" class="mt-1 text-xs text-red-500">{{ form.errors.nominal }}</p>
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium">Biaya Administrasi</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-[color:var(--color-secondary)]">Rp</span>
-                            <input v-model="form.administrasi" type="number" min="0" placeholder="0"
-                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 pl-10 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
-                        </div>
-                    </div>
-                    <div>
                         <label class="mb-1.5 block text-sm font-medium">Keterangan</label>
                         <input v-model="form.keterangan" type="text" placeholder="Penarikan tabungan (opsional)"
                             class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
                     </div>
-                    <div v-if="form.nominal" class="rounded-lg p-4 text-sm" :class="saldoBaru < 0 ? 'bg-red-50' : 'bg-[color:var(--color-surface-container-low)]'">
+                    <div v-if="form.nominal" class="rounded-lg p-4 text-sm" :class="isInvalid ? 'bg-red-50' : 'bg-[color:var(--color-surface-container-low)]'">
                         <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Saldo Saat Ini</span><span>{{ formatCurrency(tabungan.saldo) }}</span></div>
                         <div class="flex justify-between text-red-600"><span>- Penarikan</span><span>{{ formatCurrency(form.nominal) }}</span></div>
-                        <div v-if="form.administrasi" class="flex justify-between text-orange-600"><span>- Administrasi</span><span>{{ formatCurrency(form.administrasi) }}</span></div>
-                        <div class="mt-2 flex justify-between border-t pt-2 font-bold" :class="saldoBaru < 0 ? 'text-red-700 border-red-200' : 'border-[color:var(--color-outline-variant)]'">
+                        <div class="mt-2 flex justify-between border-t pt-2 font-bold" :class="isInvalid ? 'text-red-700 border-red-200' : 'border-[color:var(--color-outline-variant)]'">
                             <span>Saldo Baru</span><span>{{ formatCurrency(saldoBaru) }}</span>
                         </div>
-                        <p v-if="saldoBaru < 0" class="mt-2 text-xs text-red-600">Saldo tidak mencukupi!</p>
+                        <p v-if="isInvalid" class="mt-2 text-xs text-red-600">Saldo setelah penarikan minimal Rp 20.000 (Endapan Wajib).</p>
                     </div>
                     <div class="flex justify-end gap-3 pt-2">
                         <Link :href="route('tabungan.index')" class="rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
-                        <button type="submit" :disabled="form.processing || saldoBaru < 0" class="flex items-center gap-2 rounded-lg bg-[color:var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+                        <button type="submit" :disabled="form.processing || isInvalid" class="flex items-center gap-2 rounded-lg bg-[color:var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
                             <span class="material-symbols-outlined text-base">remove_circle</span> Simpan Penarikan
                         </button>
                     </div>

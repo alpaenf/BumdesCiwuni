@@ -1,0 +1,1 @@
+import{D as e,y as t}from"./app-DoTBT_ND.js";import{t as n}from"./_plugin-vue_export-helper-BDNMzG2s.js";var r={},i={src:`/logo.png`,alt:`Logo`,class:`object-contain`};function a(n,r){return e(),t(`img`,i)}var o=n(r,[[`render`,a]]);export{o as t};
