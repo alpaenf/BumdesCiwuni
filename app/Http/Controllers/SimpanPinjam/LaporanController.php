@@ -40,7 +40,7 @@ class LaporanController extends Controller
 
         return Inertia::render('SimpanPinjam/Laporan/Nasabah', [
             'data'    => $data,
-            'filters' => $request->only(['start_date', 'end_date']),
+            'filters' => $request->only(['start_date', 'end_date', 'bulan']),
             'summary' => [
                 'total'       => $data->count(),
                 'aktif'       => $data->where('status', 'aktif')->count(),
@@ -81,7 +81,7 @@ class LaporanController extends Controller
         return Inertia::render('SimpanPinjam/Laporan/Tabungan', [
             'transaksi' => $transaksi,
             'jenis'     => $jenis,
-            'filters'   => $request->only(['start_date', 'end_date', 'jenis']),
+            'filters'   => $request->only(['start_date', 'end_date', 'jenis', 'bulan']),
             'summary'   => [
                 'total_setoran'   => $transaksi->where('jenis_transaksi', 'setor')->sum('nominal'),
                 'total_penarikan' => $transaksi->where('jenis_transaksi', 'tarik')->sum('nominal'),
@@ -131,7 +131,7 @@ class LaporanController extends Controller
 
         return Inertia::render('SimpanPinjam/Laporan/Pinjaman', [
             'pinjaman' => $enriched,
-            'filters'  => $request->only(['start_date', 'end_date', 'status']),
+            'filters'  => $request->only(['start_date', 'end_date', 'status', 'bulan']),
             'summary'  => [
                 'total'         => $pinjaman->count(),
                 'aktif'         => $pinjaman->where('status', 'aktif')->count(),
@@ -184,7 +184,7 @@ class LaporanController extends Controller
 
         return Inertia::render('SimpanPinjam/Laporan/Angsuran', [
             'angsuran' => $angsuran,
-            'filters'  => $request->only(['start_date', 'end_date']),
+            'filters'  => $request->only(['start_date', 'end_date', 'bulan']),
             'summary'  => [
                 'total_transaksi' => $angsuran->count(),
                 'total_bayar'     => $angsuran->sum('jumlah_bayar'),
@@ -218,7 +218,7 @@ class LaporanController extends Controller
         [$summary] = $this->buildKasSummary($request);
 
         return Inertia::render('SimpanPinjam/Laporan/Kas', [
-            'filters' => $request->only(['start_date', 'end_date']),
+            'filters' => $request->only(['start_date', 'end_date', 'bulan']),
             'summary' => $summary,
         ]);
     }
