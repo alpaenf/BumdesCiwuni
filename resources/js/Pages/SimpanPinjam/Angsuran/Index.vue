@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 
 const props = defineProps({
     angsuran: Object,
@@ -10,6 +10,14 @@ const props = defineProps({
     summary: Object,
     summaryAll: Object,
     availableBulan: Array,
+    flash: Object,
+});
+
+// Auto-open receipt in new tab after submitting form
+onMounted(() => {
+    if (props.flash?.struk_url) {
+        window.open(props.flash.struk_url, '_blank');
+    }
 });
 
 const search = ref(props.filters?.search ?? '');
@@ -44,6 +52,14 @@ const isFiltered = computed(() => !!bulan.value);
     <AuthenticatedLayout>
         <template #header>Angsuran</template>
         <div class="space-y-5">
+            <!-- Flash Success Banner -->
+            <div v-if="flash?.success" class="flex items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+                    <span>{{ flash.success }} — Struk dibuka di tab baru.</span>
+                </div>
+            </div>
+
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-lg font-semibold">Riwayat Angsuran</h2>
