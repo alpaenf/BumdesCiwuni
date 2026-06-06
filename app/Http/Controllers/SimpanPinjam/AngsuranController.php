@@ -28,15 +28,33 @@ class AngsuranController extends Controller
             );
         }
 
-        if ($request->filled('start_date')) {
-            $query->whereDate('tanggal', '>=', $request->start_date);
-        }
-
-        if ($request->filled('end_date')) {
-            $query->whereDate('tanggal', '<=', $request->end_date);
+        if ($request->filled('bulan')) {
+            [$year, $month] = explode('-', $request->bulan);
+            $query->whereYear('tanggal', $year)->whereMonth('tanggal', $month);
+        } else {
+            if ($request->filled('start_date')) $query->whereDate('tanggal', '>=', $request->start_date);
+            if ($request->filled('end_date'))   $query->whereDate('tanggal', '<=', $request->end_date);
         }
 
         $angsuran = $query->paginate(15)->withQueryString();
+
+        // Summary sesuai filter aktif
+        $summaryQuery = Angsuran::query();
+        if ($request->filled('bulan')) {
+            [$year, $month] = explode('-', $request->bulan);
+            $summaryQuery->whereYear('tanggal', $year)->whereMonth('tanggal', $month);
+        } else {
+            if ($request->filled('start_date')) $summaryQuery->whereDate('tanggal', '>=', $request->start_date);
+            if ($request->filled('end_date'))   $summaryQuery->whereDate('tanggal', '<=', $request->end_date);
+        }
+        $summary = $summaryQuery->selectRaw('COUNT(*) as total_transaksi, SUM(jumlah_bayar) as total_bayar')->first();
+
+        // Summary keseluruhan
+        $summaryAll = Angsuran::selectRaw('COUNT(*) as total_transaksi, SUM(jumlah_bayar) as total_bayar')->first();
+
+        // Daftar bulan yang ada datanya
+        $availableBulan = Angsuran::selectRaw("DATE_FORMAT(tanggal, '%Y-%m') as bulan")
+            ->groupBy('bulan')->orderByDesc('bulan')->pluck('bulan');
 
         $nasabahOptions = \App\Models\Nasabah::whereHas('pinjaman', fn($q) => $q->where('status', 'aktif'))
             ->orderBy('nama')
@@ -45,7 +63,10 @@ class AngsuranController extends Controller
         return Inertia::render('SimpanPinjam/Angsuran/Index', [
             'angsuran'       => $angsuran,
             'nasabahOptions' => $nasabahOptions,
-            'filters'        => $request->only(['search', 'start_date', 'end_date']),
+            'filters'        => $request->only(['search', 'start_date', 'end_date', 'bulan']),
+            'summary'        => $summary,
+            'summaryAll'     => $summaryAll,
+            'availableBulan' => $availableBulan,
         ]);
     }
 
