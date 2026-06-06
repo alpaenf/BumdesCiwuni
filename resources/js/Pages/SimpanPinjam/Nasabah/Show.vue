@@ -11,8 +11,7 @@ const props = defineProps({
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
 
-const tabunganReguler = computed(() => props.nasabah.tabungan?.find(t => t.jenis_tabungan === 'reguler'));
-const tabunganSembako = computed(() => props.nasabah.tabungan?.find(t => t.jenis_tabungan === 'sembako'));
+const tabungan = computed(() => props.nasabah.tabungan?.[0] ?? props.nasabah.tabungan);
 const pinjamanAktif   = computed(() => props.nasabah.pinjaman?.filter(p => p.status === 'aktif') ?? []);
 
 const waModal = ref(null);
@@ -120,28 +119,16 @@ const waModal = ref(null);
                 <!-- Right column -->
                 <div class="space-y-5 lg:col-span-2">
                     <!-- Tabungan cards -->
-                    <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="grid gap-4 sm:grid-cols-1">
                         <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Tabungan Reguler</p>
-                            <p class="mt-2 text-2xl font-bold text-emerald-800">{{ formatCurrency(tabunganReguler?.saldo ?? 0) }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Tabungan Nasabah</p>
+                            <p class="mt-2 text-2xl font-bold text-emerald-800">{{ formatCurrency(tabungan?.saldo ?? 0) }}</p>
                             <div class="mt-3 flex gap-2">
-                                <Link v-if="tabunganReguler" :href="route('tabungan.setor', nasabah.id)" class="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
+                                <Link v-if="tabungan" :href="route('tabungan.setor', nasabah.id)" class="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
                                     <span class="material-symbols-outlined text-xs">add</span> Setor
                                 </Link>
-                                <Link v-if="tabunganReguler" :href="route('tabungan.tarik', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-emerald-600 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
+                                <Link v-if="tabungan" :href="route('tabungan.tarik', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-emerald-600 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
                                     <span class="material-symbols-outlined text-xs">remove</span> Tarik
-                                </Link>
-                            </div>
-                        </div>
-                        <div class="rounded-xl border border-orange-200 bg-orange-50 p-5">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">Tabungan Sembako</p>
-                            <p class="mt-2 text-2xl font-bold text-orange-800">{{ formatCurrency(tabunganSembako?.saldo ?? 0) }}</p>
-                            <div class="mt-3 flex gap-2">
-                                <Link v-if="tabunganSembako" :href="route('tabungan-sembako.setor', nasabah.id)" class="flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
-                                    <span class="material-symbols-outlined text-xs">add</span> Setor
-                                </Link>
-                                <Link v-if="tabunganSembako" :href="route('tabungan-sembako.ambil', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-orange-500 px-3 py-1.5 text-xs font-semibold text-orange-600 hover:bg-orange-100">
-                                    <span class="material-symbols-outlined text-xs">shopping_basket</span> Ambil
                                 </Link>
                             </div>
                         </div>

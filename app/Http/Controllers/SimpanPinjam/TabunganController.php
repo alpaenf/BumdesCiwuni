@@ -20,9 +20,7 @@ class TabunganController extends Controller
 
     public function index(Request $request): Response
     {
-        $query = Nasabah::with(['tabungan' => function ($q) {
-            $q->where('jenis_tabungan', Tabungan::JENIS_REGULER);
-        }]);
+        $query = Nasabah::with('tabungan');
 
         if ($request->filled('search')) {
             $search = '%' . $request->search . '%';
@@ -42,7 +40,7 @@ class TabunganController extends Controller
 
     public function setor(Request $request, Nasabah $nasabah): Response
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrFail();
 
         return Inertia::render('SimpanPinjam/Tabungan/Setor', [
             'nasabah'  => $nasabah,
@@ -52,7 +50,7 @@ class TabunganController extends Controller
 
     public function storeSetor(StoreTransaksiRequest $request, Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrFail();
         $transaksi = $this->tabunganService->setor($tabungan, $request->validated());
 
         return redirect()->route('tabungan.index')
@@ -62,21 +60,17 @@ class TabunganController extends Controller
 
     public function tarik(Request $request, Nasabah $nasabah): Response
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
-
-        $unitId = auth()->user()->unit_id;
-        $prefix = $unitId ? "unit_{$unitId}_" : "global_";
+        $tabungan = $nasabah->tabungan()->firstOrFail();
 
         return Inertia::render('SimpanPinjam/Tabungan/Tarik', [
             'nasabah'         => $nasabah,
             'tabungan'        => $tabungan,
-            'defaultAdminFee' => (int) Setting::get($prefix . 'biaya_admin_tarik_reguler', 0),
         ]);
     }
 
     public function storeTarik(StoreTransaksiRequest $request, Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrFail();
 
         try {
             $transaksi = $this->tabunganService->tarik($tabungan, $request->validated());
@@ -98,7 +92,7 @@ class TabunganController extends Controller
 
     public function riwayat(Nasabah $nasabah)
     {
-        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', Tabungan::JENIS_REGULER)->firstOrFail();
+        $tabungan = $nasabah->tabungan()->firstOrFail();
         $transaksi = $tabungan->transaksi()
             ->orderByDesc('tanggal')
             ->orderByDesc('id')

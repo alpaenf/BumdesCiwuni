@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TransaksiTabungan extends Model
 {
     public const JENIS_SETOR = 'setor';
-    public const JENIS_TARIK = 'tarik';
+    public const JENIS_TARIK_TUNAI = 'tarik_tunai';
+    public const JENIS_TARIK_SEMBAKO = 'tarik_sembako';
 
     protected $table = 'transaksi_tabungan';
 

@@ -17,9 +17,8 @@ class StoreTransaksiRequest extends FormRequest
             'nasabah_id'       => ['required', 'exists:nasabah,id'],
             'tanggal'          => ['required', 'date'],
             'nominal'          => ['required', 'numeric', 'min:1000'],
-            'administrasi'     => ['nullable', 'numeric', 'min:0'],
             'keterangan'       => ['nullable', 'string', 'max:255'],
-            'jenis_pengambilan'=> ['nullable', 'in:uang,barang'],
+            'jenis_transaksi'  => ['nullable', 'in:tarik_tunai,tarik_sembako'],
         ];
     }
 }
