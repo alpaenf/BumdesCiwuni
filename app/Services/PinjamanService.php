@@ -49,14 +49,21 @@ class PinjamanService
      */
     public function kalkulasi(float $pokok, float $bunga, float $nominalSetor): array
     {
-        $totalTagihan   = $pokok + ($pokok * $bunga / 100);
+        $totalBunga     = $pokok * $bunga / 100;
+        $totalTagihan   = $pokok + $totalBunga;
         $jumlahAngsuran = $nominalSetor > 0 ? (int) ceil($totalTagihan / $nominalSetor) : 0;
+        
+        $porsiPokok = $totalTagihan > 0 ? ($pokok / $totalTagihan) * $nominalSetor : 0;
+        $porsiBunga = $totalTagihan > 0 ? ($totalBunga / $totalTagihan) * $nominalSetor : 0;
 
         return [
             'pinjaman_pokok'  => $pokok,
             'bunga'           => $bunga,
+            'total_bunga'     => $totalBunga,
             'total_tagihan'   => $totalTagihan,
             'nominal_setoran' => $nominalSetor,
+            'porsi_pokok'     => $porsiPokok,
+            'porsi_bunga'     => $porsiBunga,
             'jumlah_angsuran' => $jumlahAngsuran,
         ];
     }

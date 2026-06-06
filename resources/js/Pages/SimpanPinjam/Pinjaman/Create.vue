@@ -120,16 +120,35 @@ const submit = () => form.post(route('pinjaman.store'));
                     </div>
 
                     <!-- Preview Kalkulasi -->
-                    <div v-if="preview" class="rounded-lg bg-[color:var(--color-primary)]/5 border border-[color:var(--color-primary)]/20 p-4 text-sm space-y-2">
+                    <div v-if="preview" class="rounded-lg bg-[color:var(--color-primary)]/5 border border-[color:var(--color-primary)]/20 p-4 text-sm space-y-4">
                         <p class="font-semibold text-[color:var(--color-primary)]">Preview Kalkulasi</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="rounded-lg bg-white p-3 text-center">
-                                <p class="text-xs text-[color:var(--color-secondary)]">Total Tagihan</p>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-lg bg-white p-3 border border-[color:var(--color-outline-variant)]">
+                                <p class="text-xs text-[color:var(--color-secondary)]">Total Bunga</p>
+                                <p class="font-bold text-[color:var(--color-on-surface)]">{{ formatCurrency(preview.total_bunga) }}</p>
+                            </div>
+                            <div class="rounded-lg bg-white p-3 border border-[color:var(--color-outline-variant)]">
+                                <p class="text-xs text-[color:var(--color-secondary)]">Total Tagihan (Pokok + Bunga)</p>
                                 <p class="font-bold text-[color:var(--color-on-surface)]">{{ formatCurrency(preview.total_tagihan) }}</p>
                             </div>
-                            <div class="rounded-lg bg-white p-3 text-center">
-                                <p class="text-xs text-[color:var(--color-secondary)]">Jumlah Angsuran</p>
-                                <p class="font-bold text-[color:var(--color-on-surface)]">{{ preview.jumlah_angsuran }} kali</p>
+                            <div class="col-span-2 rounded-lg bg-white p-3 border border-[color:var(--color-outline-variant)]">
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-xs font-semibold text-[color:var(--color-secondary)]">Estimasi Rincian per Setoran</p>
+                                    <p class="font-bold text-[color:var(--color-primary)]">{{ preview.jumlah_angsuran }}x Angsuran</p>
+                                </div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-[color:var(--color-on-surface-variant)]">Porsi Pokok:</span>
+                                    <span class="font-medium">{{ formatCurrency(preview.porsi_pokok) }}</span>
+                                </div>
+                                <div class="flex justify-between text-xs border-b border-dashed border-[color:var(--color-outline-variant)] pb-1 mb-1">
+                                    <span class="text-[color:var(--color-on-surface-variant)]">Porsi Bunga:</span>
+                                    <span class="font-medium">{{ formatCurrency(preview.porsi_bunga) }}</span>
+                                </div>
+                                <div class="flex justify-between text-xs font-bold">
+                                    <span>Total Setoran:</span>
+                                    <span>{{ formatCurrency(preview.nominal_setoran) }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -93,18 +93,18 @@
             <col class="col-ket" />
             <col class="col-setoran" />
             <col class="col-penarikan" />
-            <col class="col-admin" />
             <col class="col-saldo" />
+            <col class="col-admin" />
         </colgroup>
         <thead>
             <tr>
                 <th>Tanggal</th>
                 <th>No. Transaksi</th>
-                <th>Keterangan</th>
-                <th class="angka">Setoran</th>
-                <th class="angka">Penarikan</th>
-                <th class="angka">Admin</th>
+                <th>Uraian</th>
+                <th class="angka">Masuk</th>
+                <th class="angka">Keluar</th>
                 <th class="angka">Saldo</th>
+                <th class="angka">Laba</th>
             </tr>
         </thead>
         <tbody>
@@ -115,8 +115,8 @@
                     <td>{{ $transaksi->keterangan ?: ($transaksi->jenis_transaksi === 'setor' ? 'Setoran' : 'Penarikan') }}</td>
                     <td class="angka">Rp{{ number_format($transaksi->jenis_transaksi === 'setor' ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
                     <td class="angka">Rp{{ number_format(in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
-                    <td class="angka">Rp{{ number_format($transaksi->administrasi, 0, ',', '.') }}</td>
                     <td class="angka">Rp{{ number_format($transaksi->saldo_setelah, 0, ',', '.') }}</td>
+                    <td class="angka">Rp{{ number_format($transaksi->administrasi, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
