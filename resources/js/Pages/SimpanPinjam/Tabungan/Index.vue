@@ -26,7 +26,7 @@ watch(search, () => {
 });
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
-const getTabunganReguler = (nasabah) => nasabah.tabungan?.find(t => t.jenis_tabungan === 'reguler');
+const getTabungan = (nasabah) => Array.isArray(nasabah.tabungan) ? nasabah.tabungan[0] : nasabah.tabungan;
 
 // Struk modal state
 const showModal = ref(false);
@@ -96,9 +96,9 @@ function formatTanggal(dateStr) {
 </script>
 
 <template>
-    <Head title="Tabungan Reguler" />
+    <Head title="Tabungan Nasabah" />
     <AuthenticatedLayout>
-        <template #header>Tabungan Reguler</template>
+        <template #header>Tabungan Nasabah</template>
         <div class="space-y-5">
             <!-- Flash Success Banner -->
             <div v-if="flash?.success" class="flex items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
@@ -110,7 +110,7 @@ function formatTanggal(dateStr) {
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 class="text-lg font-semibold">Daftar Tabungan Reguler</h2>
+                    <h2 class="text-lg font-semibold">Daftar Tabungan Nasabah</h2>
                     <p class="text-sm text-[color:var(--color-secondary)]">Total {{ nasabah.total }} nasabah</p>
                 </div>
             </div>
@@ -138,7 +138,7 @@ function formatTanggal(dateStr) {
                                 <td class="px-4 py-3 font-mono text-xs font-semibold text-[color:var(--color-primary)]">{{ row.nomor_rekening }}</td>
                                 <td class="px-4 py-3 font-medium">{{ row.nama }}</td>
                                 <td class="px-4 py-3 text-right font-semibold text-[color:var(--color-on-surface)]">
-                                    {{ formatCurrency(getTabunganReguler(row)?.saldo ?? 0) }}
+                                    {{ formatCurrency(getTabungan(row)?.saldo ?? 0) }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center justify-center gap-2">

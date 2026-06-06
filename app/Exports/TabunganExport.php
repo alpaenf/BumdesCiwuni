@@ -22,9 +22,7 @@ class TabunganExport implements FromCollection, WithHeadings, WithMapping, WithS
 
     public function __construct(private Request $request)
     {
-        $jenis = $request->get('jenis', Tabungan::JENIS_REGULER);
-        $query = TransaksiTabungan::with('tabungan.nasabah')
-            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', $jenis));
+        $query = TransaksiTabungan::with('tabungan.nasabah');
 
         if ($request->filled('start_date')) $query->whereDate('tanggal', '>=', $request->start_date);
         if ($request->filled('end_date'))   $query->whereDate('tanggal', '<=', $request->end_date);

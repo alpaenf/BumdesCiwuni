@@ -77,19 +77,16 @@ class LaporanController extends Controller
     // =====================================================================
     public function tabungan(Request $request): Response
     {
-        $jenis     = $request->get('jenis', Tabungan::JENIS_REGULER);
-        $query     = TransaksiTabungan::with('tabungan.nasabah')
-            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', $jenis));
+        $query     = TransaksiTabungan::with('tabungan.nasabah');
         $this->applyDateFilter($query, $request, 'tanggal');
         $transaksi = $query->orderBy('tanggal')->get();
 
         return Inertia::render('SimpanPinjam/Laporan/Tabungan', [
             'transaksi' => $transaksi,
-            'jenis'     => $jenis,
-            'filters'   => $request->only(['start_date', 'end_date', 'jenis', 'bulan']),
+            'filters'   => $request->only(['start_date', 'end_date', 'bulan']),
             'summary'   => [
                 'total_setoran'   => $transaksi->where('jenis_transaksi', 'setor')->sum('nominal'),
-                'total_penarikan' => $transaksi->where('jenis_transaksi', 'tarik')->sum('nominal'),
+                'total_penarikan' => $transaksi->whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako'])->sum('nominal'),
                 'total_admin'     => $transaksi->sum('administrasi'),
             ],
         ]);
@@ -97,19 +94,17 @@ class LaporanController extends Controller
 
     public function tabunganPdf(Request $request)
     {
-        $jenis     = $request->get('jenis', Tabungan::JENIS_REGULER);
-        $query     = TransaksiTabungan::with('tabungan.nasabah')
-            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', $jenis));
+        $query     = TransaksiTabungan::with('tabungan.nasabah');
         $this->applyDateFilter($query, $request, 'tanggal');
         $transaksi = $query->orderBy('tanggal')->get();
         $summary   = [
             'total_setoran'   => $transaksi->where('jenis_transaksi', 'setor')->sum('nominal'),
-            'total_penarikan' => $transaksi->where('jenis_transaksi', 'tarik')->sum('nominal'),
+            'total_penarikan' => $transaksi->whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako'])->sum('nominal'),
             'total_admin'     => $transaksi->sum('administrasi'),
         ];
-        $filters = $request->only(['start_date', 'end_date', 'jenis']);
+        $filters = $request->only(['start_date', 'end_date']);
 
-        $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.tabungan', compact('transaksi', 'jenis', 'summary', 'filters'))
+        $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.tabungan', compact('transaksi', 'summary', 'filters'))
             ->setPaper('a4', 'landscape');
         return $pdf->download('laporan-tabungan-' . now()->format('Ymd') . '.pdf');
     }

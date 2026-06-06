@@ -1,7 +1,7 @@
 @php
     use App\Models\Tabungan;
     $headerColor = '#1B5E20';
-    $jenisLabel  = $jenis === Tabungan::JENIS_SEMBAKO ? 'Tabungan Sembako' : 'Tabungan Reguler';
+    $jenisLabel  = 'Tabungan';
     $reportTitle = 'Laporan Transaksi ' . $jenisLabel;
     $periodLabel = ($filters['start_date'] ?? $filters['end_date'])
         ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
