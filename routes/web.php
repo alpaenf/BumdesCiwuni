@@ -115,6 +115,8 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::delete('/nasabah/{nasabah}', [NasabahController::class, 'destroy'])->name('nasabah.destroy')->middleware('role:admin_unit');
     Route::get('/nasabah/{nasabah}/print', [NasabahController::class, 'print'])->name('nasabah.print');
     Route::get('/nasabah/{nasabah}/pinjaman-aktif', [NasabahController::class, 'pinjamanAktif'])->name('nasabah.pinjaman-aktif');
+    Route::post('/nasabah/{nasabah}/tabungan/mulai', [NasabahController::class, 'mulaiTabungan'])->name('nasabah.tabungan.mulai')->middleware('role:admin_unit');
+    Route::post('/nasabah/{nasabah}/tabungan/tutup', [NasabahController::class, 'tutupTabungan'])->name('nasabah.tabungan.tutup')->middleware('role:admin_unit');
 
 
 

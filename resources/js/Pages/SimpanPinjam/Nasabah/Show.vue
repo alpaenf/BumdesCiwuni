@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import WaTemplateModal from '@/Components/WaTemplateModal.vue';
 
@@ -11,10 +11,33 @@ const props = defineProps({
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
 
-const tabungan = computed(() => props.nasabah.tabungan?.[0] ?? props.nasabah.tabungan);
+const tabunganReguler = computed(() => {
+    return props.nasabah.tabungan?.find(t => t.jenis_tabungan === 'reguler') || null;
+});
+
+const tabunganSembako = computed(() => {
+    return props.nasabah.tabungan?.find(t => t.jenis_tabungan === 'sembako') || null;
+});
+
 const pinjamanAktif   = computed(() => props.nasabah.pinjaman?.filter(p => p.status === 'aktif') ?? []);
 
 const waModal = ref(null);
+
+function mulaiBuku(jenis) {
+    if (confirm(`Mulai/aktifkan Buku Tabungan ${jenis === 'reguler' ? 'Reguler' : 'Sembako'} untuk nasabah ini?`)) {
+        router.post(route('nasabah.tabungan.mulai', props.nasabah.id), {
+            jenis_tabungan: jenis
+        });
+    }
+}
+
+function tutupBuku(jenis) {
+    if (confirm(`Tutup Buku Tabungan ${jenis === 'reguler' ? 'Reguler' : 'Sembako'} untuk nasabah ini? Seluruh data tabungan ini akan ditutup.`)) {
+        router.post(route('nasabah.tabungan.tutup', props.nasabah.id), {
+            jenis_tabungan: jenis
+        });
+    }
+}
 </script>
 
 <template>
@@ -119,18 +142,69 @@ const waModal = ref(null);
                 <!-- Right column -->
                 <div class="space-y-5 lg:col-span-2">
                     <!-- Tabungan cards -->
-                    <div class="grid gap-4 sm:grid-cols-1">
-                        <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Tabungan Nasabah</p>
-                            <p class="mt-2 text-2xl font-bold text-emerald-800">{{ formatCurrency(tabungan?.saldo ?? 0) }}</p>
-                            <div class="mt-3 flex gap-2">
-                                <Link v-if="tabungan" :href="route('tabungan.setor', nasabah.id)" class="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <!-- Tabungan Reguler Card -->
+                        <div v-if="tabunganReguler" class="rounded-xl border border-blue-200 bg-blue-50/50 p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-blue-600">Tabungan Reguler</p>
+                                    <span class="inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700">Aktif</span>
+                                </div>
+                                <p class="mt-3 text-2xl font-bold text-blue-800">{{ formatCurrency(tabunganReguler.saldo) }}</p>
+                            </div>
+                            <div class="mt-5 flex gap-2">
+                                <Link :href="route('tabungan.setor', nasabah.id)" class="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
                                     <span class="material-symbols-outlined text-xs">add</span> Setor
                                 </Link>
-                                <Link v-if="tabungan" :href="route('tabungan.tarik', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-emerald-600 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
+                                <Link :href="route('tabungan.tarik', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-blue-600 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 bg-white">
                                     <span class="material-symbols-outlined text-xs">remove</span> Tarik
                                 </Link>
+                                <button type="button" @click="tutupBuku('reguler')" class="ml-auto flex items-center justify-center rounded-lg p-1.5 text-red-600 hover:bg-red-50" title="Tutup Buku Tabungan">
+                                    <span class="material-symbols-outlined text-base">close</span>
+                                </button>
                             </div>
+                        </div>
+                        <div v-else class="rounded-xl border border-dashed border-slate-300 p-5 flex flex-col justify-between items-center text-center bg-slate-50/50 min-h-[140px]">
+                            <div class="my-auto">
+                                <span class="material-symbols-outlined text-slate-400 text-3xl">savings</span>
+                                <p class="text-xs font-semibold text-slate-500 mt-1">Tabungan Reguler</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Belum memiliki buku tabungan</p>
+                            </div>
+                            <button type="button" @click="mulaiBuku('reguler')" class="mt-4 w-full flex items-center justify-center gap-1.5 rounded-lg border border-blue-500 px-3 py-2 text-xs font-bold text-blue-600 hover:bg-blue-50 bg-white transition">
+                                <span class="material-symbols-outlined text-xs font-bold">add</span> Mulai Buku Tabungan
+                            </button>
+                        </div>
+
+                        <!-- Tabungan Sembako Card -->
+                        <div v-if="tabunganSembako" class="rounded-xl border border-orange-200 bg-orange-50/50 p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-orange-600">Tabungan Sembako</p>
+                                    <span class="inline-flex rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">Aktif</span>
+                                </div>
+                                <p class="mt-3 text-2xl font-bold text-orange-800">{{ formatCurrency(tabunganSembako.saldo) }}</p>
+                            </div>
+                            <div class="mt-5 flex gap-2">
+                                <Link :href="route('tabungan-sembako.setor', nasabah.id)" class="flex items-center gap-1 rounded-lg bg-orange-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
+                                    <span class="material-symbols-outlined text-xs">add</span> Setor
+                                </Link>
+                                <Link :href="route('tabungan-sembako.ambil', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-orange-600 px-3 py-1.5 text-xs font-semibold text-orange-700 hover:bg-orange-100 bg-white">
+                                    <span class="material-symbols-outlined text-xs">remove</span> Ambil
+                                </Link>
+                                <button type="button" @click="tutupBuku('sembako')" class="ml-auto flex items-center justify-center rounded-lg p-1.5 text-red-600 hover:bg-red-50" title="Tutup Buku Sembako">
+                                    <span class="material-symbols-outlined text-base">close</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div v-else class="rounded-xl border border-dashed border-slate-300 p-5 flex flex-col justify-between items-center text-center bg-slate-50/50 min-h-[140px]">
+                            <div class="my-auto">
+                                <span class="material-symbols-outlined text-slate-400 text-3xl">shopping_basket</span>
+                                <p class="text-xs font-semibold text-slate-500 mt-1">Tabungan Sembako</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Belum memiliki buku tabungan sembako</p>
+                            </div>
+                            <button type="button" @click="mulaiBuku('sembako')" class="mt-4 w-full flex items-center justify-center gap-1.5 rounded-lg border border-orange-500 px-3 py-2 text-xs font-bold text-orange-600 hover:bg-orange-50 bg-white transition">
+                                <span class="material-symbols-outlined text-xs font-bold">add</span> Mulai Buku Sembako
+                            </button>
                         </div>
                     </div>
 
