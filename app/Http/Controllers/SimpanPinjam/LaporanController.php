@@ -293,20 +293,24 @@ class LaporanController extends Controller
 
         $saldoReguler = Tabungan::where('jenis_tabungan', Tabungan::JENIS_REGULER)->sum('saldo');
         $saldoSembako = Tabungan::where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->sum('saldo');
+        $totalAngsuranAll = Angsuran::sum('jumlah_bayar');
+        $totalPinjamanAll = Pinjaman::sum('pinjaman_pokok');
 
-        return [[
-            'masuk_reguler'    => (float) $masukReguler,
-            'masuk_sembako'    => (float) $masukSembako,
-            'masuk_angsuran'   => (float) $masukAngsuran,
-            'keluar_reguler'   => (float) $keluarReguler,
-            'keluar_sembako'   => (float) $keluarSembako,
-            'keluar_pinjaman'  => (float) $keluarPinjaman,
-            'total_masuk'      => (float) $totalMasuk,
-            'total_keluar'     => (float) $totalKeluar,
-            'saldo_kas'        => (float) ($totalMasuk - $totalKeluar),
-            'saldo_reguler'    => (float) $saldoReguler,
-            'saldo_sembako'    => (float) $saldoSembako,
-            'total_saldo_all'  => (float) ($saldoReguler + $saldoSembako),
-        ]];
+        return [
+            'masuk_reguler'      => (float) $masukReguler,
+            'masuk_sembako'      => (float) $masukSembako,
+            'masuk_angsuran'     => (float) $masukAngsuran,
+            'total_masuk'        => (float) $totalMasuk,
+            'keluar_reguler'     => (float) $keluarReguler,
+            'keluar_sembako'     => (float) $keluarSembako,
+            'keluar_pinjaman'    => (float) $keluarPinjaman,
+            'total_keluar'       => (float) $totalKeluar,
+            'saldo_kas'          => (float) ($totalMasuk - $totalKeluar),
+            'saldo_reguler'      => (float) $saldoReguler,
+            'saldo_sembako'      => (float) $saldoSembako,
+            'total_saldo_all'    => (float) ($saldoReguler + $saldoSembako),
+            'total_angsuran_all' => (float) $totalAngsuranAll,
+            'total_pinjaman_all' => (float) $totalPinjamanAll,
+        ];
     }
 }
