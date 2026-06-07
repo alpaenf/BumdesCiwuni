@@ -63,21 +63,16 @@ const activeTab = ref('tabungan');
                     <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Total Pendapatan Kotor {{ tahun }}</p>
                 </div>
                 <p class="text-3xl font-bold">{{ fmt(pendapatanKotor) }}</p>
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
                         <p class="text-xs opacity-75">Bunga Pinjaman (Pendapatan)</p>
                         <p class="text-lg font-bold">{{ fmt(bungaPinjaman) }}</p>
                         <p class="text-xs opacity-60">100% Dari Pendapatan</p>
                     </div>
                     <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
-                        <p class="text-xs opacity-75">Biaya Promosi (Laba Tabungan)</p>
-                        <p class="text-lg font-bold">{{ fmt(labaTabungan) }}</p>
-                        <p class="text-xs opacity-60">Retained Earnings</p>
-                    </div>
-                    <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
-                        <p class="text-xs opacity-75">Biaya Promosi (Laba Sembako)</p>
-                        <p class="text-lg font-bold">{{ fmt(labaSembako) }}</p>
-                        <p class="text-xs opacity-60">Retained Earnings</p>
+                        <p class="text-xs opacity-75">Total Biaya Promosi (Gabungan Tabungan)</p>
+                        <p class="text-lg font-bold">{{ fmt(labaTabungan + labaSembako) }}</p>
+                        <p class="text-xs opacity-80 mt-1">Reguler: {{ fmt(labaTabungan) }} | Sembako: {{ fmt(labaSembako) }}</p>
                     </div>
                 </div>
             </div>
