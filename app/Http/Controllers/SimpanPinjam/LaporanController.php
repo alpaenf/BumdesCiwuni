@@ -296,7 +296,7 @@ class LaporanController extends Controller
         $totalAngsuranAll = Angsuran::sum('jumlah_bayar');
         $totalPinjamanAll = Pinjaman::sum('pinjaman_pokok');
 
-        return [
+        return [[
             'masuk_reguler'      => (float) $masukReguler,
             'masuk_sembako'      => (float) $masukSembako,
             'masuk_angsuran'     => (float) $masukAngsuran,
@@ -311,6 +311,6 @@ class LaporanController extends Controller
             'total_saldo_all'    => (float) ($saldoReguler + $saldoSembako),
             'total_angsuran_all' => (float) $totalAngsuranAll,
             'total_pinjaman_all' => (float) $totalPinjamanAll,
-        ];
+        ]];
     }
 }
