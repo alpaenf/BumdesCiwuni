@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import WaTemplateModal from '@/Components/WaTemplateModal.vue';
 
@@ -22,22 +22,6 @@ const tabunganSembako = computed(() => {
 const pinjamanAktif   = computed(() => props.nasabah.pinjaman?.filter(p => p.status === 'aktif') ?? []);
 
 const waModal = ref(null);
-
-function mulaiBuku(jenis) {
-    if (confirm(`Mulai/aktifkan Buku Tabungan ${jenis === 'reguler' ? 'Reguler' : 'Sembako'} untuk nasabah ini?`)) {
-        router.post(route('nasabah.tabungan.mulai', props.nasabah.id), {
-            jenis_tabungan: jenis
-        });
-    }
-}
-
-function tutupBuku(jenis) {
-    if (confirm(`Tutup Buku Tabungan ${jenis === 'reguler' ? 'Reguler' : 'Sembako'} untuk nasabah ini? Seluruh data tabungan ini akan ditutup.`)) {
-        router.post(route('nasabah.tabungan.tutup', props.nasabah.id), {
-            jenis_tabungan: jenis
-        });
-    }
-}
 </script>
 
 <template>
@@ -159,20 +143,7 @@ function tutupBuku(jenis) {
                                 <Link :href="route('tabungan.tarik', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-blue-600 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 bg-white">
                                     <span class="material-symbols-outlined text-xs">remove</span> Tarik
                                 </Link>
-                                <button type="button" @click="tutupBuku('reguler')" class="ml-auto flex items-center justify-center rounded-lg p-1.5 text-red-600 hover:bg-red-50" title="Tutup Buku Tabungan">
-                                    <span class="material-symbols-outlined text-base">close</span>
-                                </button>
                             </div>
-                        </div>
-                        <div v-else class="rounded-xl border border-dashed border-slate-300 p-5 flex flex-col justify-between items-center text-center bg-slate-50/50 min-h-[140px]">
-                            <div class="my-auto">
-                                <span class="material-symbols-outlined text-slate-400 text-3xl">savings</span>
-                                <p class="text-xs font-semibold text-slate-500 mt-1">Tabungan Reguler</p>
-                                <p class="text-[10px] text-slate-400 mt-0.5">Belum memiliki buku tabungan</p>
-                            </div>
-                            <button type="button" @click="mulaiBuku('reguler')" class="mt-4 w-full flex items-center justify-center gap-1.5 rounded-lg border border-blue-500 px-3 py-2 text-xs font-bold text-blue-600 hover:bg-blue-50 bg-white transition">
-                                <span class="material-symbols-outlined text-xs font-bold">add</span> Mulai Buku Tabungan
-                            </button>
                         </div>
 
                         <!-- Tabungan Sembako Card -->
@@ -191,20 +162,14 @@ function tutupBuku(jenis) {
                                 <Link :href="route('tabungan-sembako.ambil', nasabah.id)" class="flex items-center gap-1 rounded-lg border border-orange-600 px-3 py-1.5 text-xs font-semibold text-orange-700 hover:bg-orange-100 bg-white">
                                     <span class="material-symbols-outlined text-xs">remove</span> Ambil
                                 </Link>
-                                <button type="button" @click="tutupBuku('sembako')" class="ml-auto flex items-center justify-center rounded-lg p-1.5 text-red-600 hover:bg-red-50" title="Tutup Buku Sembako">
-                                    <span class="material-symbols-outlined text-base">close</span>
-                                </button>
                             </div>
                         </div>
-                        <div v-else class="rounded-xl border border-dashed border-slate-300 p-5 flex flex-col justify-between items-center text-center bg-slate-50/50 min-h-[140px]">
-                            <div class="my-auto">
-                                <span class="material-symbols-outlined text-slate-400 text-3xl">shopping_basket</span>
-                                <p class="text-xs font-semibold text-slate-500 mt-1">Tabungan Sembako</p>
-                                <p class="text-[10px] text-slate-400 mt-0.5">Belum memiliki buku tabungan sembako</p>
-                            </div>
-                            <button type="button" @click="mulaiBuku('sembako')" class="mt-4 w-full flex items-center justify-center gap-1.5 rounded-lg border border-orange-500 px-3 py-2 text-xs font-bold text-orange-600 hover:bg-orange-50 bg-white transition">
-                                <span class="material-symbols-outlined text-xs font-bold">add</span> Mulai Buku Sembako
-                            </button>
+
+                        <!-- If none are active -->
+                        <div v-if="!tabunganReguler && !tabunganSembako" class="col-span-2 rounded-xl border border-dashed border-slate-300 p-8 flex flex-col justify-center items-center text-center bg-slate-50/50">
+                            <span class="material-symbols-outlined text-slate-400 text-4xl">account_balance_wallet</span>
+                            <p class="text-sm font-semibold text-slate-500 mt-2">Tidak Ada Rekening Tabungan Aktif</p>
+                            <p class="text-xs text-slate-400 mt-1">Gunakan Buka Buku Massal untuk mengaktifkan rekening tabungan nasabah.</p>
                         </div>
                     </div>
 
