@@ -10,7 +10,7 @@ const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency'
 
 const saldoBaru = computed(() => {
     if (form.is_tutup_buku) return 0;
-    return Number(props.tabungan.saldo) - (Number(form.nominal) || 0) - ADMIN;
+    return Number(props.tabungan.saldo) - (Number(form.nominal) || 0);
 });
 
 const isInvalid = computed(() => {
@@ -34,7 +34,7 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                     <p class="mt-1 font-bold text-orange-900">{{ nasabah.nama }}</p>
                     <p class="font-mono text-sm text-orange-700">{{ nasabah.nomor_rekening }}</p>
                     <p class="mt-2 text-sm text-orange-700">Saldo Sembako: <span class="font-bold">{{ formatCurrency(tabungan.saldo) }}</span></p>
-                    <p class="mt-1 text-xs text-orange-600">Biaya administrasi pengambilan: <strong>{{ formatCurrency(ADMIN) }}</strong></p>
+                    <p class="mt-1 text-xs text-orange-600">Biaya administrasi penutupan (Tutup Buku): <strong>{{ formatCurrency(ADMIN) }}</strong></p>
                 </div>
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
@@ -76,7 +76,6 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                     <div v-if="form.nominal && !form.is_tutup_buku" class="rounded-lg p-4 text-sm" :class="isInvalid ? 'bg-red-50' : 'bg-[color:var(--color-surface-container-low)]'">
                         <div class="flex justify-between"><span>Saldo Saat Ini</span><span>{{ formatCurrency(tabungan.saldo) }}</span></div>
                         <div class="flex justify-between text-red-600"><span>- Pengambilan</span><span>{{ formatCurrency(form.nominal) }}</span></div>
-                        <div class="flex justify-between text-orange-600"><span>- Administrasi</span><span>{{ formatCurrency(ADMIN) }}</span></div>
                         <div class="mt-2 flex justify-between border-t pt-2 font-bold" :class="isInvalid ? 'text-red-700 border-red-200' : 'border-[color:var(--color-outline-variant)]'">
                             <span>Saldo Baru</span><span>{{ formatCurrency(saldoBaru) }}</span>
                         </div>
