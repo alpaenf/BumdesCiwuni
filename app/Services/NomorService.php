@@ -23,25 +23,30 @@ class NomorService
         return (string) $next;
     }
 
-    /**
-     * Generate nomor rekening baru.
-     * Format: 00001.2026
-     */
     public function generateNomorRekening(): string
     {
         $year = now()->year;
-        $last = Nasabah::where('nomor_rekening', 'like', "%.{$year}")
-            ->orderByDesc('id')
-            ->value('nomor_rekening');
+        
+        // Ambil nomor rekening terakhir untuk melanjutkan urutan
+        $last = Nasabah::orderByDesc('id')->value('nomor_rekening');
 
-        if (!$last) {
-            $seq = 1;
-        } else {
-            $parts = explode('.', $last);
-            $seq = ((int) $parts[0]) + 1;
+        $seq = 1001; // Urutan default awal
+
+        if ($last) {
+            // Cek jika nomor rekening sebelumnya menggunakan format lama (misal: 00001.2026)
+            if (str_contains($last, '.')) {
+                $parts = explode('.', $last);
+                $oldSeq = (int) $parts[0];
+                $seq = $oldSeq >= 1001 ? $oldSeq + 1 : 1001;
+            } 
+            // Cek jika nomor rekening sebelumnya menggunakan format baru (misal: 10012026)
+            elseif (strlen($last) >= 8 && is_numeric($last)) {
+                $seqStr = substr($last, 0, -4); // Ambil urutannya saja dengan membuang 4 digit terakhir (tahun)
+                $seq = ((int) $seqStr) + 1;
+            }
         }
 
-        return str_pad($seq, 5, '0', STR_PAD_LEFT) . ".{$year}";
+        return $seq . $year;
     }
 
     /**
