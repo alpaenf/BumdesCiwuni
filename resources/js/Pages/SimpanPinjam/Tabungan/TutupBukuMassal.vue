@@ -8,11 +8,16 @@ const props = defineProps({
     totalDeduction: Number,
     biayaAdmin: Object,
     flash: Object,
+    unopenedRegulerCount: Number,
+    unopenedSembakoCount: Number,
 });
 
 const search = ref('');
 const showConfirmModal = ref(false);
 const bulkForm = useForm({});
+const mulaiForm = useForm({
+    jenis_tabungan: '',
+});
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
@@ -31,6 +36,13 @@ function executeTutupBuku() {
             showConfirmModal.value = false;
         }
     });
+}
+
+function executeMulaiBuku(jenis) {
+    if (confirm(`Apakah Anda yakin ingin memulai/membuka Buku Tabungan ${jenis === 'reguler' ? 'Reguler' : 'Sembako'} massal untuk seluruh nasabah yang belum memilikinya?`)) {
+        mulaiForm.jenis_tabungan = jenis;
+        mulaiForm.post(route('tabungan.mulai-buku-masal.store'));
+    }
 }
 </script>
 
@@ -82,6 +94,47 @@ function executeTutupBuku() {
                             <p class="text-[color:var(--color-secondary)]">Tabungan Reguler: <strong>{{ formatCurrency(biayaAdmin.reguler) }}</strong></p>
                             <p class="text-[color:var(--color-secondary)]">Tabungan Sembako: <strong>{{ formatCurrency(biayaAdmin.sembako) }}</strong></p>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mulai Buku Massal Section -->
+            <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-5 shadow-sm space-y-4">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800">Mulai Buku Tabungan Massal</h3>
+                    <p class="text-xs text-[color:var(--color-secondary)] mt-1">
+                        Gunakan tombol di bawah ini untuk membuka buku tabungan secara massal bagi nasabah yang belum terdaftar di program tabungan terkait.
+                    </p>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <!-- Tabungan Reguler -->
+                    <div class="rounded-xl border border-blue-100 bg-blue-50/30 p-4 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider">Tabungan Reguler</h4>
+                            <p class="text-sm font-semibold text-slate-700 mt-2">
+                                {{ unopenedRegulerCount }} Nasabah belum memiliki rekening.
+                            </p>
+                        </div>
+                        <button type="button" @click="executeMulaiBuku('reguler')" :disabled="unopenedRegulerCount === 0 || mulaiForm.processing"
+                            class="mt-4 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition disabled:opacity-50">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            Mulai Buku Reguler Massal
+                        </button>
+                    </div>
+
+                    <!-- Tabungan Sembako -->
+                    <div class="rounded-xl border border-orange-100 bg-orange-50/30 p-4 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-orange-700 uppercase tracking-wider">Tabungan Sembako</h4>
+                            <p class="text-sm font-semibold text-slate-700 mt-2">
+                                {{ unopenedSembakoCount }} Nasabah belum memiliki rekening.
+                            </p>
+                        </div>
+                        <button type="button" @click="executeMulaiBuku('sembako')" :disabled="unopenedSembakoCount === 0 || mulaiForm.processing"
+                            class="mt-4 flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-700 transition disabled:opacity-50">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            Mulai Buku Sembako Massal
+                        </button>
                     </div>
                 </div>
             </div>

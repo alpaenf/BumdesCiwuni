@@ -104,6 +104,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::put('/pengaturan/tabungan', [PengaturanTabunganController::class, 'update'])->name('pengaturan.tabungan.update')->middleware('role:admin_unit');
     Route::get('/tabungan/tutup-buku-masal', [PengaturanTabunganController::class, 'tutupBukuMasalIndex'])->name('tabungan.tutup-buku-masal.index')->middleware('role:admin_unit');
     Route::post('/tabungan/tutup-buku-masal', [PengaturanTabunganController::class, 'tutupBukuMasalStore'])->name('tabungan.tutup-buku-masal.store')->middleware('role:admin_unit');
+    Route::post('/tabungan/mulai-buku-masal', [PengaturanTabunganController::class, 'mulaiBukuMasalStore'])->name('tabungan.mulai-buku-masal.store')->middleware('role:admin_unit');
 
     // Nasabah
     Route::get('/nasabah', [NasabahController::class, 'index'])->name('nasabah.index');
@@ -115,8 +116,6 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::delete('/nasabah/{nasabah}', [NasabahController::class, 'destroy'])->name('nasabah.destroy')->middleware('role:admin_unit');
     Route::get('/nasabah/{nasabah}/print', [NasabahController::class, 'print'])->name('nasabah.print');
     Route::get('/nasabah/{nasabah}/pinjaman-aktif', [NasabahController::class, 'pinjamanAktif'])->name('nasabah.pinjaman-aktif');
-    Route::post('/nasabah/{nasabah}/tabungan/mulai', [NasabahController::class, 'mulaiTabungan'])->name('nasabah.tabungan.mulai')->middleware('role:admin_unit');
-    Route::post('/nasabah/{nasabah}/tabungan/tutup', [NasabahController::class, 'tutupTabungan'])->name('nasabah.tabungan.tutup')->middleware('role:admin_unit');
 
 
 
