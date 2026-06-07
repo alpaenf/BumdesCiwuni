@@ -35,6 +35,7 @@ const reportNav = [
 ];
 
 const adminNav = [
+    { name: 'Tutup Buku Massal', route: 'tabungan.tutup-buku-masal.index', icon: 'published_with_changes' },
     { name: 'Pengaturan Tabungan', route: 'pengaturan.tabungan', icon: 'tune' },
     { name: 'Landing Page Unit', route: 'admin.landing-page.edit', icon: 'web' },
 ];
