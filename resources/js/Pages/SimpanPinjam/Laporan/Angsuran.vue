@@ -55,7 +55,7 @@ const excelUrl = computed(() => `${route('laporan.angsuran.excel')}?${buildQuery
                 <h2 class="text-lg font-semibold">Laporan Angsuran</h2>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid gap-4 sm:grid-cols-2">
                 <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 text-center shadow-sm">
                     <p class="text-xs uppercase text-[color:var(--color-secondary)]">Total Transaksi</p>
                     <p class="mt-1 text-2xl font-bold">{{ summary.total_transaksi }}</p>
@@ -77,8 +77,8 @@ const excelUrl = computed(() => `${route('laporan.angsuran.excel')}?${buildQuery
                 <ExportButtons :pdf-url="pdfUrl" :excel-url="excelUrl" />
             </div>
 
-            <div class="overflow-hidden rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
-                <table class="w-full text-sm">
+            <div class="overflow-x-auto rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
+                <table class="w-full text-sm min-w-max">
                     <thead>
                         <tr class="border-b border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]">
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-[color:var(--color-secondary)]">Nasabah</th>

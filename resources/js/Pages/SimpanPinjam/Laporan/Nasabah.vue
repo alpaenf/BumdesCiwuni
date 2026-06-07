@@ -37,7 +37,7 @@ const excelUrl = computed(() => `${route('laporan.nasabah.excel')}?${buildQuery(
             </div>
 
             <!-- Summary -->
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid gap-4 sm:grid-cols-3">
                 <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 text-center shadow-sm">
                     <p class="text-xs uppercase text-[color:var(--color-secondary)]">Total Nasabah</p>
                     <p class="mt-1 text-2xl font-bold text-[color:var(--color-on-surface)]">{{ summary.total }}</p>
@@ -67,8 +67,8 @@ const excelUrl = computed(() => `${route('laporan.nasabah.excel')}?${buildQuery(
             </div>
 
             <!-- Table -->
-            <div class="overflow-hidden rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
-                <table class="w-full text-sm">
+            <div class="overflow-x-auto rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
+                <table class="w-full text-sm min-w-max">
                     <thead>
                         <tr class="border-b border-[color:var(--color-outline-variant)] bg-white">
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-[color:var(--color-secondary)]">No. Reg</th>
