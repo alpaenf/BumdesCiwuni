@@ -77,36 +77,31 @@ const activeTab = ref('tabungan');
                 </div>
             </div>
 
-            <!-- Distribusi Pendapatan -->
+            <!-- Rincian Pengurangan Pendapatan -->
             <div class="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4">
-                    <span class="material-symbols-outlined text-lg text-emerald-600">pie_chart</span>
-                    Distribusi Pendapatan Kotor (100%)
+                    <span class="material-symbols-outlined text-lg text-emerald-600">receipt_long</span>
+                    Rincian Pengurangan Pendapatan
                 </h3>
-                <div class="space-y-3">
-                    <div v-for="item in distribusi" :key="item.nama" class="flex items-center gap-4">
-                        <div class="w-40 text-sm font-medium text-slate-700">{{ item.nama }}</div>
-                        <div class="flex-1">
-                            <div class="h-6 rounded-full bg-slate-100 overflow-hidden relative">
-                                <div class="h-full rounded-full transition-all duration-700 flex items-center px-2"
-                                    :style="{ width: Math.max(0, item.persen) + '%' }"
-                                    :class="{
-                                        'bg-emerald-500': item.nama === 'Laba Bersih',
-                                        'bg-blue-500': item.nama === 'Biaya Gaji',
-                                        'bg-amber-500': item.nama === 'Biaya Operasional',
-                                        'bg-purple-500': item.nama === 'Biaya Asuransi',
-                                        'bg-red-500': item.persen < 0
-                                    }">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap" v-if="item.persen > 0">{{ item.persen }}%</span>
-                                </div>
-                                <span class="absolute inset-0 flex items-center px-2 text-[10px] font-bold text-red-600" v-if="item.persen < 0">MINUS ({{ item.persen }}%)</span>
-                            </div>
+                <div class="space-y-4">
+                    <div v-for="item in distribusi" :key="item.nama" class="flex items-center justify-between border-b border-slate-50 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full" 
+                                :class="{
+                                    'bg-emerald-500': item.nama === 'Laba Bersih',
+                                    'bg-blue-500': item.nama === 'Biaya Gaji',
+                                    'bg-amber-500': item.nama === 'Biaya Operasional',
+                                    'bg-purple-500': item.nama === 'Biaya Asuransi',
+                                }"></span>
+                            <span class="text-sm font-medium text-slate-700" :class="{'font-bold text-emerald-700': item.nama === 'Laba Bersih'}">{{ item.nama }}</span>
                         </div>
-                        <div class="w-36 text-right text-sm font-semibold text-slate-800">{{ fmt(item.nominal) }}</div>
+                        <div class="text-right text-sm font-semibold" :class="item.nominal < 0 ? 'text-red-600' : 'text-slate-800'">
+                            {{ fmt(item.nominal) }}
+                        </div>
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-sm font-bold text-slate-800">Total</span>
+                <div class="mt-4 pt-4 flex items-center justify-between border-t-2 border-slate-100">
+                    <span class="text-sm font-bold text-slate-800">Total Pendapatan Kotor</span>
                     <span class="text-sm font-bold text-emerald-700">{{ fmt(pendapatanKotor) }}</span>
                 </div>
             </div>
