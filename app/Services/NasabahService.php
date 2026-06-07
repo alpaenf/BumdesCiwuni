@@ -51,6 +51,33 @@ class NasabahService
         }
 
         $nasabah->update($data);
+
+        $kategori = $data['kategori'] ?? [];
+
+        // Sync Tabungan Reguler
+        $hasReguler = $nasabah->tabungan()->where('jenis_tabungan', 'reguler')->exists();
+        if (in_array('tabungan', $kategori)) {
+            if (!$hasReguler) {
+                $nasabah->tabungan()->create(['jenis_tabungan' => 'reguler', 'saldo' => 0]);
+            }
+        } else {
+            if ($hasReguler) {
+                $nasabah->tabungan()->where('jenis_tabungan', 'reguler')->delete();
+            }
+        }
+
+        // Sync Tabungan Sembako
+        $hasSembako = $nasabah->tabungan()->where('jenis_tabungan', 'sembako')->exists();
+        if (in_array('sembako', $kategori)) {
+            if (!$hasSembako) {
+                $nasabah->tabungan()->create(['jenis_tabungan' => 'sembako', 'saldo' => 0]);
+            }
+        } else {
+            if ($hasSembako) {
+                $nasabah->tabungan()->where('jenis_tabungan', 'sembako')->delete();
+            }
+        }
+
         return $nasabah->fresh();
     }
 

@@ -112,4 +112,58 @@ class NasabahController extends Controller
 
         return response()->json($pinjaman);
     }
+
+    public function mulaiTabungan(Request $request, Nasabah $nasabah)
+    {
+        $request->validate([
+            'jenis_tabungan' => 'required|in:reguler,sembako',
+        ]);
+
+        $jenis = $request->jenis_tabungan;
+
+        $exists = $nasabah->tabungan()->where('jenis_tabungan', $jenis)->exists();
+        if ($exists) {
+            return back()->with('error', "Buku Tabungan " . ucfirst($jenis) . " sudah aktif.");
+        }
+
+        $nasabah->tabungan()->create([
+            'jenis_tabungan' => $jenis,
+            'saldo' => 0,
+        ]);
+
+        $kategori = $nasabah->kategori ?? [];
+        $searchVal = $jenis === 'reguler' ? 'tabungan' : 'sembako';
+        if (!in_array($searchVal, $kategori)) {
+            $kategori[] = $searchVal;
+            $nasabah->update(['kategori' => $kategori]);
+        }
+
+        return back()->with('success', "Buku Tabungan " . ucfirst($jenis) . " berhasil dimulai/dibuat.");
+    }
+
+    public function tutupTabungan(Request $request, Nasabah $nasabah)
+    {
+        $request->validate([
+            'jenis_tabungan' => 'required|in:reguler,sembako',
+        ]);
+
+        $jenis = $request->jenis_tabungan;
+
+        $tabungan = $nasabah->tabungan()->where('jenis_tabungan', $jenis)->first();
+        if (!$tabungan) {
+            return back()->with('error', "Buku Tabungan " . ucfirst($jenis) . " tidak ditemukan.");
+        }
+
+        // Delete the Tabungan record
+        $tabungan->delete();
+
+        $kategori = $nasabah->kategori ?? [];
+        $searchVal = $jenis === 'reguler' ? 'tabungan' : 'sembako';
+        if (($key = array_search($searchVal, $kategori)) !== false) {
+            unset($kategori[$key]);
+            $nasabah->update(['kategori' => array_values($kategori)]);
+        }
+
+        return back()->with('success', "Buku Tabungan " . ucfirst($jenis) . " berhasil ditutup.");
+    }
 }
