@@ -17,6 +17,7 @@ class Pinjaman extends Model
         'bunga',
         'total_tagihan',
         'nominal_setoran',
+        'biaya_tambahan',
         'jumlah_angsuran',
         'sisa_pinjaman',
         'status',
@@ -29,6 +30,7 @@ class Pinjaman extends Model
         'bunga' => 'decimal:2',
         'total_tagihan' => 'decimal:2',
         'nominal_setoran' => 'decimal:2',
+        'biaya_tambahan' => 'decimal:2',
         'sisa_pinjaman' => 'decimal:2',
     ];
 

@@ -23,6 +23,13 @@ class NasabahService
             $data['foto'] = $filename;
         }
 
+        if (isset($data['foto_jaminan']) && $data['foto_jaminan'] instanceof \Illuminate\Http\UploadedFile) {
+            $fileJaminan = $data['foto_jaminan'];
+            $filenameJaminan = time() . '_jaminan_' . uniqid() . '.' . $fileJaminan->getClientOriginalExtension();
+            $fileJaminan->move(public_path('uploads/jaminan'), $filenameJaminan);
+            $data['foto_jaminan'] = $filenameJaminan;
+        }
+
         $nasabah = Nasabah::create($data);
 
         $kategori = $data['kategori'] ?? [];
@@ -48,6 +55,18 @@ class NasabahService
             $data['foto'] = $filename;
         } else {
             unset($data['foto']);
+        }
+
+        if (isset($data['foto_jaminan']) && $data['foto_jaminan'] instanceof \Illuminate\Http\UploadedFile) {
+            if ($nasabah->foto_jaminan && file_exists(public_path('uploads/jaminan/' . $nasabah->foto_jaminan))) {
+                @unlink(public_path('uploads/jaminan/' . $nasabah->foto_jaminan));
+            }
+            $fileJaminan = $data['foto_jaminan'];
+            $filenameJaminan = time() . '_jaminan_' . uniqid() . '.' . $fileJaminan->getClientOriginalExtension();
+            $fileJaminan->move(public_path('uploads/jaminan'), $filenameJaminan);
+            $data['foto_jaminan'] = $filenameJaminan;
+        } else {
+            unset($data['foto_jaminan']);
         }
 
         $nasabah->update($data);
@@ -85,6 +104,9 @@ class NasabahService
     {
         if ($nasabah->foto && file_exists(public_path('uploads/nasabah/' . $nasabah->foto))) {
             @unlink(public_path('uploads/nasabah/' . $nasabah->foto));
+        }
+        if ($nasabah->foto_jaminan && file_exists(public_path('uploads/jaminan/' . $nasabah->foto_jaminan))) {
+            @unlink(public_path('uploads/jaminan/' . $nasabah->foto_jaminan));
         }
         $nasabah->delete();
     }

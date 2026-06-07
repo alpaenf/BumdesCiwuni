@@ -18,6 +18,7 @@ class Nasabah extends Model
         'no_hp',
         'pekerjaan',
         'jaminan',
+        'foto_jaminan',
         'tanggal_bergabung',
         'status',
         'foto',
@@ -29,11 +30,16 @@ class Nasabah extends Model
         'kategori' => 'array',
     ];
 
-    protected $appends = ['foto_url'];
+    protected $appends = ['foto_url', 'foto_jaminan_url'];
 
     public function getFotoUrlAttribute(): ?string
     {
         return $this->foto ? asset('uploads/nasabah/' . $this->foto) : null;
+    }
+
+    public function getFotoJaminanUrlAttribute(): ?string
+    {
+        return $this->foto_jaminan ? asset('uploads/jaminan/' . $this->foto_jaminan) : null;
     }
 
     public function tabungan(): HasMany

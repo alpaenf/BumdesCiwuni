@@ -12,6 +12,7 @@ const form = useForm({
     pinjaman_pokok:  '',
     bunga:           10,
     nominal_setoran: '',
+    biaya_tambahan:  '',
     foto_perjanjian: null,
 });
 
@@ -104,6 +105,18 @@ const submit = () => form.post(route('pinjaman.store'));
                                 :class="form.errors.nominal_setoran ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'" />
                         </div>
                         <p v-if="form.errors.nominal_setoran" class="mt-1 text-xs text-red-500">{{ form.errors.nominal_setoran }}</p>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+                        <label class="mb-1.5 block text-sm font-medium text-blue-900">Biaya Tambahan (Materai/Lainnya)</label>
+                        <p class="mb-3 text-xs text-blue-700">Biaya tambahan bersifat opsional dan tidak masuk ke dalam perhitungan Utang Pokok maupun Angsuran Bunga.</p>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-blue-800">Rp</span>
+                            <input v-model="form.biaya_tambahan" type="number" min="0" placeholder="Opsional, misal: 10000"
+                                class="w-full rounded-lg border px-4 py-2.5 pl-9 text-sm bg-white focus:outline-none focus:border-blue-500"
+                                :class="form.errors.biaya_tambahan ? 'border-red-400' : 'border-blue-300'" />
+                        </div>
+                        <p v-if="form.errors.biaya_tambahan" class="mt-1 text-xs text-red-500">{{ form.errors.biaya_tambahan }}</p>
                     </div>
 
                     <!-- Foto Perjanjian -->
