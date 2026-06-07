@@ -261,26 +261,37 @@ class LaporanController extends Controller
     private function buildKasSummary(Request $request): array
     {
         $querySetor    = TransaksiTabungan::where('jenis_transaksi', 'setor');
-        $queryTarik    = TransaksiTabungan::where('jenis_transaksi', 'tarik');
+        $queryTarik    = TransaksiTabungan::whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako', 'tutup_periode']);
         $queryAngsuran = Angsuran::query();
+        $queryPinjaman = Pinjaman::query();
 
         $this->applyDateFilter($querySetor,    $request, 'tanggal');
         $this->applyDateFilter($queryTarik,    $request, 'tanggal');
         $this->applyDateFilter($queryAngsuran, $request, 'tanggal');
+        $this->applyDateFilter($queryPinjaman, $request, 'tanggal_akad');
 
         $masukTabungan  = $querySetor->sum('nominal');
         $keluarTabungan = $queryTarik->sum('nominal') + $queryTarik->sum('administrasi');
         $masukAngsuran  = $queryAngsuran->sum('jumlah_bayar');
+        $keluarPinjaman = $queryPinjaman->sum('pinjaman_pokok');
+        
         $totalMasuk     = $masukTabungan + $masukAngsuran;
-        $totalKeluar    = $keluarTabungan;
+        $totalKeluar    = $keluarTabungan + $keluarPinjaman;
+
+        $saldoReguler = Tabungan::where('jenis_tabungan', Tabungan::JENIS_REGULER)->sum('saldo');
+        $saldoSembako = Tabungan::where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->sum('saldo');
 
         return [[
-            'masuk_tabungan'  => $masukTabungan,
-            'masuk_angsuran'  => $masukAngsuran,
-            'total_masuk'     => $totalMasuk,
-            'keluar_tabungan' => $keluarTabungan,
-            'total_keluar'    => $totalKeluar,
-            'saldo_kas'       => $totalMasuk - $totalKeluar,
+            'masuk_tabungan'   => (float) $masukTabungan,
+            'masuk_angsuran'   => (float) $masukAngsuran,
+            'total_masuk'      => (float) $totalMasuk,
+            'keluar_tabungan'  => (float) $keluarTabungan,
+            'keluar_pinjaman'  => (float) $keluarPinjaman,
+            'total_keluar'     => (float) $totalKeluar,
+            'saldo_kas'        => (float) ($totalMasuk - $totalKeluar),
+            'saldo_reguler'    => (float) $saldoReguler,
+            'saldo_sembako'    => (float) $saldoSembako,
+            'total_saldo_all'  => (float) ($saldoReguler + $saldoSembako),
         ]];
     }
 }

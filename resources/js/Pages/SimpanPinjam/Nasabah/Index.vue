@@ -23,7 +23,7 @@ watch([search, status], () => {
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
 
 const deleteNasabah = (id, nama) => {
-    if (!confirm(`Hapus nasabah "${nama}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+    if (!confirm(`PERINGATAN: Menghapus nasabah "${nama}" akan ikut MENGHAPUS SEMUA DATA TRANSAKSI (Tabungan, Pinjaman, Setoran/Uang Masuk, dll) miliknya secara permanen.\n\nApakah Anda yakin tetap ingin menghapusnya?`)) return;
     router.delete(route('nasabah.destroy', id));
 };
 
