@@ -87,19 +87,19 @@ const activeTab = ref('tabungan');
                     <div v-for="item in distribusi" :key="item.nama" class="flex items-center gap-4">
                         <div class="w-40 text-sm font-medium text-slate-700">{{ item.nama }}</div>
                         <div class="flex-1">
-                            <div class="h-6 rounded-full bg-slate-100 overflow-hidden">
+                            <div class="h-6 rounded-full bg-slate-100 overflow-hidden relative">
                                 <div class="h-full rounded-full transition-all duration-700 flex items-center px-2"
-                                    :style="{ width: item.persen + '%' }"
+                                    :style="{ width: Math.max(0, item.persen) + '%' }"
                                     :class="{
                                         'bg-emerald-500': item.nama === 'Laba Bersih',
                                         'bg-blue-500': item.nama === 'Biaya Gaji',
                                         'bg-amber-500': item.nama === 'Biaya Operasional',
                                         'bg-purple-500': item.nama === 'Biaya Asuransi',
-                                        'bg-cyan-500': item.nama === 'Biaya ATK',
-                                        'bg-rose-400': item.nama === 'Biaya Perlengkapan',
+                                        'bg-red-500': item.persen < 0
                                     }">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">{{ item.persen }}%</span>
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap" v-if="item.persen > 0">{{ item.persen }}%</span>
                                 </div>
+                                <span class="absolute inset-0 flex items-center px-2 text-[10px] font-bold text-red-600" v-if="item.persen < 0">MINUS ({{ item.persen }}%)</span>
                             </div>
                         </div>
                         <div class="w-36 text-right text-sm font-semibold text-slate-800">{{ fmt(item.nominal) }}</div>

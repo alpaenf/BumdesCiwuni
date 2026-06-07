@@ -52,19 +52,37 @@ class PendapatanController extends Controller
 
         $pendapatanKotor = $bungaPinjaman;
 
-        // Distribusi pendapatan kotor
-        $distribusi = [
-            ['nama' => 'Biaya Gaji',         'persen' => 50],
-            ['nama' => 'Biaya Operasional',  'persen' => 20],
-            ['nama' => 'Biaya Asuransi',     'persen' => 5],
-            ['nama' => 'Biaya ATK',          'persen' => 3],
-            ['nama' => 'Biaya Perlengkapan', 'persen' => 2],
-            ['nama' => 'Laba Bersih',        'persen' => 20],
-        ];
+        $biayaGaji = 560000;
+        $biayaOps = 240000;
+        $biayaAsuransi = 40000;
 
-        foreach ($distribusi as &$item) {
-            $item['nominal'] = $pendapatanKotor * $item['persen'] / 100;
-        }
+        $totalPengurangan = $biayaGaji + $biayaOps + $biayaAsuransi;
+        $labaBersih = $pendapatanKotor - $totalPengurangan;
+
+        $calcPersen = fn($val) => $pendapatanKotor > 0 ? round(($val / $pendapatanKotor) * 100, 1) : 0;
+
+        $distribusi = [
+            [
+                'nama' => 'Biaya Gaji',
+                'nominal' => $biayaGaji,
+                'persen' => $calcPersen($biayaGaji),
+            ],
+            [
+                'nama' => 'Biaya Operasional',
+                'nominal' => $biayaOps,
+                'persen' => $calcPersen($biayaOps),
+            ],
+            [
+                'nama' => 'Biaya Asuransi',
+                'nominal' => $biayaAsuransi,
+                'persen' => $calcPersen($biayaAsuransi),
+            ],
+            [
+                'nama' => 'Laba Bersih',
+                'nominal' => $labaBersih,
+                'persen' => $calcPersen($labaBersih),
+            ],
+        ];
 
         // Detail transaksi laba tabungan reguler
         $detailTabungan = $applyDateFilter(
