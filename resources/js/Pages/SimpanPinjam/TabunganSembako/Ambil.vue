@@ -15,7 +15,7 @@ const saldoBaru = computed(() => {
 
 const isInvalid = computed(() => {
     if (form.is_tutup_buku) return Number(props.tabungan.saldo) < ADMIN;
-    return saldoBaru.value < 0;
+    return saldoBaru.value < ADMIN;
 });
 
 const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasabah.id));
@@ -79,7 +79,7 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                         <div class="mt-2 flex justify-between border-t pt-2 font-bold" :class="isInvalid ? 'text-red-700 border-red-200' : 'border-[color:var(--color-outline-variant)]'">
                             <span>Saldo Baru</span><span>{{ formatCurrency(saldoBaru) }}</span>
                         </div>
-                        <p v-if="isInvalid" class="mt-2 text-xs text-red-600">Saldo tidak mencukupi!</p>
+                        <p v-if="isInvalid" class="mt-2 text-xs text-red-600">Saldo setelah pengambilan minimal {{ formatCurrency(ADMIN) }} (Endapan Wajib).</p>
                     </div>
                     <div v-if="form.is_tutup_buku" class="rounded-lg p-4 text-sm bg-red-50 border border-red-200">
                         <div class="flex justify-between"><span class="text-red-800">Saldo Saat Ini</span><span class="font-semibold text-red-800">{{ formatCurrency(tabungan.saldo) }}</span></div>

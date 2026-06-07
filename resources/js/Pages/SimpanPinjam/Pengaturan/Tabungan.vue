@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     pengaturan: Object,
@@ -11,10 +12,21 @@ const form = useForm({
     endapan_wajib: Number(props.pengaturan?.endapan_wajib ?? 20000),
 });
 
+const showConfirmModal = ref(false);
+const bulkForm = useForm({});
+
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
 function submit() {
     form.put(route('pengaturan.tabungan.update'));
+}
+
+function executeTutupBuku() {
+    bulkForm.post(route('pengaturan.tabungan.tutup-buku-masal'), {
+        onSuccess: () => {
+            showConfirmModal.value = false;
+        }
+    });
 }
 </script>
 
@@ -83,6 +95,70 @@ function submit() {
                     </div>
                 </form>
             </div>
+
+            <!-- Tutup Buku Masal Card -->
+            <div class="rounded-xl border border-red-100 bg-white p-6 shadow-sm">
+                <div class="mb-6">
+                    <h2 class="text-base font-semibold text-red-800">Tutup Buku Masal (Tutup Periode)</h2>
+                    <p class="mt-1 text-xs text-[color:var(--color-secondary)]">
+                        Lakukan pemotongan biaya administrasi secara massal untuk seluruh rekening nasabah aktif di akhir periode/akhir tahun (misal: saat lebaran).
+                    </p>
+                </div>
+
+                <div class="rounded-xl border border-red-100 bg-red-50/50 p-4 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100">
+                            <span class="material-symbols-outlined text-xl text-red-600">published_with_changes</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-semibold text-red-900">Alur Tutup Buku Massal</h3>
+                            <ul class="mt-2 text-xs text-red-700 list-disc list-inside space-y-1">
+                                <li>Semua rekening (Reguler & Sembako) yang memiliki saldo minimal Rp 20.000 akan dipotong Rp 20.000 (Endapan Wajib).</li>
+                                <li>Transaksi akan dicatat sebagai <strong>Tutup Periode (Potongan Administrasi Masal)</strong>.</li>
+                                <li>Sisa saldo nasabah tidak hilang dan tetap aman di dalam rekening untuk periode berikutnya.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="button" @click="showConfirmModal = true"
+                            class="flex items-center gap-2 rounded-lg bg-red-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition">
+                            <span class="material-symbols-outlined text-base">lock_reset</span>
+                            Proses Tutup Buku Masal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Konfirmasi Tutup Buku Masal -->
+            <div v-if="showConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl border border-red-100">
+                    <div class="flex items-center gap-3 text-red-600">
+                        <span class="material-symbols-outlined text-3xl">warning</span>
+                        <h3 class="text-lg font-bold">Konfirmasi Tutup Buku Masal</h3>
+                    </div>
+                    <p class="mt-3 text-sm text-slate-600">
+                        Apakah Anda yakin ingin memproses Tutup Buku Masal untuk seluruh rekening tabungan?
+                    </p>
+                    <p class="mt-2 text-xs text-red-600 font-semibold bg-red-50 p-3 rounded-lg border border-red-100">
+                        PENTING: Tindakan ini akan memotong saldo masing-masing rekening sebesar Rp 20.000 secara otomatis dan permanen sebagai biaya administrasi periode tahunan. Tindakan ini tidak dapat dibatalkan!
+                    </p>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" @click="showConfirmModal = false" :disabled="bulkForm.processing"
+                            class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+                            Batal
+                        </button>
+                        <button type="button" @click="executeTutupBuku" :disabled="bulkForm.processing"
+                            class="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
+                            <span class="material-symbols-outlined text-base" :class="{'animate-spin': bulkForm.processing}">
+                                {{ bulkForm.processing ? 'sync' : 'check_circle' }}
+                            </span>
+                            Ya, Proses Sekarang
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </AuthenticatedLayout>
 </template>
