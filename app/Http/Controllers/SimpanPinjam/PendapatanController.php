@@ -54,12 +54,12 @@ class PendapatanController extends Controller
 
         // Distribusi pendapatan kotor
         $distribusi = [
-            ['nama' => 'Biaya Gaji',         'persen' => 50],
-            ['nama' => 'Biaya Operasional',   'persen' => 20],
-            ['nama' => 'Laba Bersih',         'persen' => 20],
-            ['nama' => 'Biaya Asuransi',      'persen' => 5],
-            ['nama' => 'Biaya ATK',           'persen' => 3],
-            ['nama' => 'Biaya Perlengkapan',  'persen' => 2],
+            ['nama' => 'Biaya Gaji',         'persen' => 55],
+            ['nama' => 'Biaya Operasional',  'persen' => 20],
+            ['nama' => 'Laba Bersih',        'persen' => 15],
+            ['nama' => 'Biaya Asuransi',     'persen' => 5],
+            ['nama' => 'Biaya ATK',          'persen' => 3],
+            ['nama' => 'Biaya Perlengkapan', 'persen' => 2],
         ];
 
         foreach ($distribusi as &$item) {
