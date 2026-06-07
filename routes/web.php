@@ -102,6 +102,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     // Pengaturan Tabungan (admin only)
     Route::get('/pengaturan/tabungan', [PengaturanTabunganController::class, 'index'])->name('pengaturan.tabungan')->middleware('role:admin_unit');
     Route::put('/pengaturan/tabungan', [PengaturanTabunganController::class, 'update'])->name('pengaturan.tabungan.update')->middleware('role:admin_unit');
+    Route::post('/pengaturan/tabungan/tutup-buku-masal', [PengaturanTabunganController::class, 'tutupBukuMasal'])->name('pengaturan.tabungan.tutup-buku-masal')->middleware('role:admin_unit');
 
     // Nasabah
     Route::get('/nasabah', [NasabahController::class, 'index'])->name('nasabah.index');

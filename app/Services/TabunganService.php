@@ -114,8 +114,8 @@ class TabunganService
                 $administrasi = 0;
                 $totalKurang = $nominal;
 
-                if ($tabungan->saldo < $totalKurang) {
-                    throw new \RuntimeException('Saldo tidak mencukupi.');
+                if ($tabungan->saldo - $totalKurang < $endapanWajib) {
+                    throw new \RuntimeException('Pengambilan gagal. Saldo harus tersisa minimal Rp ' . number_format($endapanWajib, 0, ',', '.') . ' (Endapan Wajib).');
                 }
 
                 $nominalKeluar = $nominal;
