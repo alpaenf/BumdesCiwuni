@@ -260,33 +260,48 @@ class LaporanController extends Controller
 
     private function buildKasSummary(Request $request): array
     {
-        $querySetor    = TransaksiTabungan::where('jenis_transaksi', 'setor');
-        $queryTarik    = TransaksiTabungan::whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako', 'tutup_periode']);
+        $querySetorReguler = TransaksiTabungan::where('jenis_transaksi', 'setor')
+            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', Tabungan::JENIS_REGULER));
+        $querySetorSembako = TransaksiTabungan::where('jenis_transaksi', 'setor')
+            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO));
+
+        $queryTarikReguler = TransaksiTabungan::whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako', 'tutup_periode'])
+            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', Tabungan::JENIS_REGULER));
+        $queryTarikSembako = TransaksiTabungan::whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako', 'tutup_periode'])
+            ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO));
+
         $queryAngsuran = Angsuran::query();
         $queryPinjaman = Pinjaman::query();
 
-        $this->applyDateFilter($querySetor,    $request, 'tanggal');
-        $this->applyDateFilter($queryTarik,    $request, 'tanggal');
+        $this->applyDateFilter($querySetorReguler, $request, 'tanggal');
+        $this->applyDateFilter($querySetorSembako, $request, 'tanggal');
+        $this->applyDateFilter($queryTarikReguler, $request, 'tanggal');
+        $this->applyDateFilter($queryTarikSembako, $request, 'tanggal');
         $this->applyDateFilter($queryAngsuran, $request, 'tanggal');
         $this->applyDateFilter($queryPinjaman, $request, 'tanggal_akad');
 
-        $masukTabungan  = $querySetor->sum('nominal');
-        $keluarTabungan = $queryTarik->sum('nominal') + $queryTarik->sum('administrasi');
-        $masukAngsuran  = $queryAngsuran->sum('jumlah_bayar');
+        $masukReguler  = $querySetorReguler->sum('nominal');
+        $masukSembako  = $querySetorSembako->sum('nominal');
+        $masukAngsuran = $queryAngsuran->sum('jumlah_bayar');
+        
+        $keluarReguler  = $queryTarikReguler->sum('nominal') + $queryTarikReguler->sum('administrasi');
+        $keluarSembako  = $queryTarikSembako->sum('nominal') + $queryTarikSembako->sum('administrasi');
         $keluarPinjaman = $queryPinjaman->sum('pinjaman_pokok');
         
-        $totalMasuk     = $masukTabungan + $masukAngsuran;
-        $totalKeluar    = $keluarTabungan + $keluarPinjaman;
+        $totalMasuk  = $masukReguler + $masukSembako + $masukAngsuran;
+        $totalKeluar = $keluarReguler + $keluarSembako + $keluarPinjaman;
 
         $saldoReguler = Tabungan::where('jenis_tabungan', Tabungan::JENIS_REGULER)->sum('saldo');
         $saldoSembako = Tabungan::where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->sum('saldo');
 
         return [[
-            'masuk_tabungan'   => (float) $masukTabungan,
+            'masuk_reguler'    => (float) $masukReguler,
+            'masuk_sembako'    => (float) $masukSembako,
             'masuk_angsuran'   => (float) $masukAngsuran,
-            'total_masuk'      => (float) $totalMasuk,
-            'keluar_tabungan'  => (float) $keluarTabungan,
+            'keluar_reguler'   => (float) $keluarReguler,
+            'keluar_sembako'   => (float) $keluarSembako,
             'keluar_pinjaman'  => (float) $keluarPinjaman,
+            'total_masuk'      => (float) $totalMasuk,
             'total_keluar'     => (float) $totalKeluar,
             'saldo_kas'        => (float) ($totalMasuk - $totalKeluar),
             'saldo_reguler'    => (float) $saldoReguler,
