@@ -33,6 +33,11 @@ const closeLightbox = () => {
     lightboxKeterangan.value = null;
 };
 
+const getInitials = (name) => {
+    if (!name) return 'SP';
+    return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase();
+};
+
 const toggleFaq = (index) => {
     if (activeFaqIndex.value === index) {
         activeFaqIndex.value = null;
@@ -277,7 +282,7 @@ onMounted(() => {
                                 <div class="relative group cursor-default">
                                     <div class="w-16 h-16 rounded-full border-4 border-slate-350 bg-gradient-to-br from-slate-400 to-slate-655 flex items-center justify-center shadow text-slate-800 font-extrabold text-sm ring-4 ring-slate-500/10 overflow-hidden">
                                         <img v-if="settings.org_pembina_image" :src="settings.org_pembina_image" class="w-full h-full object-cover" />
-                                        <span v-else>SR</span>
+                                        <span v-else>{{ getInitials(settings.org_pembina_name || 'Surya Ramdhani') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-2 text-center">
@@ -291,7 +296,7 @@ onMounted(() => {
                                 <div class="relative group cursor-default">
                                     <div class="w-16 h-16 rounded-full border-4 border-slate-350 bg-gradient-to-br from-slate-400 to-slate-655 flex items-center justify-center shadow text-slate-800 font-extrabold text-sm ring-4 ring-slate-500/10 overflow-hidden">
                                         <img v-if="settings.org_direktur_image" :src="settings.org_direktur_image" class="w-full h-full object-cover" />
-                                        <span v-else>AH</span>
+                                        <span v-else>{{ getInitials(settings.org_direktur_name || 'Ahmad Hidayat') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-2 text-center">
@@ -312,7 +317,7 @@ onMounted(() => {
                                 <div class="relative group cursor-default">
                                     <div class="w-20 h-20 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-emerald-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                         <img v-if="settings.org_unit_sp_image" :src="settings.org_unit_sp_image" class="w-full h-full object-cover" />
-                                        <span v-else>FN</span>
+                                        <span v-else>{{ getInitials(settings.org_unit_sp_name || 'Fajar Nugroho') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-3 text-center">
@@ -327,37 +332,18 @@ onMounted(() => {
                             <div class="w-0.5 h-10 bg-emerald-500/60"></div>
                         </div>
 
-                        <!-- Level 3: Staff Administrasi & Pelayanan / Kasir -->
-                        <div class="relative flex justify-center gap-0">
-                            <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-emerald-500/40"></div>
-                            <div class="absolute top-0 left-1/4 w-0.5 h-8 bg-emerald-500/40" style="transform: translateX(-50%)"></div>
-                            <div class="absolute top-0 right-1/4 w-0.5 h-8 bg-emerald-500/40" style="transform: translateX(50%)"></div>
-
-                            <div class="grid grid-cols-2 gap-16 w-full max-w-xl pt-8">
-                                <!-- Staf Administrasi & Tabungan -->
-                                <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 350ms">
-                                    <div class="relative">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm overflow-hidden">
-                                            <span class="material-symbols-outlined text-2xl">manage_accounts</span>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3 text-center">
-                                        <p class="text-[10px] font-bold text-slate-800">Staf Administrasi</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Pelayanan Nasabah & Tabungan</span>
+                        <!-- Level 3: Staff Unit Simpan Pinjam -->
+                        <div class="flex justify-center">
+                            <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 350ms">
+                                <div class="relative group cursor-default">
+                                    <div class="w-16 h-16 rounded-full border-4 border-emerald-500 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow text-white font-extrabold text-lg ring-4 ring-emerald-500/10 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <img v-if="settings.org_unit_sp_staff_image" :src="settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
+                                        <span v-else>{{ getInitials(settings.org_unit_sp_staff_name || 'Staf SP') }}</span>
                                     </div>
                                 </div>
-
-                                <!-- Staf Kredit & Pinjaman -->
-                                <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 420ms">
-                                    <div class="relative">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm overflow-hidden">
-                                            <span class="material-symbols-outlined text-2xl">rate_review</span>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3 text-center">
-                                        <p class="text-[10px] font-bold text-slate-800">Staf Kredit / Kasir</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Pelayanan Kredit & Kasir</span>
-                                    </div>
+                                <div class="mt-2 text-center">
+                                    <p class="text-xs font-bold text-slate-800">{{ settings.org_unit_sp_staff_name || 'Nama Staf' }}</p>
+                                    <span class="mt-0.5 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Staf Unit Simpan Pinjam</span>
                                 </div>
                             </div>
                         </div>
@@ -389,11 +375,29 @@ onMounted(() => {
                         <div class="bg-emerald-55/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
                             <div class="w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-xs">
                                 <img v-if="settings.org_unit_sp_image" :src="settings.org_unit_sp_image" class="w-full h-full object-cover" />
-                                <span v-else>FN</span>
+                                <span v-else>{{ getInitials(settings.org_unit_sp_name || 'Fajar Nugroho') }}</span>
                             </div>
                             <div>
                                 <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_sp_name || 'Fajar Nugroho' }}</h4>
                                 <p class="text-[9px] font-bold text-emerald-700 mt-0.5">Ka. Unit Simpan Pinjam</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center -my-2">
+                        <div class="w-0.5 h-6 bg-emerald-500/30"></div>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <span class="text-[8px] font-bold uppercase tracking-widest text-emerald-700 mb-2">Staf Unit</span>
+                        <div class="bg-emerald-55/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
+                            <div class="w-12 h-12 rounded-full border-2 border-emerald-500 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-emerald-400 to-emerald-650 flex items-center justify-center text-white font-bold text-xs">
+                                <img v-if="settings.org_unit_sp_staff_image" :src="settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
+                                <span v-else>{{ getInitials(settings.org_unit_sp_staff_name || 'Staf SP') }}</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_sp_staff_name || 'Nama Staf' }}</h4>
+                                <p class="text-[9px] font-bold text-emerald-700 mt-0.5">Staf Unit Simpan Pinjam</p>
                             </div>
                         </div>
                     </div>
