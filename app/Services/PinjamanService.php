@@ -36,6 +36,7 @@ class PinjamanService
                 'bunga'           => $bunga,
                 'total_tagihan'   => $totalTagihan,
                 'nominal_setoran' => $nominalSetor,
+                'biaya_tambahan'  => (float) ($data['biaya_tambahan'] ?? 0),
                 'jumlah_angsuran' => $jumlahAngsuran,
                 'sisa_pinjaman'   => $totalTagihan,
                 'status'          => 'aktif',

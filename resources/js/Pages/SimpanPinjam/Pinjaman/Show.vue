@@ -43,8 +43,11 @@ const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage',
                     <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 sm:p-6 shadow-sm space-y-3 text-sm">
                         <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Tanggal Akad</span><span class="font-semibold text-right">{{ formatDate(pinjaman.tanggal_akad) }}</span></div>
                         <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Pinjaman Pokok</span><span class="font-semibold text-right">{{ formatCurrency(pinjaman.pinjaman_pokok) }}</span></div>
+                        <div v-if="pinjaman.biaya_tambahan > 0" class="flex justify-between gap-2 text-blue-700 bg-blue-50 -mx-2 px-2 py-1 rounded">
+                            <span>Biaya Tambahan (Materai dll)</span><span class="font-semibold text-right">+{{ formatCurrency(pinjaman.biaya_tambahan) }}</span>
+                        </div>
                         <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Bunga</span><span class="font-semibold text-right">{{ pinjaman.bunga }}%</span></div>
-                        <div class="flex justify-between gap-2 border-t pt-3"><span class="text-[color:var(--color-secondary)]">Total Tagihan</span><span class="font-bold text-[color:var(--color-on-surface)] text-right">{{ formatCurrency(pinjaman.total_tagihan) }}</span></div>
+                        <div class="flex justify-between gap-2 border-t pt-3"><span class="text-[color:var(--color-secondary)]">Total Tagihan (Utang)</span><span class="font-bold text-[color:var(--color-on-surface)] text-right">{{ formatCurrency(pinjaman.total_tagihan) }}</span></div>
                         <div class="flex flex-col gap-1 mt-1 bg-[color:var(--color-surface-container-low)] p-2 rounded-lg text-xs">
                             <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Setoran / Angsuran</span><span class="font-semibold text-right">{{ formatCurrency(pinjaman.nominal_setoran) }}</span></div>
                             <div class="flex justify-between gap-2 border-t border-dashed border-[color:var(--color-outline-variant)] pt-1"><span class="text-[color:var(--color-secondary)]">↳ Pokok</span><span class="font-medium text-right">{{ formatCurrency((pinjaman.pinjaman_pokok / (pinjaman.total_tagihan || 1)) * pinjaman.nominal_setoran) }}</span></div>

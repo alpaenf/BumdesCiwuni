@@ -24,6 +24,7 @@ class StoreNasabahRequest extends FormRequest
             'tanggal_bergabung'=> ['nullable', 'date'],
             'status'           => ['nullable', 'in:aktif,tidak aktif'],
             'foto'             => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'foto_jaminan'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'kategori'         => ['nullable', 'array'],
             'kategori.*'       => ['string', 'in:tabungan,sembako,pinjaman'],
         ];

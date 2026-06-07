@@ -22,15 +22,68 @@ const form = useForm({
     status:            props.nasabah?.status ?? 'aktif',
     kategori:          props.nasabah?.kategori ?? [],
     foto:              null,
+    foto_jaminan:      null,
 });
 
 const imagePreview = ref(props.nasabah?.foto_url ?? null);
+const jaminanPreview = ref(props.nasabah?.foto_jaminan_url ?? null);
+
+const compressImage = (file, callback) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                    type: 'image/jpeg',
+                    lastModified: Date.now(),
+                });
+                callback(newFile);
+            }, 'image/jpeg', 0.7);
+        };
+    };
+};
 
 const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-        form.foto = file;
-        imagePreview.value = URL.createObjectURL(file);
+        compressImage(file, (compressedFile) => {
+            form.foto = compressedFile;
+            imagePreview.value = URL.createObjectURL(compressedFile);
+        });
+    }
+};
+
+const handleJaminanChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        compressImage(file, (compressedFile) => {
+            form.foto_jaminan = compressedFile;
+            jaminanPreview.value = URL.createObjectURL(compressedFile);
+        });
     }
 };
 
@@ -194,22 +247,52 @@ const submit = () => {
                         </div>
                     </div>
 
-                    <!-- Jaminan & Tanggal -->
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                            <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">
-                                Data Jaminan <span v-if="form.kategori.includes('pinjaman')" class="text-red-500">*</span>
-                            </label>
-                            <input
-                                v-model="form.jaminan"
-                                type="text"
-                                placeholder="Misal: BPKB Motor, Sertifikat"
-                                class="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
-                                :class="form.errors.jaminan ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'"
-                                :required="form.kategori.includes('pinjaman')"
-                            />
-                            <p v-if="form.errors.jaminan" class="mt-1 text-xs text-red-500">{{ form.errors.jaminan }}</p>
+                    <!-- Jaminan & Foto Jaminan (Khusus Pinjaman) -->
+                    <div v-if="form.kategori.includes('pinjaman')" class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                        <h4 class="font-bold text-amber-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-base">warning</span> Dokumen Jaminan Pinjaman</h4>
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">
+                                    Deskripsi Jaminan <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    v-model="form.jaminan"
+                                    type="text"
+                                    placeholder="Misal: BPKB Motor, Sertifikat"
+                                    class="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-amber-500 focus:outline-none"
+                                    :class="form.errors.jaminan ? 'border-red-400' : 'border-amber-300 bg-white'"
+                                    required
+                                />
+                                <p v-if="form.errors.jaminan" class="mt-1 text-xs text-red-500">{{ form.errors.jaminan }}</p>
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Foto Barang Jaminan</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    @change="handleJaminanChange"
+                                    class="hidden"
+                                    id="jaminan-input"
+                                />
+                                <label
+                                    for="jaminan-input"
+                                    class="inline-flex w-full justify-center cursor-pointer items-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2.5 text-sm font-medium text-amber-800 transition hover:bg-amber-100"
+                                >
+                                    <span class="material-symbols-outlined text-base">add_a_photo</span>
+                                    Upload Foto (Auto-Compress)
+                                </label>
+                                <p class="mt-1.5 text-xs text-[color:var(--color-secondary)]">Otomatis kompres.</p>
+                                <p v-if="form.errors.foto_jaminan" class="mt-1 text-xs text-red-500">{{ form.errors.foto_jaminan }}</p>
+                                
+                                <div v-if="jaminanPreview" class="mt-3 relative h-32 w-full overflow-hidden rounded-lg border border-amber-200">
+                                    <img :src="jaminanPreview" class="h-full w-full object-cover" alt="Preview Jaminan" />
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Tanggal Bergabung & Status -->
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Tanggal Bergabung</label>
                             <input
@@ -218,18 +301,16 @@ const submit = () => {
                                 class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
                             />
                         </div>
-                    </div>
-
-                    <!-- Status -->
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Status</label>
-                        <select
-                            v-model="form.status"
-                            class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
-                        >
-                            <option value="aktif">Aktif</option>
-                            <option value="tidak aktif">Tidak Aktif</option>
-                        </select>
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-[color:var(--color-on-surface)]">Status</label>
+                            <select
+                                v-model="form.status"
+                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="tidak aktif">Tidak Aktif</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Submit -->
