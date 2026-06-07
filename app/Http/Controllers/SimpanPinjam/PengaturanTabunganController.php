@@ -116,6 +116,11 @@ class PengaturanTabunganController extends Controller
 
     public function tutupBukuMasalStore(Request $request)
     {
+        $request->validate([
+            'tanggal_tutup' => 'required|date',
+        ]);
+
+        $tanggalTutup = $request->tanggal_tutup;
         $unitId = auth()->user()->unit_id;
         $prefix = $unitId ? "unit_{$unitId}_" : "global_";
 
@@ -132,9 +137,8 @@ class PengaturanTabunganController extends Controller
         $tabungans = $query->with('nasabah')->get();
         $processedCount = 0;
 
-        DB::transaction(function () use ($tabungans, $endapanWajibReguler, $endapanWajibSembako, &$processedCount) {
+        DB::transaction(function () use ($tabungans, $endapanWajibReguler, $endapanWajibSembako, $tanggalTutup, &$processedCount) {
             $nomorService = app(NomorService::class);
-            $today = now()->format('Y-m-d');
 
             foreach ($tabungans as $tabungan) {
                 $endapanWajib = $tabungan->jenis_tabungan === Tabungan::JENIS_SEMBAKO 
@@ -148,9 +152,9 @@ class PengaturanTabunganController extends Controller
                     $tabungan->update(['saldo' => $saldoBaru]);
 
                     // Record tutup_periode transaction
-                    TransaksiTabungan::create([
+                    $transaksi = TransaksiTabungan::create([
                         'tabungan_id'     => $tabungan->id,
-                        'tanggal'         => $today,
+                        'tanggal'         => $tanggalTutup,
                         'nomor_transaksi' => $nomorService->generateNomorTransaksi(),
                         'jenis_transaksi' => 'tutup_periode',
                         'keterangan'      => 'Potongan Administrasi Periode (Massal)',
@@ -158,6 +162,10 @@ class PengaturanTabunganController extends Controller
                         'administrasi'    => $endapanWajib,
                         'saldo_setelah'   => $saldoBaru,
                     ]);
+
+                    $transaksi->created_at = $tanggalTutup . ' 12:00:00';
+                    $transaksi->updated_at = $tanggalTutup . ' 12:00:00';
+                    $transaksi->save();
 
                     $processedCount++;
                 }
@@ -171,9 +179,11 @@ class PengaturanTabunganController extends Controller
     {
         $request->validate([
             'jenis_tabungan' => 'required|in:reguler,sembako',
+            'tanggal_mulai' => 'required|date',
         ]);
 
         $jenis = $request->jenis_tabungan;
+        $tanggalMulai = $request->tanggal_mulai;
         $unitId = auth()->user()->unit_id;
 
         $nasabahQuery = \App\Models\Nasabah::query();
@@ -184,14 +194,20 @@ class PengaturanTabunganController extends Controller
         $nasabahs = $nasabahQuery->get();
         $createdCount = 0;
 
-        DB::transaction(function () use ($nasabahs, $jenis, &$createdCount) {
+        DB::transaction(function () use ($nasabahs, $jenis, $tanggalMulai, &$createdCount) {
+            $nomorService = app(NomorService::class);
+
             foreach ($nasabahs as $nasabah) {
                 $exists = $nasabah->tabungan()->where('jenis_tabungan', $jenis)->exists();
                 if (!$exists) {
-                    $nasabah->tabungan()->create([
+                    $tabungan = $nasabah->tabungan()->create([
                         'jenis_tabungan' => $jenis,
                         'saldo' => 0,
                     ]);
+
+                    $tabungan->created_at = $tanggalMulai . ' 00:00:00';
+                    $tabungan->updated_at = $tanggalMulai . ' 00:00:00';
+                    $tabungan->save();
 
                     // Sync nasabah's kategori array
                     $kategori = $nasabah->kategori ?? [];
@@ -200,6 +216,22 @@ class PengaturanTabunganController extends Controller
                         $kategori[] = $searchVal;
                         $nasabah->update(['kategori' => $kategori]);
                     }
+
+                    // Create transaction for starting the book
+                    $transaksi = TransaksiTabungan::create([
+                        'tabungan_id'     => $tabungan->id,
+                        'tanggal'         => $tanggalMulai,
+                        'nomor_transaksi' => $nomorService->generateNomorTransaksi(),
+                        'jenis_transaksi' => 'setor',
+                        'keterangan'      => 'Pembukaan Rekening ' . ($jenis === 'reguler' ? 'Reguler' : 'Sembako') . ' (Massal)',
+                        'nominal'         => 0,
+                        'administrasi'    => 0,
+                        'saldo_setelah'   => 0,
+                    ]);
+
+                    $transaksi->created_at = $tanggalMulai . ' 00:00:00';
+                    $transaksi->updated_at = $tanggalMulai . ' 00:00:00';
+                    $transaksi->save();
 
                     $createdCount++;
                 }

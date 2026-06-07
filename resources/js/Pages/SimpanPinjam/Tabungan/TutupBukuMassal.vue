@@ -14,9 +14,15 @@ const props = defineProps({
 
 const search = ref('');
 const showConfirmModal = ref(false);
-const bulkForm = useForm({});
+
+const todayDate = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD local format
+
+const bulkForm = useForm({
+    tanggal_tutup: todayDate,
+});
 const mulaiForm = useForm({
     jenis_tabungan: '',
+    tanggal_mulai: todayDate,
 });
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
@@ -107,6 +113,12 @@ function executeMulaiBuku(jenis) {
                     </p>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Mulai Buku (Tanggal Pembukaan Rekening)</label>
+                        <input v-model="mulaiForm.tanggal_mulai" type="date"
+                            class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2 text-xs focus:border-[color:var(--color-primary)] focus:outline-none w-full sm:w-auto" />
+                    </div>
+
                     <!-- Tabungan Reguler -->
                     <div class="rounded-xl border border-blue-100 bg-blue-50/30 p-4 flex flex-col justify-between">
                         <div>
@@ -141,12 +153,19 @@ function executeMulaiBuku(jenis) {
 
             <!-- Action Card & Search -->
             <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-5 shadow-sm space-y-4">
-                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-800">Preview Data Rekening Terkena Potongan</h3>
-                        <p class="text-xs text-[color:var(--color-secondary)] mt-1">
-                            Hanya rekening dengan saldo sama dengan atau melebihi batas endapan wajib yang akan dipotong biaya administrasi tahunan.
-                        </p>
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div class="space-y-3">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-800">Preview Data Rekening Terkena Potongan</h3>
+                            <p class="text-xs text-[color:var(--color-secondary)] mt-1">
+                                Hanya rekening dengan saldo sama dengan atau melebihi batas endapan wajib yang akan dipotong biaya administrasi tahunan.
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Tutup Buku (Tanggal Transaksi Potongan)</label>
+                            <input v-model="bulkForm.tanggal_tutup" type="date"
+                                class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2 text-xs focus:border-[color:var(--color-primary)] focus:outline-none w-full sm:w-auto" />
+                        </div>
                     </div>
                     <button type="button" @click="showConfirmModal = true" :disabled="affectedAccounts.length === 0"
                         class="flex items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition disabled:opacity-50">
@@ -211,7 +230,7 @@ function executeMulaiBuku(jenis) {
                         Apakah Anda yakin ingin memproses Tutup Buku Masal untuk seluruh rekening tabungan?
                     </p>
                     <p class="mt-2 text-xs text-red-600 font-semibold bg-red-50 p-3 rounded-lg border border-red-100">
-                        PENTING: Tindakan ini akan memotong saldo masing-masing rekening sebesar Rp 20.000 secara otomatis dan permanen sebagai biaya administrasi periode tahunan. Tindakan ini tidak dapat dibatalkan!
+                        PENTING: Tindakan ini akan memotong saldo masing-masing rekening sebesar Rp 20.000 secara otomatis dan permanen sebagai biaya administrasi periode tahunan dengan tanggal transaksi <strong>{{ bulkForm.tanggal_tutup }}</strong>. Tindakan ini tidak dapat dibatalkan!
                     </p>
                     <div class="mt-6 flex justify-end gap-3">
                         <button type="button" @click="showConfirmModal = false" :disabled="bulkForm.processing"
