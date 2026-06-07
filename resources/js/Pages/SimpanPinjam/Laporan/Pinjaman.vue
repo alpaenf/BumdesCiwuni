@@ -115,7 +115,7 @@ const excelUrl = computed(() => `${route('laporan.pinjaman.excel')}?${buildQuery
 
             <div class="overflow-hidden rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-sm min-w-max">
                         <thead>
                             <tr class="border-b border-[color:var(--color-outline-variant)] bg-white">
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-[color:var(--color-secondary)]">Nasabah</th>
