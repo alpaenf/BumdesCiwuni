@@ -48,7 +48,53 @@ class PengaturanTabunganController extends Controller
         return back()->with('success', 'Pengaturan tabungan berhasil disimpan.');
     }
 
-    public function tutupBukuMasal(Request $request)
+    public function tutupBukuMasalIndex(): Response
+    {
+        $unitId = auth()->user()->unit_id;
+        $prefix = $unitId ? "unit_{$unitId}_" : "global_";
+
+        $endapanWajibReguler = (float) Setting::get($prefix . 'endapan_wajib_tabungan', 20000);
+        $endapanWajibSembako = (float) Setting::get($prefix . 'biaya_admin_sembako', 20000);
+
+        $query = Tabungan::query();
+        if ($unitId) {
+            $query->whereHas('nasabah', function ($q) use ($unitId) {
+                $q->where('unit_id', $unitId);
+            });
+        }
+
+        $allTabungans = $query->with('nasabah')->get();
+
+        $affectedAccounts = [];
+        $totalDeduction = 0;
+
+        foreach ($allTabungans as $tab) {
+            $endapan = $tab->jenis_tabungan === Tabungan::JENIS_SEMBAKO ? $endapanWajibSembako : $endapanWajibReguler;
+            if ($tab->saldo >= $endapan) {
+                $affectedAccounts[] = [
+                    'id' => $tab->id,
+                    'nomor_rekening' => $tab->nasabah->nomor_rekening,
+                    'nama' => $tab->nasabah->nama,
+                    'jenis' => $tab->jenis_tabungan,
+                    'saldo' => (float)$tab->saldo,
+                    'potongan' => $endapan,
+                    'saldo_setelah' => $tab->saldo - $endapan,
+                ];
+                $totalDeduction += $endapan;
+            }
+        }
+
+        return Inertia::render('SimpanPinjam/Tabungan/TutupBukuMassal', [
+            'affectedAccounts' => $affectedAccounts,
+            'totalDeduction' => (float) $totalDeduction,
+            'biayaAdmin' => [
+                'reguler' => $endapanWajibReguler,
+                'sembako' => $endapanWajibSembako,
+            ]
+        ]);
+    }
+
+    public function tutupBukuMasalStore(Request $request)
     {
         $unitId = auth()->user()->unit_id;
         $prefix = $unitId ? "unit_{$unitId}_" : "global_";
@@ -98,7 +144,7 @@ class PengaturanTabunganController extends Controller
             }
         });
 
-        return back()->with('success', "Tutup buku massal berhasil diproses. Sebanyak {$processedCount} rekening tabungan telah dipotong biaya administrasi periode.");
+        return redirect()->route('tabungan.tutup-buku-masal.index')->with('success', "Tutup buku massal berhasil diproses. Sebanyak {$processedCount} rekening tabungan telah dipotong biaya administrasi periode.");
     }
 }
 
