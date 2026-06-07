@@ -63,21 +63,21 @@ const activeTab = ref('tabungan');
                     <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Total Pendapatan Kotor {{ tahun }}</p>
                 </div>
                 <p class="text-3xl font-bold">{{ fmt(pendapatanKotor) }}</p>
-                <div class="mt-4 grid grid-cols-3 gap-3">
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
-                        <p class="text-xs opacity-75">Laba Tabungan</p>
-                        <p class="text-lg font-bold">{{ fmt(labaTabungan) }}</p>
-                        <p class="text-xs opacity-60">{{ pct(labaTabungan, pendapatanKotor) }}%</p>
-                    </div>
-                    <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
-                        <p class="text-xs opacity-75">Laba Sembako</p>
-                        <p class="text-lg font-bold">{{ fmt(labaSembako) }}</p>
-                        <p class="text-xs opacity-60">{{ pct(labaSembako, pendapatanKotor) }}%</p>
-                    </div>
-                    <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
-                        <p class="text-xs opacity-75">Bunga Pinjaman</p>
+                        <p class="text-xs opacity-75">Bunga Pinjaman (Pendapatan)</p>
                         <p class="text-lg font-bold">{{ fmt(bungaPinjaman) }}</p>
-                        <p class="text-xs opacity-60">{{ pct(bungaPinjaman, pendapatanKotor) }}%</p>
+                        <p class="text-xs opacity-60">100% Dari Pendapatan</p>
+                    </div>
+                    <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
+                        <p class="text-xs opacity-75">Biaya Promosi (Laba Tabungan)</p>
+                        <p class="text-lg font-bold">{{ fmt(labaTabungan) }}</p>
+                        <p class="text-xs opacity-60">Retained Earnings</p>
+                    </div>
+                    <div class="rounded-xl bg-white/15 backdrop-blur-sm p-3">
+                        <p class="text-xs opacity-75">Biaya Promosi (Laba Sembako)</p>
+                        <p class="text-lg font-bold">{{ fmt(labaSembako) }}</p>
+                        <p class="text-xs opacity-60">Retained Earnings</p>
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@ const activeTab = ref('tabungan');
                 <!-- Tab: Tabungan Reguler -->
                 <div v-if="activeTab === 'tabungan'">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-bold text-slate-700">Detail Laba Tabungan Reguler</h4>
+                        <h4 class="text-sm font-bold text-slate-700">Detail Biaya Promosi (Tabungan Reguler)</h4>
                         <span class="text-xs text-slate-500">{{ detailTabungan.length }} transaksi terakhir</span>
                     </div>
                     <div class="overflow-x-auto">
@@ -149,7 +149,7 @@ const activeTab = ref('tabungan');
                                     <th class="py-2 pe-4">Tanggal</th>
                                     <th class="py-2 pe-4">Nasabah</th>
                                     <th class="py-2 pe-4">Keterangan</th>
-                                    <th class="py-2 text-right">Laba Unit</th>
+                                    <th class="py-2 text-right">Biaya Promosi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -160,12 +160,12 @@ const activeTab = ref('tabungan');
                                     <td class="py-2.5 text-right font-semibold text-emerald-700">{{ fmt(item.laba) }}</td>
                                 </tr>
                                 <tr v-if="detailTabungan.length === 0">
-                                    <td colspan="4" class="py-8 text-center text-slate-400">Belum ada data laba tabungan di tahun ini.</td>
+                                    <td colspan="4" class="py-8 text-center text-slate-400">Belum ada data biaya promosi tabungan di tahun ini.</td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="detailTabungan.length > 0">
                                 <tr class="border-t-2 border-slate-200">
-                                    <td colspan="3" class="py-2.5 font-bold text-slate-800">Total Laba Tabungan Reguler</td>
+                                    <td colspan="3" class="py-2.5 font-bold text-slate-800">Total Biaya Promosi Tabungan Reguler</td>
                                     <td class="py-2.5 text-right font-bold text-emerald-700">{{ fmt(labaTabungan) }}</td>
                                 </tr>
                             </tfoot>
@@ -176,7 +176,7 @@ const activeTab = ref('tabungan');
                 <!-- Tab: Tabungan Sembako -->
                 <div v-if="activeTab === 'sembako'">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-bold text-slate-700">Detail Laba Tabungan Sembako</h4>
+                        <h4 class="text-sm font-bold text-slate-700">Detail Biaya Promosi (Tabungan Sembako)</h4>
                         <span class="text-xs text-slate-500">{{ detailSembako.length }} transaksi terakhir</span>
                     </div>
                     <div class="overflow-x-auto">
@@ -186,7 +186,7 @@ const activeTab = ref('tabungan');
                                     <th class="py-2 pe-4">Tanggal</th>
                                     <th class="py-2 pe-4">Nasabah</th>
                                     <th class="py-2 pe-4">Keterangan</th>
-                                    <th class="py-2 text-right">Laba Unit</th>
+                                    <th class="py-2 text-right">Biaya Promosi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -197,12 +197,12 @@ const activeTab = ref('tabungan');
                                     <td class="py-2.5 text-right font-semibold text-orange-600">{{ fmt(item.laba) }}</td>
                                 </tr>
                                 <tr v-if="detailSembako.length === 0">
-                                    <td colspan="4" class="py-8 text-center text-slate-400">Belum ada data laba sembako di tahun ini.</td>
+                                    <td colspan="4" class="py-8 text-center text-slate-400">Belum ada data biaya promosi sembako di tahun ini.</td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="detailSembako.length > 0">
                                 <tr class="border-t-2 border-slate-200">
-                                    <td colspan="3" class="py-2.5 font-bold text-slate-800">Total Laba Tabungan Sembako</td>
+                                    <td colspan="3" class="py-2.5 font-bold text-slate-800">Total Biaya Promosi Tabungan Sembako</td>
                                     <td class="py-2.5 text-right font-bold text-orange-600">{{ fmt(labaSembako) }}</td>
                                 </tr>
                             </tfoot>

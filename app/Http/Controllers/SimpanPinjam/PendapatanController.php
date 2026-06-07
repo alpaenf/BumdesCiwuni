@@ -50,7 +50,7 @@ class PendapatanController extends Controller
             ->selectRaw('COALESCE(SUM(total_tagihan - pinjaman_pokok), 0) as total_bunga')
             ->value('total_bunga');
 
-        $pendapatanKotor = $labaTabungan + $labaSembako + $bungaPinjaman;
+        $pendapatanKotor = $bungaPinjaman;
 
         // Distribusi pendapatan kotor
         $distribusi = [

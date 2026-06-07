@@ -111,8 +111,8 @@ class TabunganService
                 $jenisTransaksi = 'tutup_periode';
             } else {
                 $nominal = (float) $data['nominal'];
-                $administrasi = $endapanWajib;
-                $totalKurang = $nominal + $administrasi;
+                $administrasi = 0;
+                $totalKurang = $nominal;
 
                 if ($tabungan->saldo < $totalKurang) {
                     throw new \RuntimeException('Saldo tidak mencukupi.');
