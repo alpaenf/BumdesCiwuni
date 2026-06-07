@@ -30,12 +30,10 @@ const form = useForm({
     contact_phone: props.settings.contact_phone || '',
     contact_email: props.settings.contact_email || '',
     faq_items: props.settings.faq_items || [],
-    org_kepala_unit_name: props.settings.org_kepala_unit_name || '',
-    org_kepala_unit_image: props.settings.org_kepala_unit_image || '',
-    org_admin_sp_name: props.settings.org_admin_sp_name || '',
-    org_admin_sp_image: props.settings.org_admin_sp_image || '',
-    org_kasir_sp_name: props.settings.org_kasir_sp_name || '',
-    org_kasir_sp_image: props.settings.org_kasir_sp_image || '',
+    org_unit_sp_name: props.settings.org_unit_sp_name || '',
+    org_unit_sp_image: props.settings.org_unit_sp_image || '',
+    org_unit_sp_staff_name: props.settings.org_unit_sp_staff_name || '',
+    org_unit_sp_staff_image: props.settings.org_unit_sp_staff_image || '',
 });
 
 const isSuccessMessageVisible = ref(false);
@@ -257,9 +255,8 @@ const deleteGaleri = (id) => {
                     <div class="grid gap-6 md:grid-cols-2">
                         <!-- Helper component generator inside form -->
                         <div v-for="role in [
-                            { label: 'Kepala Unit Simpan Pinjam', nameKey: 'org_kepala_unit_name', imgKey: 'org_kepala_unit_image' },
-                            { label: 'Admin Simpan Pinjam', nameKey: 'org_admin_sp_name', imgKey: 'org_admin_sp_image' },
-                            { label: 'Kasir Simpan Pinjam', nameKey: 'org_kasir_sp_name', imgKey: 'org_kasir_sp_image' },
+                            { label: 'Kepala Unit Simpan Pinjam / Manager', nameKey: 'org_unit_sp_name', imgKey: 'org_unit_sp_image' },
+                            { label: 'Staf Unit Simpan Pinjam', nameKey: 'org_unit_sp_staff_name', imgKey: 'org_unit_sp_staff_image' },
                         ]" :key="role.nameKey" class="p-4 bg-white border border-outline-variant rounded-xl flex gap-4 items-center">
                             
                             <!-- Foto Upload Preview -->
