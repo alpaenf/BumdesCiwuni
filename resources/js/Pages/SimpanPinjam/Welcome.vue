@@ -88,6 +88,7 @@ onMounted(() => {
                     <a href="#layanan" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Layanan</a>
                     <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Struktur</a>
                     <a href="#galeri" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Galeri</a>
+                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Berita</a>
                     <a href="#faq" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">FAQ</a>
                     <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Kontak</a>
                     
@@ -123,6 +124,7 @@ onMounted(() => {
                     <a href="#tentang" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Tentang</a>
                     <a href="#layanan" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Layanan</a>
                     <a href="#struktur" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Struktur</a>
+                    <a href="#berita" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Berita</a>
                     <a href="#faq" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">FAQ</a>
                     <a href="#kontak" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Kontak</a>
                     
@@ -145,7 +147,7 @@ onMounted(() => {
         </header>
 
         <!-- Hero Section -->
-        <section class="relative pt-32 pb-24 overflow-hidden">
+        <section class="relative min-h-[85vh] flex flex-col justify-center pt-28 pb-20 overflow-hidden">
             <!-- Video Background -->
             <div class="absolute inset-0 z-0">
                 <video autoplay loop muted playsinline class="w-full h-full object-cover">
@@ -457,6 +459,42 @@ onMounted(() => {
                 </div>
             </div>
         </Teleport>
+
+        <!-- Berita & Pengumuman Section -->
+        <section id="berita" class="py-20 bg-[#f8fafc] border-b border-[#bfc9bd]">
+            <div class="max-w-5xl mx-auto px-6 space-y-12">
+                <div class="text-center space-y-3 scroll-animate scroll-fade-up">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Berita Terkini</span>
+                    <h3 class="text-2xl font-bold text-slate-800">Pengumuman & Berita Unit</h3>
+                    <p class="text-xs text-[#404940] max-w-md mx-auto">Informasi terbaru seputar layanan dan kegiatan Unit Simpan Pinjam.</p>
+                </div>
+
+                <div v-if="!settings.news_items || settings.news_items.length === 0" class="text-center text-xs text-slate-400 py-10 scroll-animate scroll-fade-up">
+                    Belum ada berita atau pengumuman saat ini.
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div v-for="(news, idx) in settings.news_items" :key="idx" class="scroll-animate scroll-fade-up bg-white rounded-xl overflow-hidden border border-[#bfc9bd] shadow-sm hover:shadow-md transition-shadow group flex flex-col" :style="{ transitionDelay: `${idx * 100}ms` }">
+                        <div class="w-full h-44 overflow-hidden relative">
+                            <img v-if="news.image" :src="news.image" alt="Berita" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div v-else class="w-full h-full bg-slate-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-4xl text-slate-300">newspaper</span>
+                            </div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <div class="flex items-center text-[10px] text-slate-500 mb-2 font-semibold tracking-wide uppercase">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[12px]">calendar_today</span>
+                                    {{ news.date || 'Terbaru' }}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm mb-2 leading-snug">{{ news.title }}</h4>
+                            <p class="text-[11px] text-slate-600 line-clamp-3 leading-relaxed mb-4">{{ news.content }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- FAQ Section -->
         <section id="faq" class="py-20 bg-[#ffffff] border-b border-[#bfc9bd]">
