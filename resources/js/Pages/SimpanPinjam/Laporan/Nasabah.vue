@@ -55,8 +55,8 @@ const excelUrl = computed(() => `${route('laporan.nasabah.excel')}?${buildQuery(
             <!-- Export -->
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex flex-col gap-3 sm:flex-row">
-                    <input v-model="startDate" type="date" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
-                    <input v-model="endDate" type="date" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
+                    <input v-model="startDate" type="date" :max="endDate" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
+                    <input v-model="endDate" type="date" :min="startDate" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none" />
                     <select v-model="status" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none">
                         <option value="">Semua Status</option>
                         <option value="aktif">Aktif</option>
