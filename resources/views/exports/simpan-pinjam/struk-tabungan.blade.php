@@ -187,7 +187,7 @@
 
         <!-- Print Action Area -->
         <div class="no-print mt-4 flex flex-col sm:flex-row justify-center gap-2">
-            <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded shadow transition duration-200">
+            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded shadow transition duration-200">
                 Cetak Struk
             </button>
             <button onclick="printBluetooth()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded shadow transition duration-200 flex items-center justify-center gap-1">

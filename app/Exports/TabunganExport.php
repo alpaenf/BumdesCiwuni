@@ -97,7 +97,7 @@ class TabunganExport implements FromCollection, WithHeadings, WithMapping, WithS
         return [
             6 => [
                 'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-                'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1B5E20']],
+                'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1E40AF']],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ],
             "A6:J{$lastRow}" => [
