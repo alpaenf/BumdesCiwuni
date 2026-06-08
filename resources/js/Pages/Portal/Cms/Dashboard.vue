@@ -21,31 +21,31 @@ const formatDate = (dateStr) => {
 
         <div class="space-y-6">
             <div>
-                <h2 class="text-2xl font-bold text-emerald-800">Pengelolaan Website</h2>
+                <h2 class="text-2xl font-bold text-blue-800">Pengelolaan Website</h2>
                 <p class="text-sm text-slate-500">Kelola konten website publik BUMDes Dammar Wulan.</p>
             </div>
 
             <!-- Stat Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="p-2 bg-emerald-50 rounded-lg text-emerald-700">
+                        <div class="p-2 bg-blue-50 rounded-lg text-blue-700">
                             <span class="material-symbols-outlined">business</span>
                         </div>
                     </div>
                     <p class="text-2xl font-bold text-slate-800">{{ stats.totalUnits }}</p>
                     <p class="text-xs text-slate-500 mt-1">Total Unit</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="p-2 bg-emerald-50 rounded-lg text-emerald-700">
+                        <div class="p-2 bg-blue-50 rounded-lg text-blue-700">
                             <span class="material-symbols-outlined">check_circle</span>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-emerald-700">{{ stats.unitAktif }}</p>
+                    <p class="text-2xl font-bold text-blue-700">{{ stats.unitAktif }}</p>
                     <p class="text-xs text-slate-500 mt-1">Unit Aktif</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="p-2 bg-blue-50 rounded-lg text-blue-700">
                             <span class="material-symbols-outlined">newspaper</span>
@@ -54,7 +54,7 @@ const formatDate = (dateStr) => {
                     <p class="text-2xl font-bold text-slate-800">{{ stats.totalPosts }}</p>
                     <p class="text-xs text-slate-500 mt-1">Total Berita</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="p-2 bg-violet-50 rounded-lg text-violet-700">
                             <span class="material-symbols-outlined">publish</span>
@@ -71,23 +71,23 @@ const formatDate = (dateStr) => {
                 <div class="col-span-12 lg:col-span-5 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                     <h4 class="text-base font-bold text-slate-800 mb-4">Aksi Cepat</h4>
                     <div class="space-y-2">
-                        <Link :href="route('portal.cms.berita.create')" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all group">
-                            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <Link :href="route('portal.cms.berita.create')" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all group">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-lg">edit_note</span>
                             </div>
-                            <span class="text-sm font-semibold text-slate-700 group-hover:text-emerald-700">Tulis Berita Baru</span>
+                            <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-700">Tulis Berita Baru</span>
                         </Link>
-                        <Link :href="route('portal.cms.unit.create')" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all group">
-                            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <Link :href="route('portal.cms.unit.create')" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all group">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-lg">add_business</span>
                             </div>
-                            <span class="text-sm font-semibold text-slate-700 group-hover:text-emerald-700">Tambah Unit Usaha</span>
+                            <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-700">Tambah Unit Usaha</span>
                         </Link>
-                        <Link :href="route('portal.cms.profil.edit')" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/30 transition-all group">
-                            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                        <Link :href="route('portal.cms.profil.edit')" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all group">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-lg">apartment</span>
                             </div>
-                            <span class="text-sm font-semibold text-slate-700 group-hover:text-emerald-700">Edit Profil BUMDes</span>
+                            <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-700">Edit Profil BUMDes</span>
                         </Link>
                     </div>
                 </div>
@@ -96,7 +96,7 @@ const formatDate = (dateStr) => {
                 <div class="col-span-12 lg:col-span-7 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                     <div class="px-5 py-4 border-b border-slate-200 flex justify-between items-center">
                         <h4 class="text-base font-bold text-slate-800">Berita Terbaru</h4>
-                        <Link :href="route('portal.cms.berita.index')" class="text-xs text-emerald-700 font-semibold hover:underline">Semua</Link>
+                        <Link :href="route('portal.cms.berita.index')" class="text-xs text-blue-700 font-semibold hover:underline">Semua</Link>
                     </div>
                     <div class="divide-y divide-slate-100">
                         <div v-for="post in recentPosts" :key="post.id" class="px-5 py-3 flex items-center justify-between hover:bg-slate-50 transition">
@@ -104,7 +104,7 @@ const formatDate = (dateStr) => {
                                 <p class="text-sm font-semibold text-slate-700 truncate">{{ post.judul }}</p>
                                 <p class="text-[10px] text-slate-400 mt-0.5">{{ formatDate(post.created_at) }}</p>
                             </div>
-                            <span :class="post.status === 'published' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-100 text-amber-700 border-amber-200'" class="px-2 py-0.5 border text-[9px] font-bold uppercase tracking-wider rounded ml-3 shrink-0">
+                            <span :class="post.status === 'published' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-amber-100 text-amber-700 border-amber-200'" class="px-2 py-0.5 border text-[9px] font-bold uppercase tracking-wider rounded ml-3 shrink-0">
                                 {{ post.status }}
                             </span>
                         </div>

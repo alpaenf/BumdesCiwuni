@@ -37,8 +37,8 @@ const templates = computed(() => [
         id: 'penagihan_tabungan',
         label: 'Pengingat Setoran Tabungan',
         icon: 'savings',
-        color: 'text-emerald-600',
-        bgColor: 'bg-emerald-50 border-emerald-200',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-50 border-blue-200',
         pesan: `Assalamu'alaikum, Bapak/Ibu *${props.nasabah?.nama}*.\n\nKami dari *BUMDes Dammar Wulan* ingin mengingatkan untuk melakukan setoran tabungan rutin Anda.\n\nTabungan rutin sangat membantu untuk masa depan yang lebih baik.\n\nSilakan datang ke kantor kami atau hubungi kami untuk informasi lebih lanjut.\n\nTerima kasih.`,
     },
     {

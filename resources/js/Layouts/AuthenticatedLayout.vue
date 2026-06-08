@@ -190,9 +190,9 @@ const adminNav = [
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <div v-if="isAdmin" class="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 sm:flex">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <span class="text-xs font-semibold text-emerald-700">Administrator</span>
+                    <div v-if="isAdmin" class="hidden items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 sm:flex">
+                        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span class="text-xs font-semibold text-blue-700">Administrator</span>
                     </div>
                     <div v-else class="hidden items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 sm:flex">
                         <span class="h-2 w-2 rounded-full bg-blue-500"></span>

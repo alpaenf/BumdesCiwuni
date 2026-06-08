@@ -22,12 +22,12 @@ const submit = () => {
 
         <div class="max-w-md mx-auto mt-10">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-                <div class="bg-emerald-600 p-6 text-center">
+                <div class="bg-blue-600 p-6 text-center">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 text-white mb-4">
                         <span class="material-symbols-outlined text-3xl">lock</span>
                     </div>
                     <h2 class="text-xl font-bold text-white">Area Sensitif BUMDes</h2>
-                    <p class="text-emerald-100 text-sm mt-1">Kelola Akses Admin & Pengguna</p>
+                    <p class="text-blue-100 text-sm mt-1">Kelola Akses Admin & Pengguna</p>
                 </div>
 
                 <div class="p-8">
@@ -43,7 +43,7 @@ const submit = () => {
                                     id="pin"
                                     :type="showPin ? 'text' : 'password'"
                                     v-model="form.pin"
-                                    class="w-full text-center tracking-[0.5em] font-mono text-2xl py-3 border-slate-300 rounded-xl focus:border-emerald-500 focus:ring-emerald-500"
+                                    class="w-full text-center tracking-[0.5em] font-mono text-2xl py-3 border-slate-300 rounded-xl focus:border-blue-500 focus:ring-blue-500"
                                     required
                                     autofocus
                                     maxlength="6"
@@ -59,7 +59,7 @@ const submit = () => {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                             :class="{ 'opacity-70 cursor-not-allowed': form.processing }"
                         >
                             <span v-if="form.processing" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>

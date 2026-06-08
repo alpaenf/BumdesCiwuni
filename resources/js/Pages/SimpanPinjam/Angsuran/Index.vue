@@ -53,9 +53,9 @@ const isFiltered = computed(() => !!bulan.value);
         <template #header>Angsuran</template>
         <div class="space-y-5">
             <!-- Flash Success Banner -->
-            <div v-if="flash?.success" class="flex items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div v-if="flash?.success" class="flex items-center justify-between gap-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+                    <span class="material-symbols-outlined text-base text-blue-600">check_circle</span>
                     <span>{{ flash.success }} — Struk dibuka di tab baru.</span>
                 </div>
             </div>
@@ -80,7 +80,7 @@ const isFiltered = computed(() => !!bulan.value);
                     </div>
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
                         <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ formatBulanLabel(bulan) }} — Total Bayar</p>
-                        <p class="mt-1 text-base font-bold text-emerald-700">{{ formatCurrency(summary?.total_bayar) }}</p>
+                        <p class="mt-1 text-base font-bold text-blue-700">{{ formatCurrency(summary?.total_bayar) }}</p>
                     </div>
                 </template>
 
@@ -91,7 +91,7 @@ const isFiltered = computed(() => !!bulan.value);
                 </div>
                 <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4">
                     <p class="text-xs text-[color:var(--color-secondary)]">Semua Bulan — Total Bayar</p>
-                    <p class="mt-1 text-base font-bold text-emerald-700">{{ formatCurrency(summaryAll?.total_bayar) }}</p>
+                    <p class="mt-1 text-base font-bold text-blue-700">{{ formatCurrency(summaryAll?.total_bayar) }}</p>
                 </div>
             </div>
 
@@ -134,8 +134,8 @@ const isFiltered = computed(() => !!bulan.value);
                                 <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal) }}</td>
                                 <td class="px-4 py-3 text-center font-semibold">{{ row.angsuran_ke }}</td>
                                 <td class="px-4 py-3 capitalize text-[color:var(--color-secondary)]">{{ pasaranLabel[row.pasaran] ?? row.pasaran }}</td>
-                                <td class="px-4 py-3 text-right font-semibold text-emerald-600">{{ formatCurrency(row.jumlah_bayar) }}</td>
-                                <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) <= 0 ? 'text-emerald-600' : 'text-red-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
+                                <td class="px-4 py-3 text-right font-semibold text-blue-600">{{ formatCurrency(row.jumlah_bayar) }}</td>
+                                <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) <= 0 ? 'text-blue-600' : 'text-red-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <a :href="route('angsuran.struk', row.id)" target="_blank" class="inline-flex items-center gap-1 rounded-lg bg-[color:var(--color-surface-container)] px-2.5 py-1 text-xs hover:bg-[color:var(--color-surface-container-high)]">
                                         <span class="material-symbols-outlined text-xs">print</span> Print

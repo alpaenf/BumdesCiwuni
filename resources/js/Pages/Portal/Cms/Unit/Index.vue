@@ -5,7 +5,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 const props = defineProps({ units: { type: Object, required: true } });
 
 const statusBadge = (s) => ({
-    aktif: { text: 'Aktif', class: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    aktif: { text: 'Aktif', class: 'bg-blue-100 text-blue-700 border-blue-200' },
     coming_soon: { text: 'Coming Soon', class: 'bg-amber-100 text-amber-700 border-amber-200' },
     nonaktif: { text: 'Nonaktif', class: 'bg-slate-100 text-slate-500 border-slate-200' },
 }[s] || { text: s, class: 'bg-slate-100 text-slate-500 border-slate-200' });
@@ -24,10 +24,10 @@ const deleteUnit = (id) => {
         <div class="space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h2 class="text-xl font-bold text-emerald-800">Daftar Unit Usaha</h2>
+                    <h2 class="text-xl font-bold text-blue-800">Daftar Unit Usaha</h2>
                     <p class="text-sm text-slate-500">Kelola unit usaha BUMDes.</p>
                 </div>
-                <Link :href="route('portal.cms.unit.create')" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                <Link :href="route('portal.cms.unit.create')" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
                     <span class="material-symbols-outlined text-base">add_business</span>
                     Tambah Unit Baru
                 </Link>
@@ -50,7 +50,7 @@ const deleteUnit = (id) => {
                                 <td class="px-5 py-3 text-slate-400 font-mono">{{ unit.urutan }}</td>
                                 <td class="px-5 py-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                                        <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
                                             <span class="material-symbols-outlined text-[18px]">{{ unit.icon || 'business' }}</span>
                                         </div>
                                         <div>
@@ -60,7 +60,7 @@ const deleteUnit = (id) => {
                                     </div>
                                 </td>
                                 <td class="px-5 py-3">
-                                    <span :class="unit.tipe === 'internal' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-blue-100 text-blue-700 border-blue-200'" class="px-2 py-0.5 border text-[9px] font-bold uppercase tracking-wider rounded">
+                                    <span :class="unit.tipe === 'internal' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-blue-100 text-blue-700 border-blue-200'" class="px-2 py-0.5 border text-[9px] font-bold uppercase tracking-wider rounded">
                                         {{ unit.tipe }}
                                     </span>
                                 </td>
@@ -71,7 +71,7 @@ const deleteUnit = (id) => {
                                 </td>
                                 <td class="px-5 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1">
-                                        <Link :href="route('portal.cms.unit.edit', unit.id)" class="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 transition">
+                                        <Link :href="route('portal.cms.unit.edit', unit.id)" class="p-1.5 rounded-lg hover:bg-blue-50 text-slate-500 hover:text-blue-700 transition">
                                             <span class="material-symbols-outlined text-[16px]">edit</span>
                                         </Link>
                                         <button @click="deleteUnit(unit.id)" class="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition">

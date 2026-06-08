@@ -94,7 +94,7 @@ const submit = () => form.post(route('angsuran.store'));
                     <!-- Info Pinjaman -->
                     <div v-if="selectedPinjaman" class="rounded-lg bg-[color:var(--color-surface-container-low)] p-4 text-sm space-y-3 border border-[color:var(--color-outline-variant)]">
                         <div class="border-b border-[color:var(--color-outline-variant)] pb-2">
-                            <h4 class="font-semibold text-emerald-800">Detail Pinjaman Aktif</h4>
+                            <h4 class="font-semibold text-blue-800">Detail Pinjaman Aktif</h4>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
@@ -111,7 +111,7 @@ const submit = () => form.post(route('angsuran.store'));
                             </div>
                             <div>
                                 <p class="text-xs text-[color:var(--color-secondary)]">Setoran Normal / Bulan</p>
-                                <p class="font-bold text-emerald-700">{{ formatCurrency(selectedPinjaman.nominal_setoran) }}</p>
+                                <p class="font-bold text-blue-700">{{ formatCurrency(selectedPinjaman.nominal_setoran) }}</p>
                             </div>
                             <div class="col-span-2">
                                 <p class="text-xs text-[color:var(--color-secondary)]">Status Pembayaran</p>

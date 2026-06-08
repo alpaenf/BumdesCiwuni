@@ -35,7 +35,7 @@ const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage',
                         <p class="mt-2 text-lg font-bold">{{ pinjaman.nasabah?.nama }}</p>
                         <p class="font-mono text-sm text-[color:var(--color-primary)]">{{ pinjaman.nasabah?.nomor_rekening }}</p>
                         <span class="mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                            :class="pinjaman.status === 'aktif' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'">
+                            :class="pinjaman.status === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">
                             {{ pinjaman.status === 'aktif' ? 'Aktif' : 'Lunas' }}
                         </span>
                     </div>
@@ -54,7 +54,7 @@ const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage',
                             <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">↳ Bunga</span><span class="font-medium text-right">{{ formatCurrency(((pinjaman.pinjaman_pokok * pinjaman.bunga / 100) / (pinjaman.total_tagihan || 1)) * pinjaman.nominal_setoran) }}</span></div>
                         </div>
                         <div class="flex justify-between gap-2 mt-2"><span class="text-[color:var(--color-secondary)]">Jumlah Angsuran</span><span class="font-semibold text-right">{{ pinjaman.jumlah_angsuran }} kali</span></div>
-                        <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Terbayar</span><span class="font-semibold text-emerald-600 text-right">{{ pinjaman.angsuran?.length ?? 0 }} kali</span></div>
+                        <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Terbayar</span><span class="font-semibold text-blue-600 text-right">{{ pinjaman.angsuran?.length ?? 0 }} kali</span></div>
                         <div class="flex justify-between gap-2 border-t pt-3"><span class="text-[color:var(--color-secondary)]">Sisa Pinjaman</span><span class="font-bold text-red-600 text-right">{{ formatCurrency(pinjaman.sisa_pinjaman) }}</span></div>
                     </div>
 
@@ -110,8 +110,8 @@ const pasaranLabel = { legi: 'Legi', pahing: 'Pahing', pon: 'Pon', wage: 'Wage',
                                         <td class="px-2 sm:px-4 py-3 font-semibold text-center">{{ a.angsuran_ke }}</td>
                                         <td class="px-2 sm:px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(a.tanggal) }}</td>
                                         <td class="px-2 sm:px-4 py-3 capitalize text-[color:var(--color-secondary)] hidden sm:table-cell">{{ pasaranLabel[a.pasaran] ?? a.pasaran }}</td>
-                                        <td class="px-2 sm:px-4 py-3 text-right font-semibold text-emerald-600">{{ formatCurrency(a.jumlah_bayar) }}</td>
-                                        <td class="px-2 sm:px-4 py-3 text-right" :class="Number(a.sisa_pinjaman) <= 0 ? 'text-emerald-600 font-semibold' : 'text-red-600'">{{ formatCurrency(a.sisa_pinjaman) }}</td>
+                                        <td class="px-2 sm:px-4 py-3 text-right font-semibold text-blue-600">{{ formatCurrency(a.jumlah_bayar) }}</td>
+                                        <td class="px-2 sm:px-4 py-3 text-right" :class="Number(a.sisa_pinjaman) <= 0 ? 'text-blue-600 font-semibold' : 'text-red-600'">{{ formatCurrency(a.sisa_pinjaman) }}</td>
                                         <td class="px-2 sm:px-4 py-3 text-center">
                                             <a :href="route('angsuran.struk', a.id)" target="_blank" class="inline-flex items-center gap-1 rounded-lg bg-[color:var(--color-surface-container)] px-2 py-1 text-xs text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-surface-container-high)] sm:px-2.5">
                                                 <span class="material-symbols-outlined text-xs">print</span> <span class="hidden sm:inline">Print</span>

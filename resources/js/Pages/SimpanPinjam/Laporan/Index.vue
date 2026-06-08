@@ -4,7 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
 const reports = [
     { title: 'Laporan Nasabah', desc: 'Data nasabah berdasarkan periode bergabung', icon: 'people', route: 'laporan.nasabah', color: 'blue' },
-    { title: 'Laporan Tabungan', desc: 'Rekapitulasi setoran dan penarikan tabungan', icon: 'savings', route: 'laporan.tabungan', color: 'emerald' },
+    { title: 'Laporan Tabungan', desc: 'Rekapitulasi setoran dan penarikan tabungan', icon: 'savings', route: 'laporan.tabungan', color: 'blue' },
     { title: 'Laporan Pinjaman', desc: 'Status pinjaman aktif, lunas, dan bermasalah', icon: 'account_balance', route: 'laporan.pinjaman', color: 'purple' },
     { title: 'Laporan Angsuran', desc: 'Riwayat pembayaran angsuran per periode', icon: 'payments', route: 'laporan.angsuran', color: 'orange' },
     { title: 'Laporan Kas', desc: 'Arus kas masuk dan keluar BUMDes', icon: 'account_balance_wallet', route: 'laporan.kas', color: 'teal' },
@@ -12,7 +12,7 @@ const reports = [
 
 const colorMap = {
     blue:    { bg: 'bg-blue-50', text: 'text-blue-600', btn: 'bg-blue-600', border: 'border-blue-200' },
-    emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', btn: 'bg-emerald-600', border: 'border-emerald-200' },
+    blue: { bg: 'bg-blue-50', text: 'text-blue-600', btn: 'bg-blue-600', border: 'border-blue-200' },
     purple:  { bg: 'bg-purple-50', text: 'text-purple-600', btn: 'bg-purple-600', border: 'border-purple-200' },
     orange:  { bg: 'bg-orange-50', text: 'text-orange-600', btn: 'bg-orange-600', border: 'border-orange-200' },
     teal:    { bg: 'bg-teal-50', text: 'text-teal-600', btn: 'bg-teal-600', border: 'border-teal-200' },

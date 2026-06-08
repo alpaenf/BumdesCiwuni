@@ -19,9 +19,9 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { dateStyl
             <div class="max-w-5xl mx-auto px-6 flex items-center justify-between h-14">
                 <Link href="/" class="flex items-center gap-2">
                     <img src="/logo2.png" alt="Logo" class="h-8 w-8 object-contain" />
-                    <span class="text-xs font-bold text-emerald-800">{{ settings.bumdes_name || 'BUMDes' }}</span>
+                    <span class="text-xs font-bold text-blue-800">{{ settings.bumdes_name || 'BUMDes' }}</span>
                 </Link>
-                <Link :href="route('portal.berita.index')" class="text-xs font-semibold text-slate-500 hover:text-emerald-700 transition">← Semua Berita</Link>
+                <Link :href="route('portal.berita.index')" class="text-xs font-semibold text-slate-500 hover:text-blue-700 transition">← Semua Berita</Link>
             </div>
         </header>
 
@@ -29,7 +29,7 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { dateStyl
             <!-- Article -->
             <article class="max-w-3xl mx-auto px-6">
                 <div class="mb-6">
-                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">{{ formatDate(post.published_at) }}</span>
+                    <span class="text-xs font-bold text-blue-700 uppercase tracking-wider">{{ formatDate(post.published_at) }}</span>
                     <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 mt-2 leading-tight">{{ post.judul }}</h1>
                     <p v-if="post.ringkasan" class="text-sm text-slate-500 mt-3">{{ post.ringkasan }}</p>
                 </div>
@@ -55,8 +55,8 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { dateStyl
                             </div>
                         </div>
                         <div class="p-4">
-                            <p class="text-[10px] font-bold text-emerald-700 uppercase">{{ formatDate(r.published_at) }}</p>
-                            <h4 class="text-sm font-bold text-slate-800 group-hover:text-emerald-700 transition-colors mt-1 line-clamp-2">{{ r.judul }}</h4>
+                            <p class="text-[10px] font-bold text-blue-700 uppercase">{{ formatDate(r.published_at) }}</p>
+                            <h4 class="text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors mt-1 line-clamp-2">{{ r.judul }}</h4>
                         </div>
                     </Link>
                 </div>

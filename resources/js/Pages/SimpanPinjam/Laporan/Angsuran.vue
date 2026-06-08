@@ -60,9 +60,9 @@ const excelUrl = computed(() => `${route('laporan.angsuran.excel')}?${buildQuery
                     <p class="text-xs uppercase text-[color:var(--color-secondary)]">Total Transaksi</p>
                     <p class="mt-1 text-2xl font-bold">{{ summary.total_transaksi }}</p>
                 </div>
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-                    <p class="text-xs uppercase text-emerald-600">Total Bayar</p>
-                    <p class="mt-1 text-2xl font-bold text-emerald-700">{{ formatCurrency(summary.total_bayar) }}</p>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 text-center">
+                    <p class="text-xs uppercase text-blue-600">Total Bayar</p>
+                    <p class="mt-1 text-2xl font-bold text-blue-700">{{ formatCurrency(summary.total_bayar) }}</p>
                 </div>
             </div>
 
@@ -99,8 +99,8 @@ const excelUrl = computed(() => `${route('laporan.angsuran.excel')}?${buildQuery
                             <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal) }}</td>
                             <td class="px-4 py-3 text-center font-semibold">{{ row.angsuran_ke }}</td>
                             <td class="px-4 py-3 capitalize text-[color:var(--color-secondary)]">{{ pasaranLabel[row.pasaran] ?? row.pasaran }}</td>
-                            <td class="px-4 py-3 text-right font-semibold text-emerald-600">{{ formatCurrency(row.jumlah_bayar) }}</td>
-                            <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) <= 0 ? 'text-emerald-600' : 'text-red-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
+                            <td class="px-4 py-3 text-right font-semibold text-blue-600">{{ formatCurrency(row.jumlah_bayar) }}</td>
+                            <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) <= 0 ? 'text-blue-600' : 'text-red-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
                         </tr>
                     </tbody>
                 </table>

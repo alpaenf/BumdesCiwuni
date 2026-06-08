@@ -101,9 +101,9 @@ function formatTanggal(dateStr) {
         <template #header>Tabungan Nasabah</template>
         <div class="space-y-5">
             <!-- Flash Success Banner -->
-            <div v-if="flash?.success" class="flex items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div v-if="flash?.success" class="flex items-center justify-between gap-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+                    <span class="material-symbols-outlined text-base text-blue-600">check_circle</span>
                     <span>{{ flash.success }} — Struk dibuka di tab baru.</span>
                 </div>
             </div>
@@ -143,7 +143,7 @@ function formatTanggal(dateStr) {
                                 <td class="px-4 py-3">
                                     <div class="flex items-center justify-center gap-2">
                                         <Link :href="route('tabungan.setor', row.id)"
-                                            class="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
+                                            class="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
                                             <span class="material-symbols-outlined text-xs">add</span> Setor
                                         </Link>
                                         <Link :href="route('tabungan.tarik', row.id)"
@@ -183,7 +183,7 @@ function formatTanggal(dateStr) {
                     <div class="px-5 py-4 max-h-80 overflow-y-auto">
                         <!-- Loading -->
                         <div v-if="modalLoading" class="flex flex-col items-center justify-center py-10 gap-3">
-                            <div class="h-8 w-8 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600"></div>
+                            <div class="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
                             <p class="text-xs text-slate-500">Memuat riwayat transaksi...</p>
                         </div>
 
@@ -207,12 +207,12 @@ function formatTanggal(dateStr) {
                                     <p class="text-xs text-slate-500 mt-0.5">{{ formatTanggal(trx.tanggal) }}</p>
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0">
-                                    <span :class="trx.jenis_transaksi === 'setor' ? 'text-emerald-600' : 'text-red-500'"
+                                    <span :class="trx.jenis_transaksi === 'setor' ? 'text-blue-600' : 'text-red-500'"
                                         class="text-xs font-semibold">
                                         {{ trx.jenis_transaksi === 'setor' ? '+' : '-' }} {{ formatCurrency(trx.nominal) }}
                                     </span>
                                     <button @click="openStruk(trx.id)"
-                                        class="flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700">
+                                        class="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
                                         <span class="material-symbols-outlined text-xs">print</span> Cetak
                                     </button>
                                     <button @click="sendWaStruk(trx)"

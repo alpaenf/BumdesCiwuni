@@ -52,7 +52,7 @@ const waModal = ref(null);
                         </div>
                         <p class="text-lg font-bold text-[color:var(--color-on-surface)]">{{ nasabah.nama }}</p>
                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                            :class="nasabah.status === 'aktif' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'">
+                            :class="nasabah.status === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">
                             {{ nasabah.status === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                         </span>
                         <div class="mt-4 space-y-2.5 text-sm">
@@ -201,9 +201,9 @@ const waModal = ref(null);
                                     <p class="text-red-600">Sisa</p>
                                     <p class="font-semibold text-red-700">{{ formatCurrency(p.sisa_pinjaman) }}</p>
                                 </div>
-                                <div class="rounded-lg bg-emerald-50 p-2">
-                                    <p class="text-emerald-600">Angsuran</p>
-                                    <p class="font-semibold text-emerald-700">{{ p.angsuran?.length ?? 0 }}/{{ p.jumlah_angsuran }}x</p>
+                                <div class="rounded-lg bg-blue-50 p-2">
+                                    <p class="text-blue-600">Angsuran</p>
+                                    <p class="font-semibold text-blue-700">{{ p.angsuran?.length ?? 0 }}/{{ p.jumlah_angsuran }}x</p>
                                 </div>
                             </div>
                         </div>

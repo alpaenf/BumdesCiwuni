@@ -29,7 +29,7 @@ watch([search, status, bulan], () => {
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID') : '-';
-const statusClass = (s) => s === 'aktif' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600';
+const statusClass = (s) => s === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600';
 
 // Format YYYY-MM ke nama bulan Indonesia
 const formatBulanLabel = (val) => {
@@ -146,7 +146,7 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
                                 <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal_akad) }}</td>
                                 <td class="px-4 py-3 text-right font-semibold">{{ formatCurrency(row.pinjaman_pokok) }}</td>
                                 <td class="px-4 py-3 text-right">{{ formatCurrency(row.total_tagihan) }}</td>
-                                <td class="px-4 py-3 text-right" :class="row.sisa_pinjaman > 0 ? 'text-red-600 font-semibold' : 'text-emerald-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
+                                <td class="px-4 py-3 text-right" :class="row.sisa_pinjaman > 0 ? 'text-red-600 font-semibold' : 'text-blue-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
                                 <td class="px-4 py-3 text-center text-xs text-[color:var(--color-secondary)]">{{ row.jumlah_angsuran }} kali / {{ formatCurrency(row.nominal_setoran) }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold" :class="statusClass(row.status)">{{ row.status }}</span>

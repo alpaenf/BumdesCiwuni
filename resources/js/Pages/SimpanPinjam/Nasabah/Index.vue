@@ -126,13 +126,13 @@ function openWaModal(row) {
                                         <span v-if="!row.kategori || row.kategori.length === 0" class="text-xs text-gray-400">-</span>
                                         <span v-if="row.kategori && row.kategori.includes('tabungan')" class="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Tabungan</span>
                                         <span v-if="row.kategori && row.kategori.includes('sembako')" class="inline-flex rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-semibold text-orange-700">Sembako</span>
-                                        <span v-if="row.kategori && row.kategori.includes('pinjaman')" class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">Pinjaman</span>
+                                        <span v-if="row.kategori && row.kategori.includes('pinjaman')" class="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Pinjaman</span>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
                                     <span
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                        :class="row.status === 'aktif' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'"
+                                        :class="row.status === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'"
                                     >
                                         {{ row.status === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                                     </span>

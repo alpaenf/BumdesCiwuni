@@ -83,7 +83,7 @@ const submit = () => {
 
         <div class="max-w-3xl space-y-6">
             <div>
-                <h2 class="text-xl font-bold text-emerald-800">Profil BUMDes</h2>
+                <h2 class="text-xl font-bold text-blue-800">Profil BUMDes</h2>
                 <p class="text-sm text-slate-500">Kelola informasi umum tentang BUMDes Dammar Wulan.</p>
             </div>
 
@@ -94,12 +94,12 @@ const submit = () => {
                     <div class="grid gap-4 md:grid-cols-2">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Nama BUMDes</label>
-                            <input v-model="form.bumdes_name" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.bumdes_name" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                             <p v-if="form.errors.bumdes_name" class="text-xs text-red-500 mt-1">{{ form.errors.bumdes_name }}</p>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Tagline</label>
-                            <input v-model="form.bumdes_tagline" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.bumdes_tagline" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                         </div>
                     </div>
                     <div>
@@ -114,7 +114,7 @@ const submit = () => {
                                     type="file" 
                                     accept="image/*"
                                     @change="handleLogoUpload"
-                                    class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition cursor-pointer"
+                                    class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer"
                                 />
                                 <p class="text-[10px] text-slate-500 mt-1.5">Gambar akan dikompres otomatis ke resolusi maksimal 1200px dan format JPG 80% untuk menghemat penyimpanan server BUMDes.</p>
                             </div>
@@ -127,15 +127,15 @@ const submit = () => {
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Tentang Kami</h3>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Tentang</label>
-                        <input v-model="form.about_title" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                        <input v-model="form.about_title" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi</label>
-                        <textarea v-model="form.about_description" rows="4" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"></textarea>
+                        <textarea v-model="form.about_description" rows="4" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Sejarah Singkat</label>
-                        <textarea v-model="form.about_history" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"></textarea>
+                        <textarea v-model="form.about_history" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                     </div>
                 </div>
 
@@ -144,11 +144,11 @@ const submit = () => {
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Visi & Misi</h3>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Visi</label>
-                        <textarea v-model="form.visi" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"></textarea>
+                        <textarea v-model="form.visi" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Misi</label>
-                        <textarea v-model="form.misi" rows="4" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder="1. Misi pertama&#10;2. Misi kedua"></textarea>
+                        <textarea v-model="form.misi" rows="4" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="1. Misi pertama&#10;2. Misi kedua"></textarea>
                     </div>
                 </div>
 
@@ -157,21 +157,21 @@ const submit = () => {
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Kontak</h3>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat</label>
-                        <textarea v-model="form.contact_address" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"></textarea>
+                        <textarea v-model="form.contact_address" rows="2" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                     </div>
                     <div class="grid gap-4 md:grid-cols-2">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Telepon</label>
-                            <input v-model="form.contact_phone" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.contact_phone" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                            <input v-model="form.contact_email" type="email" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.contact_email" type="email" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Google Maps Embed (iframe)</label>
-                        <textarea v-model="form.google_maps_embed" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" placeholder='<iframe src="..." ...></iframe>'></textarea>
+                        <textarea v-model="form.google_maps_embed" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder='<iframe src="..." ...></iframe>'></textarea>
                     </div>
                 </div>
 
@@ -180,26 +180,26 @@ const submit = () => {
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Footer & Sosial Media</h3>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Footer Text</label>
-                        <input v-model="form.footer_text" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                        <input v-model="form.footer_text" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div class="grid gap-4 md:grid-cols-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Facebook</label>
-                            <input v-model="form.social_facebook" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.social_facebook" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Instagram</label>
-                            <input v-model="form.social_instagram" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.social_instagram" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">YouTube</label>
-                            <input v-model="form.social_youtube" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" />
+                            <input v-model="form.social_youtube" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                         </div>
                     </div>
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" :disabled="form.processing" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
+                    <button type="submit" :disabled="form.processing" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
                         <span class="material-symbols-outlined text-base">save</span>
                         {{ form.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
                     </button>

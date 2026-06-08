@@ -104,20 +104,20 @@ const formatCurrency = (value) =>
                         <a
                             :href="route('buku-tabungan.pdf', exportFilters)"
                             target="_blank"
-                            class="rounded-lg border border-emerald-200 px-4 py-2 text-sm text-slate-900"
+                            class="rounded-lg border border-blue-200 px-4 py-2 text-sm text-slate-900"
                         >
                             Cetak PDF
                         </a>
                         <a
                             :href="route('buku-tabungan.excel', exportFilters)"
-                            class="rounded-lg border border-emerald-200 px-4 py-2 text-sm text-slate-900"
+                            class="rounded-lg border border-blue-200 px-4 py-2 text-sm text-slate-900"
                         >
                             Export Excel
                         </a>
                         <a
                             :href="route('buku-tabungan.print', exportFilters)"
                             target="_blank"
-                            class="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white"
+                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white"
                         >
                             Print
                         </a>
@@ -131,7 +131,7 @@ const formatCurrency = (value) =>
                             v-model="form.search"
                             type="text"
                             placeholder="Nama atau nomor registrasi"
-                            class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm"
+                            class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm"
                         />
                     </div>
                     <div>
@@ -140,12 +140,12 @@ const formatCurrency = (value) =>
                             v-model="form.nomor_rekening"
                             type="text"
                             placeholder="00001.2026"
-                            class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm"
+                            class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm"
                         />
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Jenis Tabungan</label>
-                        <select v-model="form.jenis_tabungan" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm">
+                        <select v-model="form.jenis_tabungan" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm">
                             <option value="">Semua Jenis</option>
                             <option value="reguler">Reguler</option>
                             <option value="sembako">Sembako</option>
@@ -153,7 +153,7 @@ const formatCurrency = (value) =>
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Nasabah</label>
-                        <select v-model="form.nasabah_id" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm">
+                        <select v-model="form.nasabah_id" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm">
                             <option value="">Semua Nasabah</option>
                             <option v-for="nasabahItem in nasabahOptions" :key="nasabahItem.id" :value="nasabahItem.id">
                                 {{ nasabahItem.nama }} - {{ nasabahItem.nomor_rekening }}
@@ -162,16 +162,16 @@ const formatCurrency = (value) =>
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Periode Mulai</label>
-                        <input v-model="form.start_date" type="date" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm" />
+                        <input v-model="form.start_date" type="date" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm" />
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Periode Akhir</label>
-                        <input v-model="form.end_date" type="date" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm" />
+                        <input v-model="form.end_date" type="date" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm" />
                     </div>
                     <div class="flex items-end">
                         <button
                             type="submit"
-                            class="w-full rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"
+                            class="w-full rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
                         >
                             Terapkan Filter
                         </button>

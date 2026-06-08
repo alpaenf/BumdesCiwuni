@@ -26,8 +26,8 @@ function submit() {
         <div class="mx-auto max-w-xl space-y-5">
 
             <!-- Flash -->
-            <div v-if="flash?.success" class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                <span class="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+            <div v-if="flash?.success" class="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                <span class="material-symbols-outlined text-base text-blue-600">check_circle</span>
                 {{ flash.success }}
             </div>
 

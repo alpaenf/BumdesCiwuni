@@ -186,7 +186,7 @@ function formatTanggal(dateStr) {
                                     <p class="text-xs text-slate-500 mt-0.5">{{ formatTanggal(trx.tanggal) }}</p>
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0">
-                                    <span :class="trx.jenis_transaksi === 'setor' ? 'text-emerald-600' : 'text-red-500'"
+                                    <span :class="trx.jenis_transaksi === 'setor' ? 'text-blue-600' : 'text-red-500'"
                                         class="text-xs font-semibold">
                                         {{ trx.jenis_transaksi === 'setor' ? '+' : '-' }} {{ formatCurrency(trx.nominal) }}
                                     </span>

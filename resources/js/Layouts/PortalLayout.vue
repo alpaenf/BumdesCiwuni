@@ -58,7 +58,7 @@ const portalNav = [
                         :active="route().current(item.route)"
                         class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
                         :class="route().current(item.route)
-                            ? 'bg-emerald-600 text-white font-semibold shadow-sm'
+                            ? 'bg-blue-600 text-white font-semibold shadow-sm'
                             : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
                         @click="showingSidebar = false"
                     >
@@ -77,7 +77,7 @@ const portalNav = [
                         :active="route().current(item.route)"
                         class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
                         :class="route().current(item.route)
-                            ? 'bg-emerald-600 text-white font-semibold shadow-sm'
+                            ? 'bg-blue-600 text-white font-semibold shadow-sm'
                             : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
                         @click="showingSidebar = false"
                     >
@@ -97,7 +97,7 @@ const portalNav = [
                     >
                         <span class="material-symbols-outlined text-[18px]">savings</span>
                         <span>Unit Simpan Pinjam</span>
-                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">Aktif</span>
+                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Aktif</span>
                     </a>
                     <a
                         href="/"
@@ -114,7 +114,7 @@ const portalNav = [
             <!-- User section -->
             <div class="border-t border-[color:var(--color-outline-variant)] p-3">
                 <div class="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[color:var(--color-on-surface-variant)]">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600/10 text-emerald-600">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600/10 text-blue-600">
                         <span class="material-symbols-outlined text-base">person</span>
                     </div>
                     <div class="flex-1 overflow-hidden">
@@ -153,13 +153,13 @@ const portalNav = [
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <div class="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 sm:flex">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <span class="text-xs font-semibold text-emerald-700">Portal Admin</span>
+                    <div class="hidden items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 sm:flex">
+                        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span class="text-xs font-semibold text-blue-700">Portal Admin</span>
                     </div>
                     <Dropdown align="right" width="48">
                         <template #trigger>
-                            <button class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600/10 text-emerald-600">
+                            <button class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600/10 text-blue-600">
                                 <span class="material-symbols-outlined text-xl">person</span>
                             </button>
                         </template>
