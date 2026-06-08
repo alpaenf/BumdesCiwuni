@@ -216,20 +216,21 @@ class LaporanController extends Controller
     public function kas(Request $request): Response
     {
         $this->logRequest($request, 'kas');
-        [$summary] = $this->buildKasSummary($request);
+        [$summary, $rincian] = $this->buildKasSummary($request);
 
         return Inertia::render('SimpanPinjam/Laporan/Kas', [
             'filters' => $request->only(['start_date', 'end_date', 'bulan']),
             'summary' => $summary,
+            'rincian' => $rincian,
         ]);
     }
 
     public function kasPdf(Request $request)
     {
-        [$summary] = $this->buildKasSummary($request);
+        [$summary, $rincian] = $this->buildKasSummary($request);
         $filters = $request->only(['start_date', 'end_date']);
 
-        $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.kas', compact('summary', 'filters'))
+        $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.kas', compact('summary', 'rincian', 'filters'))
             ->setPaper('a4', 'portrait');
         return $pdf->download('laporan-kas-' . now()->format('Ymd') . '.pdf');
     }
@@ -296,6 +297,13 @@ class LaporanController extends Controller
         $totalAngsuranAll = Angsuran::sum('jumlah_bayar');
         $totalPinjamanAll = Pinjaman::sum('pinjaman_pokok');
 
+        $masukRegulerItems = (clone $querySetorReguler)->with('tabungan.nasabah')->get();
+        $masukSembakoItems = (clone $querySetorSembako)->with('tabungan.nasabah')->get();
+        $masukAngsuranItems = (clone $queryAngsuran)->with('pinjaman.nasabah')->get();
+        $keluarRegulerItems = (clone $queryTarikReguler)->with('tabungan.nasabah')->get();
+        $keluarSembakoItems = (clone $queryTarikSembako)->with('tabungan.nasabah')->get();
+        $keluarPinjamanItems = (clone $queryPinjaman)->with('nasabah')->get();
+
         return [[
             'masuk_reguler'      => (float) $masukReguler,
             'masuk_sembako'      => (float) $masukSembako,
@@ -311,6 +319,13 @@ class LaporanController extends Controller
             'total_saldo_all'    => (float) ($saldoReguler + $saldoSembako),
             'total_angsuran_all' => (float) $totalAngsuranAll,
             'total_pinjaman_all' => (float) $totalPinjamanAll,
+        ], [
+            'masuk_reguler'   => $masukRegulerItems,
+            'masuk_sembako'   => $masukSembakoItems,
+            'masuk_angsuran'  => $masukAngsuranItems,
+            'keluar_reguler'  => $keluarRegulerItems,
+            'keluar_sembako'  => $keluarSembakoItems,
+            'keluar_pinjaman' => $keluarPinjamanItems,
         ]];
     }
 }

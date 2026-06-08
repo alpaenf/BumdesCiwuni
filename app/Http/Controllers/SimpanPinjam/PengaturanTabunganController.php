@@ -84,23 +84,24 @@ class PengaturanTabunganController extends Controller
             }
         }
 
-        // Count nasabahs who don't have tabungan reguler / sembako
         $nasabahQuery = \App\Models\Nasabah::query();
         if ($unitId) {
             $nasabahQuery->where('unit_id', $unitId);
         }
-        $nasabahs = $nasabahQuery->get();
-        $totalNasabah = $nasabahs->count();
 
+        // Count nasabahs who should have tabungan reguler
+        $nasabahsReguler = (clone $nasabahQuery)->whereJsonContains('kategori', 'tabungan')->get();
         $hasRegulerCount = Tabungan::where('jenis_tabungan', 'reguler')
-            ->whereIn('nasabah_id', $nasabahs->pluck('id'))
+            ->whereIn('nasabah_id', $nasabahsReguler->pluck('id'))
             ->count();
-        $unopenedRegulerCount = max(0, $totalNasabah - $hasRegulerCount);
+        $unopenedRegulerCount = max(0, $nasabahsReguler->count() - $hasRegulerCount);
 
+        // Count nasabahs who should have tabungan sembako
+        $nasabahsSembako = (clone $nasabahQuery)->whereJsonContains('kategori', 'sembako')->get();
         $hasSembakoCount = Tabungan::where('jenis_tabungan', 'sembako')
-            ->whereIn('nasabah_id', $nasabahs->pluck('id'))
+            ->whereIn('nasabah_id', $nasabahsSembako->pluck('id'))
             ->count();
-        $unopenedSembakoCount = max(0, $totalNasabah - $hasSembakoCount);
+        $unopenedSembakoCount = max(0, $nasabahsSembako->count() - $hasSembakoCount);
 
         return Inertia::render('SimpanPinjam/Tabungan/TutupBukuMassal', [
             'affectedAccounts' => $affectedAccounts,
@@ -190,6 +191,9 @@ class PengaturanTabunganController extends Controller
         if ($unitId) {
             $nasabahQuery->where('unit_id', $unitId);
         }
+
+        $searchVal = $jenis === 'reguler' ? 'tabungan' : 'sembako';
+        $nasabahQuery->whereJsonContains('kategori', $searchVal);
 
         $nasabahs = $nasabahQuery->get();
         $createdCount = 0;
