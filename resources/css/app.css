@@ -3,10 +3,10 @@
 @theme {
 	--font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 	--font-mono: "Poppins", monospace;
-	--color-brand-50: #ecfdf5;
-	--color-brand-100: #d1fae5;
-	--color-brand-500: #10b981;
-	--color-brand-700: #047857;
+	--color-brand-50: #eff6ff;
+	--color-brand-100: #dbeafe;
+	--color-brand-500: #3b82f6;
+	--color-brand-700: #1d4ed8;
 	--color-background: #ffffff;
 	--color-surface: #ffffff;
 	--color-surface-bright: #ffffff;
@@ -15,9 +15,9 @@
 	--color-surface-container-high: #e2e8f0;
 	--color-outline: #64748b;
 	--color-outline-variant: #cbd5e1;
-	--color-on-surface: #181d18;
-	--color-on-surface-variant: #404940;
-	--color-primary: #004c22;
+	--color-on-surface: #1e293b;
+	--color-on-surface-variant: #334155;
+	--color-primary: #1e3a8a;
 	--color-on-primary: #ffffff;
 	--color-secondary: #5c5f61;
 	--color-tertiary: #722736;
@@ -77,8 +77,8 @@
 	.bg-mesh {
 		background-color: var(--color-background);
 		background-image:
-			radial-gradient(at 0% 0%, rgba(0, 76, 34, 0.05) 0px, transparent 50%),
-			radial-gradient(at 100% 100%, rgba(0, 76, 34, 0.08) 0px, transparent 50%);
+			radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.05) 0px, transparent 50%),
+			radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.08) 0px, transparent 50%);
 	}
 
 	@keyframes fade-in {
