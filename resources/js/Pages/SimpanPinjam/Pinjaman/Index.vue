@@ -119,7 +119,7 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
             </div>
 
             <!-- Tabel -->
-            <div class="overflow-hidden rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
