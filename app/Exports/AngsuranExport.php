@@ -10,12 +10,14 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithDrawings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class AngsuranExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithTitle, ShouldAutoSize
+class AngsuranExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithTitle, ShouldAutoSize, WithDrawings
 {
     private $data;
 
@@ -33,7 +35,25 @@ class AngsuranExport implements FromCollection, WithHeadings, WithMapping, WithS
 
     public function headings(): array
     {
-        return ['No', 'Tanggal', 'Nasabah', 'No. Rekening', 'Ke-', 'Jumlah Bayar (Rp)', 'Pokok (Rp)', 'Bunga (Rp)', 'Sisa Pinjaman (Rp)', 'Keterangan'];
+        return [
+            [''],
+            [''],
+            [''],
+            [''],
+            [''],
+            ['No', 'Tanggal', 'Nasabah', 'No. Rekening', 'Ke-', 'Jumlah Bayar (Rp)', 'Pokok (Rp)', 'Bunga (Rp)', 'Sisa Pinjaman (Rp)', 'Keterangan']
+        ];
+    }
+
+    public function drawings()
+    {
+        $drawing = new Drawing();
+        $drawing->setName('Logo');
+        $drawing->setDescription('Logo BUMDes');
+        $drawing->setPath(public_path('logo.png'));
+        $drawing->setHeight(80);
+        $drawing->setCoordinates('A1');
+        return $drawing;
     }
 
     public function map($row): array
@@ -56,14 +76,28 @@ class AngsuranExport implements FromCollection, WithHeadings, WithMapping, WithS
 
     public function styles(Worksheet $sheet): array
     {
-        $lastRow = $this->data->count() + 1;
+        $sheet->mergeCells('B1:J1');
+        $sheet->setCellValue('B1', 'BADAN USAHA MILIK DESA (BUMDesa)');
+        
+        $sheet->mergeCells('B2:J2');
+        $sheet->setCellValue('B2', 'DAMMAR WULAN - UNIT SIMPAN PINJAM');
+        
+        $sheet->mergeCells('B3:J3');
+        $sheet->setCellValue('B3', 'LAPORAN ANGSURAN');
+
+        $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);
+        $sheet->getStyle('B3')->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('B1:B3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $lastRow = $this->data->count() + 6;
         return [
-            1 => [
+            6 => [
                 'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E65100']],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             ],
-            "A1:J{$lastRow}" => [
+            "A6:J{$lastRow}" => [
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
             ],
         ];

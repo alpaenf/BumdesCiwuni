@@ -145,10 +145,19 @@ onMounted(() => {
         </header>
 
         <!-- Hero Section -->
-        <section class="relative pt-28 pb-24 overflow-hidden bg-gradient-to-b from-white to-slate-50">
+        <section class="relative pt-32 pb-24 overflow-hidden">
+            <!-- Video Background -->
+            <div class="absolute inset-0 z-0">
+                <video autoplay loop muted playsinline class="w-full h-full object-cover">
+                    <source src="/simpin.mp4" type="video/mp4" />
+                </video>
+                <!-- Gradient overlay for readability -->
+                <div class="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-slate-50"></div>
+            </div>
+
             <!-- Decorative circles -->
-            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-emerald-600/5 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-emerald-700/5 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl z-0"></div>
+            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-emerald-700/10 rounded-full blur-3xl z-0"></div>
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-55 text-emerald-800 border border-emerald-100 text-[10px] font-bold uppercase tracking-wider">
@@ -200,7 +209,7 @@ onMounted(() => {
                 <div class="scroll-animate scroll-scale-in relative bg-gradient-to-br from-emerald-50 to-[#ffffff] p-8 border border-[#bfc9bd] rounded-2xl shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
                     <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-600/5 rounded-full"></div>
                     
-                    <span class="material-symbols-outlined text-6xl text-emerald-650 mb-4 filter drop-shadow-sm">payments</span>
+                    <img src="/logo.png" alt="Logo Simpan Pinjam" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
                     <h4 class="font-extrabold text-slate-800 text-base uppercase tracking-wider">Unit Simpan Pinjam</h4>
                     <p class="text-[10px] font-bold text-emerald-700 tracking-widest uppercase">BUMDesa Dammar Wulan</p>
                     <div class="w-full border-t border-dashed border-[#bfc9bd] my-4"></div>

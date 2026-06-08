@@ -27,16 +27,24 @@
         }
 
         /* Print settings */
+        @page {
+            margin: 0;
+        }
         @media print {
           .no-print {
             display: none !important;
           }
-          body { background: none; }
+          body { 
+            background: none; 
+            padding: 0;
+            margin: 0;
+          }
           .receipt-container { 
             margin: 0; 
             box-shadow: none;
             width: 100%;
-            padding: 20px;
+            max-width: 100%;
+            padding: 0 5px;
           }
         }
         @media (max-width: 640px) {
@@ -157,9 +165,13 @@
         <!-- END: TransactionSection -->
 
         <!-- Print Action Area -->
-        <div class="no-print mt-4 flex justify-center gap-2">
+        <div class="no-print mt-4 flex flex-col sm:flex-row justify-center gap-2">
             <button onclick="window.print()" class="px-4 py-2 bg-black hover:bg-gray-800 text-white text-[11px] font-medium rounded-sm shadow transition duration-200">
                 Cetak Struk
+            </button>
+            <button onclick="printBluetooth()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium rounded-sm shadow transition duration-200 flex items-center justify-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                Cetak Bluetooth
             </button>
             <button onclick="window.close()" class="px-4 py-2 bg-white hover:bg-gray-100 text-black text-[11px] font-medium rounded-sm border border-black shadow transition duration-200">
                 Tutup Halaman
@@ -169,8 +181,12 @@
     <!-- END: ReceiptPage -->
 
     <script>
+        function printBluetooth() {
+            var url = window.location.href;
+            window.location.href = "intent:" + url + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
+        }
         window.onload = () => {
-            window.print();
+            // window.print();
         };
     </script>
 </body>
