@@ -152,7 +152,7 @@ onMounted(() => {
                     <source src="/simpin.mp4" type="video/mp4" />
                 </video>
                 <!-- Gradient overlay for readability -->
-                <div class="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-slate-50"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/95"></div>
             </div>
 
             <!-- Decorative circles -->
@@ -160,11 +160,6 @@ onMounted(() => {
             <div class="absolute bottom-10 -left-20 w-80 h-80 bg-emerald-700/10 rounded-full blur-3xl z-0"></div>
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-55 text-emerald-800 border border-emerald-100 text-[10px] font-bold uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Unit Usaha 1 BUMDesa Dammar Wulan
-                </span>
-                
                 <h2 class="text-3xl md:text-5xl font-extrabold text-emerald-800 leading-tight md:leading-none tracking-tight">
                     {{ settings.hero_title || 'Layanan Simpan Pinjam BUMDesa Dammar Wulan' }}
                 </h2>
