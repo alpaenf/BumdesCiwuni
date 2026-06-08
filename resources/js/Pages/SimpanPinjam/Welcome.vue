@@ -70,7 +70,7 @@ onMounted(() => {
         <!-- Header / Navbar -->
         <header :class="[
             'fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/90 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg transition-all duration-300',
-            isMobileMenuOpen ? 'rounded-2xl py-4 px-6' : 'rounded-full py-2 px-6'
+            'rounded-full py-2 px-6'
         ]">
             <div class="flex items-center justify-between">
                 <!-- Logo -->
@@ -119,8 +119,15 @@ onMounted(() => {
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <transition name="mobile-menu">
-                <div v-if="isMobileMenuOpen" class="md:hidden mt-3 pt-3 border-t border-[#bfc9bd]/30 flex flex-col gap-2.5">
+            <transition 
+                enter-active-class="transition ease-out duration-200 origin-top" 
+                enter-from-class="opacity-0 scale-y-95 -translate-y-2" 
+                enter-to-class="opacity-100 scale-y-100 translate-y-0" 
+                leave-active-class="transition ease-in duration-150 origin-top" 
+                leave-from-class="opacity-100 scale-y-100 translate-y-0" 
+                leave-to-class="opacity-0 scale-y-95 -translate-y-2"
+            >
+                <div v-if="isMobileMenuOpen" class="md:hidden absolute top-[115%] left-0 right-0 bg-white/95 backdrop-blur-md border border-[#bfc9bd]/70 rounded-2xl shadow-xl p-4 flex flex-col gap-2.5">
                     <a href="#tentang" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Tentang</a>
                     <a href="#layanan" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Layanan</a>
                     <a href="#struktur" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Struktur</a>

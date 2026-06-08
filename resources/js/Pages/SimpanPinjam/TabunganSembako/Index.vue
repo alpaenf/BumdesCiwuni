@@ -114,7 +114,7 @@ function formatTanggal(dateStr) {
                 <input v-model="search" type="text" placeholder="Cari nama atau nomor rekening..."
                     class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
             </div>
-            <div class="overflow-hidden rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]">
