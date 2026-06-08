@@ -166,10 +166,10 @@
             <div class="flex">
                 <span class="label-col label-text">Sisa Pinjaman</span>
                 <span class="colon-col">:</span>
-                <span class="data-text font-bold {{ $angsuran->sisa_pinjaman <= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                <span class="data-text font-bold {{ $angsuran->sisa_pinjaman <= 0 ? 'text-blue-700' : 'text-red-600' }}">
                     Rp. {{ number_format($angsuran->sisa_pinjaman, 0, ',', '.') }}
                     @if($angsuran->sisa_pinjaman <= 0)
-                        <span class="ml-2 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">LUNAS</span>
+                        <span class="ml-2 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">LUNAS</span>
                     @endif
                 </span>
             </div>
