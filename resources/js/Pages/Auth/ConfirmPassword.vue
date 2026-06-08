@@ -32,7 +32,7 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                    class="mt-1 block w-full border-blue-300 focus:border-blue-500 focus:ring-blue-500"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
@@ -44,7 +44,7 @@ const submit = () => {
 
             <div class="mt-6 flex justify-end">
                 <PrimaryButton
-                    class="w-full justify-center bg-emerald-600 hover:bg-emerald-700"
+                    class="w-full justify-center bg-blue-600 hover:bg-blue-700"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >

@@ -66,10 +66,10 @@ const formatCurrency = (value) =>
                 <!-- Saldo Kas -->
                 <div class="col-span-12 md:col-span-4 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-primary transition-all shadow-sm">
                     <div class="flex justify-between items-start">
-                        <div class="p-2.5 bg-emerald-50 rounded-lg text-emerald-700">
+                        <div class="p-2.5 bg-blue-50 rounded-lg text-blue-700">
                             <span class="material-symbols-outlined">account_balance_wallet</span>
                         </div>
-                        <span class="text-emerald-700 font-semibold text-xs flex items-center gap-1">
+                        <span class="text-blue-700 font-semibold text-xs flex items-center gap-1">
                             Aktif
                         </span>
                     </div>
@@ -109,9 +109,9 @@ const formatCurrency = (value) =>
                         <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Nasabah</span>
                     </div>
                     <div class="mt-4 relative z-10">
-                        <p class="text-emerald-100 text-sm font-medium">Total Nasabah Terdaftar</p>
+                        <p class="text-blue-100 text-sm font-medium">Total Nasabah Terdaftar</p>
                         <h3 class="text-3xl font-bold mt-1">{{ stats.totalNasabah }} <span class="text-sm font-normal opacity-70">Orang</span></h3>
-                        <p class="text-[11px] text-emerald-100 mt-1">Tergabung dalam unit simpan pinjam</p>
+                        <p class="text-[11px] text-blue-100 mt-1">Tergabung dalam unit simpan pinjam</p>
                     </div>
                 </div>
             </div>
@@ -125,21 +125,21 @@ const formatCurrency = (value) =>
                         <span class="material-symbols-outlined text-outline text-lg">bolt</span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Link :href="route('tabungan.index')" class="flex flex-col items-center justify-center gap-3 p-5 border border-outline-variant hover:border-primary hover:bg-emerald-50/20 rounded-xl transition-all group text-center">
+                        <Link :href="route('tabungan.index')" class="flex flex-col items-center justify-center gap-3 p-5 border border-outline-variant hover:border-primary hover:bg-blue-50/20 rounded-xl transition-all group text-center">
                             <div class="w-12 h-12 rounded-full bg-white border border-outline-variant flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-primary">
                                 <span class="material-symbols-outlined text-[24px]">move_to_inbox</span>
                             </div>
                             <span class="font-semibold text-sm text-slate-700 group-hover:text-primary">Setor Tunai</span>
                         </Link>
 
-                        <Link :href="route('tabungan.index')" class="flex flex-col items-center justify-center gap-3 p-5 border border-outline-variant hover:border-primary hover:bg-emerald-50/20 rounded-xl transition-all group text-center">
+                        <Link :href="route('tabungan.index')" class="flex flex-col items-center justify-center gap-3 p-5 border border-outline-variant hover:border-primary hover:bg-blue-50/20 rounded-xl transition-all group text-center">
                             <div class="w-12 h-12 rounded-full bg-white border border-outline-variant flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-primary">
                                 <span class="material-symbols-outlined text-[24px]">outbox</span>
                             </div>
                             <span class="font-semibold text-sm text-slate-700 group-hover:text-primary">Tarik Tunai</span>
                         </Link>
 
-                        <Link :href="isAdmin ? route('nasabah.create') : route('nasabah.index')" class="flex flex-col items-center justify-center gap-3 p-5 border border-outline-variant hover:border-primary hover:bg-emerald-50/20 rounded-xl transition-all group text-center">
+                        <Link :href="isAdmin ? route('nasabah.create') : route('nasabah.index')" class="flex flex-col items-center justify-center gap-3 p-5 border border-outline-variant hover:border-primary hover:bg-blue-50/20 rounded-xl transition-all group text-center">
                             <div class="w-12 h-12 rounded-full bg-white border border-outline-variant flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-primary">
                                 <span class="material-symbols-outlined text-[24px]">person_add</span>
                             </div>
@@ -161,7 +161,7 @@ const formatCurrency = (value) =>
                         </div>
                         <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-outline-variant">
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-emerald-700 text-xl">payments</span>
+                                <span class="material-symbols-outlined text-blue-700 text-xl">payments</span>
                                 <span class="text-sm font-medium text-slate-700">Angsuran Pinjaman</span>
                             </div>
                             <span class="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-outline-variant text-xs">{{ stats.angsuranPeriode }}</span>
@@ -181,7 +181,7 @@ const formatCurrency = (value) =>
                     <LoanStatusChart :data="loanChart" />
                     
                     <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-                        <div class="flex items-center justify-between p-2 rounded bg-emerald-50/50 text-emerald-800">
+                        <div class="flex items-center justify-between p-2 rounded bg-blue-50/50 text-blue-800">
                             <span>Aktif</span>
                             <span class="font-bold">{{ loanChart.aktif }}</span>
                         </div>
@@ -223,11 +223,11 @@ const formatCurrency = (value) =>
                                             <div class="text-[10px] text-slate-400 font-mono mt-0.5">{{ tx.nomor_transaksi }}</div>
                                         </td>
                                         <td class="px-5 py-3">
-                                            <span :class="tx.jenis_transaksi === 'setor' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'" class="px-2 py-0.5 rounded border text-[10px] font-bold uppercase">
+                                            <span :class="tx.jenis_transaksi === 'setor' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-rose-50 text-rose-700 border-rose-100'" class="px-2 py-0.5 rounded border text-[10px] font-bold uppercase">
                                                 {{ tx.jenis_transaksi }}
                                             </span>
                                         </td>
-                                        <td class="px-5 py-3 text-right font-mono font-bold" :class="tx.jenis_transaksi === 'setor' ? 'text-emerald-700' : 'text-rose-700'">
+                                        <td class="px-5 py-3 text-right font-mono font-bold" :class="tx.jenis_transaksi === 'setor' ? 'text-blue-700' : 'text-rose-700'">
                                             {{ formatCurrency(tx.nominal) }}
                                         </td>
                                     </tr>

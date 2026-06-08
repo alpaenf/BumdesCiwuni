@@ -42,9 +42,9 @@ const excelUrl = computed(() => `${route('laporan.nasabah.excel')}?${buildQuery(
                     <p class="text-xs uppercase text-[color:var(--color-secondary)]">Total Nasabah</p>
                     <p class="mt-1 text-2xl font-bold text-[color:var(--color-on-surface)]">{{ summary.total }}</p>
                 </div>
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-                    <p class="text-xs uppercase text-emerald-600">Aktif</p>
-                    <p class="mt-1 text-2xl font-bold text-emerald-700">{{ summary.aktif }}</p>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 text-center">
+                    <p class="text-xs uppercase text-blue-600">Aktif</p>
+                    <p class="mt-1 text-2xl font-bold text-blue-700">{{ summary.aktif }}</p>
                 </div>
                 <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 text-center shadow-sm">
                     <p class="text-xs uppercase text-slate-600">Tidak Aktif</p>
@@ -89,7 +89,7 @@ const excelUrl = computed(() => `${route('laporan.nasabah.excel')}?${buildQuery(
                             <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal_bergabung) }}</td>
                             <td class="px-4 py-3 text-center">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                    :class="row.status === 'aktif' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'">{{ row.status }}</span>
+                                    :class="row.status === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">{{ row.status }}</span>
                             </td>
                         </tr>
                     </tbody>

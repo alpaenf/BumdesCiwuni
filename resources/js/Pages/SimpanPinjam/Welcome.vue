@@ -378,7 +378,7 @@ onMounted(() => {
 
                     <div class="flex flex-col items-center">
                         <span class="text-[8px] font-bold uppercase tracking-widest text-blue-700 mb-2">Kepala Unit</span>
-                        <div class="bg-blue-55/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
+                        <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
                             <div class="w-12 h-12 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
                                 <img v-if="settings.org_unit_sp_image" :src="settings.org_unit_sp_image" class="w-full h-full object-cover" />
                                 <span v-else>{{ getInitials(settings.org_unit_sp_name || 'Fajar Nugroho') }}</span>
@@ -396,8 +396,8 @@ onMounted(() => {
 
                     <div class="flex flex-col items-center">
                         <span class="text-[8px] font-bold uppercase tracking-widest text-blue-700 mb-2">Staf Unit</span>
-                        <div class="bg-blue-55/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
-                            <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-400 to-blue-650 flex items-center justify-center text-white font-bold text-xs">
+                        <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
+                            <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs">
                                 <img v-if="settings.org_unit_sp_staff_image" :src="settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
                                 <span v-else>{{ getInitials(settings.org_unit_sp_staff_name || 'Staf SP') }}</span>
                             </div>
@@ -563,7 +563,7 @@ onMounted(() => {
                         <p class="text-xs text-slate-400 mt-1">Sabtu: 08.00 - 12.00 WIB</p>
                     </div>
                     <div class="mt-6">
-                        <a v-if="settings.contact_phone" :href="`https://wa.me/${settings.contact_phone.replace(/[^0-9]/g, '')}`" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-650 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg transition shadow-sm">
+                        <a v-if="settings.contact_phone" :href="`https://wa.me/${settings.contact_phone.replace(/[^0-9]/g, '')}`" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg transition shadow-sm">
                             <span class="material-symbols-outlined text-[18px]">chat</span>
                             Hubungi Pelayanan via WhatsApp
                         </a>

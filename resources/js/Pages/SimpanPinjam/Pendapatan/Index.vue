@@ -47,17 +47,17 @@ const activeTab = ref('tabungan');
                     <p class="text-sm text-slate-500">Periode: {{ bulanNama }} {{ tahun }}</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <select v-model="selectedBulan" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                    <select v-model="selectedBulan" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                         <option v-for="b in bulanOptions" :key="b.value" :value="b.value">{{ b.label }}</option>
                     </select>
-                    <select v-model="selectedTahun" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                    <select v-model="selectedTahun" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                         <option v-for="y in tahunOptions" :key="y" :value="y">{{ y }}</option>
                     </select>
                 </div>
             </div>
 
             <!-- Pendapatan Kotor Total -->
-            <div class="rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 p-6 text-white shadow-lg">
+            <div class="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 p-6 text-white shadow-lg">
                 <div class="flex items-center gap-3 mb-2">
                     <span class="material-symbols-outlined text-2xl opacity-80">account_balance_wallet</span>
                     <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Total Pendapatan Kotor {{ tahun }}</p>
@@ -80,7 +80,7 @@ const activeTab = ref('tabungan');
             <!-- Rincian Pengurangan Pendapatan -->
             <div class="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4">
-                    <span class="material-symbols-outlined text-lg text-emerald-600">receipt_long</span>
+                    <span class="material-symbols-outlined text-lg text-blue-600">receipt_long</span>
                     Rincian Pengurangan Pendapatan
                 </h3>
                 <div class="space-y-4">
@@ -88,12 +88,12 @@ const activeTab = ref('tabungan');
                         <div class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full" 
                                 :class="{
-                                    'bg-emerald-500': item.nama === 'Laba Bersih',
+                                    'bg-blue-500': item.nama === 'Laba Bersih',
                                     'bg-blue-500': item.nama === 'Biaya Gaji',
                                     'bg-amber-500': item.nama === 'Biaya Operasional',
                                     'bg-purple-500': item.nama === 'Biaya Asuransi',
                                 }"></span>
-                            <span class="text-sm font-medium text-slate-700" :class="{'font-bold text-emerald-700': item.nama === 'Laba Bersih'}">{{ item.nama }}</span>
+                            <span class="text-sm font-medium text-slate-700" :class="{'font-bold text-blue-700': item.nama === 'Laba Bersih'}">{{ item.nama }}</span>
                         </div>
                         <div class="text-right text-sm font-semibold" :class="item.nominal < 0 ? 'text-red-600' : 'text-slate-800'">
                             {{ fmt(item.nominal) }}
@@ -102,7 +102,7 @@ const activeTab = ref('tabungan');
                 </div>
                 <div class="mt-4 pt-4 flex items-center justify-between border-t-2 border-slate-100">
                     <span class="text-sm font-bold text-slate-800">Total Pendapatan Kotor</span>
-                    <span class="text-sm font-bold text-emerald-700">{{ fmt(pendapatanKotor) }}</span>
+                    <span class="text-sm font-bold text-blue-700">{{ fmt(pendapatanKotor) }}</span>
                 </div>
             </div>
 
@@ -111,7 +111,7 @@ const activeTab = ref('tabungan');
                 <div class="flex items-center gap-1 mb-4 border-b border-slate-100 pb-3">
                     <button @click="activeTab = 'tabungan'"
                         class="px-4 py-2 rounded-lg text-xs font-semibold transition"
-                        :class="activeTab === 'tabungan' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100'">
+                        :class="activeTab === 'tabungan' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'">
                         <span class="material-symbols-outlined text-xs align-middle mr-1">savings</span>Tabungan Reguler
                     </button>
                     <button @click="activeTab = 'sembako'"
@@ -147,7 +147,7 @@ const activeTab = ref('tabungan');
                                     <td class="py-2.5 pe-4 text-slate-600">{{ item.tanggal }}</td>
                                     <td class="py-2.5 pe-4 font-medium text-slate-800">{{ item.nasabah }}</td>
                                     <td class="py-2.5 pe-4 text-slate-500">{{ item.keterangan }}</td>
-                                    <td class="py-2.5 text-right font-semibold text-emerald-700">{{ fmt(item.laba) }}</td>
+                                    <td class="py-2.5 text-right font-semibold text-blue-700">{{ fmt(item.laba) }}</td>
                                 </tr>
                                 <tr v-if="detailTabungan.length === 0">
                                     <td colspan="4" class="py-8 text-center text-slate-400">Belum ada data biaya promosi tabungan di tahun ini.</td>
@@ -156,7 +156,7 @@ const activeTab = ref('tabungan');
                             <tfoot v-if="detailTabungan.length > 0">
                                 <tr class="border-t-2 border-slate-200">
                                     <td colspan="3" class="py-2.5 font-bold text-slate-800">Total Biaya Promosi Tabungan Reguler</td>
-                                    <td class="py-2.5 text-right font-bold text-emerald-700">{{ fmt(labaTabungan) }}</td>
+                                    <td class="py-2.5 text-right font-bold text-blue-700">{{ fmt(labaTabungan) }}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -227,7 +227,7 @@ const activeTab = ref('tabungan');
                                     <td class="py-2.5 pe-4 text-right font-semibold text-blue-700">{{ fmt(item.bunga_nominal) }}</td>
                                     <td class="py-2.5 text-center">
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                                            :class="item.status === 'lunas' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">
+                                            :class="item.status === 'lunas' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'">
                                             {{ item.status }}
                                         </span>
                                     </td>

@@ -70,7 +70,7 @@ const submit = () => {
                     <h1 class="text-3xl font-extrabold tracking-tight leading-tight text-slate-900">
                         {{ app === 'unit' ? 'Unit Simpan Pinjam' : 'BUMDesa Dammar Wulan' }}
                     </h1>
-                    <p class="text-emerald-600 font-semibold mt-1 uppercase tracking-wider text-xs">
+                    <p class="text-blue-600 font-semibold mt-1 uppercase tracking-wider text-xs">
                         {{ app === 'unit' ? 'Layanan Keuangan Mikro' : 'Portal BUMDesa Terintegrasi' }}
                     </p>
                 </div>
@@ -224,7 +224,7 @@ const submit = () => {
                     <!-- Submit Button -->
                     <button
                         type="submit"
-                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-[color:var(--color-primary)] py-3.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] hover:bg-emerald-800"
+                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-[color:var(--color-primary)] py-3.5 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] hover:bg-blue-800"
                         :class="{ 'opacity-70': form.processing }"
                         :disabled="form.processing"
                     >

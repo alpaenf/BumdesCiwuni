@@ -31,11 +31,11 @@ const submit = () => {
             </Link>
             <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-6 shadow-sm">
                 <!-- Info Nasabah -->
-                <div class="mb-6 rounded-lg bg-emerald-50 p-4">
-                    <p class="text-xs font-semibold uppercase text-emerald-600">Nasabah</p>
-                    <p class="mt-1 font-bold text-emerald-900">{{ nasabah.nama }}</p>
-                    <p class="font-mono text-sm text-emerald-700">{{ nasabah.nomor_rekening }}</p>
-                    <p class="mt-2 text-sm text-emerald-700">Saldo Saat Ini: <span class="font-bold">{{ formatCurrency(tabungan.saldo) }}</span></p>
+                <div class="mb-6 rounded-lg bg-blue-50 p-4">
+                    <p class="text-xs font-semibold uppercase text-blue-600">Nasabah</p>
+                    <p class="mt-1 font-bold text-blue-900">{{ nasabah.nama }}</p>
+                    <p class="font-mono text-sm text-blue-700">{{ nasabah.nomor_rekening }}</p>
+                    <p class="mt-2 text-sm text-blue-700">Saldo Saat Ini: <span class="font-bold">{{ formatCurrency(tabungan.saldo) }}</span></p>
                 </div>
 
                 <form @submit.prevent="submit" class="space-y-4">
@@ -63,13 +63,13 @@ const submit = () => {
                     <!-- Preview Saldo -->
                     <div v-if="form.nominal" class="rounded-lg bg-[color:var(--color-surface-container-low)] p-4 text-sm">
                         <div class="flex justify-between"><span class="text-[color:var(--color-secondary)]">Saldo Saat Ini</span><span>{{ formatCurrency(tabungan.saldo) }}</span></div>
-                        <div class="flex justify-between text-emerald-600"><span>+ Setoran</span><span>{{ formatCurrency(form.nominal) }}</span></div>
+                        <div class="flex justify-between text-blue-600"><span>+ Setoran</span><span>{{ formatCurrency(form.nominal) }}</span></div>
                         <div class="mt-2 flex justify-between border-t border-[color:var(--color-outline-variant)] pt-2 font-bold"><span>Saldo Baru</span><span>{{ formatCurrency(Number(tabungan.saldo) + Number(form.nominal)) }}</span></div>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-2">
                         <Link :href="route('tabungan.index')" class="rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
-                        <button type="submit" :disabled="form.processing" class="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+                        <button type="submit" :disabled="form.processing" class="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
                             <span class="material-symbols-outlined text-base">add_circle</span> Simpan Setoran
                         </button>
                     </div>

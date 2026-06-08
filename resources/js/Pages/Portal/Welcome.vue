@@ -24,7 +24,7 @@ const formatNumber = (num) => {
 
 const getStatusBadge = (status) => {
     const map = {
-        aktif: { text: 'Aktif', class: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+        aktif: { text: 'Aktif', class: 'bg-blue-100 text-blue-800 border-blue-200' },
         coming_soon: { text: 'Coming Soon', class: 'bg-amber-100 text-amber-800 border-amber-200' },
         nonaktif: { text: 'Nonaktif', class: 'bg-slate-100 text-slate-600 border-slate-200' },
     };
@@ -33,7 +33,7 @@ const getStatusBadge = (status) => {
 
 const getTypeBadge = (tipe) => {
     return tipe === 'internal'
-        ? { text: 'Aplikasi Internal', class: 'bg-emerald-100 text-emerald-800 border-emerald-200' }
+        ? { text: 'Aplikasi Internal', class: 'bg-blue-100 text-blue-800 border-blue-200' }
         : { text: 'Website Unit', class: 'bg-blue-100 text-blue-800 border-blue-200' };
 };
 
@@ -53,7 +53,7 @@ onMounted(() => {
 <template>
     <Head title="Portal BUMDes Dammar Wulan" />
 
-    <div class="min-h-screen bg-white text-[#181d18] font-sans antialiased selection:bg-emerald-600 selection:text-white">
+    <div class="min-h-screen bg-white text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white">
         <!-- Header / Navbar -->
         <header :class="[
             'fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/90 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg transition-all duration-300',
@@ -63,44 +63,44 @@ onMounted(() => {
                 <div class="flex items-center gap-2">
                     <img src="/logo2.png" alt="Logo" class="h-9 w-9 object-contain" />
                     <div>
-                        <h1 class="text-xs font-extrabold text-emerald-800 leading-tight">{{ settings.bumdes_name || 'BUMDes Dammar Wulan' }}</h1>
+                        <h1 class="text-xs font-extrabold text-blue-800 leading-tight">{{ settings.bumdes_name || 'BUMDes Dammar Wulan' }}</h1>
                         <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">Portal Terintegrasi</p>
                     </div>
                 </div>
 
                 <nav class="hidden md:flex items-center gap-5">
-                    <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Tentang</a>
-                    <a href="#unit-usaha" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Unit Usaha</a>
-                    <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Struktur</a>
-                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Berita</a>
-                    <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Kontak</a>
+                    <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Tentang</a>
+                    <a href="#unit-usaha" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Unit Usaha</a>
+                    <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Struktur</a>
+                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Berita</a>
+                    <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Kontak</a>
                     <div class="border-l border-[#bfc9bd] pl-4 flex items-center gap-2">
-                        <Link v-if="$page.props.auth?.user" :href="route('portal.cms.dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-lg hover:bg-emerald-700 transition shadow-sm">
+                        <Link v-if="$page.props.auth?.user" :href="route('portal.cms.dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-lg hover:bg-blue-700 transition shadow-sm">
                             Dashboard CMS
                         </Link>
-                        <Link v-else :href="route('portal.login')" class="inline-flex items-center justify-center px-4 py-2 border border-emerald-600 text-emerald-700 font-semibold text-xs rounded-lg hover:bg-emerald-50 transition">
+                        <Link v-else :href="route('portal.login')" class="inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-semibold text-xs rounded-lg hover:bg-blue-50 transition">
                             Masuk Portal
                         </Link>
                     </div>
                 </nav>
 
-                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center text-[#404940] hover:text-emerald-700 transition">
+                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center text-[#404940] hover:text-blue-700 transition">
                     <span class="material-symbols-outlined text-[22px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
                 </button>
             </div>
 
             <transition name="mobile-menu">
                 <div v-if="isMobileMenuOpen" class="md:hidden mt-3 pt-3 border-t border-[#bfc9bd]/30 flex flex-col gap-2.5">
-                    <a href="#tentang" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Tentang</a>
-                    <a href="#unit-usaha" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Unit Usaha</a>
-                    <a href="#struktur" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Struktur</a>
-                    <a href="#berita" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Berita</a>
-                    <a href="#kontak" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Kontak</a>
+                    <a href="#tentang" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Tentang</a>
+                    <a href="#unit-usaha" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Unit Usaha</a>
+                    <a href="#struktur" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Struktur</a>
+                    <a href="#berita" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Berita</a>
+                    <a href="#kontak" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Kontak</a>
                     <div class="border-t border-[#bfc9bd]/30 pt-2.5">
-                        <Link v-if="$page.props.auth?.user" :href="route('portal.cms.dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shadow-sm">
+                        <Link v-if="$page.props.auth?.user" :href="route('portal.cms.dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow-sm">
                             Dashboard CMS
                         </Link>
-                        <Link v-else :href="route('portal.login')" class="w-full inline-flex items-center justify-center px-4 py-2 border border-emerald-600 text-emerald-700 font-bold text-xs rounded-xl hover:bg-emerald-50 transition">
+                        <Link v-else :href="route('portal.login')" class="w-full inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-bold text-xs rounded-xl hover:bg-blue-50 transition">
                             Masuk Portal
                         </Link>
                     </div>
@@ -110,16 +110,16 @@ onMounted(() => {
 
         <!-- Hero Section -->
         <section class="relative pt-28 pb-16 overflow-hidden">
-            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-emerald-700/5 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-blue-700/5 rounded-full blur-3xl"></div>
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-100 text-[10px] font-bold uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                     Portal Terintegrasi BUMDes
                 </span>
 
-                <h2 class="text-3xl md:text-5xl font-extrabold text-emerald-800 leading-tight md:leading-none tracking-tight">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-blue-800 leading-tight md:leading-none tracking-tight">
                     {{ settings.hero_title || 'Portal Resmi BUMDesa Dammar Wulan' }}
                 </h2>
 
@@ -128,7 +128,7 @@ onMounted(() => {
                 </p>
 
                 <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <a :href="settings.hero_cta_link || '#unit-usaha'" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                    <a :href="settings.hero_cta_link || '#unit-usaha'" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
                         {{ settings.hero_cta_text || 'Lihat Unit Usaha' }}
                         <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                     </a>
@@ -143,7 +143,7 @@ onMounted(() => {
         <section id="tentang" class="pt-16 pb-20 bg-white border-b border-[#bfc9bd]">
             <div class="max-w-5xl mx-auto px-6 grid gap-10 md:grid-cols-2 items-center">
                 <div class="space-y-5 portal-animate">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Tentang Kami</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Tentang Kami</span>
                     <h3 class="text-2xl font-bold text-slate-800 leading-tight">
                         {{ settings.about_title || 'Mengenal BUMDesa Dammar Wulan' }}
                     </h3>
@@ -158,9 +158,9 @@ onMounted(() => {
 
                 <div class="portal-animate space-y-6">
                     <!-- Visi -->
-                    <div v-if="settings.visi" class="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
-                        <h4 class="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Visi</h4>
-                        <p class="text-sm text-emerald-900 leading-relaxed">{{ settings.visi }}</p>
+                    <div v-if="settings.visi" class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+                        <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">Visi</h4>
+                        <p class="text-sm text-blue-900 leading-relaxed">{{ settings.visi }}</p>
                     </div>
                     <!-- Misi -->
                     <div v-if="settings.misi" class="bg-white border border-[#bfc9bd] rounded-xl p-5">
@@ -175,7 +175,7 @@ onMounted(() => {
         <section class="py-20 bg-slate-50 border-b border-[#bfc9bd]">
             <div class="max-w-5xl mx-auto px-6 space-y-16">
                 <div class="text-center space-y-2 mb-12 portal-animate">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Profil Unit Bisnis</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Profil Unit Bisnis</span>
                     <h3 class="text-xl font-bold text-slate-800">Eksplorasi Detail Unit Kerja BUMDes</h3>
                     <p class="text-xs text-[#5c5f61] max-w-md mx-auto">Mengenal lebih dekat bidang usaha yang dikelola secara profesional demi memajukan perekonomian desa.</p>
                 </div>
@@ -183,7 +183,7 @@ onMounted(() => {
                 <div class="space-y-20">
                     <div v-for="(unit, idx) in units" :key="unit.id" class="grid md:grid-cols-2 gap-8 items-center">
                         <div :class="idx % 2 === 1 ? 'order-1 md:order-2' : ''" class="space-y-4 portal-animate">
-                            <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-bold uppercase rounded-full border border-emerald-200">Unit {{ idx + 1 }}</span>
+                            <span class="inline-block px-2.5 py-0.5 bg-blue-50 text-blue-700 text-[9px] font-bold uppercase rounded-full border border-blue-200">Unit {{ idx + 1 }}</span>
                             <h4 class="text-lg font-bold text-slate-800">{{ unit.nama_unit }}</h4>
                             <p class="text-xs md:text-sm text-[#5c5f61] leading-relaxed">
                                 {{ unit.deskripsi }}
@@ -193,7 +193,7 @@ onMounted(() => {
                             <div class="w-40 h-40 md:w-52 md:h-52 flex items-center justify-center bg-transparent shrink-0">
                                 <img v-if="unit.thumbnail || unit.logo" :src="unit.thumbnail || unit.logo" class="w-full h-full object-contain drop-shadow-sm" />
                                 <div v-else class="w-full h-full flex flex-col items-center justify-center text-slate-350">
-                                    <span class="material-symbols-outlined text-[64px] text-emerald-600">{{ unit.icon || 'business' }}</span>
+                                    <span class="material-symbols-outlined text-[64px] text-blue-600">{{ unit.icon || 'business' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -206,7 +206,7 @@ onMounted(() => {
         <section id="unit-usaha" class="py-20 bg-gradient-to-b from-white to-slate-50 border-b border-[#bfc9bd]">
             <div class="max-w-6xl mx-auto px-6 space-y-12">
                 <div class="text-center space-y-3 portal-animate">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">PORTAL INTEGRASI</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">PORTAL INTEGRASI</span>
                     <h3 class="text-2xl font-bold text-slate-800">Unit Usaha BUMDes</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Akses cepat ke portal aplikasi internal dan website resmi dari berbagai divisi bisnis kami.</p>
                 </div>
@@ -215,12 +215,12 @@ onMounted(() => {
                     <div v-for="(unit, idx) in units" :key="unit.id || idx"
                          class="portal-animate"
                          :style="{ transitionDelay: `${idx * 80}ms` }">
-                        <div class="bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full">
+                        <div class="bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full">
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between">
                                     <div class="w-10 h-10 flex items-center justify-center shrink-0">
                                         <img v-if="unit.logo || unit.thumbnail" :src="unit.logo || unit.thumbnail" class="w-full h-full object-contain" />
-                                        <div v-else class="w-full h-full rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                                        <div v-else class="w-full h-full rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
                                             <span class="material-symbols-outlined text-[20px]">{{ unit.icon || 'business' }}</span>
                                         </div>
                                     </div>
@@ -237,11 +237,11 @@ onMounted(() => {
                             </div>
                             <div class="mt-6 pt-4 border-t border-slate-100">
                                 <template v-if="unit.status === 'aktif'">
-                                    <a v-if="unit.tipe === 'external'" :href="unit.api_url" target="_blank" class="w-full inline-flex items-center justify-center gap-1 px-3 py-2 border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-700 font-bold text-[11px] rounded-lg transition">
+                                    <a v-if="unit.tipe === 'external'" :href="unit.api_url" target="_blank" class="w-full inline-flex items-center justify-center gap-1 px-3 py-2 border border-slate-200 hover:border-blue-500 text-slate-700 hover:text-blue-700 font-bold text-[11px] rounded-lg transition">
                                         Kunjungi Website
                                         <span class="material-symbols-outlined text-[12px]">open_in_new</span>
                                     </a>
-                                    <Link v-else-if="unit.slug === 'simpan-pinjam'" :href="route('welcome')" class="w-full inline-flex items-center justify-center gap-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
+                                    <Link v-else-if="unit.slug === 'simpan-pinjam'" :href="route('welcome')" class="w-full inline-flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
                                         Kunjungi Unit
                                         <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
                                     </Link>
@@ -261,7 +261,7 @@ onMounted(() => {
         <section id="struktur" class="py-20 bg-white border-b border-[#bfc9bd]">
             <div class="max-w-6xl mx-auto px-6">
                 <div class="text-center space-y-3 mb-16 portal-animate">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Kepengurusan</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Kepengurusan</span>
                     <h3 class="text-2xl font-bold text-slate-800">Struktur Organisasi BUMDesa</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Jajaran pengurus BUMDesa Dammar Wulan Desa Ciwuni periode 2024–2028 yang berkomitmen melayani masyarakat.</p>
                 </div>
@@ -273,102 +273,102 @@ onMounted(() => {
                         <div class="flex justify-center mb-0">
                             <div class="flex flex-col items-center portal-animate">
                                 <div class="relative group cursor-default">
-                                    <div class="w-20 h-20 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-emerald-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                    <div class="w-20 h-20 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-blue-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                         <img v-if="orgSettings.org_pembina_image" :src="orgSettings.org_pembina_image" class="w-full h-full object-cover" />
                                         <span v-else>SR</span>
                                     </div>
-                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
                                         <span class="material-symbols-outlined text-white text-[10px]" style="font-size:10px">verified</span>
                                     </span>
                                 </div>
                                 <div class="mt-3 text-center">
                                     <p class="text-xs font-extrabold text-slate-800">{{ orgSettings.org_pembina_name || 'Surya Ramdhani' }}</p>
-                                    <span class="mt-1 inline-block px-2.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Pembina</span>
+                                    <span class="mt-1 inline-block px-2.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Pembina</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Connector: L1 → L2 -->
                         <div class="flex justify-center portal-animate" style="transition-delay: 80ms">
-                            <div class="w-0.5 h-10 bg-emerald-500/60"></div>
+                            <div class="w-0.5 h-10 bg-blue-500/60"></div>
                         </div>
 
                         <!-- Level 2: Direktur -->
                         <div class="flex justify-center mb-0">
                             <div class="flex flex-col items-center portal-animate" style="transition-delay: 150ms">
                                 <div class="relative group cursor-default">
-                                    <div class="w-20 h-20 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-emerald-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                    <div class="w-20 h-20 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-blue-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                         <img v-if="orgSettings.org_direktur_image" :src="orgSettings.org_direktur_image" class="w-full h-full object-cover" />
                                         <span v-else>AH</span>
                                     </div>
-                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
                                         <span class="material-symbols-outlined text-white" style="font-size:10px">star</span>
                                     </span>
                                 </div>
                                 <div class="mt-3 text-center">
                                     <p class="text-xs font-extrabold text-slate-800">{{ orgSettings.org_direktur_name || 'Ahmad Hidayat' }}</p>
-                                    <span class="mt-1 inline-block px-2.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Direktur</span>
+                                    <span class="mt-1 inline-block px-2.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Direktur</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Connector: L2 → L3 (horizontal rail) -->
                         <div class="relative flex justify-center mt-0 portal-animate" style="transition-delay: 220ms">
-                            <div class="w-0.5 h-10 bg-emerald-500/60"></div>
+                            <div class="w-0.5 h-10 bg-blue-500/60"></div>
                         </div>
 
                         <!-- Level 3: Sekretaris + Bendahara + Pengawas -->
                         <div class="relative flex justify-center gap-0">
                             <!-- Horizontal line spanning all 3 children -->
-                            <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-emerald-500/40"></div>
+                            <div class="absolute top-0 left-1/4 right-1/4 h-0.5 bg-blue-500/40"></div>
 
                             <!-- Left branch vertical -->
-                            <div class="absolute top-0 left-1/4 w-0.5 h-10 bg-emerald-500/40" style="transform: translateX(-50%)"></div>
+                            <div class="absolute top-0 left-1/4 w-0.5 h-10 bg-blue-500/40" style="transform: translateX(-50%)"></div>
                             <!-- Right branch vertical -->
-                            <div class="absolute top-0 right-1/4 w-0.5 h-10 bg-emerald-500/40" style="transform: translateX(50%)"></div>
+                            <div class="absolute top-0 right-1/4 w-0.5 h-10 bg-blue-500/40" style="transform: translateX(50%)"></div>
                             <!-- Center branch vertical -->
-                            <div class="absolute top-0 left-1/2 w-0.5 h-10 bg-emerald-500/40" style="transform: translateX(-50%)"></div>
+                            <div class="absolute top-0 left-1/2 w-0.5 h-10 bg-blue-500/40" style="transform: translateX(-50%)"></div>
 
                             <div class="grid grid-cols-3 gap-10 w-full max-w-2xl pt-10">
                                 <!-- Sekretaris -->
                                 <div class="flex flex-col items-center portal-animate" style="transition-delay: 300ms">
                                     <div class="relative group cursor-default">
-                                        <div class="w-16 h-16 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-md text-white font-extrabold text-base ring-4 ring-emerald-50/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-16 h-16 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md text-white font-extrabold text-base ring-4 ring-blue-50/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_sekretaris_image" :src="orgSettings.org_sekretaris_image" class="w-full h-full object-cover" />
                                             <span v-else>DP</span>
                                         </div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[10px] font-extrabold text-slate-800">{{ orgSettings.org_sekretaris_name || 'Dewi Puspitasari' }}</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-600 text-white text-[8px] font-bold uppercase tracking-wider rounded-full">Sekretaris</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-600 text-white text-[8px] font-bold uppercase tracking-wider rounded-full">Sekretaris</span>
                                     </div>
                                 </div>
 
                                 <!-- Bendahara -->
                                 <div class="flex flex-col items-center portal-animate" style="transition-delay: 380ms">
                                     <div class="relative group cursor-default">
-                                        <div class="w-16 h-16 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-md text-white font-extrabold text-base ring-4 ring-emerald-50/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-16 h-16 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md text-white font-extrabold text-base ring-4 ring-blue-50/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_bendahara_image" :src="orgSettings.org_bendahara_image" class="w-full h-full object-cover" />
                                             <span v-else>RS</span>
                                         </div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[10px] font-extrabold text-slate-800">{{ orgSettings.org_bendahara_name || 'Rini Setiawati' }}</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-600 text-white text-[8px] font-bold uppercase tracking-wider rounded-full">Bendahara</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-600 text-white text-[8px] font-bold uppercase tracking-wider rounded-full">Bendahara</span>
                                     </div>
                                 </div>
 
                                 <!-- Pengawas -->
                                 <div class="flex flex-col items-center portal-animate" style="transition-delay: 460ms">
                                     <div class="relative group cursor-default">
-                                        <div class="w-16 h-16 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-md text-white font-extrabold text-base ring-4 ring-emerald-50/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-16 h-16 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md text-white font-extrabold text-base ring-4 ring-blue-50/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_pengawas_image" :src="orgSettings.org_pengawas_image" class="w-full h-full object-cover" />
                                             <span v-else>BW</span>
                                         </div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[10px] font-extrabold text-slate-800">{{ orgSettings.org_pengawas_name || 'Bambang Wibowo' }}</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-600 text-white text-[8px] font-bold uppercase tracking-wider rounded-full">Pengawas</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-600 text-white text-[8px] font-bold uppercase tracking-wider rounded-full">Pengawas</span>
                                     </div>
                                 </div>
                             </div>
@@ -376,97 +376,97 @@ onMounted(() => {
 
                         <!-- Connector to unit heads -->
                         <div class="flex justify-center mt-6 portal-animate" style="transition-delay: 520ms">
-                            <div class="w-0.5 h-10 bg-emerald-500/40"></div>
+                            <div class="w-0.5 h-10 bg-blue-500/40"></div>
                         </div>
 
                         <!-- Level 4: Kepala Unit -->
                         <div class="relative">
                             <!-- Horizontal bar spanning columns -->
-                            <div class="absolute top-0 left-[5%] right-[5%] h-0.5 bg-emerald-500/30"></div>
+                            <div class="absolute top-0 left-[5%] right-[5%] h-0.5 bg-blue-500/30"></div>
 
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-10">
                                 <!-- Unit Simpan Pinjam -->
                                 <div class="flex flex-col items-center group relative portal-animate" style="transition-delay: 600ms">
-                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-emerald-500/30" style="transform:translateX(-50%)"></div>
+                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-blue-500/30" style="transform:translateX(-50%)"></div>
                                     <div class="relative cursor-default">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-14 h-14 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_unit_sp_image" :src="orgSettings.org_unit_sp_image" class="w-full h-full object-cover" />
                                             <span v-else class="material-symbols-outlined text-2xl">savings</span>
                                         </div>
-                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
+                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[9px] font-extrabold text-slate-800">{{ orgSettings.org_unit_sp_name || 'Fajar Nugroho' }}</p>
                                         <p class="text-[8px] text-slate-500 mt-0.5">Ka. Unit</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-emerald-200">Simpan Pinjam</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-blue-200">Simpan Pinjam</span>
                                     </div>
                                 </div>
 
                                 <!-- Unit KP-SPAMS -->
                                 <div class="flex flex-col items-center group relative portal-animate" style="transition-delay: 680ms">
-                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-emerald-500/30" style="transform:translateX(-50%)"></div>
+                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-blue-500/30" style="transform:translateX(-50%)"></div>
                                     <div class="relative cursor-default">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-14 h-14 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_unit_kpspams_image" :src="orgSettings.org_unit_kpspams_image" class="w-full h-full object-cover" />
                                             <span v-else class="material-symbols-outlined text-2xl">water_drop</span>
                                         </div>
-                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
+                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[9px] font-extrabold text-slate-800">{{ orgSettings.org_unit_kpspams_name || 'Mulyadi' }}</p>
                                         <p class="text-[8px] text-slate-500 mt-0.5">Ka. Unit</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-emerald-200">KP-SPAMS</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-blue-200">KP-SPAMS</span>
                                     </div>
                                 </div>
 
                                 <!-- Unit Toko / Sembako -->
                                 <div class="flex flex-col items-center group relative portal-animate" style="transition-delay: 760ms">
-                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-emerald-500/30" style="transform:translateX(-50%)"></div>
+                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-blue-500/30" style="transform:translateX(-50%)"></div>
                                     <div class="relative cursor-default">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-14 h-14 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_unit_toko_image" :src="orgSettings.org_unit_toko_image" class="w-full h-full object-cover" />
                                             <span v-else class="material-symbols-outlined text-2xl">storefront</span>
                                         </div>
-                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
+                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[9px] font-extrabold text-slate-800">{{ orgSettings.org_unit_toko_name || 'Siti Aminah' }}</p>
                                         <p class="text-[8px] text-slate-500 mt-0.5">Ka. Unit</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-emerald-200">Toko Desa</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-blue-200">Toko Desa</span>
                                     </div>
                                 </div>
 
                                 <!-- Unit Wisata -->
                                 <div class="flex flex-col items-center group relative portal-animate" style="transition-delay: 840ms">
-                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-emerald-500/30" style="transform:translateX(-50%)"></div>
+                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-blue-500/30" style="transform:translateX(-50%)"></div>
                                     <div class="relative cursor-default">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-14 h-14 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_unit_wisata_image" :src="orgSettings.org_unit_wisata_image" class="w-full h-full object-cover" />
                                             <span v-else class="material-symbols-outlined text-2xl">forest</span>
                                         </div>
-                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
+                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[9px] font-extrabold text-slate-800">{{ orgSettings.org_unit_wisata_name || 'Eko Prasetyo' }}</p>
                                         <p class="text-[8px] text-slate-500 mt-0.5">Ka. Unit</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-emerald-200">Wisata</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-blue-200">Wisata</span>
                                     </div>
                                 </div>
 
                                 <!-- Unit TPS3R -->
                                 <div class="flex flex-col items-center group relative portal-animate col-span-2 md:col-span-1" style="transition-delay: 920ms">
-                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-emerald-500/30" style="transform:translateX(-50%)"></div>
+                                    <div class="absolute -top-10 left-1/2 w-0.5 h-10 bg-blue-500/30" style="transform:translateX(-50%)"></div>
                                     <div class="relative cursor-default">
-                                        <div class="w-14 h-14 rounded-2xl border-2 border-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center shadow text-emerald-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                        <div class="w-14 h-14 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-700 font-extrabold text-sm group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                             <img v-if="orgSettings.org_unit_tps3r_image" :src="orgSettings.org_unit_tps3r_image" class="w-full h-full object-cover" />
                                             <span v-else class="material-symbols-outlined text-2xl">delete_sweep</span>
                                         </div>
-                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
+                                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
                                     </div>
                                     <div class="mt-3 text-center">
                                         <p class="text-[9px] font-extrabold text-slate-800">{{ orgSettings.org_unit_tps3r_name || 'Budi Santoso' }}</p>
                                         <p class="text-[8px] text-slate-500 mt-0.5">Ka. Unit</p>
-                                        <span class="mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-emerald-200">TPS3R</span>
+                                        <span class="mt-1 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[7px] font-bold uppercase tracking-wider rounded-full border border-blue-200">TPS3R</span>
                                     </div>
                                 </div>
                             </div>
@@ -483,53 +483,53 @@ onMounted(() => {
                 <div class="md:hidden space-y-8">
                     <!-- Pembina -->
                     <div class="flex flex-col items-center">
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-700 mb-2">Pembina</span>
-                        <div class="w-full max-w-[280px] bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-4 portal-animate">
-                            <div class="w-14 h-14 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700 mb-2">Pembina</span>
+                        <div class="w-full max-w-[280px] bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-4 portal-animate">
+                            <div class="w-14 h-14 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
                                 <img v-if="orgSettings.org_pembina_image" :src="orgSettings.org_pembina_image" class="w-full h-full object-cover" />
                                 <span v-else>SR</span>
                             </div>
                             <div>
                                 <h4 class="text-xs font-extrabold text-slate-800">{{ orgSettings.org_pembina_name || 'Surya Ramdhani' }}</h4>
-                                <p class="text-[10px] font-bold text-emerald-700 mt-0.5">Pembina Utama</p>
+                                <p class="text-[10px] font-bold text-blue-700 mt-0.5">Pembina Utama</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Line separator -->
                     <div class="flex justify-center -my-2 portal-animate">
-                        <div class="w-0.5 h-6 bg-emerald-500/30"></div>
+                        <div class="w-0.5 h-6 bg-blue-500/30"></div>
                     </div>
 
                     <!-- Direktur -->
                     <div class="flex flex-col items-center">
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-700 mb-2">Direksi Utama</span>
-                        <div class="w-full max-w-[280px] bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-4 portal-animate">
-                            <div class="w-14 h-14 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700 mb-2">Direksi Utama</span>
+                        <div class="w-full max-w-[280px] bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-4 portal-animate">
+                            <div class="w-14 h-14 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
                                 <img v-if="orgSettings.org_direktur_image" :src="orgSettings.org_direktur_image" class="w-full h-full object-cover" />
                                 <span v-else>AH</span>
                             </div>
                             <div>
                                 <h4 class="text-xs font-extrabold text-slate-800">{{ orgSettings.org_direktur_name || 'Ahmad Hidayat' }}</h4>
-                                <p class="text-[10px] font-bold text-emerald-700 mt-0.5">Direktur</p>
+                                <p class="text-[10px] font-bold text-blue-700 mt-0.5">Direktur</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Line separator -->
                     <div class="flex justify-center -my-2 portal-animate">
-                        <div class="w-0.5 h-6 bg-emerald-500/30"></div>
+                        <div class="w-0.5 h-6 bg-blue-500/30"></div>
                     </div>
 
                     <!-- Sekretaris, Bendahara, Pengawas Grid -->
                     <div class="space-y-3">
                         <div class="text-center portal-animate">
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-700">Manajemen & Pengawas</span>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700">Manajemen & Pengawas</span>
                         </div>
                         <div class="grid grid-cols-1 gap-3 max-w-[280px] mx-auto">
                             <!-- Sekretaris -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-xs">
+                                <div class="w-12 h-12 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
                                     <img v-if="orgSettings.org_sekretaris_image" :src="orgSettings.org_sekretaris_image" class="w-full h-full object-cover" />
                                     <span v-else>DP</span>
                                 </div>
@@ -541,7 +541,7 @@ onMounted(() => {
                             
                             <!-- Bendahara -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-xs">
+                                <div class="w-12 h-12 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
                                     <img v-if="orgSettings.org_bendahara_image" :src="orgSettings.org_bendahara_image" class="w-full h-full object-cover" />
                                     <span v-else>RS</span>
                                 </div>
@@ -553,7 +553,7 @@ onMounted(() => {
 
                             <!-- Pengawas -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-xs">
+                                <div class="w-12 h-12 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
                                     <img v-if="orgSettings.org_pengawas_image" :src="orgSettings.org_pengawas_image" class="w-full h-full object-cover" />
                                     <span v-else>BW</span>
                                 </div>
@@ -567,72 +567,72 @@ onMounted(() => {
 
                     <!-- Line separator -->
                     <div class="flex justify-center -my-2 portal-animate">
-                        <div class="w-0.5 h-6 bg-emerald-500/30"></div>
+                        <div class="w-0.5 h-6 bg-blue-500/30"></div>
                     </div>
 
                     <!-- Kepala Unit -->
                     <div class="space-y-3">
                         <div class="text-center portal-animate">
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-700">Kepala Unit Kerja</span>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700">Kepala Unit Kerja</span>
                         </div>
                         <div class="grid grid-cols-1 gap-3 max-w-[280px] mx-auto">
                             <!-- Simpan Pinjam -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-xl border border-emerald-400 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                <div class="w-12 h-12 rounded-xl border border-blue-400 overflow-hidden shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                     <img v-if="orgSettings.org_unit_sp_image" :src="orgSettings.org_unit_sp_image" class="w-full h-full object-cover" />
                                     <span v-else class="material-symbols-outlined text-xl">savings</span>
                                 </div>
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-800 leading-tight">{{ orgSettings.org_unit_sp_name || 'Fajar Nugroho' }}</h4>
-                                    <p class="text-[9px] text-emerald-650 font-bold mt-0.5">Ka. Unit Simpan Pinjam</p>
+                                    <p class="text-[9px] text-blue-600 font-bold mt-0.5">Ka. Unit Simpan Pinjam</p>
                                 </div>
                             </div>
 
                             <!-- KP-SPAMS -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-xl border border-emerald-400 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                <div class="w-12 h-12 rounded-xl border border-blue-400 overflow-hidden shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                     <img v-if="orgSettings.org_unit_kpspams_image" :src="orgSettings.org_unit_kpspams_image" class="w-full h-full object-cover" />
                                     <span v-else class="material-symbols-outlined text-xl">water_drop</span>
                                 </div>
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-800 leading-tight">{{ orgSettings.org_unit_kpspams_name || 'Mulyadi' }}</h4>
-                                    <p class="text-[9px] text-emerald-650 font-bold mt-0.5">Ka. Unit KP-SPAMS</p>
+                                    <p class="text-[9px] text-blue-600 font-bold mt-0.5">Ka. Unit KP-SPAMS</p>
                                 </div>
                             </div>
 
                             <!-- Toko Desa -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-xl border border-emerald-400 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                <div class="w-12 h-12 rounded-xl border border-blue-400 overflow-hidden shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                     <img v-if="orgSettings.org_unit_toko_image" :src="orgSettings.org_unit_toko_image" class="w-full h-full object-cover" />
                                     <span v-else class="material-symbols-outlined text-xl">storefront</span>
                                 </div>
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-800 leading-tight">{{ orgSettings.org_unit_toko_name || 'Siti Aminah' }}</h4>
-                                    <p class="text-[9px] text-emerald-650 font-bold mt-0.5">Ka. Unit Toko Desa</p>
+                                    <p class="text-[9px] text-blue-600 font-bold mt-0.5">Ka. Unit Toko Desa</p>
                                 </div>
                             </div>
 
                             <!-- Wisata -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-xl border border-emerald-400 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                <div class="w-12 h-12 rounded-xl border border-blue-400 overflow-hidden shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                     <img v-if="orgSettings.org_unit_wisata_image" :src="orgSettings.org_unit_wisata_image" class="w-full h-full object-cover" />
                                     <span v-else class="material-symbols-outlined text-xl">forest</span>
                                 </div>
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-800 leading-tight">{{ orgSettings.org_unit_wisata_name || 'Eko Prasetyo' }}</h4>
-                                    <p class="text-[9px] text-emerald-650 font-bold mt-0.5">Ka. Unit Wisata Desa</p>
+                                    <p class="text-[9px] text-blue-600 font-bold mt-0.5">Ka. Unit Wisata Desa</p>
                                 </div>
                             </div>
 
                             <!-- TPS3R -->
                             <div class="bg-white border border-[#bfc9bd] rounded-2xl p-3 flex items-center gap-3 portal-animate">
-                                <div class="w-12 h-12 rounded-xl border border-emerald-400 overflow-hidden shrink-0 bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                <div class="w-12 h-12 rounded-xl border border-blue-400 overflow-hidden shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                     <img v-if="orgSettings.org_unit_tps3r_image" :src="orgSettings.org_unit_tps3r_image" class="w-full h-full object-cover" />
                                     <span v-else class="material-symbols-outlined text-xl">delete_sweep</span>
                                 </div>
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-800 leading-tight">{{ orgSettings.org_unit_tps3r_name || 'Budi Santoso' }}</h4>
-                                    <p class="text-[9px] text-emerald-650 font-bold mt-0.5">Ka. Unit TPS3R</p>
+                                    <p class="text-[9px] text-blue-600 font-bold mt-0.5">Ka. Unit TPS3R</p>
                                 </div>
                             </div>
                         </div>
@@ -645,7 +645,7 @@ onMounted(() => {
         <section id="berita" class="py-20 bg-white border-b border-[#bfc9bd]">
             <div class="max-w-5xl mx-auto px-6 space-y-12">
                 <div class="text-center space-y-3 portal-animate">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Kabar Desa</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Kabar Desa</span>
                     <h3 class="text-2xl font-bold text-slate-800">Berita & Informasi Terkini</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Ikuti perkembangan terbaru dari BUMDes Dammar Wulan.</p>
                 </div>
@@ -658,7 +658,7 @@ onMounted(() => {
                     <div v-for="(post, idx) in posts" :key="post.id"
                          class="portal-animate"
                          :style="{ transitionDelay: `${idx * 100}ms` }">
-                        <Link :href="route('portal.berita.detail', post.slug)" class="bg-white border border-[#bfc9bd]/60 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md hover:border-emerald-400/45 transition-all duration-300 group cursor-pointer h-full">
+                        <Link :href="route('portal.berita.detail', post.slug)" class="bg-white border border-[#bfc9bd]/60 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md hover:border-blue-400/45 transition-all duration-300 group cursor-pointer h-full">
                             <div>
                                 <div class="relative overflow-hidden aspect-[4/3] bg-slate-100 border-b border-slate-100">
                                     <img v-if="post.thumbnail" :src="post.thumbnail" :alt="post.judul" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -667,10 +667,10 @@ onMounted(() => {
                                     </div>
                                 </div>
                                 <div class="p-5 space-y-3">
-                                    <div class="text-xs font-bold text-emerald-700 uppercase tracking-wide">
+                                    <div class="text-xs font-bold text-blue-700 uppercase tracking-wide">
                                         {{ formatDate(post.published_at) }}
                                     </div>
-                                    <h4 class="font-bold text-slate-800 text-sm leading-snug group-hover:text-emerald-700 transition-colors line-clamp-2">
+                                    <h4 class="font-bold text-slate-800 text-sm leading-snug group-hover:text-blue-700 transition-colors line-clamp-2">
                                         {{ post.judul }}
                                     </h4>
                                     <p class="text-xs text-[#5c5f61] leading-relaxed line-clamp-3">
@@ -679,7 +679,7 @@ onMounted(() => {
                                 </div>
                             </div>
                             <div class="px-5 pb-5 pt-0">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 group-hover:text-emerald-800 transition">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 group-hover:text-blue-800 transition">
                                     Baca Selengkapnya
                                     <span class="material-symbols-outlined text-xs font-bold transition-transform group-hover:translate-x-0.5">arrow_forward</span>
                                 </span>
@@ -701,14 +701,14 @@ onMounted(() => {
         <section id="kontak" class="py-20 bg-slate-50 border-b border-[#bfc9bd]">
             <div class="max-w-5xl mx-auto px-6">
                 <div class="text-center space-y-3 mb-12 portal-animate">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Hubungi Kami</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Hubungi Kami</span>
                     <h3 class="text-2xl font-bold text-slate-800">Kontak & Lokasi</h3>
                 </div>
 
                 <div class="grid gap-8 md:grid-cols-2">
                     <div class="space-y-6 portal-animate">
                         <div v-if="settings.contact_address" class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[20px]">location_on</span>
                             </div>
                             <div>
@@ -717,7 +717,7 @@ onMounted(() => {
                             </div>
                         </div>
                         <div v-if="settings.contact_phone" class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[20px]">phone</span>
                             </div>
                             <div>
@@ -726,7 +726,7 @@ onMounted(() => {
                             </div>
                         </div>
                         <div v-if="settings.contact_email" class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                                 <span class="material-symbols-outlined text-[20px]">email</span>
                             </div>
                             <div>
@@ -750,17 +750,17 @@ onMounted(() => {
         </section>
 
         <!-- Footer -->
-        <footer class="py-10 bg-emerald-800 text-white">
+        <footer class="py-10 bg-blue-800 text-white">
             <div class="max-w-5xl mx-auto px-6">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <img src="/logo2.png" alt="Logo" class="h-10 w-10 object-contain" />
                         <div>
                             <p class="text-sm font-bold">{{ settings.bumdes_name || 'BUMDes Dammar Wulan' }}</p>
-                            <p class="text-[10px] text-emerald-200">Portal Terintegrasi</p>
+                            <p class="text-[10px] text-blue-200">Portal Terintegrasi</p>
                         </div>
                     </div>
-                    <p class="text-xs text-emerald-200">{{ settings.footer_text || '© 2024 BUMDesa Dammar Wulan. Hak Cipta Dilindungi.' }}</p>
+                    <p class="text-xs text-blue-200">{{ settings.footer_text || '© 2024 BUMDesa Dammar Wulan. Hak Cipta Dilindungi.' }}</p>
                 </div>
             </div>
         </footer>

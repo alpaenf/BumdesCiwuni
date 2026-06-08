@@ -84,7 +84,7 @@ const onDrop = (targetItem) => {
         <div class="space-y-6">
 
             <!-- Flash Message -->
-            <div v-if="flash?.success" class="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 font-medium flex items-center gap-2">
+            <div v-if="flash?.success" class="rounded-xl bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-700 font-medium flex items-center gap-2">
                 <span class="material-symbols-outlined text-base">check_circle</span>
                 {{ flash.success }}
             </div>
@@ -174,7 +174,7 @@ const onDrop = (targetItem) => {
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                             <button
                                 @click.stop="startEdit(item)"
-                                class="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition shadow"
+                                class="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-blue-50 transition shadow"
                                 title="Edit keterangan"
                             >
                                 <span class="material-symbols-outlined text-sm text-slate-700">edit</span>

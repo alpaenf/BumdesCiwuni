@@ -31,7 +31,7 @@ const submit = () => {
     <PortalLayout>
         <template #header>
             <div class="flex items-center gap-2">
-                <Link :href="route('portal.cms.users.index')" class="text-slate-400 hover:text-emerald-600 transition">
+                <Link :href="route('portal.cms.users.index')" class="text-slate-400 hover:text-blue-600 transition">
                     <span class="material-symbols-outlined text-[20px]">arrow_back</span>
                 </Link>
                 <span>Edit Pengurus</span>
@@ -49,14 +49,14 @@ const submit = () => {
                         <!-- Nama Lengkap -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap <span class="text-rose-500">*</span></label>
-                            <input v-model="form.nama" type="text" required class="w-full border-slate-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500" />
+                            <input v-model="form.nama" type="text" required class="w-full border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" />
                             <p v-if="form.errors.nama" class="mt-1 text-xs text-rose-500">{{ form.errors.nama }}</p>
                         </div>
                         
                         <!-- Email -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email <span class="text-rose-500">*</span></label>
-                            <input v-model="form.email" type="email" required class="w-full border-slate-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500" />
+                            <input v-model="form.email" type="email" required class="w-full border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" />
                             <p v-if="form.errors.email" class="mt-1 text-xs text-rose-500">{{ form.errors.email }}</p>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ const submit = () => {
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Password Baru (Opsional)</label>
                             <div class="relative">
-                                <input v-model="form.password" :type="showPassword ? 'text' : 'password'" class="w-full border-slate-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500 pr-10" placeholder="Kosongkan jika tidak diubah" />
+                                <input v-model="form.password" :type="showPassword ? 'text' : 'password'" class="w-full border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 pr-10" placeholder="Kosongkan jika tidak diubah" />
                                 <button type="button" @click="showPassword = !showPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                                     <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                                 </button>
@@ -78,7 +78,7 @@ const submit = () => {
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
                             <div class="relative">
-                                <input v-model="form.password_confirmation" :type="showPassword ? 'text' : 'password'" class="w-full border-slate-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500 pr-10" placeholder="Ulangi password baru" />
+                                <input v-model="form.password_confirmation" :type="showPassword ? 'text' : 'password'" class="w-full border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 pr-10" placeholder="Ulangi password baru" />
                             </div>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ const submit = () => {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Peran (Role) <span class="text-rose-500">*</span></label>
-                            <select v-model="form.role" class="w-full border-slate-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500 bg-white">
+                            <select v-model="form.role" class="w-full border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 bg-white">
                                 <option v-for="r in roles" :key="r.value" :value="r.value">{{ r.label }}</option>
                             </select>
                             <p class="mt-1.5 text-[11px] text-slate-500 leading-relaxed">
@@ -100,7 +100,7 @@ const submit = () => {
                         
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">Unit Usaha (Kosongkan untuk Pusat)</label>
-                            <select v-model="form.unit_id" class="w-full border-slate-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500 bg-white">
+                            <select v-model="form.unit_id" class="w-full border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 bg-white">
                                 <option value="">-- Pengurus Pusat (Tanpa Unit) --</option>
                                 <option v-for="unit in units" :key="unit.id" :value="unit.id">
                                     {{ unit.nama_unit }}
@@ -115,7 +115,7 @@ const submit = () => {
                         <Link :href="route('portal.cms.users.index')" class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition text-center w-full sm:w-auto">
                             Batal
                         </Link>
-                        <button type="submit" :disabled="form.processing" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg shadow-sm transition flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <button type="submit" :disabled="form.processing" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm transition flex items-center justify-center gap-2 w-full sm:w-auto">
                             <span v-if="form.processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             Simpan Perubahan
                         </button>

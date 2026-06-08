@@ -59,8 +59,8 @@ function executeMulaiBuku(jenis) {
 
         <div class="space-y-5">
             <!-- Flash Message -->
-            <div v-if="flash?.success" class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                <span class="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+            <div v-if="flash?.success" class="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                <span class="material-symbols-outlined text-base text-blue-600">check_circle</span>
                 {{ flash.success }}
             </div>
 
@@ -212,7 +212,7 @@ function executeMulaiBuku(jenis) {
                                 </td>
                                 <td class="px-4 py-3 text-right font-semibold text-slate-700">{{ formatCurrency(row.saldo) }}</td>
                                 <td class="px-4 py-3 text-right font-semibold text-red-600">- {{ formatCurrency(row.potongan) }}</td>
-                                <td class="px-4 py-3 text-right font-semibold text-emerald-600">{{ formatCurrency(row.saldo_setelah) }}</td>
+                                <td class="px-4 py-3 text-right font-semibold text-blue-600">{{ formatCurrency(row.saldo_setelah) }}</td>
                             </tr>
                         </tbody>
                     </table>

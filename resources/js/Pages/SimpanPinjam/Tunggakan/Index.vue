@@ -75,20 +75,20 @@ const formatCurrency = (value) =>
                         <a
                             :href="route('tunggakan.pdf', exportFilters)"
                             target="_blank"
-                            class="rounded-lg border border-emerald-200 px-4 py-2 text-sm text-emerald-700"
+                            class="rounded-lg border border-blue-200 px-4 py-2 text-sm text-blue-700"
                         >
                             Export PDF
                         </a>
                         <a
                             :href="route('tunggakan.excel', exportFilters)"
-                            class="rounded-lg border border-emerald-200 px-4 py-2 text-sm text-emerald-700"
+                            class="rounded-lg border border-blue-200 px-4 py-2 text-sm text-blue-700"
                         >
                             Export Excel
                         </a>
                         <a
                             :href="route('tunggakan.print', exportFilters)"
                             target="_blank"
-                            class="rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white"
+                            class="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white"
                         >
                             Cetak Laporan
                         </a>
@@ -102,12 +102,12 @@ const formatCurrency = (value) =>
                             v-model="form.search"
                             type="text"
                             placeholder="Nama atau nomor rekening"
-                            class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm"
+                            class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm"
                         />
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Status</label>
-                        <select v-model="form.status" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm">
+                        <select v-model="form.status" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm">
                             <option value="">Semua Status</option>
                             <option value="lancar">Lancar</option>
                             <option value="perhatian-khusus">Perhatian Khusus</option>
@@ -117,16 +117,16 @@ const formatCurrency = (value) =>
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Periode Mulai</label>
-                        <input v-model="form.start_date" type="date" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm" />
+                        <input v-model="form.start_date" type="date" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm" />
                     </div>
                     <div>
                         <label class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">Periode Akhir</label>
-                        <input v-model="form.end_date" type="date" class="mt-2 w-full rounded-xl border border-emerald-100 px-3 py-2 text-sm" />
+                        <input v-model="form.end_date" type="date" class="mt-2 w-full rounded-xl border border-blue-100 px-3 py-2 text-sm" />
                     </div>
                     <div class="flex items-end">
                         <button
                             type="submit"
-                            class="w-full rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"
+                            class="w-full rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
                         >
                             Terapkan Filter
                         </button>
@@ -135,9 +135,9 @@ const formatCurrency = (value) =>
             </section>
 
             <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-2xl bg-emerald-50 p-5">
-                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-600">Nasabah Lancar</p>
-                    <p class="mt-2 text-xl font-semibold text-emerald-700">{{ summary.lancar }}</p>
+                <div class="rounded-2xl bg-blue-50 p-5">
+                    <p class="text-xs uppercase tracking-[0.2em] text-blue-600">Nasabah Lancar</p>
+                    <p class="mt-2 text-xl font-semibold text-blue-700">{{ summary.lancar }}</p>
                 </div>
                 <div class="rounded-2xl bg-orange-50 p-5">
                     <p class="text-xs uppercase tracking-[0.2em] text-orange-600">Nasabah Menunggak</p>

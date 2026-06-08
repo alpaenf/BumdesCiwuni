@@ -34,7 +34,7 @@ const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency'
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID') : '-';
 
 const statusColor = {
-    aktif: 'bg-emerald-50 text-emerald-700',
+    aktif: 'bg-blue-50 text-blue-700',
     lunas: 'bg-gray-100 text-gray-600',
     menunggak: 'bg-orange-50 text-orange-700',
     'perhatian-khusus': 'bg-yellow-50 text-yellow-700',
@@ -74,9 +74,9 @@ const excelUrl = computed(() => `${route('laporan.pinjaman.excel')}?${buildQuery
                     <p class="text-xs uppercase text-[color:var(--color-secondary)]">Total</p>
                     <p class="mt-1 text-xl font-bold">{{ summary.total }}</p>
                 </div>
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-                    <p class="text-xs uppercase text-emerald-600">Aktif</p>
-                    <p class="mt-1 text-xl font-bold text-emerald-700">{{ summary.aktif }}</p>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 text-center">
+                    <p class="text-xs uppercase text-blue-600">Aktif</p>
+                    <p class="mt-1 text-xl font-bold text-blue-700">{{ summary.aktif }}</p>
                 </div>
                 <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 text-center shadow-sm">
                     <p class="text-xs uppercase text-slate-600">Lunas</p>
@@ -136,7 +136,7 @@ const excelUrl = computed(() => `${route('laporan.pinjaman.excel')}?${buildQuery
                                 <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal_akad) }}</td>
                                 <td class="px-4 py-3 text-right">{{ formatCurrency(row.pinjaman_pokok) }}</td>
                                 <td class="px-4 py-3 text-right">{{ formatCurrency(row.total_tagihan) }}</td>
-                                <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) > 0 ? 'text-red-600' : 'text-emerald-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
+                                <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) > 0 ? 'text-red-600' : 'text-blue-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold" :class="statusColor[row.computed_status] ?? statusColor[row.status]">{{ row.computed_status ?? row.status }}</span>
                                 </td>

@@ -6,32 +6,32 @@ import { Link } from '@inertiajs/vue3';
 <template>
     <div class="min-h-screen bg-white">
         <div class="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-            <div class="relative hidden flex-col justify-between overflow-hidden bg-emerald-950 p-10 text-white lg:flex">
+            <div class="relative hidden flex-col justify-between overflow-hidden bg-blue-950 p-10 text-white lg:flex">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.45),_transparent_60%)]"></div>
                 <div class="relative z-10 flex items-center gap-1.5">
                     <ApplicationLogo class="h-10 w-10" />
                     <div>
-                        <p class="text-sm uppercase tracking-[0.2em] text-emerald-200">BUMDes Dammar Wulan</p>
+                        <p class="text-sm uppercase tracking-[0.2em] text-blue-200">BUMDes Dammar Wulan</p>
                         <p class="text-xl font-semibold">Sistem Simpan Pinjam</p>
                     </div>
                 </div>
                 <div class="relative z-10 max-w-md space-y-4">
                     <h1 class="text-3xl font-semibold leading-tight">Pengelolaan transaksi yang rapi, cepat, dan aman.</h1>
-                    <p class="text-sm text-emerald-100">
+                    <p class="text-sm text-blue-100">
                         Semua tabungan, pinjaman, dan laporan keuangan terintegrasi dalam satu dashboard yang mudah digunakan perangkat desa.
                     </p>
-                    <div class="grid grid-cols-2 gap-4 text-xs text-emerald-100">
-                        <div class="rounded-xl border border-emerald-800/60 bg-emerald-900/60 p-4">
-                            <p class="text-emerald-200">Akurasi</p>
+                    <div class="grid grid-cols-2 gap-4 text-xs text-blue-100">
+                        <div class="rounded-xl border border-blue-800/60 bg-blue-900/60 p-4">
+                            <p class="text-blue-200">Akurasi</p>
                             <p class="mt-2 text-lg font-semibold">Realtime</p>
                         </div>
-                        <div class="rounded-xl border border-emerald-800/60 bg-emerald-900/60 p-4">
-                            <p class="text-emerald-200">Laporan</p>
+                        <div class="rounded-xl border border-blue-800/60 bg-blue-900/60 p-4">
+                            <p class="text-blue-200">Laporan</p>
                             <p class="mt-2 text-lg font-semibold">Otomatis</p>
                         </div>
                     </div>
                 </div>
-                <p class="relative z-10 text-xs text-emerald-200">Ciwuni, Kesugihan, Cilacap</p>
+                <p class="relative z-10 text-xs text-blue-200">Ciwuni, Kesugihan, Cilacap</p>
             </div>
 
             <div class="flex items-center justify-center px-6 py-12 lg:px-12">
@@ -39,7 +39,7 @@ import { Link } from '@inertiajs/vue3';
                     <div class="mb-8 flex items-center gap-1.5 lg:hidden">
                         <ApplicationLogo class="h-10 w-10" />
                         <div>
-                            <p class="text-xs uppercase tracking-[0.2em] text-emerald-700">BUMDes Dammar Wulan</p>
+                            <p class="text-xs uppercase tracking-[0.2em] text-blue-700">BUMDes Dammar Wulan</p>
                             <p class="text-lg font-semibold">Sistem Simpan Pinjam</p>
                         </div>
                     </div>

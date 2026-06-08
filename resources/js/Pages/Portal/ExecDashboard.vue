@@ -28,22 +28,22 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
         <div class="space-y-6">
             <!-- Header -->
             <div>
-                <h2 class="text-2xl font-bold text-emerald-800">Ringkasan Eksekutif BUMDes</h2>
+                <h2 class="text-2xl font-bold text-blue-800">Ringkasan Eksekutif BUMDes</h2>
                 <p class="text-sm text-slate-500">Data gabungan seluruh unit usaha BUMDes Dammar Wulan.</p>
             </div>
 
             <!-- Top Stats - Row 1 (Small Stats) -->
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                <div class="bg-white border border-slate-200 rounded-xl p-4 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-4 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="material-symbols-outlined text-emerald-600 text-lg">hub</span>
+                        <span class="material-symbols-outlined text-blue-600 text-lg">hub</span>
                     </div>
                     <p class="text-xl font-bold text-slate-800">{{ ringkasan.unitAktif }}</p>
                     <p class="text-[10px] text-slate-500 mt-0.5 uppercase tracking-wider font-semibold">Unit Aktif</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-xl p-4 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-4 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="material-symbols-outlined text-emerald-600 text-lg">group</span>
+                        <span class="material-symbols-outlined text-blue-600 text-lg">group</span>
                     </div>
                     <p class="text-xl font-bold text-slate-800">{{ formatNumber(ringkasan.totalNasabah) }}</p>
                     <p class="text-[10px] text-slate-500 mt-0.5 uppercase tracking-wider font-semibold">Nasabah</p>
@@ -62,24 +62,24 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
                     <p class="text-xl font-bold text-red-700">{{ ringkasan.totalKreditMacet }}</p>
                     <p class="text-[10px] text-slate-500 mt-0.5 uppercase tracking-wider font-semibold">Kredit Macet</p>
                 </div>
-                <div class="bg-emerald-600 text-white rounded-xl p-4 shadow-sm">
+                <div class="bg-blue-600 text-white rounded-xl p-4 shadow-sm">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="material-symbols-outlined text-lg">sync_alt</span>
                     </div>
                     <p class="text-xl font-bold">{{ formatNumber(ringkasan.totalTransaksi) }}</p>
-                    <p class="text-[10px] text-emerald-100 mt-0.5 uppercase tracking-wider font-semibold">Transaksi</p>
+                    <p class="text-[10px] text-blue-100 mt-0.5 uppercase tracking-wider font-semibold">Transaksi</p>
                 </div>
             </div>
 
             <!-- Top Stats - Row 2 (Large Monetary Stats) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-emerald-400 transition-all shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Total Tabungan</p>
                             <p class="text-2xl font-bold text-slate-800 font-mono truncate" :title="formatCurrency(ringkasan.totalTabungan)">{{ formatCurrency(ringkasan.totalTabungan) }}</p>
                         </div>
-                        <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                             <span class="material-symbols-outlined">savings</span>
                         </div>
                     </div>
@@ -112,9 +112,9 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
                             <p class="text-xs font-bold text-slate-600 w-20 shrink-0">{{ month.bulan }}</p>
                             <div class="flex-1 grid grid-cols-3 gap-3 text-xs">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                                     <span class="text-slate-500">Setor</span>
-                                    <span class="font-mono font-bold text-emerald-700 ml-auto">{{ formatCurrency(month.setor) }}</span>
+                                    <span class="font-mono font-bold text-blue-700 ml-auto">{{ formatCurrency(month.setor) }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full bg-rose-500"></span>
@@ -135,12 +135,12 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
                 <div class="col-span-12 lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                     <h4 class="text-base font-bold text-slate-800 mb-4">Status Pinjaman</h4>
                     <div class="space-y-3">
-                        <div class="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-100">
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-100">
                             <div class="flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                                <span class="text-sm font-semibold text-emerald-800">Aktif</span>
+                                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                                <span class="text-sm font-semibold text-blue-800">Aktif</span>
                             </div>
-                            <span class="text-lg font-bold text-emerald-700">{{ loanStats.aktif }}</span>
+                            <span class="text-lg font-bold text-blue-700">{{ loanStats.aktif }}</span>
                         </div>
                         <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-slate-200">
                             <div class="flex items-center gap-2">
@@ -176,14 +176,14 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
                     </div>
                 </div>
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    <div v-for="unit in unitSummaries" :key="unit.id" class="border border-slate-200 rounded-xl p-4 hover:border-emerald-400 transition-all">
+                    <div v-for="unit in unitSummaries" :key="unit.id" class="border border-slate-200 rounded-xl p-4 hover:border-blue-400 transition-all">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[20px]">{{ unit.icon || 'business' }}</span>
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-slate-800">{{ unit.nama }}</p>
-                                <span :class="unit.tipe === 'internal' ? 'text-emerald-600' : 'text-blue-600'" class="text-[9px] font-bold uppercase tracking-wider">{{ unit.tipe }}</span>
+                                <span :class="unit.tipe === 'internal' ? 'text-blue-600' : 'text-blue-600'" class="text-[9px] font-bold uppercase tracking-wider">{{ unit.tipe }}</span>
                             </div>
                         </div>
 

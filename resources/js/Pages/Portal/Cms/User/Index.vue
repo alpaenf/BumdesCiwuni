@@ -27,7 +27,7 @@ const deleteUser = () => {
 const roleMap = {
     admin:         { label: 'Super Admin',   color: 'bg-indigo-100 text-indigo-700' },
     manager_pusat: { label: 'Manager Pusat', color: 'bg-purple-100 text-purple-700' },
-    admin_unit:    { label: 'Admin Unit',    color: 'bg-emerald-100 text-emerald-700' },
+    admin_unit:    { label: 'Admin Unit',    color: 'bg-blue-100 text-blue-700' },
     manager:       { label: 'Manager Unit',  color: 'bg-blue-100 text-blue-700' },
 };
 const formatRole = (role) => roleMap[role]?.label ?? role;
@@ -57,7 +57,7 @@ const roleBadgeClass = (role) => roleMap[role]?.color ?? 'bg-slate-100 text-slat
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">lock</span>
                         Kunci Sesi
                     </Link>
-                    <Link :href="route('portal.cms.users.create')" class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg shadow-sm hover:bg-emerald-700 transition text-xs sm:text-sm w-full sm:w-auto justify-center">
+                    <Link :href="route('portal.cms.users.create')" class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition text-xs sm:text-sm w-full sm:w-auto justify-center">
                         <span class="material-symbols-outlined text-[16px] sm:text-[18px]">person_add</span>
                         Tambah Pengurus
                     </Link>
@@ -65,7 +65,7 @@ const roleBadgeClass = (role) => roleMap[role]?.color ?? 'bg-slate-100 text-slat
             </div>
 
             <!-- Flash Message -->
-            <div v-if="$page.props.flash.success" class="flex items-center gap-3 p-4 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl">
+            <div v-if="$page.props.flash.success" class="flex items-center gap-3 p-4 bg-blue-50 text-blue-800 border border-blue-200 rounded-xl">
                 <span class="material-symbols-outlined">check_circle</span>
                 <span class="text-sm font-medium">{{ $page.props.flash.success }}</span>
             </div>

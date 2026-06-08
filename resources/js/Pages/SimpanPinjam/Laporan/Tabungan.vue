@@ -62,9 +62,9 @@ const excelUrl = computed(() => `${route('laporan.tabungan.excel')}?${buildQuery
 
             <!-- Summary -->
             <div class="grid gap-4 sm:grid-cols-3">
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-                    <p class="text-xs uppercase text-emerald-600">Total Setoran</p>
-                    <p class="mt-1 text-lg font-bold text-emerald-700">{{ formatCurrency(summary.total_setoran) }}</p>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 text-center">
+                    <p class="text-xs uppercase text-blue-600">Total Setoran</p>
+                    <p class="mt-1 text-lg font-bold text-blue-700">{{ formatCurrency(summary.total_setoran) }}</p>
                 </div>
                 <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-center">
                     <p class="text-xs uppercase text-red-600">Total Penarikan</p>
@@ -119,11 +119,11 @@ const excelUrl = computed(() => `${route('laporan.tabungan.excel')}?${buildQuery
                             <td class="px-4 py-3 font-semibold">{{ row.tabungan?.nasabah?.nama }}</td>
                             <td class="px-4 py-3">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                    :class="row.jenis_transaksi === 'setor' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'">
+                                    :class="row.jenis_transaksi === 'setor' ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'">
                                     {{ row.jenis_transaksi === 'setor' ? 'Setoran' : 'Penarikan' }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right font-semibold" :class="row.jenis_transaksi === 'setor' ? 'text-emerald-600' : 'text-red-600'">{{ formatCurrency(row.nominal) }}</td>
+                            <td class="px-4 py-3 text-right font-semibold" :class="row.jenis_transaksi === 'setor' ? 'text-blue-600' : 'text-red-600'">{{ formatCurrency(row.nominal) }}</td>
                             <td class="px-4 py-3 text-right text-orange-600">{{ formatCurrency(row.administrasi) }}</td>
                             <td class="px-4 py-3 text-right">{{ formatCurrency(row.saldo_setelah) }}</td>
                         </tr>

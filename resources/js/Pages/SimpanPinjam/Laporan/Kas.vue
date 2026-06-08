@@ -64,8 +64,8 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                         <p class="text-xs font-semibold text-orange-700 uppercase mb-1">Total Saldo Sembako</p>
                         <p class="text-xl font-bold text-slate-800">{{ formatCurrency(summary.saldo_sembako) }}</p>
                     </div>
-                    <div class="rounded-lg border border-emerald-100 bg-emerald-50/50 p-4">
-                        <p class="text-xs font-semibold text-emerald-700 uppercase mb-1">Total Angsuran Masuk</p>
+                    <div class="rounded-lg border border-blue-100 bg-blue-50/50 p-4">
+                        <p class="text-xs font-semibold text-blue-700 uppercase mb-1">Total Angsuran Masuk</p>
                         <p class="text-xl font-bold text-slate-800">{{ formatCurrency(summary.total_angsuran_all) }}</p>
                     </div>
                     <div class="rounded-lg border border-rose-100 bg-rose-50/50 p-4">
@@ -128,17 +128,17 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                 <div class="space-y-4 text-sm mt-4 border-t border-[color:var(--color-outline-variant)] pt-4">
                     <!-- Pemasukan -->
                     <div>
-                        <h4 class="font-bold text-emerald-700 mb-2 border-b border-emerald-100 pb-1">Total Uang Masuk</h4>
+                        <h4 class="font-bold text-blue-700 mb-2 border-b border-blue-100 pb-1">Total Uang Masuk</h4>
                         <div class="space-y-4 pl-2">
                             <div class="flex flex-col">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-slate-600">+ Setoran Tabungan Reguler</span>
-                                    <span class="font-semibold text-emerald-600">{{ formatCurrency(summary.masuk_reguler) }}</span>
+                                    <span class="font-semibold text-blue-600">{{ formatCurrency(summary.masuk_reguler) }}</span>
                                 </div>
-                                <details v-if="rincian?.masuk_reguler?.length" class="text-xs text-slate-600 bg-emerald-50/50 rounded-lg p-2 border border-emerald-100 cursor-pointer">
-                                    <summary class="font-medium hover:text-emerald-700 outline-none">Lihat Rincian ({{ rincian.masuk_reguler.length }} data)</summary>
-                                    <div class="mt-2 space-y-1 pl-4 border-l-2 border-emerald-200 cursor-default">
-                                        <div v-for="item in rincian.masuk_reguler" :key="item.id" class="flex justify-between py-1 border-b border-emerald-100/50 last:border-0">
+                                <details v-if="rincian?.masuk_reguler?.length" class="text-xs text-slate-600 bg-blue-50/50 rounded-lg p-2 border border-blue-100 cursor-pointer">
+                                    <summary class="font-medium hover:text-blue-700 outline-none">Lihat Rincian ({{ rincian.masuk_reguler.length }} data)</summary>
+                                    <div class="mt-2 space-y-1 pl-4 border-l-2 border-blue-200 cursor-default">
+                                        <div v-for="item in rincian.masuk_reguler" :key="item.id" class="flex justify-between py-1 border-b border-blue-100/50 last:border-0">
                                             <span>{{ item.tanggal }} - {{ item.tabungan?.nasabah?.nama || '-' }}</span>
                                             <span class="font-medium">{{ formatCurrency(item.nominal) }}</span>
                                         </div>
@@ -149,12 +149,12 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                             <div class="flex flex-col">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-slate-600">+ Setoran Tabungan Sembako</span>
-                                    <span class="font-semibold text-emerald-600">{{ formatCurrency(summary.masuk_sembako) }}</span>
+                                    <span class="font-semibold text-blue-600">{{ formatCurrency(summary.masuk_sembako) }}</span>
                                 </div>
-                                <details v-if="rincian?.masuk_sembako?.length" class="text-xs text-slate-600 bg-emerald-50/50 rounded-lg p-2 border border-emerald-100 cursor-pointer">
-                                    <summary class="font-medium hover:text-emerald-700 outline-none">Lihat Rincian ({{ rincian.masuk_sembako.length }} data)</summary>
-                                    <div class="mt-2 space-y-1 pl-4 border-l-2 border-emerald-200 cursor-default">
-                                        <div v-for="item in rincian.masuk_sembako" :key="item.id" class="flex justify-between py-1 border-b border-emerald-100/50 last:border-0">
+                                <details v-if="rincian?.masuk_sembako?.length" class="text-xs text-slate-600 bg-blue-50/50 rounded-lg p-2 border border-blue-100 cursor-pointer">
+                                    <summary class="font-medium hover:text-blue-700 outline-none">Lihat Rincian ({{ rincian.masuk_sembako.length }} data)</summary>
+                                    <div class="mt-2 space-y-1 pl-4 border-l-2 border-blue-200 cursor-default">
+                                        <div v-for="item in rincian.masuk_sembako" :key="item.id" class="flex justify-between py-1 border-b border-blue-100/50 last:border-0">
                                             <span>{{ item.tanggal }} - {{ item.tabungan?.nasabah?.nama || '-' }}</span>
                                             <span class="font-medium">{{ formatCurrency(item.nominal) }}</span>
                                         </div>
@@ -165,12 +165,12 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                             <div class="flex flex-col">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-slate-600">+ Pembayaran Angsuran Pinjaman (Masuk)</span>
-                                    <span class="font-semibold text-emerald-600">{{ formatCurrency(summary.masuk_angsuran) }}</span>
+                                    <span class="font-semibold text-blue-600">{{ formatCurrency(summary.masuk_angsuran) }}</span>
                                 </div>
-                                <details v-if="rincian?.masuk_angsuran?.length" class="text-xs text-slate-600 bg-emerald-50/50 rounded-lg p-2 border border-emerald-100 cursor-pointer">
-                                    <summary class="font-medium hover:text-emerald-700 outline-none">Lihat Rincian ({{ rincian.masuk_angsuran.length }} data)</summary>
-                                    <div class="mt-2 space-y-1 pl-4 border-l-2 border-emerald-200 cursor-default">
-                                        <div v-for="item in rincian.masuk_angsuran" :key="item.id" class="flex justify-between py-1 border-b border-emerald-100/50 last:border-0">
+                                <details v-if="rincian?.masuk_angsuran?.length" class="text-xs text-slate-600 bg-blue-50/50 rounded-lg p-2 border border-blue-100 cursor-pointer">
+                                    <summary class="font-medium hover:text-blue-700 outline-none">Lihat Rincian ({{ rincian.masuk_angsuran.length }} data)</summary>
+                                    <div class="mt-2 space-y-1 pl-4 border-l-2 border-blue-200 cursor-default">
+                                        <div v-for="item in rincian.masuk_angsuran" :key="item.id" class="flex justify-between py-1 border-b border-blue-100/50 last:border-0">
                                             <span>{{ item.tanggal }} - {{ item.pinjaman?.nasabah?.nama || '-' }} (Angsuran ke-{{ item.angsuran_ke }})</span>
                                             <span class="font-medium">{{ formatCurrency(item.jumlah_bayar) }}</span>
                                         </div>
@@ -178,7 +178,7 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                                 </details>
                             </div>
                         </div>
-                        <div class="flex justify-between font-bold text-emerald-800 bg-emerald-50 p-3 mt-4 rounded-lg">
+                        <div class="flex justify-between font-bold text-blue-800 bg-blue-50 p-3 mt-4 rounded-lg">
                             <span>Subtotal Pemasukan</span>
                             <span>{{ formatCurrency(summary.total_masuk) }}</span>
                         </div>
@@ -245,7 +245,7 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                     <!-- Laba/Rugi Kas -->
                     <div class="flex justify-between pt-6 font-bold text-xl border-t border-[color:var(--color-outline-variant)]">
                         <span class="text-slate-800">Saldo Kas Bersih (Periode Ini)</span>
-                        <span :class="summary.saldo_kas >= 0 ? 'text-emerald-600' : 'text-red-600'">{{ formatCurrency(summary.saldo_kas) }}</span>
+                        <span :class="summary.saldo_kas >= 0 ? 'text-blue-600' : 'text-red-600'">{{ formatCurrency(summary.saldo_kas) }}</span>
                     </div>
                 </div>
             </div>
