@@ -187,8 +187,8 @@ const deleteGaleri = (id) => {
 
             <!-- Toast Success -->
             <transition name="fade">
-                <div v-if="isSuccessMessageVisible" class="flex items-center gap-2 p-3 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-lg text-sm font-semibold shadow-sm">
-                    <span class="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
+                <div v-if="isSuccessMessageVisible" class="flex items-center gap-2 p-3 bg-blue-50 text-blue-800 border border-blue-100 rounded-lg text-sm font-semibold shadow-sm">
+                    <span class="material-symbols-outlined text-[20px] text-blue-600">check_circle</span>
                     Konten Landing Page berhasil disimpan!
                 </div>
             </transition>
@@ -331,7 +331,7 @@ const deleteGaleri = (id) => {
                                     <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white py-1 px-2.5" placeholder="Nama Lengkap" />
                                 </div>
                                 <div v-if="form[role.imgKey]" class="flex items-center justify-between">
-                                    <span class="text-[9px] text-emerald-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
+                                    <span class="text-[9px] text-blue-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
                                     <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[9px] font-bold text-rose-600 hover:underline">Hapus Foto</button>
                                 </div>
                             </div>
@@ -501,7 +501,7 @@ const deleteGaleri = (id) => {
 
                 <!-- Submit Button -->
                 <div class="flex items-center gap-3">
-                    <button type="submit" :disabled="form.processing" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-emerald-800 text-white font-semibold text-xs rounded-lg shadow transition disabled:opacity-50">
+                    <button type="submit" :disabled="form.processing" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-blue-800 text-white font-semibold text-xs rounded-lg shadow transition disabled:opacity-50">
                         <span class="material-symbols-outlined text-[18px]">save</span>
                         {{ form.processing ? 'Menyimpan...' : 'Simpan Semua Konten' }}
                     </button>

@@ -66,7 +66,7 @@ onMounted(() => {
 <template>
     <Head title="Unit Simpan Pinjam" />
 
-    <div class="min-h-screen bg-[#ffffff] text-[#181d18] font-sans antialiased selection:bg-emerald-600 selection:text-white">
+    <div class="min-h-screen bg-[#ffffff] text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white">
         <!-- Header / Navbar -->
         <header :class="[
             'fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/90 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg transition-all duration-300',
@@ -77,20 +77,20 @@ onMounted(() => {
                 <div class="flex items-center gap-2">
                     <img :src="settings.custom_logo || '/logo.png'" alt="Logo" class="w-9 h-9 object-contain" />
                     <div>
-                        <h1 class="text-xs font-extrabold text-emerald-800 leading-tight">Simpan Pinjam</h1>
+                        <h1 class="text-xs font-extrabold text-blue-800 leading-tight">Simpan Pinjam</h1>
                         <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">BUMDesa Dammar Wulan</p>
                     </div>
                 </div>
 
                 <!-- Navigation Desktop -->
                 <nav class="hidden md:flex items-center gap-5">
-                    <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Tentang</a>
-                    <a href="#layanan" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Layanan</a>
-                    <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Struktur</a>
-                    <a href="#galeri" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Galeri</a>
-                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Berita</a>
-                    <a href="#faq" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">FAQ</a>
-                    <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-emerald-700 transition">Kontak</a>
+                    <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Tentang</a>
+                    <a href="#layanan" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Layanan</a>
+                    <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Struktur</a>
+                    <a href="#galeri" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Galeri</a>
+                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Berita</a>
+                    <a href="#faq" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">FAQ</a>
+                    <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Kontak</a>
                     
                     <div class="border-l border-[#bfc9bd] pl-4 flex items-center gap-2">
                         <!-- Back to Main Portal -->
@@ -99,11 +99,11 @@ onMounted(() => {
                             Portal BUMDes
                         </Link>
                         
-                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-lg hover:bg-emerald-700 transition shadow-sm">
+                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-lg hover:bg-blue-700 transition shadow-sm">
                             Dashboard
                         </Link>
                         <template v-else>
-                            <Link :href="route('login')" class="inline-flex items-center justify-center px-4 py-2 border border-emerald-600 text-emerald-700 font-semibold text-xs rounded-lg hover:bg-emerald-50 transition">
+                            <Link :href="route('login')" class="inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-semibold text-xs rounded-lg hover:bg-blue-50 transition">
                                 Masuk
                             </Link>
                         </template>
@@ -111,7 +111,7 @@ onMounted(() => {
                 </nav>
 
                 <!-- Hamburger Button (Mobile) -->
-                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center text-[#404940] hover:text-emerald-700 transition focus:outline-none">
+                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center text-[#404940] hover:text-blue-700 transition focus:outline-none">
                     <span class="material-symbols-outlined text-[22px]">
                         {{ isMobileMenuOpen ? 'close' : 'menu' }}
                     </span>
@@ -121,23 +121,23 @@ onMounted(() => {
             <!-- Mobile Navigation Menu -->
             <transition name="mobile-menu">
                 <div v-if="isMobileMenuOpen" class="md:hidden mt-3 pt-3 border-t border-[#bfc9bd]/30 flex flex-col gap-2.5">
-                    <a href="#tentang" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Tentang</a>
-                    <a href="#layanan" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Layanan</a>
-                    <a href="#struktur" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Struktur</a>
-                    <a href="#berita" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Berita</a>
-                    <a href="#faq" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">FAQ</a>
-                    <a href="#kontak" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-emerald-700 py-1 transition">Kontak</a>
+                    <a href="#tentang" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Tentang</a>
+                    <a href="#layanan" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Layanan</a>
+                    <a href="#struktur" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Struktur</a>
+                    <a href="#berita" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Berita</a>
+                    <a href="#faq" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">FAQ</a>
+                    <a href="#kontak" @click="isMobileMenuOpen = false" class="text-xs font-bold text-[#404940] hover:text-blue-700 py-1 transition">Kontak</a>
                     
                     <div class="border-t border-[#bfc9bd]/30 pt-2.5 flex flex-col gap-2">
                         <Link :href="route('portal.home')" class="w-full inline-flex items-center justify-center px-4 py-2 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
                             <span class="material-symbols-outlined text-sm mr-1">home</span>
                             Kembali ke Portal BUMDes
                         </Link>
-                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shadow-sm">
+                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow-sm">
                             Dashboard
                         </Link>
                         <template v-else>
-                            <Link :href="route('login')" class="w-full inline-flex items-center justify-center px-4 py-2 border border-emerald-600 text-emerald-700 font-bold text-xs rounded-xl hover:bg-emerald-50 transition">
+                            <Link :href="route('login')" class="w-full inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-bold text-xs rounded-xl hover:bg-blue-50 transition">
                                 Masuk
                             </Link>
                         </template>
@@ -158,11 +158,11 @@ onMounted(() => {
             </div>
 
             <!-- Decorative circles -->
-            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl z-0"></div>
-            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-emerald-700/10 rounded-full blur-3xl z-0"></div>
+            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl z-0"></div>
+            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-blue-700/10 rounded-full blur-3xl z-0"></div>
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
-                <h2 class="text-3xl md:text-5xl font-extrabold text-emerald-800 leading-tight md:leading-none tracking-tight">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-blue-800 leading-tight md:leading-none tracking-tight">
                     {{ settings.hero_title || 'Layanan Simpan Pinjam BUMDesa Dammar Wulan' }}
                 </h2>
                 
@@ -171,7 +171,7 @@ onMounted(() => {
                 </p>
 
                 <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <Link :href="route('login')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                    <Link :href="route('login')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
                         Buka Aplikasi Layanan
                         <span class="material-symbols-outlined text-[16px]">login</span>
                     </Link>
@@ -187,7 +187,7 @@ onMounted(() => {
         <section id="tentang" class="py-20 bg-white border-y border-[#bfc9bd] space-y-16 overflow-hidden">
             <div class="max-w-5xl mx-auto px-6 grid gap-8 md:grid-cols-2 items-center">
                 <div class="space-y-5 scroll-animate scroll-slide-right">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Profil & Layanan</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Profil & Layanan</span>
                     <h3 class="text-2xl font-bold text-slate-800 leading-tight">
                         {{ settings.about_title || 'Tentang Unit Simpan Pinjam' }}
                     </h3>
@@ -203,12 +203,12 @@ onMounted(() => {
                 </div>
 
                 <!-- Visual Card with Icon representation -->
-                <div class="scroll-animate scroll-scale-in relative bg-gradient-to-br from-emerald-50 to-[#ffffff] p-8 border border-[#bfc9bd] rounded-2xl shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-600/5 rounded-full"></div>
+                <div class="scroll-animate scroll-scale-in relative bg-gradient-to-br from-blue-50 to-[#ffffff] p-8 border border-[#bfc9bd] rounded-2xl shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/5 rounded-full"></div>
                     
                     <img src="/logo.png" alt="Logo Simpan Pinjam" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
                     <h4 class="font-extrabold text-slate-800 text-base uppercase tracking-wider">Unit Simpan Pinjam</h4>
-                    <p class="text-[10px] font-bold text-emerald-700 tracking-widest uppercase">BUMDesa Dammar Wulan</p>
+                    <p class="text-[10px] font-bold text-blue-700 tracking-widest uppercase">BUMDesa Dammar Wulan</p>
                     <div class="w-full border-t border-dashed border-[#bfc9bd] my-4"></div>
                     <p class="text-xs text-[#404940] leading-relaxed max-w-sm">
                         Mendorong pertumbuhan ekonomi desa melalui pengelolaan simpanan yang aman serta penyaluran pinjaman modal yang bijak dan berkeadilan.
@@ -221,16 +221,16 @@ onMounted(() => {
         <section id="layanan" class="py-20 bg-slate-50 border-b border-[#bfc9bd]">
             <div class="max-w-5xl mx-auto px-6 space-y-12">
                 <div class="text-center space-y-3 scroll-animate scroll-fade-up">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Program & Fitur</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Program & Fitur</span>
                     <h3 class="text-2xl font-bold text-slate-800">Layanan Keuangan Kami</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Berbagai pilihan produk tabungan dan pinjaman yang disesuaikan dengan kebutuhan finansial masyarakat desa.</p>
                 </div>
 
                 <div class="grid gap-6 md:grid-cols-3">
                     <!-- Feature 1: Tabungan Reguler -->
-                    <div class="scroll-animate scroll-scale-in bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                    <div class="scroll-animate scroll-scale-in bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between">
                         <div class="space-y-4">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[24px]">savings</span>
                             </div>
                             <div>
@@ -241,9 +241,9 @@ onMounted(() => {
                     </div>
 
                     <!-- Feature 2: Tabungan Sembako -->
-                    <div class="scroll-animate scroll-scale-in bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between" style="transition-delay: 80ms">
+                    <div class="scroll-animate scroll-scale-in bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between" style="transition-delay: 80ms">
                         <div class="space-y-4">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[24px]">shopping_basket</span>
                             </div>
                             <div>
@@ -254,9 +254,9 @@ onMounted(() => {
                     </div>
 
                     <!-- Feature 3: Pinjaman Modal -->
-                    <div class="scroll-animate scroll-scale-in bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between" style="transition-delay: 160ms">
+                    <div class="scroll-animate scroll-scale-in bg-white border border-[#bfc9bd] p-6 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between" style="transition-delay: 160ms">
                         <div class="space-y-4">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[24px]">payments</span>
                             </div>
                             <div>
@@ -273,7 +273,7 @@ onMounted(() => {
         <section id="struktur" class="py-20 bg-white border-b border-[#bfc9bd]">
             <div class="max-w-6xl mx-auto px-6">
                 <div class="text-center space-y-3 mb-16 scroll-animate scroll-fade-up">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Kepengurusan Unit</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Kepengurusan Unit</span>
                     <h3 class="text-2xl font-bold text-slate-800">Struktur Organisasi Unit Simpan Pinjam</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Manajemen pengelola Unit Simpan Pinjam BUMDesa Dammar Wulan yang bertanggung jawab penuh terhadap pelayanan transaksi warga.</p>
                 </div>
@@ -314,42 +314,42 @@ onMounted(() => {
 
                         <!-- Connector down to Unit Head -->
                         <div class="flex justify-center scroll-animate scroll-fade-up" style="transition-delay: 150ms">
-                            <div class="w-0.5 h-10 bg-emerald-500/60"></div>
+                            <div class="w-0.5 h-10 bg-blue-500/60"></div>
                         </div>
 
                         <!-- Level 2: Kepala Unit Simpan Pinjam -->
                         <div class="flex justify-center mb-0">
                             <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 200ms">
                                 <div class="relative group cursor-default">
-                                    <div class="w-20 h-20 rounded-full border-4 border-emerald-600 bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-emerald-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                    <div class="w-20 h-20 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-blue-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                         <img v-if="settings.org_unit_sp_image" :src="settings.org_unit_sp_image" class="w-full h-full object-cover" />
                                         <span v-else>{{ getInitials(settings.org_unit_sp_name || 'Fajar Nugroho') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-3 text-center">
                                     <p class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_sp_name || 'Fajar Nugroho' }}</p>
-                                    <span class="mt-1 inline-block px-2.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Kepala Unit Simpan Pinjam</span>
+                                    <span class="mt-1 inline-block px-2.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Kepala Unit Simpan Pinjam</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Connector down to Staff -->
                         <div class="flex justify-center scroll-animate scroll-fade-up" style="transition-delay: 280ms">
-                            <div class="w-0.5 h-10 bg-emerald-500/60"></div>
+                            <div class="w-0.5 h-10 bg-blue-500/60"></div>
                         </div>
 
                         <!-- Level 3: Staff Unit Simpan Pinjam -->
                         <div class="flex justify-center">
                             <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 350ms">
                                 <div class="relative group cursor-default">
-                                    <div class="w-16 h-16 rounded-full border-4 border-emerald-500 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow text-white font-extrabold text-lg ring-4 ring-emerald-500/10 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+                                    <div class="w-16 h-16 rounded-full border-4 border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow text-white font-extrabold text-lg ring-4 ring-blue-500/10 group-hover:scale-105 transition-all duration-300 overflow-hidden">
                                         <img v-if="settings.org_unit_sp_staff_image" :src="settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
                                         <span v-else>{{ getInitials(settings.org_unit_sp_staff_name || 'Staf SP') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-2 text-center">
                                     <p class="text-xs font-bold text-slate-800">{{ settings.org_unit_sp_staff_name || 'Nama Staf' }}</p>
-                                    <span class="mt-0.5 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Staf Unit Simpan Pinjam</span>
+                                    <span class="mt-0.5 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Staf Unit Simpan Pinjam</span>
                                 </div>
                             </div>
                         </div>
@@ -373,37 +373,37 @@ onMounted(() => {
                     </div>
 
                     <div class="flex justify-center -my-2">
-                        <div class="w-0.5 h-6 bg-emerald-500/30"></div>
+                        <div class="w-0.5 h-6 bg-blue-500/30"></div>
                     </div>
 
                     <div class="flex flex-col items-center">
-                        <span class="text-[8px] font-bold uppercase tracking-widest text-emerald-700 mb-2">Kepala Unit</span>
-                        <div class="bg-emerald-55/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
-                            <div class="w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-xs">
+                        <span class="text-[8px] font-bold uppercase tracking-widest text-blue-700 mb-2">Kepala Unit</span>
+                        <div class="bg-blue-55/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
+                            <div class="w-12 h-12 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
                                 <img v-if="settings.org_unit_sp_image" :src="settings.org_unit_sp_image" class="w-full h-full object-cover" />
                                 <span v-else>{{ getInitials(settings.org_unit_sp_name || 'Fajar Nugroho') }}</span>
                             </div>
                             <div>
                                 <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_sp_name || 'Fajar Nugroho' }}</h4>
-                                <p class="text-[9px] font-bold text-emerald-700 mt-0.5">Ka. Unit Simpan Pinjam</p>
+                                <p class="text-[9px] font-bold text-blue-700 mt-0.5">Ka. Unit Simpan Pinjam</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-center -my-2">
-                        <div class="w-0.5 h-6 bg-emerald-500/30"></div>
+                        <div class="w-0.5 h-6 bg-blue-500/30"></div>
                     </div>
 
                     <div class="flex flex-col items-center">
-                        <span class="text-[8px] font-bold uppercase tracking-widest text-emerald-700 mb-2">Staf Unit</span>
-                        <div class="bg-emerald-55/50 border border-emerald-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
-                            <div class="w-12 h-12 rounded-full border-2 border-emerald-500 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-emerald-400 to-emerald-650 flex items-center justify-center text-white font-bold text-xs">
+                        <span class="text-[8px] font-bold uppercase tracking-widest text-blue-700 mb-2">Staf Unit</span>
+                        <div class="bg-blue-55/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
+                            <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-400 to-blue-650 flex items-center justify-center text-white font-bold text-xs">
                                 <img v-if="settings.org_unit_sp_staff_image" :src="settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
                                 <span v-else>{{ getInitials(settings.org_unit_sp_staff_name || 'Staf SP') }}</span>
                             </div>
                             <div>
                                 <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_sp_staff_name || 'Nama Staf' }}</h4>
-                                <p class="text-[9px] font-bold text-emerald-700 mt-0.5">Staf Unit Simpan Pinjam</p>
+                                <p class="text-[9px] font-bold text-blue-700 mt-0.5">Staf Unit Simpan Pinjam</p>
                             </div>
                         </div>
                     </div>
@@ -415,7 +415,7 @@ onMounted(() => {
         <section id="galeri" class="py-20 bg-slate-50 border-b border-[#bfc9bd]">
             <div class="max-w-6xl mx-auto px-6 space-y-12">
                 <div class="text-center space-y-3 scroll-animate scroll-fade-up">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Dokumentasi</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Dokumentasi</span>
                     <h3 class="text-2xl font-bold text-slate-800">Galeri Unit Simpan Pinjam</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Dokumentasi kegiatan dan aktivitas pelayanan Unit Simpan Pinjam BUMDesa Dammar Wulan.</p>
                 </div>
@@ -424,7 +424,7 @@ onMounted(() => {
                 <div v-if="galeri.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div
                         v-for="(item, idx) in galeri" :key="item.id"
-                        class="scroll-animate scroll-scale-in group relative rounded-xl overflow-hidden aspect-square cursor-pointer shadow-sm border border-[#bfc9bd] hover:border-emerald-400 hover:shadow-md transition-all duration-300"
+                        class="scroll-animate scroll-scale-in group relative rounded-xl overflow-hidden aspect-square cursor-pointer shadow-sm border border-[#bfc9bd] hover:border-blue-400 hover:shadow-md transition-all duration-300"
                         :style="{ transitionDelay: `${(idx % 8) * 60}ms` }"
                         @click="openLightbox(item.foto, item.keterangan)"
                     >
@@ -464,7 +464,7 @@ onMounted(() => {
         <section id="berita" class="py-20 bg-[#f8fafc] border-b border-[#bfc9bd]">
             <div class="max-w-5xl mx-auto px-6 space-y-12">
                 <div class="text-center space-y-3 scroll-animate scroll-fade-up">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Berita Terkini</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Berita Terkini</span>
                     <h3 class="text-2xl font-bold text-slate-800">Pengumuman & Berita Unit</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Informasi terbaru seputar layanan dan kegiatan Unit Simpan Pinjam.</p>
                 </div>
@@ -500,7 +500,7 @@ onMounted(() => {
         <section id="faq" class="py-20 bg-[#ffffff] border-b border-[#bfc9bd]">
             <div class="max-w-3xl mx-auto px-6 space-y-12">
                 <div class="text-center space-y-3 scroll-animate scroll-fade-up">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Tanya Jawab</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Tanya Jawab</span>
                     <h3 class="text-2xl font-bold text-slate-800">Frequently Asked Questions (FAQ)</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Temukan jawaban atas beberapa pertanyaan umum seputar layanan Simpan Pinjam kami.</p>
                 </div>
@@ -516,7 +516,7 @@ onMounted(() => {
                         <div class="bg-white border border-[#bfc9bd] rounded-xl overflow-hidden shadow-sm transition-all">
                             <button @click="toggleFaq(idx)" class="w-full px-5 py-4 flex items-center justify-between text-left font-bold text-xs md:text-sm text-slate-800 hover:bg-slate-50/50 transition">
                                 <span>{{ faq.question }}</span>
-                                <span class="material-symbols-outlined text-slate-400 transition-transform" :class="{ 'rotate-180 text-emerald-700': activeFaqIndex === idx }">
+                                <span class="material-symbols-outlined text-slate-400 transition-transform" :class="{ 'rotate-180 text-blue-700': activeFaqIndex === idx }">
                                     keyboard_arrow_down
                                 </span>
                             </button>
@@ -542,15 +542,15 @@ onMounted(() => {
                     
                     <div class="space-y-3 pt-2 text-xs">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-emerald-500 text-[18px]">location_on</span>
+                            <span class="material-symbols-outlined text-blue-500 text-[18px]">location_on</span>
                             <span class="text-slate-300">{{ settings.contact_address || 'Kantor BUMDesa Dammar Wulan, Desa Ciwuni' }}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-emerald-500 text-[18px]">call</span>
+                            <span class="material-symbols-outlined text-blue-500 text-[18px]">call</span>
                             <span class="text-slate-300">{{ settings.contact_phone || '0812-0000-0000' }}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-emerald-500 text-[18px]">mail</span>
+                            <span class="material-symbols-outlined text-blue-500 text-[18px]">mail</span>
                             <span class="text-slate-300">{{ settings.contact_email || 'simpanpinjam@ciwuni.desa.id' }}</span>
                         </div>
                     </div>
@@ -563,7 +563,7 @@ onMounted(() => {
                         <p class="text-xs text-slate-400 mt-1">Sabtu: 08.00 - 12.00 WIB</p>
                     </div>
                     <div class="mt-6">
-                        <a v-if="settings.contact_phone" :href="`https://wa.me/${settings.contact_phone.replace(/[^0-9]/g, '')}`" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-650 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg transition shadow-sm">
+                        <a v-if="settings.contact_phone" :href="`https://wa.me/${settings.contact_phone.replace(/[^0-9]/g, '')}`" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-650 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg transition shadow-sm">
                             <span class="material-symbols-outlined text-[18px]">chat</span>
                             Hubungi Pelayanan via WhatsApp
                         </a>
