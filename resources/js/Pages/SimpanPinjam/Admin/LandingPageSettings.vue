@@ -30,6 +30,7 @@ const form = useForm({
     contact_phone: props.settings.contact_phone || '',
     contact_email: props.settings.contact_email || '',
     faq_items: props.settings.faq_items || [],
+    news_items: props.settings.news_items || [],
     org_unit_sp_name: props.settings.org_unit_sp_name || '',
     org_unit_sp_image: props.settings.org_unit_sp_image || '',
     org_unit_sp_staff_name: props.settings.org_unit_sp_staff_name || '',
@@ -46,6 +47,14 @@ const addFaq = () => {
 
 const removeFaq = (index) => {
     form.faq_items.splice(index, 1);
+};
+
+const addNews = () => {
+    form.news_items.push({ title: '', date: '', content: '', image: '' });
+};
+
+const removeNews = (index) => {
+    form.news_items.splice(index, 1);
 };
 
 const uploadingMembers = ref({});
@@ -80,6 +89,40 @@ const handleMemberImageUpload = async (event, fieldKey) => {
 
 const removeMemberImage = (fieldKey) => {
     form[fieldKey] = '';
+};
+
+const uploadingNewsImage = ref({});
+
+const triggerNewsFileInput = (index) => {
+    const el = document.getElementById(`input-news-image-${index}`);
+    if (el) el.click();
+};
+
+const handleNewsImageUpload = async (event, index) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    uploadingNewsImage.value[index] = true;
+    try {
+        const response = await axios.post(route('admin.landing-page.upload-image'), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        form.news_items[index].image = response.data.url;
+    } catch (error) {
+        console.error('News image upload failed:', error);
+        alert('Gagal mengunggah foto. Pastikan file berupa gambar (JPG, PNG, WebP) dan berukuran kurang dari 5MB.');
+    } finally {
+        uploadingNewsImage.value[index] = false;
+    }
+};
+
+const removeNewsImage = (index) => {
+    form.news_items[index].image = '';
 };
 
 const submit = () => {
@@ -293,6 +336,73 @@ const deleteGaleri = (id) => {
                                 </div>
                             </div>
 
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BERITA SECTION -->
+                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">newspaper</span>
+                            Section Berita & Pengumuman
+                        </h3>
+                        <button type="button" @click="addNews" class="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">add</span> Tambah Berita
+                        </button>
+                    </div>
+
+                    <div v-if="form.news_items.length === 0" class="text-xs text-slate-400 py-4 text-center">
+                        Belum ada berita. Klik "Tambah Berita" untuk menulis pengumuman baru.
+                    </div>
+
+                    <div class="space-y-4">
+                        <div v-for="(item, index) in form.news_items" :key="index" class="p-4 bg-white border border-outline-variant rounded-lg space-y-3 relative group">
+                            <button type="button" @click="removeNews(index)" class="absolute top-2 right-2 text-rose-600 hover:text-rose-800 opacity-50 group-hover:opacity-100 transition">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                            
+                            <div class="grid gap-4 md:grid-cols-4">
+                                <div class="md:col-span-1">
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">Gambar/Thumbnail</label>
+                                    <div class="w-full aspect-video border border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex flex-col items-center justify-center relative group cursor-pointer" @click="triggerNewsFileInput(index)">
+                                        <input
+                                            :id="`input-news-image-${index}`"
+                                            type="file"
+                                            accept="image/*"
+                                            class="hidden"
+                                            @change="handleNewsImageUpload($event, index)"
+                                        />
+                                        <div v-if="uploadingNewsImage[index]" class="flex items-center justify-center text-slate-500">
+                                            <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                                        </div>
+                                        <template v-else>
+                                            <img v-if="item.image" :src="item.image" class="w-full h-full object-cover" />
+                                            <div v-else class="text-center text-slate-400">
+                                                <span class="material-symbols-outlined text-lg">add_a_photo</span>
+                                                <span class="text-[8px] uppercase tracking-wider block mt-0.5">Upload</span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <button v-if="item.image" type="button" @click.stop="removeNewsImage(index)" class="text-[9px] font-bold text-rose-600 hover:underline mt-1 block w-full text-center">Hapus Gambar</button>
+                                </div>
+                                <div class="md:col-span-3 space-y-3">
+                                    <div class="grid gap-3 grid-cols-2">
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">Judul Berita</label>
+                                            <input v-model="item.title" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white" placeholder="Misal: Penyaluran Dana 2026..." required />
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">Tanggal</label>
+                                            <input v-model="item.date" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white" placeholder="Misal: 12 April 2026" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">Isi Berita</label>
+                                        <textarea v-model="item.content" rows="3" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white" placeholder="Masukkan isi pengumuman atau berita di sini..." required></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
