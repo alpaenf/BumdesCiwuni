@@ -24,6 +24,8 @@
                 window.addEventListener('load', function() {
                     navigator.serviceWorker.register("{{ asset('sw.js') }}").then(function(registration) {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        // Force update to ensure buggy SW is replaced
+                        registration.update();
                     }, function(err) {
                         console.log('ServiceWorker registration failed: ', err);
                     });
