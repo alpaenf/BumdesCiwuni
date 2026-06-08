@@ -7,10 +7,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    // Basic fetch pass-through to satisfy PWA requirements
-    event.respondWith(
-        fetch(event.request).catch(() => {
-            return caches.match(event.request);
-        })
-    );
+    // We only need an empty fetch handler to satisfy PWA installability criteria.
+    // Let the browser handle all network requests natively to avoid caching bugs and POST errors.
 });
