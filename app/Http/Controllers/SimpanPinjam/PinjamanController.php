@@ -118,13 +118,15 @@ class PinjamanController extends Controller
             'pinjaman_pokok'  => 'required|numeric|min:1',
             'bunga'           => 'required|numeric|min:0|max:100',
             'nominal_setoran' => 'required|numeric|min:1',
+            'biaya_tambahan'  => 'nullable|numeric|min:0',
         ]);
 
         return response()->json(
             $this->pinjamanService->kalkulasi(
                 $request->pinjaman_pokok,
                 $request->bunga,
-                $request->nominal_setoran
+                $request->nominal_setoran,
+                $request->biaya_tambahan ?? 0
             )
         );
     }

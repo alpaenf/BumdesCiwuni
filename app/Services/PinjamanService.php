@@ -19,8 +19,9 @@ class PinjamanService
             $pokok         = (float) $data['pinjaman_pokok'];
             $bunga         = (float) ($data['bunga'] ?? 10); // default 10%
             $nominalSetor  = (float) $data['nominal_setoran'];
+            $biayaTambahan = (float) ($data['biaya_tambahan'] ?? 0);
 
-            $totalTagihan    = $pokok + ($pokok * $bunga / 100);
+            $totalTagihan    = $pokok + ($pokok * $bunga / 100) + $biayaTambahan;
             $jumlahAngsuran  = (int) ceil($totalTagihan / max(1, $nominalSetor));
 
             $foto_perjanjian = null;
@@ -39,7 +40,7 @@ class PinjamanService
                 'bunga'           => $bunga,
                 'total_tagihan'   => $totalTagihan,
                 'nominal_setoran' => $nominalSetor,
-                'biaya_tambahan'  => (float) ($data['biaya_tambahan'] ?? 0),
+                'biaya_tambahan'  => $biayaTambahan,
                 'jumlah_angsuran' => $jumlahAngsuran,
                 'sisa_pinjaman'   => $totalTagihan,
                 'status'          => 'aktif',
@@ -51,10 +52,10 @@ class PinjamanService
     /**
      * Hitung preview angsuran sebelum disimpan.
      */
-    public function kalkulasi(float $pokok, float $bunga, float $nominalSetor): array
+    public function kalkulasi(float $pokok, float $bunga, float $nominalSetor, float $biayaTambahan = 0): array
     {
         $totalBunga     = $pokok * $bunga / 100;
-        $totalTagihan   = $pokok + $totalBunga;
+        $totalTagihan   = $pokok + $totalBunga + $biayaTambahan;
         $jumlahAngsuran = $nominalSetor > 0 ? (int) ceil($totalTagihan / $nominalSetor) : 0;
         
         $porsiPokok = $totalTagihan > 0 ? ($pokok / $totalTagihan) * $nominalSetor : 0;

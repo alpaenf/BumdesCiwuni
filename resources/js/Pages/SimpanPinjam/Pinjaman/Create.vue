@@ -32,6 +32,7 @@ const updatePreview = () => {
                 pinjaman_pokok: form.pinjaman_pokok,
                 bunga: form.bunga,
                 nominal_setoran: form.nominal_setoran,
+                biaya_tambahan: form.biaya_tambahan,
             });
             preview.value = res.data;
         } finally {
@@ -44,13 +45,14 @@ watch([() => form.pinjaman_pokok, () => form.bunga], ([newPokok, newBunga]) => {
     if (newPokok) {
         const pokok = parseFloat(newPokok) || 0;
         const bunga = parseFloat(newBunga) || 0;
-        const total = pokok + (pokok * bunga / 100);
+        const biaya = parseFloat(form.biaya_tambahan) || 0;
+        const total = pokok + (pokok * bunga / 100) + biaya;
         // Default ke 22 kali angsuran
         form.nominal_setoran = Math.ceil(total / 22);
     }
 });
 
-watch([() => form.pinjaman_pokok, () => form.bunga, () => form.nominal_setoran], updatePreview);
+watch([() => form.pinjaman_pokok, () => form.bunga, () => form.nominal_setoran, () => form.biaya_tambahan], updatePreview);
 
 const submit = () => form.post(route('pinjaman.store'));
 </script>
