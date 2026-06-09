@@ -15,10 +15,114 @@ class PendapatanController extends Controller
 {
     public function index(Request $request): Response
     {
-        $year  = $request->input('tahun', now()->year);
-        $month = $request->input('bulan'); // null = semua bulan
+        $data = $this->getLaporanData($request, true);
 
-        // Helper: apply date filters to query
+        return Inertia::render('SimpanPinjam/Pendapatan/Index', [
+            'tahun' => $data['tahun'],
+            'bulan' => $data['bulan'],
+            'tahunOptions' => $data['tahunOptions'],
+            'bulanOptions' => $data['bulanOptions'],
+            'labaTabungan' => $data['labaTabungan'],
+            'labaSembako' => $data['labaSembako'],
+            'bungaPinjaman' => $data['bungaPinjaman'],
+            'pendapatanKotor' => $data['pendapatanKotor'],
+            'distribusi' => $data['distribusi'],
+            'detailTabungan' => $data['detailTabungan'],
+            'detailSembako' => $data['detailSembako'],
+            'detailPinjaman' => $data['detailPinjaman'],
+        ]);
+    }
+
+    public function pdf(Request $request)
+    {
+        $data = $this->getLaporanData($request, false);
+
+        return view('exports.simpan-pinjam.laporan.pendapatan-kotor', $data);
+    }
+
+    public function excel(Request $request)
+    {
+        $data = $this->getLaporanData($request, false);
+
+        return response()->streamDownload(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+            
+            // Header Info
+            fputcsv($handle, ['LAPORAN PENDAPATAN KOTOR']);
+            fputcsv($handle, ['BUMDesa Dammar Wulan - Unit Simpan Pinjam']);
+            fputcsv($handle, ['Periode: ' . $data['bulanNama'] . ' ' . $data['tahun']]);
+            fputcsv($handle, []);
+
+            // Summary
+            fputcsv($handle, ['RINGKASAN PENDAPATAN']);
+            fputcsv($handle, ['Total Pendapatan Kotor', $data['pendapatanKotor']]);
+            fputcsv($handle, ['Bunga Pinjaman', $data['bungaPinjaman']]);
+            fputcsv($handle, ['Biaya Promosi (Tabungan Reguler)', $data['labaTabungan']]);
+            fputcsv($handle, ['Biaya Promosi (Tabungan Sembako)', $data['labaSembako']]);
+            fputcsv($handle, []);
+
+            // Distribusi Pengurangan Pendapatan
+            fputcsv($handle, ['RINCIAN PENGURANGAN PENDAPATAN']);
+            fputcsv($handle, ['Nama Pengurangan', 'Nominal', 'Persentase (%)']);
+            foreach ($data['distribusi'] as $item) {
+                fputcsv($handle, [
+                    $item['nama'],
+                    $item['nominal'],
+                    $item['persen'] . '%'
+                ]);
+            }
+            fputcsv($handle, []);
+
+            // Detail Bunga Pinjaman
+            fputcsv($handle, ['DETAIL BUNGA PINJAMAN']);
+            fputcsv($handle, ['Tanggal', 'Nasabah', 'Pokok Pinjaman', 'Bunga (%)', 'Bunga Nominal']);
+            foreach ($data['detailPinjaman'] as $p) {
+                fputcsv($handle, [
+                    $p['tanggal'],
+                    $p['nasabah'],
+                    $p['pokok'],
+                    $p['bunga_persen'],
+                    $p['bunga_nominal']
+                ]);
+            }
+            fputcsv($handle, []);
+
+            // Detail Biaya Promosi Reguler
+            fputcsv($handle, ['DETAIL BIAYA PROMOSI (TABUNGAN REGULER)']);
+            fputcsv($handle, ['Tanggal', 'Nasabah', 'Keterangan', 'Biaya Promosi']);
+            foreach ($data['detailTabungan'] as $t) {
+                fputcsv($handle, [
+                    $t['tanggal'],
+                    $t['nasabah'],
+                    $t['keterangan'],
+                    $t['laba']
+                ]);
+            }
+            fputcsv($handle, []);
+
+            // Detail Biaya Promosi Sembako
+            fputcsv($handle, ['DETAIL BIAYA PROMOSI (TABUNGAN SEMBAKO)']);
+            fputcsv($handle, ['Tanggal', 'Nasabah', 'Keterangan', 'Biaya Promosi']);
+            foreach ($data['detailSembako'] as $s) {
+                fputcsv($handle, [
+                    $s['tanggal'],
+                    $s['nasabah'],
+                    $s['keterangan'],
+                    $s['laba']
+                ]);
+            }
+
+            fclose($handle);
+        }, 'laporan-pendapatan-kotor.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    private function getLaporanData(Request $request, bool $limit = false): array
+    {
+        $year  = $request->input('tahun', now()->year);
+        $month = $request->input('bulan');
+
         $applyDateFilter = function ($query, string $dateColumn) use ($year, $month) {
             $query->whereYear($dateColumn, $year);
             if ($month) {
@@ -85,15 +189,18 @@ class PendapatanController extends Controller
         ];
 
         // Detail transaksi laba tabungan reguler
-        $detailTabungan = $applyDateFilter(
+        $detailTabunganQuery = $applyDateFilter(
             TransaksiTabungan::whereHas('tabungan', fn (Builder $q) => $q->where('jenis_tabungan', Tabungan::JENIS_REGULER))
                 ->with('tabungan.nasabah')
                 ->where('administrasi', '>', 0),
             'tanggal'
-        )
-            ->orderByDesc('tanggal')
-            ->limit(20)
-            ->get()
+        )->orderByDesc('tanggal');
+
+        if ($limit) {
+            $detailTabunganQuery->limit(20);
+        }
+
+        $detailTabungan = $detailTabunganQuery->get()
             ->map(fn ($t) => [
                 'tanggal' => $t->tanggal->format('Y-m-d'),
                 'nasabah' => $t->tabungan?->nasabah?->nama ?? '-',
@@ -102,15 +209,18 @@ class PendapatanController extends Controller
             ]);
 
         // Detail transaksi laba sembako
-        $detailSembako = $applyDateFilter(
+        $detailSembakoQuery = $applyDateFilter(
             TransaksiTabungan::whereHas('tabungan', fn (Builder $q) => $q->where('jenis_tabungan', Tabungan::JENIS_SEMBAKO))
                 ->with('tabungan.nasabah')
                 ->where('administrasi', '>', 0),
             'tanggal'
-        )
-            ->orderByDesc('tanggal')
-            ->limit(20)
-            ->get()
+        )->orderByDesc('tanggal');
+
+        if ($limit) {
+            $detailSembakoQuery->limit(20);
+        }
+
+        $detailSembako = $detailSembakoQuery->get()
             ->map(fn ($t) => [
                 'tanggal' => $t->tanggal->format('Y-m-d'),
                 'nasabah' => $t->tabungan?->nasabah?->nama ?? '-',
@@ -123,10 +233,13 @@ class PendapatanController extends Controller
         if ($month) {
             $detailPinjamanQuery->whereMonth('tanggal_akad', $month);
         }
-        $detailPinjaman = $detailPinjamanQuery
-            ->orderByDesc('tanggal_akad')
-            ->limit(20)
-            ->get()
+        $detailPinjamanQuery->orderByDesc('tanggal_akad');
+
+        if ($limit) {
+            $detailPinjamanQuery->limit(20);
+        }
+
+        $detailPinjaman = $detailPinjamanQuery->get()
             ->map(fn ($p) => [
                 'tanggal' => $p->tanggal_akad->format('Y-m-d'),
                 'nasabah' => $p->nasabah?->nama ?? '-',
@@ -136,8 +249,8 @@ class PendapatanController extends Controller
                 'status' => $p->status,
             ]);
 
-        // Options
         $tahunOptions = collect(range(now()->year, now()->year - 5))->values();
+        
         $bulanOptions = collect([
             ['value' => '',  'label' => 'Semua Bulan'],
             ['value' => 1,   'label' => 'Januari'],
@@ -154,7 +267,9 @@ class PendapatanController extends Controller
             ['value' => 12,  'label' => 'Desember'],
         ]);
 
-        return Inertia::render('SimpanPinjam/Pendapatan/Index', [
+        $bulanNama = $month ? $bulanOptions->firstWhere('value', (int)$month)['label'] : 'Semua Bulan';
+
+        return [
             'tahun' => (int) $year,
             'bulan' => $month ? (int) $month : null,
             'tahunOptions' => $tahunOptions,
@@ -167,6 +282,7 @@ class PendapatanController extends Controller
             'detailTabungan' => $detailTabungan,
             'detailSembako' => $detailSembako,
             'detailPinjaman' => $detailPinjaman,
-        ]);
+            'bulanNama' => $bulanNama,
+        ];
     }
 }
