@@ -9,11 +9,14 @@ const props = defineProps({ nasabahOptions: Array });
 const form = useForm({
     nasabah_id:      '',
     tanggal_akad:    new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0],
+    jenis_pinjaman:  'Uang Tunai',
+    keterangan:      '',
     pinjaman_pokok:  '',
     bunga:           10,
     nominal_setoran: '',
     biaya_tambahan:  '',
     foto_perjanjian: null,
+    foto_barang:     null,
 });
 
 const preview = ref(null);
@@ -77,10 +80,26 @@ const submit = () => form.post(route('pinjaman.store'));
                         </select>
                         <p v-if="form.errors.nasabah_id" class="mt-1 text-xs text-red-500">{{ form.errors.nasabah_id }}</p>
                     </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium">Tanggal Akad <span class="text-red-500">*</span></label>
-                        <input v-model="form.tanggal_akad" type="date" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium">Jenis Pinjaman <span class="text-red-500">*</span></label>
+                            <select v-model="form.jenis_pinjaman" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]">
+                                <option value="Uang Tunai">Uang Tunai</option>
+                                <option value="Sembako/Barang">Sembako / Barang</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium">Tanggal Akad <span class="text-red-500">*</span></label>
+                            <input v-model="form.tanggal_akad" type="date" class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                        </div>
                     </div>
+
+                    <div v-if="form.jenis_pinjaman === 'Sembako/Barang'">
+                        <label class="mb-1.5 block text-sm font-medium">Keterangan Barang/Sembako <span class="text-red-500">*</span></label>
+                        <input v-model="form.keterangan" type="text" placeholder="Misal: Beras 10kg, Minyak 2L"
+                            class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                    </div>
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="mb-1.5 block text-sm font-medium">Pinjaman Pokok <span class="text-red-500">*</span></label>
@@ -122,16 +141,29 @@ const submit = () => form.post(route('pinjaman.store'));
                     </div>
 
                     <!-- Foto Perjanjian -->
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium">Foto Dokumen Perjanjian</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            @change="(e) => form.foto_perjanjian = e.target.files[0]"
-                            class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2 text-sm focus:outline-none focus:border-[color:var(--color-primary)]"
-                        />
-                        <p class="mt-1.5 text-xs text-[color:var(--color-secondary)]">Format: JPG, JPEG, PNG, GIF. Maksimal 2MB.</p>
-                        <p v-if="form.errors.foto_perjanjian" class="mt-1 text-xs text-red-500">{{ form.errors.foto_perjanjian }}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium">Foto Dokumen Perjanjian</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                @change="(e) => form.foto_perjanjian = e.target.files[0]"
+                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2 text-sm focus:outline-none focus:border-[color:var(--color-primary)]"
+                            />
+                            <p class="mt-1.5 text-xs text-[color:var(--color-secondary)]">Format: JPG/PNG. Maks 2MB.</p>
+                            <p v-if="form.errors.foto_perjanjian" class="mt-1 text-xs text-red-500">{{ form.errors.foto_perjanjian }}</p>
+                        </div>
+                        <div v-if="form.jenis_pinjaman === 'Sembako/Barang'">
+                            <label class="mb-1.5 block text-sm font-medium">Foto Barang (Opsional)</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                @change="(e) => form.foto_barang = e.target.files[0]"
+                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] px-4 py-2 text-sm focus:outline-none focus:border-[color:var(--color-primary)]"
+                            />
+                            <p class="mt-1.5 text-xs text-[color:var(--color-secondary)]">Format: JPG/PNG. Maks 2MB.</p>
+                            <p v-if="form.errors.foto_barang" class="mt-1 text-xs text-red-500">{{ form.errors.foto_barang }}</p>
+                        </div>
                     </div>
 
                     <!-- Preview Kalkulasi -->

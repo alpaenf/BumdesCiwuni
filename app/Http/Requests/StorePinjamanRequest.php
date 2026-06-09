@@ -20,7 +20,10 @@ class StorePinjamanRequest extends FormRequest
             'bunga'           => ['required', 'numeric', 'min:0', 'max:100'],
             'nominal_setoran' => ['required', 'numeric', 'min:1'],
             'biaya_tambahan'  => ['nullable', 'numeric', 'min:0'],
+            'jenis_pinjaman'  => ['required', 'string', 'in:Uang Tunai,Sembako/Barang'],
+            'keterangan'      => ['nullable', 'string', 'max:255'],
             'foto_perjanjian' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'foto_barang'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ];
     }
 
