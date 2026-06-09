@@ -19,7 +19,7 @@ const tabunganSembako = computed(() => {
     return props.nasabah.tabungan?.find(t => t.jenis_tabungan === 'sembako') || null;
 });
 
-const pinjamanAktif   = computed(() => props.nasabah.pinjaman?.filter(p => p.status === 'aktif') ?? []);
+const pinjamanAktif   = computed(() => props.nasabah.pinjaman?.filter(p => p.status === 'aktif' || p.status === 'macet') ?? []);
 
 const waModal = ref(null);
 </script>
@@ -176,17 +176,21 @@ const waModal = ref(null);
                     <!-- Pinjaman aktif -->
                     <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-6 shadow-sm">
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="font-semibold text-[color:var(--color-on-surface)]">Pinjaman Aktif</h3>
+                            <h3 class="font-semibold text-[color:var(--color-on-surface)]">Pinjaman Berjalan</h3>
                             <Link :href="route('pinjaman.create')" class="flex items-center gap-1 rounded-lg bg-[color:var(--color-primary)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
                                 <span class="material-symbols-outlined text-xs">add</span> Pinjam
                             </Link>
                         </div>
                         <div v-if="pinjamanAktif.length === 0" class="py-6 text-center text-sm text-[color:var(--color-secondary)]">
-                            Tidak ada pinjaman aktif
+                            Tidak ada pinjaman berjalan
                         </div>
-                        <div v-for="p in pinjamanAktif" :key="p.id" class="rounded-lg border border-[color:var(--color-outline-variant)] p-4 mb-3">
+                        <div v-for="p in pinjamanAktif" :key="p.id" class="rounded-lg border border-[color:var(--color-outline-variant)] p-4 mb-3" :class="p.status === 'macet' ? 'bg-red-50/50 border-red-200' : ''">
                             <div class="flex items-start justify-between">
                                 <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <p class="font-semibold text-[color:var(--color-on-surface)]">Pinjaman Pokok</p>
+                                        <span v-if="p.status === 'macet'" class="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">Macet</span>
+                                    </div>
                                     <p class="text-xs text-[color:var(--color-secondary)]">Tanggal Akad: {{ formatDate(p.tanggal_akad) }}</p>
                                     <p class="mt-1 text-sm font-semibold">Pokok: {{ formatCurrency(p.pinjaman_pokok) }} | Bunga {{ p.bunga }}%</p>
                                 </div>

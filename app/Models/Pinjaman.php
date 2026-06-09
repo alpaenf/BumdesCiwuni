@@ -42,6 +42,17 @@ class Pinjaman extends Model
         return $this->foto_perjanjian ? asset('uploads/pinjaman/' . $this->foto_perjanjian) : null;
     }
 
+    public function getStatusAttribute($value)
+    {
+        if ($value === 'aktif' && $this->tanggal_akad) {
+            // Macet jika sudah lebih dari 2 bulan sejak tanggal akad
+            if (now()->diffInMonths($this->tanggal_akad) >= 2) {
+                return 'macet';
+            }
+        }
+        return $value;
+    }
+
     public function nasabah(): BelongsTo
     {
         return $this->belongsTo(Nasabah::class);

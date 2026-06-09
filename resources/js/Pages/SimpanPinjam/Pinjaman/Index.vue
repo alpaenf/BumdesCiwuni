@@ -29,7 +29,11 @@ watch([search, status, bulan], () => {
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID') : '-';
-const statusClass = (s) => s === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600';
+const statusClass = (s) => {
+    if (s === 'aktif') return 'bg-blue-50 text-blue-700';
+    if (s === 'macet') return 'bg-red-50 text-red-700';
+    return 'bg-gray-100 text-gray-600';
+};
 
 // Format YYYY-MM ke nama bulan Indonesia
 const formatBulanLabel = (val) => {
@@ -114,6 +118,7 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
                 <select v-model="status" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none">
                     <option value="">Semua Status</option>
                     <option value="aktif">Aktif</option>
+                    <option value="macet">Macet</option>
                     <option value="lunas">Lunas</option>
                 </select>
             </div>
