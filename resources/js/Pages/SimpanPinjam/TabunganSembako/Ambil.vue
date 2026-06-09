@@ -17,6 +17,72 @@ const isInvalid = computed(() => {
 });
 
 const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasabah.id));
+
+const isCompressing = ref(false);
+
+const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+        form.foto_barang = null;
+        return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+        form.foto_barang = file;
+        return;
+    }
+
+    isCompressing.value = true;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1000;
+            const MAX_HEIGHT = 1000;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    form.foto_barang = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                } else {
+                    form.foto_barang = file;
+                }
+                isCompressing.value = false;
+            }, 'image/jpeg', 0.6); // 60% quality
+        };
+        img.onerror = () => {
+            form.foto_barang = file;
+            isCompressing.value = false;
+        }
+    };
+    reader.onerror = () => {
+        form.foto_barang = file;
+        isCompressing.value = false;
+    };
+};
 </script>
 <template>
     <Head title="Ambil Sembako" />
@@ -76,10 +142,11 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                             <input
                                 type="file"
                                 accept="image/*"
-                                @change="(e) => form.foto_barang = e.target.files[0]"
+                                @change="handleImageUpload"
                                 class="w-full rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm focus:outline-none focus:border-amber-500"
                             />
-                            <p class="mt-1.5 text-xs text-amber-700">Format: JPG, JPEG, PNG. Maksimal 5MB.</p>
+                            <p class="mt-1.5 text-xs text-amber-700">Format: JPG, JPEG, PNG. Akan dikompres otomatis.</p>
+                            <p v-if="isCompressing" class="mt-1.5 text-xs font-semibold text-amber-600 flex items-center gap-1"><span class="h-3 w-3 animate-spin rounded-full border-2 border-amber-200 border-t-amber-600"></span> Mengompresi gambar...</p>
                             <p v-if="form.errors.foto_barang" class="mt-1 text-xs text-red-500">{{ form.errors.foto_barang }}</p>
                         </div>
                     </div>
@@ -93,7 +160,7 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                     </div>
                     <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
                         <Link :href="route('tabungan-sembako.index')" class="w-full sm:w-auto text-center rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
-                        <button type="submit" :disabled="form.processing || isInvalid" class="w-full sm:w-auto justify-center flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+                        <button type="submit" :disabled="form.processing || isInvalid || isCompressing" class="w-full sm:w-auto justify-center flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
                             <span class="material-symbols-outlined text-base">shopping_basket</span> Proses Pengambilan
                         </button>
                     </div>
