@@ -99,6 +99,11 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Struk Publik (Bisa diakses tanpa login dari link WhatsApp)
+    Route::get('/tabungan/struk/{transaksi}', [TabunganController::class, 'struk'])->name('tabungan.struk')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
+    Route::get('/tabungan-sembako/struk/{transaksi}', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'struk'])->name('tabungan-sembako.struk')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
+    Route::get('/angsuran/struk/{angsuran}', [AngsuranController::class, 'struk'])->name('angsuran.struk')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
+
     // Pengaturan Tabungan (admin only)
     Route::get('/pengaturan/tabungan', [PengaturanTabunganController::class, 'index'])->name('pengaturan.tabungan')->middleware('role:admin_unit');
     Route::put('/pengaturan/tabungan', [PengaturanTabunganController::class, 'update'])->name('pengaturan.tabungan.update')->middleware('role:admin_unit');
@@ -121,7 +126,6 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
 
     // Tabungan — static routes FIRST, then dynamic {nasabah}
     Route::get('/tabungan', [TabunganController::class, 'index'])->name('tabungan.index');
-    Route::get('/tabungan/struk/{transaksi}', [TabunganController::class, 'struk'])->name('tabungan.struk');
     Route::get('/tabungan/{nasabah}/setor', [TabunganController::class, 'setor'])->name('tabungan.setor')->middleware('role:admin_unit');
     Route::post('/tabungan/{nasabah}/setor', [TabunganController::class, 'storeSetor'])->name('tabungan.setor.store')->middleware('role:admin_unit');
     Route::get('/tabungan/{nasabah}/tarik', [TabunganController::class, 'tarik'])->name('tabungan.tarik')->middleware('role:admin_unit');
@@ -131,7 +135,6 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
 
     // Tabungan Sembako
     Route::get('/tabungan-sembako', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'index'])->name('tabungan-sembako.index');
-    Route::get('/tabungan-sembako/struk/{transaksi}', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'struk'])->name('tabungan-sembako.struk');
     Route::get('/tabungan-sembako/{nasabah}/setor', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'setor'])->name('tabungan-sembako.setor')->middleware('role:admin_unit');
     Route::post('/tabungan-sembako/{nasabah}/setor', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'storeSetor'])->name('tabungan-sembako.setor.store')->middleware('role:admin_unit');
     Route::get('/tabungan-sembako/{nasabah}/ambil', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'ambil'])->name('tabungan-sembako.ambil')->middleware('role:admin_unit');
@@ -148,7 +151,6 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     // Angsuran — static routes FIRST, then dynamic {angsuran}
     Route::get('/angsuran', [AngsuranController::class, 'index'])->name('angsuran.index');
     Route::get('/angsuran/bayar', [AngsuranController::class, 'create'])->name('angsuran.create')->middleware('role:admin_unit');
-    Route::get('/angsuran/struk/{angsuran}', [AngsuranController::class, 'struk'])->name('angsuran.struk');
     Route::post('/angsuran', [AngsuranController::class, 'store'])->name('angsuran.store')->middleware('role:admin_unit');
 
     // Buku Tabungan
