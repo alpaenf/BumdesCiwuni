@@ -38,6 +38,7 @@ class BukuTabunganController extends Controller
                 'id' => $transaksi->id,
                 'tanggal' => $transaksi->tanggal->format('Y-m-d'),
                 'nomor_transaksi' => $transaksi->nomor_transaksi,
+                'nama_nasabah' => $transaksi->tabungan?->nasabah?->nama ?? '-',
                 'uraian' => $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
                 'masuk' => $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
                 'keluar' => in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0,
@@ -75,6 +76,7 @@ class BukuTabunganController extends Controller
             fputcsv($handle, [
                 'Tanggal',
                 'Nomor Transaksi',
+                'Nama Nasabah',
                 'Uraian',
                 'Masuk',
                 'Keluar',
@@ -86,6 +88,7 @@ class BukuTabunganController extends Controller
                 fputcsv($handle, [
                     $transaksi->tanggal->format('Y-m-d'),
                     $transaksi->nomor_transaksi,
+                    $transaksi->tabungan?->nasabah?->nama ?? '-',
                     $transaksi->keterangan ?: ($transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? 'Setoran' : 'Penarikan'),
                     $transaksi->jenis_transaksi === TransaksiTabungan::JENIS_SETOR ? $transaksi->nominal : 0,
                     in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0,

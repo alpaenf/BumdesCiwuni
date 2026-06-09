@@ -42,12 +42,13 @@
             table-layout: fixed;
         }
         colgroup col.col-tanggal    { width: 10%; }
-        colgroup col.col-no         { width: 18%; }
-        colgroup col.col-ket        { width: 18%; }
-        colgroup col.col-setoran    { width: 14%; }
-        colgroup col.col-penarikan  { width: 14%; }
-        colgroup col.col-admin      { width: 12%; }
-        colgroup col.col-saldo      { width: 14%; }
+        colgroup col.col-no         { width: 15%; }
+        colgroup col.col-nama       { width: 15%; }
+        colgroup col.col-ket        { width: 15%; }
+        colgroup col.col-setoran    { width: 12%; }
+        colgroup col.col-penarikan  { width: 12%; }
+        colgroup col.col-admin      { width: 10%; }
+        colgroup col.col-saldo      { width: 11%; }
 
         th, td {
             border: 1px solid #ddd;
@@ -90,6 +91,7 @@
         <colgroup>
             <col class="col-tanggal" />
             <col class="col-no" />
+            <col class="col-nama" />
             <col class="col-ket" />
             <col class="col-setoran" />
             <col class="col-penarikan" />
@@ -100,6 +102,7 @@
             <tr>
                 <th>Tanggal</th>
                 <th>No. Transaksi</th>
+                <th>Nama Nasabah</th>
                 <th>Uraian</th>
                 <th class="angka">Masuk</th>
                 <th class="angka">Keluar</th>
@@ -112,6 +115,7 @@
                 <tr>
                     <td>{{ $transaksi->tanggal->format('d/m/Y') }}</td>
                     <td>{{ $transaksi->nomor_transaksi }}</td>
+                    <td>{{ $transaksi->tabungan?->nasabah?->nama ?? '-' }}</td>
                     <td>{{ $transaksi->keterangan ?: ($transaksi->jenis_transaksi === 'setor' ? 'Setoran' : 'Penarikan') }}</td>
                     <td class="angka">Rp{{ number_format($transaksi->jenis_transaksi === 'setor' ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
                     <td class="angka">Rp{{ number_format(in_array($transaksi->jenis_transaksi, ['tarik_tunai', 'tarik_sembako', 'tutup_periode']) ? $transaksi->nominal : 0, 0, ',', '.') }}</td>
