@@ -25,7 +25,7 @@ class TabunganService
             return TransaksiTabungan::create([
                 'tabungan_id'     => $tabungan->id,
                 'tanggal'         => $data['tanggal'],
-                'nomor_transaksi' => $this->nomorService->generateNomorTransaksi(),
+                'nomor_transaksi' => $this->nomorService->generateNomorTransaksiTabungan($tabungan->jenis_tabungan),
                 'jenis_transaksi' => TransaksiTabungan::JENIS_SETOR,
                 'keterangan'      => $data['keterangan'] ?? 'Setoran Tabungan',
                 'nominal'         => $nominal,
@@ -76,7 +76,7 @@ class TabunganService
             return TransaksiTabungan::create([
                 'tabungan_id'     => $tabungan->id,
                 'tanggal'         => $data['tanggal'],
-                'nomor_transaksi' => $this->nomorService->generateNomorTransaksi(),
+                'nomor_transaksi' => $this->nomorService->generateNomorTransaksiTabungan($tabungan->jenis_tabungan),
                 'jenis_transaksi' => $jenisTransaksi,
                 'keterangan'      => $keterangan,
                 'nominal'         => $nominalKeluar,
@@ -129,7 +129,7 @@ class TabunganService
             return TransaksiTabungan::create([
                 'tabungan_id'     => $tabungan->id,
                 'tanggal'         => $data['tanggal'],
-                'nomor_transaksi' => $this->nomorService->generateNomorTransaksi(),
+                'nomor_transaksi' => $this->nomorService->generateNomorTransaksiTabungan($tabungan->jenis_tabungan),
                 'jenis_transaksi' => $jenisTransaksi,
                 'keterangan'      => $keterangan,
                 'nominal'         => $nominalKeluar,

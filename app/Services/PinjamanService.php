@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class PinjamanService
 {
+    public function __construct(private NomorService $nomorService) {}
+
     /**
      * Buat pinjaman baru dengan kalkulasi otomatis.
      */
@@ -31,6 +33,7 @@ class PinjamanService
 
             return Pinjaman::create([
                 'nasabah_id'      => $nasabah->id,
+                'nomor_transaksi' => $this->nomorService->generateNomorPinjaman(),
                 'tanggal_akad'    => $data['tanggal_akad'],
                 'pinjaman_pokok'  => $pokok,
                 'bunga'           => $bunga,

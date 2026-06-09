@@ -279,7 +279,7 @@ const submit = () => {
                                     class="inline-flex w-full justify-center cursor-pointer items-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2.5 text-sm font-medium text-amber-800 transition hover:bg-amber-100"
                                 >
                                     <span class="material-symbols-outlined text-base">add_a_photo</span>
-                                    Upload Foto (Auto-Compress)
+                                    Upload Foto
                                 </label>
                                 <p class="mt-1.5 text-xs text-[color:var(--color-secondary)]">Otomatis kompres.</p>
                                 <p v-if="form.errors.foto_jaminan" class="mt-1 text-xs text-red-500">{{ form.errors.foto_jaminan }}</p>
