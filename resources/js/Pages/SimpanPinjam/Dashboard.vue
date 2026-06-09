@@ -180,23 +180,38 @@ const formatCurrency = (value) =>
                     </div>
                     <LoanStatusChart :data="loanChart" />
                     
-                    <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-                        <div class="flex items-center justify-between p-2 rounded bg-blue-50/50 text-blue-800">
-                            <span>Aktif</span>
-                            <span class="font-bold">{{ loanChart.aktif }}</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 rounded bg-white border border-outline-variant text-slate-700">
-                            <span>Lunas</span>
-                            <span class="font-bold">{{ loanChart.lunas }}</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 rounded bg-amber-50 text-amber-800">
-                            <span>Menunggak</span>
-                            <span class="font-bold">{{ loanChart.menunggak }}</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 rounded bg-rose-50 text-rose-800">
-                            <span>Kredit Macet</span>
-                            <span class="font-bold">{{ loanChart.kredit_macet }}</span>
-                        </div>
+                    <div class="mt-4 grid grid-cols-2 gap-3">
+                        <Link :href="route('pinjaman.index', { status: 'aktif' })" class="flex items-center justify-between p-3.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-900 hover:bg-blue-100 hover:border-blue-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-blue-700 uppercase tracking-wider">Aktif</span>
+                                <span class="text-xl font-bold mt-0.5">{{ loanChart.aktif }}</span>
+                            </div>
+                            <span class="material-symbols-outlined text-xl text-blue-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                        </Link>
+                        
+                        <Link :href="route('pinjaman.index', { status: 'lunas' })" class="flex items-center justify-between p-3.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 hover:border-emerald-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Lunas</span>
+                                <span class="text-xl font-bold mt-0.5">{{ loanChart.lunas }}</span>
+                            </div>
+                            <span class="material-symbols-outlined text-xl text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                        </Link>
+
+                        <Link :href="route('tunggakan.index', { status: 'menunggak' })" class="flex items-center justify-between p-3.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 hover:border-amber-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">Menunggak</span>
+                                <span class="text-xl font-bold mt-0.5">{{ loanChart.menunggak }}</span>
+                            </div>
+                            <span class="material-symbols-outlined text-xl text-amber-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                        </Link>
+
+                        <Link :href="route('tunggakan.index', { status: 'kredit-macet' })" class="flex items-center justify-between p-3.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-900 hover:bg-rose-100 hover:border-rose-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-rose-700 uppercase tracking-wider">Kredit Macet</span>
+                                <span class="text-xl font-bold mt-0.5">{{ loanChart.kredit_macet }}</span>
+                            </div>
+                            <span class="material-symbols-outlined text-xl text-rose-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                        </Link>
                     </div>
                 </div>
 
