@@ -37,9 +37,9 @@ const submit = () => form.post(route('tabungan-sembako.setor.store', props.nasab
                         </div>
                         <p v-if="form.errors.nominal" class="mt-1 text-xs text-red-500">{{ form.errors.nominal }}</p>
                     </div>
-                    <div class="flex justify-end gap-3 pt-2">
-                        <Link :href="route('tabungan-sembako.index')" class="rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
-                        <button type="submit" :disabled="form.processing" class="flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+                    <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
+                        <Link :href="route('tabungan-sembako.index')" class="w-full sm:w-auto text-center rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
+                        <button type="submit" :disabled="form.processing" class="w-full sm:w-auto justify-center flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
                             <span class="material-symbols-outlined text-base">add_circle</span> Simpan Setoran
                         </button>
                     </div>

@@ -67,9 +67,9 @@ const submit = () => {
                         <div class="mt-2 flex justify-between border-t border-[color:var(--color-outline-variant)] pt-2 font-bold"><span>Saldo Baru</span><span>{{ formatCurrency(Number(tabungan.saldo) + Number(form.nominal)) }}</span></div>
                     </div>
 
-                    <div class="flex justify-end gap-3 pt-2">
-                        <Link :href="route('tabungan.index')" class="rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
-                        <button type="submit" :disabled="form.processing" class="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+                    <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
+                        <Link :href="route('tabungan.index')" class="w-full sm:w-auto text-center rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
+                        <button type="submit" :disabled="form.processing" class="w-full sm:w-auto justify-center flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
                             <span class="material-symbols-outlined text-base">add_circle</span> Simpan Setoran
                         </button>
                     </div>
