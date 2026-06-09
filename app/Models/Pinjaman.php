@@ -22,8 +22,6 @@ class Pinjaman extends Model
         'jumlah_angsuran',
         'sisa_pinjaman',
         'status',
-        'jenis_pinjaman',
-        'keterangan',
         'foto_perjanjian',
         'foto_barang',
     ];
@@ -38,16 +36,11 @@ class Pinjaman extends Model
         'sisa_pinjaman' => 'decimal:2',
     ];
 
-    protected $appends = ['foto_perjanjian_url', 'foto_barang_url'];
+    protected $appends = ['foto_perjanjian_url'];
 
     public function getFotoPerjanjianUrlAttribute(): ?string
     {
         return $this->foto_perjanjian ? asset('uploads/pinjaman/' . $this->foto_perjanjian) : null;
-    }
-
-    public function getFotoBarangUrlAttribute(): ?string
-    {
-        return $this->foto_barang ? asset('uploads/pinjaman/' . $this->foto_barang) : null;
     }
 
     public function getStatusAttribute($value)

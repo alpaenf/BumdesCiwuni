@@ -181,22 +181,22 @@ const formatCurrency = (value) =>
                     <LoanStatusChart :data="loanChart" />
                     
                     <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-                        <Link :href="route('pinjaman.index', { status: 'aktif' })" class="flex items-center justify-between p-2 rounded bg-blue-50/50 text-blue-800 hover:bg-blue-100 transition-colors">
+                        <div class="flex items-center justify-between p-2 rounded bg-blue-50/50 text-blue-800">
                             <span>Aktif</span>
                             <span class="font-bold">{{ loanChart.aktif }}</span>
-                        </Link>
-                        <Link :href="route('pinjaman.index', { status: 'lunas' })" class="flex items-center justify-between p-2 rounded bg-white border border-outline-variant text-slate-700 hover:bg-slate-50 transition-colors">
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-white border border-outline-variant text-slate-700">
                             <span>Lunas</span>
                             <span class="font-bold">{{ loanChart.lunas }}</span>
-                        </Link>
-                        <Link :href="route('pinjaman.index')" class="flex items-center justify-between p-2 rounded bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors">
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-amber-50 text-amber-800">
                             <span>Menunggak</span>
                             <span class="font-bold">{{ loanChart.menunggak }}</span>
-                        </Link>
-                        <Link :href="route('pinjaman.index', { status: 'macet' })" class="flex items-center justify-between p-2 rounded bg-rose-50 text-rose-800 hover:bg-rose-100 transition-colors">
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-rose-50 text-rose-800">
                             <span>Kredit Macet</span>
                             <span class="font-bold">{{ loanChart.kredit_macet }}</span>
-                        </Link>
+                        </div>
                     </div>
                 </div>
 

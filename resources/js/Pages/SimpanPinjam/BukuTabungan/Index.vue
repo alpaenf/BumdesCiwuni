@@ -237,7 +237,7 @@ const formatCurrency = (value) =>
                     <span class="text-sm text-slate-500">{{ transactions.length }} transaksi</span>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm whitespace-nowrap">
+                    <table class="min-w-full text-sm">
                         <thead>
                             <tr class="border-b text-left text-xs uppercase tracking-[0.2em] text-slate-900">
                                 <th class="py-3 pe-4">Tanggal</th>
