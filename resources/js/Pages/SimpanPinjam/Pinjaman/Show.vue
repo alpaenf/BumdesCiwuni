@@ -66,9 +66,13 @@ Terima kasih.`;
                         <p class="text-xs font-semibold uppercase text-[color:var(--color-secondary)]">Nasabah</p>
                         <p class="mt-2 text-lg font-bold">{{ pinjaman.nasabah?.nama }}</p>
                         <p class="font-mono text-sm text-[color:var(--color-primary)]">{{ pinjaman.nasabah?.nomor_rekening }}</p>
-                        <span class="mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                            :class="pinjaman.status === 'aktif' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-600'">
-                            {{ pinjaman.status === 'aktif' ? 'Aktif' : 'Lunas' }}
+                        <span class="mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize"
+                            :class="{
+                                'bg-blue-50 text-blue-700': pinjaman.status === 'aktif',
+                                'bg-red-50 text-red-700': pinjaman.status === 'macet',
+                                'bg-gray-100 text-gray-600': pinjaman.status === 'lunas'
+                            }">
+                            {{ pinjaman.status }}
                         </span>
                     </div>
 
@@ -110,7 +114,7 @@ Terima kasih.`;
                         <p class="mt-2 text-center text-xs text-[color:var(--color-secondary)]">Klik gambar untuk melihat ukuran penuh</p>
                     </div>
 
-                    <Link v-if="pinjaman.status === 'aktif'" :href="route('angsuran.create', { nasabah_id: pinjaman.nasabah?.id })"
+                    <Link v-if="pinjaman.status === 'aktif' || pinjaman.status === 'macet'" :href="route('angsuran.create', { nasabah_id: pinjaman.nasabah?.id })"
                         class="flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:opacity-90">
                         <span class="material-symbols-outlined text-base">payments</span> Bayar Angsuran
                     </Link>

@@ -29,7 +29,15 @@ class PinjamanController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'macet') {
+                $query->where('status', 'aktif')
+                      ->where('tanggal_akad', '<=', now()->subMonths(2));
+            } elseif ($request->status === 'aktif') {
+                $query->where('status', 'aktif')
+                      ->where('tanggal_akad', '>', now()->subMonths(2));
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         // Filter bulan (format: YYYY-MM)
@@ -63,7 +71,15 @@ class PinjamanController extends Controller
                             ->whereMonth('tanggal_akad', $month);
         }
         if ($request->filled('status')) {
-            $summaryFiltered->where('status', $request->status);
+            if ($request->status === 'macet') {
+                $summaryFiltered->where('status', 'aktif')
+                                ->where('tanggal_akad', '<=', now()->subMonths(2));
+            } elseif ($request->status === 'aktif') {
+                $summaryFiltered->where('status', 'aktif')
+                                ->where('tanggal_akad', '>', now()->subMonths(2));
+            } else {
+                $summaryFiltered->where('status', $request->status);
+            }
         }
         $summaryFiltered = $summaryFiltered->first();
 
