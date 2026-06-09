@@ -51,12 +51,12 @@ class NomorService
 
     /**
      * Generate nomor transaksi tabungan.
-     * Format: TRX-20260531-0001
+     * Format: T260531001 (10 karakter)
      */
     public function generateNomorTransaksi(): string
     {
-        $today = now()->format('Ymd');
-        $prefix = "TRX-{$today}-";
+        $today = now()->format('ymd');
+        $prefix = "T{$today}";
 
         $last = \App\Models\TransaksiTabungan::where('nomor_transaksi', 'like', "{$prefix}%")
             ->orderByDesc('id')
@@ -65,21 +65,21 @@ class NomorService
         if (!$last) {
             $seq = 1;
         } else {
-            $parts = explode('-', $last);
-            $seq = ((int) end($parts)) + 1;
+            $seqStr = substr($last, 7); // ambil 3 digit terakhir setelah prefix 7 digit (T+yymmdd)
+            $seq = ((int) $seqStr) + 1;
         }
 
-        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
     }
 
     /**
      * Generate nomor kwitansi.
-     * Format: KWT-20260531-0001
+     * Format: K260531001 (10 karakter)
      */
     public function generateNomorKwitansi(): string
     {
-        $today = now()->format('Ymd');
-        $prefix = "KWT-{$today}-";
+        $today = now()->format('ymd');
+        $prefix = "K{$today}";
 
         $last = \App\Models\Kwitansi::where('nomor_kwitansi', 'like', "{$prefix}%")
             ->orderByDesc('id')
@@ -88,11 +88,11 @@ class NomorService
         if (!$last) {
             $seq = 1;
         } else {
-            $parts = explode('-', $last);
-            $seq = ((int) end($parts)) + 1;
+            $seqStr = substr($last, 7);
+            $seq = ((int) $seqStr) + 1;
         }
 
-        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
     }
 
     /**
