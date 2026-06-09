@@ -242,6 +242,7 @@ const formatCurrency = (value) =>
                             <tr class="border-b text-left text-xs uppercase tracking-[0.2em] text-slate-900">
                                 <th class="py-3 pe-4">Tanggal</th>
                                 <th class="py-3 pe-4">Nomor Transaksi</th>
+                                <th class="py-3 pe-4">Nama Nasabah</th>
                                 <th class="py-3 pe-4">Uraian</th>
                                 <th class="py-3 pe-4">Masuk</th>
                                 <th class="py-3 pe-4">Keluar</th>
@@ -252,7 +253,8 @@ const formatCurrency = (value) =>
                         <tbody>
                             <tr v-for="item in transactions" :key="item.id" class="border-b last:border-none">
                                 <td class="py-3 pe-4">{{ item.tanggal }}</td>
-                                <td class="py-3 pe-4">{{ item.nomor_transaksi }}</td>
+                                <td class="py-3 pe-4 font-mono">{{ item.nomor_transaksi || '-' }}</td>
+                                <td class="py-3 pe-4 font-semibold uppercase">{{ item.nama_nasabah }}</td>
                                 <td class="py-3 pe-4">{{ item.uraian }}</td>
                                 <td class="py-3 pe-4">{{ formatCurrency(item.masuk) }}</td>
                                 <td class="py-3 pe-4">{{ formatCurrency(item.keluar) }}</td>
