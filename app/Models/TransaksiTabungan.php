@@ -19,6 +19,7 @@ class TransaksiTabungan extends Model
         'nomor_transaksi',
         'jenis_transaksi',
         'keterangan',
+        'foto_barang',
         'nominal',
         'administrasi',
         'saldo_setelah',

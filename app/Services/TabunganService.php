@@ -126,12 +126,21 @@ class TabunganService
 
             $tabungan->update(['saldo' => $saldoBaru]);
 
+            $foto_barang = null;
+            if (isset($data['foto_barang']) && $data['foto_barang'] instanceof \Illuminate\Http\UploadedFile) {
+                $file = $data['foto_barang'];
+                $filename = time() . '_sembako_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/tabungan'), $filename);
+                $foto_barang = $filename;
+            }
+
             return TransaksiTabungan::create([
                 'tabungan_id'     => $tabungan->id,
                 'tanggal'         => $data['tanggal'],
                 'nomor_transaksi' => $this->nomorService->generateNomorTransaksiTabungan($tabungan->jenis_tabungan),
                 'jenis_transaksi' => $jenisTransaksi,
-                'keterangan'      => $keterangan,
+                'keterangan'      => $data['keterangan'] ?? $keterangan,
+                'foto_barang'     => $foto_barang,
                 'nominal'         => $nominalKeluar,
                 'administrasi'    => $administrasi,
                 'saldo_setelah'   => $saldoBaru,

@@ -180,24 +180,31 @@ function formatTanggal(dateStr) {
                             <p class="text-sm">Belum ada riwayat transaksi</p>
                         </div>
                         <ul v-else class="divide-y divide-slate-100">
-                            <li v-for="trx in modalTransaksi" :key="trx.id" class="flex items-center justify-between py-3 gap-3">
-                                <div class="min-w-0">
-                                    <p class="text-xs font-mono font-semibold text-slate-700 truncate">#{{ trx.nomor_transaksi }}</p>
-                                    <p class="text-xs text-slate-500 mt-0.5">{{ formatTanggal(trx.tanggal) }}</p>
+                            <li v-for="trx in modalTransaksi" :key="trx.id" class="flex flex-col py-3 gap-2">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-mono font-semibold text-slate-700 truncate">#{{ trx.nomor_transaksi }}</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">{{ formatTanggal(trx.tanggal) }}</p>
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <span :class="trx.jenis_transaksi === 'setor' ? 'text-blue-600' : 'text-red-500'" class="text-xs font-semibold">
+                                            {{ trx.jenis_transaksi === 'setor' ? '+' : '-' }} {{ formatCurrency(trx.nominal) }}
+                                        </span>
+                                        <button @click="openStruk(trx.id)"
+                                            class="flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-orange-600">
+                                            <span class="material-symbols-outlined text-xs">print</span> Cetak
+                                        </button>
+                                        <button @click="sendWaStruk(trx)"
+                                            class="flex items-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600">
+                                            <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.534 5.855L.054 23.272a.75.75 0 00.917.928l5.528-1.451A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.723 9.723 0 01-5.02-1.394l-.36-.213-3.73.979.997-3.645-.235-.374A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg> WA
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-3 shrink-0">
-                                    <span :class="trx.jenis_transaksi === 'setor' ? 'text-blue-600' : 'text-red-500'"
-                                        class="text-xs font-semibold">
-                                        {{ trx.jenis_transaksi === 'setor' ? '+' : '-' }} {{ formatCurrency(trx.nominal) }}
-                                    </span>
-                                    <button @click="openStruk(trx.id)"
-                                        class="flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-orange-600">
-                                        <span class="material-symbols-outlined text-xs">print</span> Cetak
-                                    </button>
-                                    <button @click="sendWaStruk(trx)"
-                                        class="flex items-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600">
-                                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.534 5.855L.054 23.272a.75.75 0 00.917.928l5.528-1.451A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.723 9.723 0 01-5.02-1.394l-.36-.213-3.73.979.997-3.645-.235-.374A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg> WA
-                                    </button>
+                                <div v-if="trx.keterangan || trx.foto_barang" class="mt-1 rounded border border-amber-100 bg-amber-50 p-2 text-xs">
+                                    <div v-if="trx.keterangan" class="font-semibold text-amber-900">{{ trx.keterangan }}</div>
+                                    <a v-if="trx.foto_barang" :href="'/uploads/tabungan/' + trx.foto_barang" target="_blank" class="mt-1 inline-flex items-center gap-1 text-blue-600 hover:underline">
+                                        <span class="material-symbols-outlined text-[14px]">image</span> Lihat Foto
+                                    </a>
                                 </div>
                             </li>
                         </ul>
