@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
     tahun: Number,
@@ -31,6 +31,13 @@ const pct = (v, total) => total > 0 ? ((v / total) * 100).toFixed(1) : '0.0';
 
 const bulanNama = props.bulanOptions?.find(b => b.value === (props.bulan ?? ''))?.label ?? 'Semua Bulan';
 
+const exportFilters = computed(() => {
+    const payload = {};
+    if (selectedTahun.value) payload.tahun = selectedTahun.value;
+    if (selectedBulan.value) payload.bulan = selectedBulan.value;
+    return payload;
+});
+
 const activeTab = ref('tabungan');
 </script>
 
@@ -46,7 +53,13 @@ const activeTab = ref('tabungan');
                     <h2 class="text-lg font-bold text-slate-800">Ringkasan Pendapatan Kotor</h2>
                     <p class="text-sm text-slate-500">Periode: {{ bulanNama }} {{ tahun }}</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a :href="route('pendapatan.pdf', exportFilters)" target="_blank" class="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">picture_as_pdf</span> Cetak PDF
+                    </a>
+                    <a :href="route('pendapatan.excel', exportFilters)" class="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">description</span> Export Excel
+                    </a>
                     <select v-model="selectedBulan" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                         <option v-for="b in bulanOptions" :key="b.value" :value="b.value">{{ b.label }}</option>
                     </select>

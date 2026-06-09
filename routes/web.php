@@ -173,6 +173,8 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
 
     // Pendapatan Kotor
     Route::get('/pendapatan', [PendapatanController::class, 'index'])->name('pendapatan.index');
+    Route::get('/pendapatan/pdf', [PendapatanController::class, 'pdf'])->name('pendapatan.pdf');
+    Route::get('/pendapatan/excel', [PendapatanController::class, 'excel'])->name('pendapatan.excel');
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
