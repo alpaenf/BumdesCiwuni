@@ -40,7 +40,7 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                     </div>
                     <div>
                         <label class="mb-1.5 block text-sm font-medium">Jenis Pengambilan <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button type="button" @click="form.jenis_pengambilan = 'uang'"
                                 class="flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition"
                                 :class="form.jenis_pengambilan === 'uang' ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]' : 'border-[color:var(--color-outline-variant)] text-[color:var(--color-secondary)]'">
@@ -49,7 +49,7 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                             <button type="button" @click="form.jenis_pengambilan = 'barang'"
                                 class="flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition"
                                 :class="form.jenis_pengambilan === 'barang' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-[color:var(--color-outline-variant)] text-[color:var(--color-secondary)]'">
-                                <span class="material-symbols-outlined text-base">shopping_basket</span> Barang/Sembako
+                                <span class="material-symbols-outlined text-base">shopping_basket</span> Barang
                             </button>
                         </div>
                     </div>
@@ -91,9 +91,9 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                         </div>
                         <p v-if="isInvalid" class="mt-2 text-xs text-red-600">Saldo setelah pengambilan minimal {{ formatCurrency(ADMIN) }} (Endapan Wajib).</p>
                     </div>
-                    <div class="flex justify-end gap-3 pt-2">
-                        <Link :href="route('tabungan-sembako.index')" class="rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
-                        <button type="submit" :disabled="form.processing || isInvalid" class="flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+                    <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
+                        <Link :href="route('tabungan-sembako.index')" class="w-full sm:w-auto text-center rounded-lg border border-[color:var(--color-outline-variant)] px-5 py-2.5 text-sm font-medium hover:bg-[color:var(--color-surface-container)]">Batal</Link>
+                        <button type="submit" :disabled="form.processing || isInvalid" class="w-full sm:w-auto justify-center flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
                             <span class="material-symbols-outlined text-base">shopping_basket</span> Proses Pengambilan
                         </button>
                     </div>
