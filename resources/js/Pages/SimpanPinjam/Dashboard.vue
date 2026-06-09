@@ -81,18 +81,18 @@ const formatCurrency = (value) =>
                 </div>
 
                 <!-- Piutang Berjalan -->
-                <div class="col-span-12 md:col-span-4 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-tertiary transition-all shadow-sm">
+                <div class="col-span-12 md:col-span-4 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-indigo-500 transition-all shadow-sm">
                     <div class="flex justify-between items-start">
-                        <div class="p-2.5 bg-rose-50 rounded-lg text-tertiary">
+                        <div class="p-2.5 bg-indigo-50 rounded-lg text-indigo-700">
                             <span class="material-symbols-outlined">payments</span>
                         </div>
-                        <span class="text-tertiary font-semibold text-xs">
+                        <span class="text-indigo-700 font-semibold text-xs">
                             Outstanding
                         </span>
                     </div>
                     <div class="mt-4">
                         <p class="text-secondary text-sm font-medium">Piutang Berjalan</p>
-                        <h3 class="text-xl font-bold text-tertiary font-mono mt-1">{{ formatCurrency(stats.totalPiutangBerjalan) }}</h3>
+                        <h3 class="text-xl font-bold text-indigo-800 font-mono mt-1">{{ formatCurrency(stats.totalPiutangBerjalan) }}</h3>
                         <p class="text-[11px] text-outline mt-1">Total pinjaman aktif yang belum lunas</p>
                     </div>
                 </div>
@@ -189,28 +189,28 @@ const formatCurrency = (value) =>
                             <span class="material-symbols-outlined text-xl text-blue-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
                         </Link>
                         
-                        <Link :href="route('pinjaman.index', { status: 'lunas' })" class="flex items-center justify-between p-3.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 hover:border-emerald-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                        <Link :href="route('pinjaman.index', { status: 'lunas' })" class="flex items-center justify-between p-3.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-900 hover:bg-sky-100 hover:border-sky-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Lunas</span>
+                                <span class="text-xs font-bold text-sky-700 uppercase tracking-wider">Lunas</span>
                                 <span class="text-xl font-bold mt-0.5">{{ loanChart.lunas }}</span>
                             </div>
-                            <span class="material-symbols-outlined text-xl text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                            <span class="material-symbols-outlined text-xl text-sky-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
                         </Link>
 
-                        <Link :href="route('tunggakan.index', { status: 'menunggak' })" class="flex items-center justify-between p-3.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 hover:border-amber-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                        <Link :href="route('tunggakan.index', { status: 'menunggak' })" class="flex items-center justify-between p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/70 text-indigo-900 hover:bg-indigo-100 hover:border-indigo-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">Menunggak</span>
+                                <span class="text-xs font-bold text-indigo-700 uppercase tracking-wider">Menunggak</span>
                                 <span class="text-xl font-bold mt-0.5">{{ loanChart.menunggak }}</span>
                             </div>
-                            <span class="material-symbols-outlined text-xl text-amber-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                            <span class="material-symbols-outlined text-xl text-indigo-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
                         </Link>
 
-                        <Link :href="route('tunggakan.index', { status: 'kredit-macet' })" class="flex items-center justify-between p-3.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-900 hover:bg-rose-100 hover:border-rose-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
+                        <Link :href="route('tunggakan.index', { status: 'kredit-macet' })" class="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 hover:bg-slate-100 hover:border-slate-300 hover:shadow-sm transition-all duration-200 active:scale-95 group cursor-pointer">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-rose-700 uppercase tracking-wider">Kredit Macet</span>
+                                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Kredit Macet</span>
                                 <span class="text-xl font-bold mt-0.5">{{ loanChart.kredit_macet }}</span>
                             </div>
-                            <span class="material-symbols-outlined text-xl text-rose-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
+                            <span class="material-symbols-outlined text-xl text-slate-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">chevron_right</span>
                         </Link>
                     </div>
                 </div>

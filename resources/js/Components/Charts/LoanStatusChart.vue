@@ -33,7 +33,7 @@ const buildChart = () => {
                         props.data.menunggak || 0,
                         props.data.kredit_macet || 0,
                     ],
-                    backgroundColor: ['#10B981', '#64748B', '#F97316', '#EF4444'],
+                    backgroundColor: ['#2563EB', '#38BDF8', '#4F46E5', '#64748B'],
                     borderWidth: 0,
                 },
             ],
