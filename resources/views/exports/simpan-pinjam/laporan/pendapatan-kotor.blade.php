@@ -11,10 +11,20 @@
             font-family: "Poppins", Arial, sans-serif;
             color: #1e293b;
             font-size: 11px;
-            padding: 30px;
-            background-color: #ffffff;
+            padding: 20px;
+            background-color: #f8fafc;
         }
         
+        .report-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
         /* Header Kop Surat */
         header {
             margin-bottom: 20px;
@@ -23,7 +33,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             text-align: center;
         }
         .kop-logo {
@@ -126,16 +136,22 @@
         }
 
         /* Table Styles */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
-            margin-bottom: 15px;
             table-layout: fixed;
         }
         th, td {
-            border: 1px solid #e2e8f0;
-            padding: 7px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 10px;
             font-size: 10px;
             text-align: left;
             word-break: break-word;
@@ -157,29 +173,58 @@
             font-weight: 600;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            font-size: 8px;
-            font-weight: 600;
-            border-radius: 4px;
-            text-transform: uppercase;
+        /* Responsive on Screens */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+                background-color: #ffffff;
+            }
+            .report-wrapper {
+                padding: 15px;
+                border: none;
+                box-shadow: none;
+            }
+            .kop-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .kop-logo {
+                height: 50px;
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            table {
+                min-width: 600px; /* Forces horizontal scroll bar on small screens to maintain design */
+            }
         }
-        .badge-success { background-color: #dcfce7; color: #15803d; }
-        .badge-warning { background-color: #fef9c3; color: #a16207; }
-        .badge-danger { background-color: #fee2e2; color: #b91c1c; }
 
         /* Print Optimization */
         @media print {
             body {
-                padding: 15px;
+                padding: 0;
+                background-color: #ffffff;
                 font-size: 10px;
+            }
+            .report-wrapper {
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                max-width: 100%;
             }
             .no-print {
                 display: none !important;
             }
             .page-break {
                 page-break-before: always;
+            }
+            .table-responsive {
+                overflow-x: visible;
+                border: none;
+                border-radius: 0;
+            }
+            .table-responsive table {
+                min-width: 100% !important;
             }
         }
         
@@ -202,13 +247,17 @@
             background-color: #1d4ed8;
         }
         .action-bar {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
             padding: 12px;
             border-radius: 8px;
             display: flex;
             justify-content: center;
             margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
     </style>
 </head>
@@ -222,178 +271,188 @@
         </button>
     </div>
 
-    <!-- Kop Surat -->
-    <header>
-        <div class="kop-container">
-            <img class="kop-logo" src="{{ asset('logo.png') }}" alt="Logo BUMDes">
-            <div class="kop-text">
-                <div class="kop-title-1">Badan Usaha Milik Desa (BUMDesa)</div>
-                <div class="kop-title-2">Dammar Wulan</div>
-                <div class="kop-title-3">Unit Simpan Pinjam</div>
-                <div class="kop-subtitle">Desa Ciwuni Kecamatan Kesugihan Kabupaten Cilacap</div>
-                <div class="kop-subtitle" style="font-size: 8px; margin-top: 1px;">Alamat : Jl. Pasar Jagang RT 1 RW 4 Ciwuni | Email: bumdesciwuni@gmail.com</div>
+    <div class="report-wrapper">
+        <!-- Kop Surat -->
+        <header>
+            <div class="kop-container">
+                <img class="kop-logo" src="{{ asset('logo.png') }}" alt="Logo BUMDes">
+                <div class="kop-text">
+                    <div class="kop-title-1">Badan Usaha Milik Desa (BUMDesa)</div>
+                    <div class="kop-title-2">Dammar Wulan</div>
+                    <div class="kop-title-3">Unit Simpan Pinjam</div>
+                    <div class="kop-subtitle">Desa Ciwuni Kecamatan Kesugihan Kabupaten Cilacap</div>
+                    <div class="kop-subtitle" style="font-size: 8px; margin-top: 1px;">Alamat : Jl. Pasar Jagang RT 1 RW 4 Ciwuni | Email: bumdesciwuni@gmail.com</div>
+                </div>
+            </div>
+            <div class="header-underline"></div>
+        </header>
+
+        <!-- Judul Laporan -->
+        <h1 class="report-title">Laporan Pendapatan Kotor</h1>
+        <div class="report-period">Periode: {{ $bulanNama }} {{ $tahun }}</div>
+
+        <!-- Ringkasan Pendapatan -->
+        <div class="summary-section-title">Ringkasan Pendapatan</div>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-card-title">Total Pendapatan Kotor</div>
+                <div class="summary-card-value" style="color: #1e3a8a;">Rp{{ number_format($pendapatanKotor, 0, ',', '.') }}</div>
+                <div class="summary-card-subtext">Akumulasi bunga pinjaman dikurangi biaya promosi</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-title">Bunga Pinjaman (Pendapatan)</div>
+                <div class="summary-card-value">Rp{{ number_format($bungaPinjaman, 0, ',', '.') }}</div>
+                <div class="summary-card-subtext">Total pendapatan bunga dari akad pinjaman</div>
             </div>
         </div>
-        <div class="header-underline"></div>
-    </header>
 
-    <!-- Judul Laporan -->
-    <h1 class="report-title">Laporan Pendapatan Kotor</h1>
-    <div class="report-period">Periode: {{ $bulanNama }} {{ $tahun }}</div>
-
-    <!-- Ringkasan Pendapatan -->
-    <div class="summary-section-title">Ringkasan Pendapatan</div>
-    <div class="summary-grid">
-        <div class="summary-card">
-            <div class="summary-card-title">Total Pendapatan Kotor</div>
-            <div class="summary-card-value" style="color: #1e3a8a;">Rp{{ number_format($pendapatanKotor, 0, ',', '.') }}</div>
-            <div class="summary-card-subtext">Akumulasi bunga pinjaman dikurangi biaya promosi</div>
+        <!-- Pengurangan Pendapatan -->
+        <div class="summary-section-title">Rincian Pengurangan Pendapatan</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama Pengurangan / Biaya</th>
+                        <th class="angka">Nominal</th>
+                        <th class="angka">Persentase (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($distribusi as $item)
+                        <tr class="{{ $item['nama'] === 'Laba Bersih' ? 'highlight-row' : '' }}">
+                            <td style="{{ $item['nama'] === 'Laba Bersih' ? 'font-weight: 700;' : '' }}">{{ $item['nama'] }}</td>
+                            <td class="angka" style="{{ $item['nama'] === 'Laba Bersih' && $item['nominal'] < 0 ? 'color: #ef4444; font-weight: 700;' : ($item['nama'] === 'Laba Bersih' ? 'color: #15803d; font-weight: 700;' : '') }}">
+                                Rp{{ number_format($item['nominal'], 0, ',', '.') }}
+                            </td>
+                            <td class="angka" style="{{ $item['nama'] === 'Laba Bersih' ? 'font-weight: 700;' : '' }}">{{ $item['persen'] }}%</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        <div class="summary-card">
-            <div class="summary-card-title">Bunga Pinjaman (Pendapatan)</div>
-            <div class="summary-card-value">Rp{{ number_format($bungaPinjaman, 0, ',', '.') }}</div>
-            <div class="summary-card-subtext">Total pendapatan bunga dari akad pinjaman</div>
+
+        <div class="page-break"></div>
+
+        <!-- Kop Surat Halaman Kedua -->
+        <header class="no-print-page2" style="margin-top: 15px;">
+            <div class="kop-container">
+                <img class="kop-logo" style="height: 45px;" src="{{ asset('logo.png') }}" alt="Logo BUMDes">
+                <div class="kop-text">
+                    <div class="kop-title-1" style="font-size: 11px;">BUMDesa Dammar Wulan - Unit Simpan Pinjam</div>
+                    <div class="kop-subtitle" style="font-size: 7px;">Lampiran Detail Transaksi Pendapatan Periode {{ $bulanNama }} {{ $tahun }}</div>
+                </div>
+            </div>
+            <div style="border-bottom: 2px solid #0f172a; margin-top: 8px; margin-bottom: 15px;"></div>
+        </header>
+
+        <!-- Detail Bunga Pinjaman -->
+        <div class="summary-section-title" style="margin-top: 10px;">Detail Bunga Pinjaman</div>
+        <div class="table-responsive">
+            <table>
+                <colgroup>
+                    <col style="width: 15%;" />
+                    <col style="width: 30%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 15%;" />
+                    <col style="width: 20%;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Nama Nasabah</th>
+                        <th class="angka">Pokok Pinjaman</th>
+                        <th class="angka">Bunga (%)</th>
+                        <th class="angka">Bunga Nominal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($detailPinjaman as $p)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($p['tanggal'])->format('d/m/Y') }}</td>
+                            <td>{{ $p['nasabah'] }}</td>
+                            <td class="angka">Rp{{ number_format($p['pokok'], 0, ',', '.') }}</td>
+                            <td class="angka">{{ $p['bunga_persen'] }}%</td>
+                            <td class="angka">Rp{{ number_format($p['bunga_nominal'], 0, ',', '.') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi pinjaman pada periode ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Detail Biaya Promosi Reguler -->
+        <div class="summary-section-title">Detail Biaya Promosi (Tabungan Reguler)</div>
+        <div class="table-responsive">
+            <table>
+                <colgroup>
+                    <col style="width: 15%;" />
+                    <col style="width: 35%;" />
+                    <col style="width: 30%;" />
+                    <col style="width: 20%;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Nama Nasabah</th>
+                        <th>Keterangan</th>
+                        <th class="angka">Biaya Promosi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($detailTabungan as $t)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($t['tanggal'])->format('d/m/Y') }}</td>
+                            <td>{{ $t['nasabah'] }}</td>
+                            <td>{{ $t['keterangan'] ?: 'Biaya Administrasi' }}</td>
+                            <td class="angka">Rp{{ number_format($t['laba'], 0, ',', '.') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi tabungan reguler pada periode ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Detail Biaya Promosi Sembako -->
+        <div class="summary-section-title">Detail Biaya Promosi (Tabungan Sembako)</div>
+        <div class="table-responsive">
+            <table>
+                <colgroup>
+                    <col style="width: 15%;" />
+                    <col style="width: 35%;" />
+                    <col style="width: 30%;" />
+                    <col style="width: 20%;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Nama Nasabah</th>
+                        <th>Keterangan</th>
+                        <th class="angka">Biaya Promosi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($detailSembako as $s)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($s['tanggal'])->format('d/m/Y') }}</td>
+                            <td>{{ $s['nasabah'] }}</td>
+                            <td>{{ $s['keterangan'] ?: 'Biaya Administrasi' }}</td>
+                            <td class="angka">Rp{{ number_format($s['laba'], 0, ',', '.') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi tabungan sembako pada periode ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <!-- Pengurangan Pendapatan -->
-    <div class="summary-section-title">Rincian Pengurangan Pendapatan</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Nama Pengurangan / Biaya</th>
-                <th class="angka">Nominal</th>
-                <th class="angka">Persentase (%)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($distribusi as $item)
-                <tr class="{{ $item['nama'] === 'Laba Bersih' ? 'highlight-row' : '' }}">
-                    <td style="{{ $item['nama'] === 'Laba Bersih' ? 'font-weight: 700;' : '' }}">{{ $item['nama'] }}</td>
-                    <td class="angka" style="{{ $item['nama'] === 'Laba Bersih' && $item['nominal'] < 0 ? 'color: #ef4444; font-weight: 700;' : ($item['nama'] === 'Laba Bersih' ? 'color: #15803d; font-weight: 700;' : '') }}">
-                        Rp{{ number_format($item['nominal'], 0, ',', '.') }}
-                    </td>
-                    <td class="angka" style="{{ $item['nama'] === 'Laba Bersih' ? 'font-weight: 700;' : '' }}">{{ $item['persen'] }}%</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="page-break"></div>
-
-    <!-- Kop Surat Halaman Kedua -->
-    <header class="no-print-page2" style="margin-top: 15px;">
-        <div class="kop-container">
-            <img class="kop-logo" style="height: 45px;" src="{{ asset('logo.png') }}" alt="Logo BUMDes">
-            <div class="kop-text">
-                <div class="kop-title-1" style="font-size: 11px;">BUMDesa Dammar Wulan - Unit Simpan Pinjam</div>
-                <div class="kop-subtitle" style="font-size: 7px;">Lampiran Detail Transaksi Pendapatan Periode {{ $bulanNama }} {{ $tahun }}</div>
-            </div>
-        </div>
-        <div style="border-bottom: 2px solid #0f172a; margin-top: 8px; margin-bottom: 15px;"></div>
-    </header>
-
-    <!-- Detail Bunga Pinjaman -->
-    <div class="summary-section-title" style="margin-top: 10px;">Detail Bunga Pinjaman</div>
-    <table>
-        <colgroup>
-            <col style="width: 15%;" />
-            <col style="width: 30%;" />
-            <col style="width: 20%;" />
-            <col style="width: 15%;" />
-            <col style="width: 20%;" />
-        </colgroup>
-        <thead>
-            <tr>
-                <th>Tanggal</th>
-                <th>Nama Nasabah</th>
-                <th class="angka">Pokok Pinjaman</th>
-                <th class="angka">Bunga (%)</th>
-                <th class="angka">Bunga Nominal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($detailPinjaman as $p)
-                <tr>
-                    <td>{{ \Carbon\Carbon::parse($p['tanggal'])->format('d/m/Y') }}</td>
-                    <td>{{ $p['nasabah'] }}</td>
-                    <td class="angka">Rp{{ number_format($p['pokok'], 0, ',', '.') }}</td>
-                    <td class="angka">{{ $p['bunga_persen'] }}%</td>
-                    <td class="angka">Rp{{ number_format($p['bunga_nominal'], 0, ',', '.') }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi pinjaman pada periode ini.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <!-- Detail Biaya Promosi Reguler -->
-    <div class="summary-section-title">Detail Biaya Promosi (Tabungan Reguler)</div>
-    <table>
-        <colgroup>
-            <col style="width: 15%;" />
-            <col style="width: 35%;" />
-            <col style="width: 30%;" />
-            <col style="width: 20%;" />
-        </colgroup>
-        <thead>
-            <tr>
-                <th>Tanggal</th>
-                <th>Nama Nasabah</th>
-                <th>Keterangan</th>
-                <th class="angka">Biaya Promosi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($detailTabungan as $t)
-                <tr>
-                    <td>{{ \Carbon\Carbon::parse($t['tanggal'])->format('d/m/Y') }}</td>
-                    <td>{{ $t['nasabah'] }}</td>
-                    <td>{{ $t['keterangan'] ?: 'Biaya Administrasi' }}</td>
-                    <td class="angka">Rp{{ number_format($t['laba'], 0, ',', '.') }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi tabungan reguler pada periode ini.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <!-- Detail Biaya Promosi Sembako -->
-    <div class="summary-section-title">Detail Biaya Promosi (Tabungan Sembako)</div>
-    <table>
-        <colgroup>
-            <col style="width: 15%;" />
-            <col style="width: 35%;" />
-            <col style="width: 30%;" />
-            <col style="width: 20%;" />
-        </colgroup>
-        <thead>
-            <tr>
-                <th>Tanggal</th>
-                <th>Nama Nasabah</th>
-                <th>Keterangan</th>
-                <th class="angka">Biaya Promosi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($detailSembako as $s)
-                <tr>
-                    <td>{{ \Carbon\Carbon::parse($s['tanggal'])->format('d/m/Y') }}</td>
-                    <td>{{ $s['nasabah'] }}</td>
-                    <td>{{ $s['keterangan'] ?: 'Biaya Administrasi' }}</td>
-                    <td class="angka">Rp{{ number_format($s['laba'], 0, ',', '.') }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi tabungan sembako pada periode ini.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
 
 </body>
 </html>
