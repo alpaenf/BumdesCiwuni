@@ -405,6 +405,12 @@
         </div>
     </div>
 
-    <script>window.onload = () => window.print();</script>
+    <script>
+        window.onload = () => {
+            if (window.innerWidth > 640) {
+                window.print();
+            }
+        };
+    </script>
 </body>
 </html>
