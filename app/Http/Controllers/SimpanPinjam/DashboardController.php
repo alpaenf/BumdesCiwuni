@@ -16,7 +16,7 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request, PinjamanStatusService $statusService): Response
     {
         $totalTabungan = Tabungan::sum('saldo');
         $totalSaldoKas = $totalTabungan;
@@ -32,11 +32,12 @@ class DashboardController extends Controller
         ];
 
         foreach ($pinjamanAktif as $pinjaman) {
-            // Gunakan status computed dari model (aktif / macet)
-            $status = $pinjaman->status;
+            $pinjaman->loadMissing('angsuran');
+            $status = $statusService->status($pinjaman);
 
-            if ($status === 'macet') { $loanChart['kredit_macet']++; }
-            else { $loanChart['aktif']++; }
+            if ($status === 'kredit-macet') { $loanChart['kredit_macet']++; continue; }
+            if ($status === 'menunggak')    { $loanChart['menunggak']++;    continue; }
+            $loanChart['aktif']++;
         }
 
         // Filter bulan (format: YYYY-MM)

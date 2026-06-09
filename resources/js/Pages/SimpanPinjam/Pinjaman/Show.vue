@@ -83,9 +83,16 @@ Terima kasih.`;
                     </div>
 
                     <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 sm:p-6 shadow-sm space-y-3 text-sm">
-                        <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Jenis Pinjaman</span><span class="font-semibold text-right">{{ pinjaman.jenis_pinjaman ?? 'Uang Tunai' }}</span></div>
-                        <div v-if="pinjaman.keterangan" class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Keterangan</span><span class="font-semibold text-right">{{ pinjaman.keterangan }}</span></div>
                         <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Tanggal Akad</span><span class="font-semibold text-right">{{ formatDate(pinjaman.tanggal_akad) }}</span></div>
+                        
+                        <div v-if="pinjaman.jenis_pinjaman !== 'uang'" class="flex flex-col gap-1 border-y border-amber-100 bg-amber-50/50 py-2">
+                            <div class="flex justify-between gap-2"><span class="text-amber-700">Jenis Pinjaman</span><span class="font-semibold capitalize text-amber-900 text-right">{{ pinjaman.jenis_pinjaman }}</span></div>
+                            <div class="flex justify-between gap-2"><span class="text-amber-700">Barang</span><span class="font-semibold text-amber-900 text-right">{{ pinjaman.keterangan || '-' }}</span></div>
+                            <div v-if="pinjaman.foto_barang" class="flex justify-between gap-2"><span class="text-amber-700">Foto Barang</span>
+                                <a :href="'/uploads/pinjaman/' + pinjaman.foto_barang" target="_blank" class="text-blue-600 hover:underline">Lihat Foto</a>
+                            </div>
+                        </div>
+
                         <div class="flex justify-between gap-2"><span class="text-[color:var(--color-secondary)]">Pinjaman Pokok</span><span class="font-semibold text-right">{{ formatCurrency(pinjaman.pinjaman_pokok) }}</span></div>
                         <div v-if="pinjaman.biaya_tambahan > 0" class="flex justify-between gap-2 text-blue-700 bg-blue-50 -mx-2 px-2 py-1 rounded">
                             <span>Biaya Tambahan (Materai dll)</span><span class="font-semibold text-right">+{{ formatCurrency(pinjaman.biaya_tambahan) }}</span>
@@ -114,22 +121,12 @@ Terima kasih.`;
                     </div>
 
                     <!-- Dokumen Perjanjian -->
-                    <div v-if="pinjaman.foto_perjanjian_url || pinjaman.foto_barang_url" class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 sm:p-5 shadow-sm space-y-5">
-                        <div v-if="pinjaman.foto_perjanjian_url">
-                            <p class="font-semibold text-sm mb-3">Dokumen Perjanjian</p>
-                            <a :href="pinjaman.foto_perjanjian_url" target="_blank" class="block overflow-hidden rounded-lg border hover:opacity-90">
-                                <img :src="pinjaman.foto_perjanjian_url" class="w-full object-cover max-h-48" alt="Dokumen Perjanjian" />
-                            </a>
-                            <p class="mt-2 text-center text-xs text-[color:var(--color-secondary)]">Klik gambar untuk melihat ukuran penuh</p>
-                        </div>
-                        
-                        <div v-if="pinjaman.foto_barang_url" :class="{'pt-4 border-t': pinjaman.foto_perjanjian_url}">
-                            <p class="font-semibold text-sm mb-3">Foto Barang/Sembako</p>
-                            <a :href="pinjaman.foto_barang_url" target="_blank" class="block overflow-hidden rounded-lg border hover:opacity-90">
-                                <img :src="pinjaman.foto_barang_url" class="w-full object-cover max-h-48" alt="Foto Barang" />
-                            </a>
-                            <p class="mt-2 text-center text-xs text-[color:var(--color-secondary)]">Klik gambar untuk melihat ukuran penuh</p>
-                        </div>
+                    <div v-if="pinjaman.foto_perjanjian_url" class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 sm:p-5 shadow-sm">
+                        <p class="font-semibold text-sm mb-3">Dokumen Perjanjian</p>
+                        <a :href="pinjaman.foto_perjanjian_url" target="_blank" class="block overflow-hidden rounded-lg border hover:opacity-90">
+                            <img :src="pinjaman.foto_perjanjian_url" class="w-full object-cover max-h-48" alt="Dokumen Perjanjian" />
+                        </a>
+                        <p class="mt-2 text-center text-xs text-[color:var(--color-secondary)]">Klik gambar untuk melihat ukuran penuh</p>
                     </div>
 
                     <Link v-if="pinjaman.status === 'aktif' || pinjaman.status === 'macet'" :href="route('angsuran.create', { nasabah_id: pinjaman.nasabah?.id })"
