@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class AngsuranService
 {
+    public function __construct(private NomorService $nomorService) {}
+
     /**
      * Bayar angsuran pinjaman.
      */
@@ -19,8 +21,9 @@ class AngsuranService
             $sisaBaru      = max(0, $pinjaman->sisa_pinjaman - $jumlahBayar);
 
             $angsuran = Angsuran::create([
-                'pinjaman_id'    => $pinjaman->id,
-                'tanggal'        => $data['tanggal'],
+                'pinjaman_id'     => $pinjaman->id,
+                'nomor_transaksi' => $this->nomorService->generateNomorAngsuran(),
+                'tanggal'         => $data['tanggal'],
                 'angsuran_ke'    => $angsuranKe,
                 'pasaran'        => $data['pasaran'],
                 'jumlah_bayar'   => $jumlahBayar,

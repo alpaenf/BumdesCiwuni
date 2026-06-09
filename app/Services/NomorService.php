@@ -51,12 +51,13 @@ class NomorService
 
     /**
      * Generate nomor transaksi tabungan.
-     * Format: T260531001 (10 karakter)
+     * Format: T06260001 (Reguler) atau TS06260001 (Sembako)
      */
-    public function generateNomorTransaksi(): string
+    public function generateNomorTransaksiTabungan(string $jenisTabungan = 'reguler'): string
     {
-        $today = now()->format('ymd');
-        $prefix = "T{$today}";
+        $ym = now()->format('my');
+        $code = $jenisTabungan === 'sembako' ? 'TS' : 'T';
+        $prefix = "{$code}{$ym}";
 
         $last = \App\Models\TransaksiTabungan::where('nomor_transaksi', 'like', "{$prefix}%")
             ->orderByDesc('id')
@@ -65,11 +66,58 @@ class NomorService
         if (!$last) {
             $seq = 1;
         } else {
-            $seqStr = substr($last, 7); // ambil 3 digit terakhir setelah prefix 7 digit (T+yymmdd)
+            $prefixLen = strlen($prefix);
+            $seqStr = substr($last, $prefixLen);
             $seq = ((int) $seqStr) + 1;
         }
 
-        return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Generate nomor pinjaman.
+     * Format: P06260001
+     */
+    public function generateNomorPinjaman(): string
+    {
+        $ym = now()->format('my');
+        $prefix = "P{$ym}";
+
+        $last = \App\Models\Pinjaman::where('nomor_transaksi', 'like', "{$prefix}%")
+            ->orderByDesc('id')
+            ->value('nomor_transaksi');
+
+        if (!$last) {
+            $seq = 1;
+        } else {
+            $seqStr = substr($last, 5);
+            $seq = ((int) $seqStr) + 1;
+        }
+
+        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Generate nomor angsuran.
+     * Format: A06260001
+     */
+    public function generateNomorAngsuran(): string
+    {
+        $ym = now()->format('my');
+        $prefix = "A{$ym}";
+
+        $last = \App\Models\Angsuran::where('nomor_transaksi', 'like', "{$prefix}%")
+            ->orderByDesc('id')
+            ->value('nomor_transaksi');
+
+        if (!$last) {
+            $seq = 1;
+        } else {
+            $seqStr = substr($last, 5);
+            $seq = ((int) $seqStr) + 1;
+        }
+
+        return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
     }
 
     /**
