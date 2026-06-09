@@ -11,48 +11,47 @@
             font-family: 'Poppins', Arial, sans-serif; 
             font-size: 12px; 
             padding: 20px; 
-            background: #f1f5f9; 
-            color: #1e293b;
+            background: #f8fafc; 
+            color: #000000;
         }
         
         .kwitansi-wrapper {
-            max-width: 750px; 
+            max-width: 700px; 
             margin: 0 auto;
         }
 
         .kwitansi { 
             background: #ffffff;
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             overflow: hidden; 
-            border: 1px solid #cbd5e1;
+            border: 2px solid #000000;
             position: relative;
         }
 
-        /* Kop / Header */
+        /* Kop / Header - Monochrome style */
         .header { 
-            background: #004c22; 
-            color: white; 
-            padding: 24px; 
+            background: #000000; 
+            color: #ffffff; 
+            padding: 20px; 
             display: flex; 
             flex-direction: row;
             align-items: center; 
-            gap: 20px;
+            gap: 15px;
         }
         
         .logo-container {
-            background: white;
-            padding: 6px;
-            border-radius: 8px;
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .logo-img {
-            height: 60px;
+            height: 55px;
             width: auto;
         }
 
@@ -61,26 +60,27 @@
         }
 
         .header-text h1 { 
-            font-size: 16px; 
+            font-size: 14px; 
             font-weight: 700; 
             text-transform: uppercase;
             letter-spacing: 0.5px;
             line-height: 1.2;
+            color: #ffffff;
         }
         
         .header-text h2 {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 600;
-            color: #4ade80;
+            color: #cccccc;
             text-transform: uppercase;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .header-text p { 
-            font-size: 10px; 
+            font-size: 9px; 
             opacity: 0.85; 
-            margin-top: 4px; 
-            line-height: 1.4;
+            margin-top: 3px; 
+            line-height: 1.3;
         }
 
         .header-right { 
@@ -89,20 +89,21 @@
         }
 
         .header-right .nomor { 
-            font-size: 12px; 
+            font-size: 11px; 
             font-weight: 700; 
             background: rgba(255, 255, 255, 0.15);
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-family: monospace;
             display: inline-block;
+            color: #ffffff;
         }
 
         .header-right .tanggal {
-            font-size: 11px;
+            font-size: 10px;
             opacity: 0.9;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .body { 
@@ -112,91 +113,87 @@
         }
 
         .title { 
-            font-size: 18px; 
+            font-size: 16px; 
             font-weight: 700; 
             text-align: center; 
             text-transform: uppercase; 
             letter-spacing: 3px; 
-            margin-bottom: 24px; 
-            color: #004c22; 
-            border-bottom: 2px solid #004c22;
-            padding-bottom: 6px;
+            margin-bottom: 20px; 
+            color: #000000; 
+            border-bottom: 2px solid #000000;
+            padding-bottom: 4px;
             display: inline-block;
             left: 50%;
             transform: translateX(-50%);
             position: relative;
         }
 
-        /* Detail Fields */
+        /* Detail Fields - Grid style for perfect alignment */
         .fields-container {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .field { 
-            display: flex; 
-            margin-bottom: 12px; 
+            display: grid;
+            grid-template-columns: 140px 15px 1fr;
+            margin-bottom: 10px; 
             align-items: baseline; 
-            border-bottom: 1px dashed #f1f5f9;
-            padding-bottom: 8px;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 6px;
         }
         
         .field-label { 
-            width: 160px; 
-            color: #64748b; 
+            color: #475569; 
             font-size: 11px; 
             text-transform: uppercase;
             font-weight: 600;
             letter-spacing: 0.5px;
-            flex-shrink: 0;
         }
         
         .field-colon { 
-            margin-right: 12px; 
-            color: #94a3b8;
+            color: #000000;
             font-weight: bold;
         }
         
         .field-value { 
             font-weight: 500; 
-            color: #0f172a;
+            color: #000000;
             font-size: 12px;
-            flex-grow: 1;
         }
 
-        /* Nominal Box */
+        /* Nominal Box - Monochrome style */
         .nominal-box { 
-            background: #f0fdf4; 
-            border: 1px solid #bbf7d0; 
-            border-radius: 8px; 
-            padding: 16px; 
-            margin: 20px 0; 
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+            background: #f8fafc; 
+            border: 1px dashed #000000; 
+            border-radius: 6px; 
+            padding: 14px; 
+            margin: 15px 0; 
         }
         
         .nominal-label { 
-            font-size: 10px; 
-            color: #166534; 
+            font-size: 9px; 
+            color: #475569; 
             text-transform: uppercase; 
             letter-spacing: 1px; 
             font-weight: 600;
         }
         
         .nominal-value { 
-            font-size: 24px; 
+            font-size: 22px; 
             font-weight: 700; 
-            color: #15803d; 
-            margin-top: 4px; 
+            color: #000000; 
+            margin-top: 2px; 
         }
         
         .terbilang { 
             font-style: italic; 
             font-size: 11px; 
-            color: #166534; 
-            margin-top: 6px; 
+            color: #000000; 
+            margin-top: 4px; 
             background: #ffffff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(22, 101, 52, 0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
             display: inline-block;
             width: 100%;
         }
@@ -206,9 +203,9 @@
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            margin-top: 35px; 
-            padding-top: 20px; 
-            border-top: 1px solid #e2e8f0; 
+            margin-top: 30px; 
+            padding-top: 15px; 
+            border-top: 1px solid #000000; 
         }
         
         .sign-box { 
@@ -217,19 +214,21 @@
         }
         
         .sign-box .title-sign { 
-            font-size: 11px; 
-            color: #64748b; 
+            font-size: 10px; 
+            color: #475569; 
             font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 45px;
+            margin-bottom: 50px;
         }
         
         .sign-name { 
-            font-size: 12px; 
+            font-size: 11px; 
             font-weight: 700; 
-            color: #0f172a;
-            border-top: 1px solid #0f172a; 
+            color: #000000;
+            border-top: 1px solid #000000; 
             padding-top: 4px; 
+            display: inline-block;
+            width: 100%;
         }
 
         .watermark { 
@@ -237,8 +236,8 @@
             top: 50%; 
             left: 50%; 
             transform: translate(-50%, -50%) rotate(-25deg); 
-            font-size: 90px; 
-            color: rgba(0, 76, 34, 0.03); 
+            font-size: 80px; 
+            color: rgba(0, 0, 0, 0.02); 
             font-weight: 800; 
             pointer-events: none; 
             z-index: 0; 
@@ -252,11 +251,11 @@
         }
 
         .btn-print {
-            background-color: #004c22;
+            background-color: #000000;
             color: #ffffff;
             border: none;
             border-radius: 6px;
-            padding: 10px 24px;
+            padding: 8px 20px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -265,51 +264,43 @@
             gap: 8px;
             text-decoration: none;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: background 0.2s;
         }
 
         .btn-print:hover {
-            background-color: #003316;
+            background-color: #1e293b;
         }
 
         /* Responsive */
         @media (max-width: 640px) {
             body {
                 padding: 10px;
+                background: #ffffff;
+            }
+            .kwitansi {
+                box-shadow: none;
+                border-radius: 0;
             }
             .header {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
-                gap: 12px;
-                padding: 20px;
+                gap: 10px;
+                padding: 15px;
             }
             .header-right {
                 text-align: center;
             }
             .field {
-                flex-direction: column;
-                gap: 4px;
-                padding-bottom: 10px;
-            }
-            .field-label {
-                width: 100%;
-            }
-            .field-colon {
-                display: none;
+                grid-template-columns: 110px 10px 1fr;
             }
             .footer {
                 flex-direction: column;
                 align-items: center;
-                gap: 25px;
+                gap: 20px;
             }
             .sign-box {
                 width: 100%;
-                max-width: 220px;
-            }
-            .title {
-                font-size: 15px;
-                margin-bottom: 15px;
+                max-width: 200px;
             }
         }
 
@@ -321,7 +312,7 @@
             .kwitansi {
                 box-shadow: none;
                 border-radius: 0;
-                border: 2px solid #004c22;
+                border: 2px solid #000000;
             }
             .action-bar { 
                 display: none; 
@@ -377,10 +368,10 @@
                     <div class="terbilang">{{ $terbilang }} rupiah</div>
                 </div>
 
-                <div class="field" style="border-bottom: none;">
+                <div class="field" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                     <span class="field-label">Untuk keperluan</span>
                     <span class="field-colon">:</span>
-                    <span class="field-value" style="font-weight: 600; color: #004c22;">{{ $kwitansi->keperluan }}</span>
+                    <span class="field-value" style="font-weight: 600;">{{ $kwitansi->keperluan }}</span>
                 </div>
 
                 <div class="footer">
@@ -391,7 +382,7 @@
                     
                     <div class="sign-box">
                         <div class="title-sign">Bendahara BUMDes,</div>
-                        <div class="sign-name">________________________</div>
+                        <div class="sign-name">&nbsp;</div>
                     </div>
                 </div>
             </div>
@@ -405,12 +396,5 @@
         </div>
     </div>
 
-    <script>
-        window.onload = () => {
-            if (window.innerWidth > 640) {
-                window.print();
-            }
-        };
-    </script>
 </body>
 </html>
