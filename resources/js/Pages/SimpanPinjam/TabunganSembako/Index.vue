@@ -115,7 +115,7 @@ function formatTanggal(dateStr) {
                     class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
             </div>
             <div class="overflow-x-auto rounded-xl border border-[color:var(--color-outline-variant)] bg-white shadow-sm">
-                <table class="w-full text-sm">
+                <table class="w-full text-sm whitespace-nowrap">
                     <thead>
                         <tr class="border-b border-[color:var(--color-outline-variant)] bg-[color:var(--color-surface-container-low)]">
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[color:var(--color-secondary)]">No. Rekening</th>

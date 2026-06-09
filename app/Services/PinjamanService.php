@@ -27,15 +27,25 @@ class PinjamanService
             $foto_perjanjian = null;
             if (isset($data['foto_perjanjian']) && $data['foto_perjanjian'] instanceof \Illuminate\Http\UploadedFile) {
                 $file = $data['foto_perjanjian'];
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filename = time() . '_perjanjian_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('uploads/pinjaman'), $filename);
                 $foto_perjanjian = $filename;
+            }
+
+            $foto_barang = null;
+            if (isset($data['foto_barang']) && $data['foto_barang'] instanceof \Illuminate\Http\UploadedFile) {
+                $file = $data['foto_barang'];
+                $filename = time() . '_barang_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/pinjaman'), $filename);
+                $foto_barang = $filename;
             }
 
             return Pinjaman::create([
                 'nasabah_id'      => $nasabah->id,
                 'nomor_transaksi' => $this->nomorService->generateNomorPinjaman(),
                 'tanggal_akad'    => $data['tanggal_akad'],
+                'jenis_pinjaman'  => $data['jenis_pinjaman'] ?? 'Uang Tunai',
+                'keterangan'      => $data['keterangan'] ?? null,
                 'pinjaman_pokok'  => $pokok,
                 'bunga'           => $bunga,
                 'total_tagihan'   => $totalTagihan,
@@ -45,6 +55,7 @@ class PinjamanService
                 'sisa_pinjaman'   => $totalTagihan,
                 'status'          => 'aktif',
                 'foto_perjanjian' => $foto_perjanjian,
+                'foto_barang'     => $foto_barang,
             ]);
         });
     }
