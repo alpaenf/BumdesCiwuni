@@ -121,7 +121,7 @@ class TabunganSembakoController extends Controller
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
             ->limit(20)
-            ->get(['id', 'tanggal', 'nomor_transaksi', 'jenis_transaksi', 'nominal']);
+            ->get(['id', 'tanggal', 'nomor_transaksi', 'jenis_transaksi', 'nominal', 'keterangan', 'foto_barang']);
 
         return response()->json($transaksi);
     }

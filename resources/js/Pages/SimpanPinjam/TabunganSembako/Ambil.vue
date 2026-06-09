@@ -5,7 +5,7 @@ import { computed } from 'vue';
 
 const props = defineProps({ nasabah: Object, tabungan: Object, biayaAdmin: { type: Number, default: 20000 } });
 const ADMIN = props.biayaAdmin;
-const form = useForm({ nasabah_id: props.nasabah.id, tanggal: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0], nominal: '', jenis_pengambilan: 'uang', keterangan: '' });
+const form = useForm({ nasabah_id: props.nasabah.id, tanggal: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0], nominal: '', jenis_pengambilan: 'uang', keterangan: '', foto_barang: null });
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
 const saldoBaru = computed(() => {
@@ -62,6 +62,26 @@ const submit = () => form.post(route('tabungan-sembako.ambil.store', props.nasab
                                 :class="form.errors.nominal ? 'border-red-400' : 'border-[color:var(--color-outline-variant)]'" />
                         </div>
                         <p v-if="form.errors.nominal" class="mt-1 text-xs text-red-500">{{ form.errors.nominal }}</p>
+                    </div>
+
+                    <div v-if="form.jenis_pengambilan === 'barang'" class="bg-amber-50 border border-amber-200 p-4 rounded-xl space-y-4">
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-amber-900">Nama/Keterangan Barang <span class="text-red-500">*</span></label>
+                            <input v-model="form.keterangan" type="text" placeholder="Misal: Beras 10kg"
+                                class="w-full rounded-lg border px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-amber-500 border-amber-300" />
+                            <p v-if="form.errors.keterangan" class="mt-1 text-xs text-red-500">{{ form.errors.keterangan }}</p>
+                        </div>
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-amber-900">Foto Barang (Opsional)</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                @change="(e) => form.foto_barang = e.target.files[0]"
+                                class="w-full rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm focus:outline-none focus:border-amber-500"
+                            />
+                            <p class="mt-1.5 text-xs text-amber-700">Format: JPG, JPEG, PNG. Maksimal 5MB.</p>
+                            <p v-if="form.errors.foto_barang" class="mt-1 text-xs text-red-500">{{ form.errors.foto_barang }}</p>
+                        </div>
                     </div>
                     <div v-if="form.nominal" class="rounded-lg p-4 text-sm" :class="isInvalid ? 'bg-red-50' : 'bg-[color:var(--color-surface-container-low)]'">
                         <div class="flex justify-between"><span>Saldo Saat Ini</span><span>{{ formatCurrency(tabungan.saldo) }}</span></div>
