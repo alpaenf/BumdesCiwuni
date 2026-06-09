@@ -113,11 +113,11 @@ const submit = () => form.post(route('angsuran.store'));
                                 <p class="text-xs text-[color:var(--color-secondary)]">Setoran Normal / Bulan</p>
                                 <p class="font-bold text-blue-700">{{ formatCurrency(selectedPinjaman.nominal_setoran) }}</p>
                             </div>
-                            <div v-if="selectedPinjaman.biaya_tambahan > 0">
+                            <div>
                                 <p class="text-xs text-[color:var(--color-secondary)]">Biaya Tambahan</p>
-                                <p class="font-semibold text-slate-900">{{ formatCurrency(selectedPinjaman.biaya_tambahan) }}</p>
+                                <p class="font-semibold text-slate-900">{{ formatCurrency(selectedPinjaman.biaya_tambahan || 0) }}</p>
                             </div>
-                            <div :class="selectedPinjaman.biaya_tambahan > 0 ? 'col-span-1' : 'col-span-2'">
+                            <div>
                                 <p class="text-xs text-[color:var(--color-secondary)]">Status Pembayaran</p>
                                 <p class="font-semibold text-[color:var(--color-on-surface)]">
                                     Angsuran Ke-{{ selectedPinjaman.angsuran_ke }} dari {{ selectedPinjaman.jumlah_angsuran }} kali

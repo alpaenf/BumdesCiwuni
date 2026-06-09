@@ -102,13 +102,12 @@ class NasabahController extends Controller
     {
         $pinjaman = $nasabah->pinjaman()
             ->where('status', 'aktif')
-            ->get(['id', 'pinjaman_pokok', 'total_tagihan', 'sisa_pinjaman', 'nominal_setoran', 'jumlah_angsuran', 'biaya_tambahan']);
-            
-        $pinjaman->map(function($p) {
-            $countPaid = $p->angsuran()->count();
-            $p->angsuran_ke = $countPaid + 1;
-            return $p;
-        });
+            ->get(['id', 'pinjaman_pokok', 'total_tagihan', 'sisa_pinjaman', 'nominal_setoran', 'jumlah_angsuran', 'biaya_tambahan'])
+            ->map(function($p) {
+                $countPaid = $p->angsuran()->count();
+                $p->setAttribute('angsuran_ke', $countPaid + 1);
+                return $p;
+            });
 
         return response()->json($pinjaman);
     }
