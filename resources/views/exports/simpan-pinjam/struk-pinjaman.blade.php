@@ -133,7 +133,7 @@
             <div class="flex">
                 <span class="label-col label-text">NO. TRANSAKSI</span>
                 <span class="colon-col">:</span>
-                <span class="data-text">#St.{{ sprintf('%04d', $angsuran->id) }}</span>
+                <span class="data-text">#{{ $angsuran->nomor_transaksi ?: 'St.' . sprintf('%04d', $angsuran->id) }}</span>
             </div>
             <div class="flex">
                 <span class="label-col label-text">TANGGAL</span>
@@ -149,9 +149,21 @@
         <hr class="border-black border-t my-2">
         <div class="space-y-0.5" data-purpose="financial-details">
             <div class="flex">
-                <span class="label-col label-text">Total Pinjaman + Bunga</span>
+                <span class="label-col label-text">Pinjaman + Bunga</span>
                 <span class="colon-col">:</span>
-                <span class="data-text">Rp. {{ number_format($angsuran->pinjaman->total_tagihan, 0, ',', '.') }}</span>
+                <span class="data-text">Rp. {{ number_format($angsuran->pinjaman->pinjaman_pokok + ($angsuran->pinjaman->pinjaman_pokok * $angsuran->pinjaman->bunga / 100), 0, ',', '.') }}</span>
+            </div>
+            @if($angsuran->pinjaman->biaya_tambahan > 0)
+            <div class="flex">
+                <span class="label-col label-text">Biaya Tambahan</span>
+                <span class="colon-col">:</span>
+                <span class="data-text">Rp. {{ number_format($angsuran->pinjaman->biaya_tambahan, 0, ',', '.') }}</span>
+            </div>
+            @endif
+            <div class="flex">
+                <span class="label-col label-text">Total Tagihan</span>
+                <span class="colon-col">:</span>
+                <span class="data-text font-bold">Rp. {{ number_format($angsuran->pinjaman->total_tagihan, 0, ',', '.') }}</span>
             </div>
             <div class="flex">
                 <span class="label-col label-text">Setoran ke</span>
