@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pinjaman', function (Blueprint $table) {
-            $table->string('foto_barang')->nullable()->after('keterangan');
+            $table->string('jenis_pinjaman')->default('Uang Tunai')->after('sisa_pinjaman');
+            $table->string('keterangan')->nullable()->after('jenis_pinjaman');
+            $table->string('foto_barang')->nullable()->after('foto_perjanjian');
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pinjaman', function (Blueprint $table) {
-            $table->dropColumn('foto_barang');
+            $table->dropColumn(['jenis_pinjaman', 'keterangan', 'foto_barang']);
         });
     }
 };
