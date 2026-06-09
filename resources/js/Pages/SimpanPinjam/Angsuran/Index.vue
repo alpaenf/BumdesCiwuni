@@ -57,7 +57,12 @@ function kirimStrukWa(row) {
     if (!no.startsWith('62')) no = '62' + no;
 
     const strukUrl = route('angsuran.struk', row.id);
-    const nama = row.pinjaman?.nasabah?.nama;
+    const nama = row.pinjaman?.nasabah?.nama || '-';
+    
+    const p = row.pinjaman;
+    const t = p?.total_tagihan > 0 ? p.total_tagihan : 1;
+    const porsiPokok = p ? (p.pinjaman_pokok / t) * row.jumlah_bayar : 0;
+    const porsiBunga = p ? ((p.pinjaman_pokok * p.bunga / 100) / t) * row.jumlah_bayar : 0;
     
     const pesan =
 `Assalamu'alaikum, Bapak/Ibu *${nama}*.
@@ -68,6 +73,7 @@ No. Transaksi : #${row.nomor_transaksi || '-'}
 Tanggal       : ${formatDate(row.tanggal)}
 Angsuran Ke   : ${row.angsuran_ke}
 Jumlah Bayar  : ${formatCurrency(row.jumlah_bayar)}
+(Pokok: ${formatCurrency(porsiPokok)}, Bunga: ${formatCurrency(porsiBunga)})
 Sisa Pinjaman : ${formatCurrency(row.sisa_pinjaman)}
 
 Lihat struk lengkap di:
@@ -166,7 +172,15 @@ Terima kasih.`;
                                 <td class="px-4 py-3 text-[color:var(--color-secondary)]">{{ formatDate(row.tanggal) }}</td>
                                 <td class="px-4 py-3 text-center font-semibold">{{ row.angsuran_ke }}</td>
                                 <td class="px-4 py-3 capitalize text-[color:var(--color-secondary)]">{{ pasaranLabel[row.pasaran] ?? row.pasaran }}</td>
-                                <td class="px-4 py-3 text-right font-semibold text-blue-600">{{ formatCurrency(row.jumlah_bayar) }}</td>
+                                <td class="px-4 py-3 text-right">
+                                    <div class="font-semibold text-blue-600">{{ formatCurrency(row.jumlah_bayar) }}</div>
+                                    <div v-if="row.pinjaman" class="text-[10px] text-gray-500 mt-0.5">
+                                        Pokok: {{ formatCurrency((row.pinjaman.pinjaman_pokok / (row.pinjaman.total_tagihan || 1)) * row.jumlah_bayar) }}
+                                    </div>
+                                    <div v-if="row.pinjaman" class="text-[10px] text-gray-500">
+                                        Bunga: {{ formatCurrency(((row.pinjaman.pinjaman_pokok * row.pinjaman.bunga / 100) / (row.pinjaman.total_tagihan || 1)) * row.jumlah_bayar) }}
+                                    </div>
+                                </td>
                                 <td class="px-4 py-3 text-right" :class="Number(row.sisa_pinjaman) <= 0 ? 'text-blue-600' : 'text-red-600'">{{ formatCurrency(row.sisa_pinjaman) }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center justify-center gap-2">

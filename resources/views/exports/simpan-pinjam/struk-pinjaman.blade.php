@@ -171,10 +171,36 @@
                 <span class="data-text">{{ $angsuran->angsuran_ke }} / {{ $angsuran->pinjaman->jumlah_angsuran }}</span>
             </div>
             <div class="flex">
-                <span class="label-col label-text">Jumlah Setoran</span>
-                <span class="colon-col">:</span>
-                <span class="data-text">Rp. {{ number_format($angsuran->jumlah_bayar, 0, ',', '.') }}</span>
+                <span class="label-col label-text font-bold">Jumlah Setoran</span>
+                <span class="colon-col font-bold">:</span>
+                <span class="data-text font-bold">Rp. {{ number_format($angsuran->jumlah_bayar, 0, ',', '.') }}</span>
             </div>
+            
+            @php
+                $p = $angsuran->pinjaman;
+                $t = $p->total_tagihan > 0 ? $p->total_tagihan : 1;
+                $porsiPokok = ($p->pinjaman_pokok / $t) * $angsuran->jumlah_bayar;
+                $porsiBunga = (($p->pinjaman_pokok * $p->bunga / 100) / $t) * $angsuran->jumlah_bayar;
+                $porsiBiaya = ($p->biaya_tambahan / $t) * $angsuran->jumlah_bayar;
+            @endphp
+            <div class="flex pl-4">
+                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Pokok</span>
+                <span class="colon-col text-[10px] italic text-gray-600">:</span>
+                <span class="data-text text-[10px] italic text-gray-600">Rp. {{ number_format($porsiPokok, 0, ',', '.') }}</span>
+            </div>
+            <div class="flex pl-4">
+                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Bunga</span>
+                <span class="colon-col text-[10px] italic text-gray-600">:</span>
+                <span class="data-text text-[10px] italic text-gray-600">Rp. {{ number_format($porsiBunga, 0, ',', '.') }}</span>
+            </div>
+            @if($p->biaya_tambahan > 0)
+            <div class="flex pl-4">
+                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Biaya Tambahan</span>
+                <span class="colon-col text-[10px] italic text-gray-600">:</span>
+                <span class="data-text text-[10px] italic text-gray-600">Rp. {{ number_format($porsiBiaya, 0, ',', '.') }}</span>
+            </div>
+            @endif
+            <hr class="border-black border-dashed border-t my-1">
             <div class="flex">
                 <span class="label-col label-text">Sisa Pinjaman</span>
                 <span class="colon-col">:</span>
