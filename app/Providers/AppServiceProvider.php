@@ -21,5 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        \Carbon\Carbon::setLocale('id');
+        setlocale(LC_TIME, 'id_ID', 'id_ID.utf8', 'Indonesian');
     }
 }
