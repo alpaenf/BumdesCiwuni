@@ -225,6 +225,15 @@ Route::post('/unit/{slug}/login', [App\Http\Controllers\Portal\UnitLandingContro
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/unit/{slug}/dashboard', [App\Http\Controllers\Portal\UnitLandingController::class, 'dashboard'])->name('unit.dashboard');
+    
+    // Unit Settings
+    Route::get('/unit/{slug}/settings', [App\Http\Controllers\Portal\UnitLandingController::class, 'editSettings'])->name('unit.settings.edit');
+    Route::post('/unit/{slug}/settings', [App\Http\Controllers\Portal\UnitLandingController::class, 'updateSettings'])->name('unit.settings.update');
+    Route::post('/unit/{slug}/settings/upload-image', [App\Http\Controllers\Portal\UnitLandingController::class, 'uploadImage'])->name('unit.settings.upload-image');
+    
+    // Unit Galeri
+    Route::post('/unit/{slug}/galeri', [App\Http\Controllers\Portal\UnitLandingController::class, 'galeriStore'])->name('unit.galeri.store');
+    Route::delete('/unit/{slug}/galeri/{id}', [App\Http\Controllers\Portal\UnitLandingController::class, 'galeriDestroy'])->name('unit.galeri.destroy');
 });
 
 require __DIR__.'/auth.php';

@@ -157,7 +157,7 @@ onMounted(() => {
         <section class="relative pt-32 pb-24 md:pb-32 overflow-hidden min-h-screen flex items-center justify-center">
             <!-- Video Background -->
             <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0">
-                <source src="/bumdes.mp4" type="video/mp4" />
+                <source src="/wifi.mp4" type="video/mp4" />
             </video>
             
             <!-- Blue Tint Overlay for Readability -->
