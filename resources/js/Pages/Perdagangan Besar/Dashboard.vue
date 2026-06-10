@@ -45,6 +45,8 @@ const totalTransactionVal = computed(() => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(total);
 });
 
+const isSidebarOpen = ref(false);
+
 const logout = () => {
     router.post(route('logout'));
 };
@@ -96,18 +98,26 @@ const createOrder = () => {
     <Head title="Dashboard Admin - Perdagangan Besar" />
 
     <div class="min-h-screen bg-slate-50 text-slate-800 flex font-sans">
+        <!-- Mobile Sidebar Backdrop -->
+        <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"></div>
+
         <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-slate-300 shrink-0 hidden md:flex flex-col justify-between p-6">
+        <aside :class="['fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-300 shrink-0 flex flex-col justify-between p-6 transition-transform duration-300', isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
             <div class="space-y-8">
                 <!-- Branding -->
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-blue-500/10 border border-blue-500/30 rounded-xl text-amber-405">
-                        <span class="material-symbols-outlined font-bold">local_shipping</span>
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-blue-500/10 border border-blue-500/30 rounded-xl text-amber-500">
+                            <span class="material-symbols-outlined font-bold">local_shipping</span>
+                        </div>
+                        <div>
+                            <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Dagang</h2>
+                            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Dagang</h2>
-                        <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
-                    </div>
+                    <button @click="isSidebarOpen = false" class="md:hidden text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
 
                 <!-- Nav -->
@@ -115,18 +125,6 @@ const createOrder = () => {
                     <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-500/10 text-blue-600 font-bold text-xs rounded-xl border border-blue-500/20">
                         <span class="material-symbols-outlined text-lg">dashboard</span>
                         Dashboard
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                        <span class="material-symbols-outlined text-lg">assignment</span>
-                        Kontrak Supply
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                        <span class="material-symbols-outlined text-lg">local_shipping</span>
-                        Jadwal Kargo
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                        <span class="material-symbols-outlined text-lg">analytics</span>
-                        Statistik Penjualan
                     </a>
                     <Link :href="route('admin.landing-page.edit')" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">web</span>
@@ -138,7 +136,7 @@ const createOrder = () => {
             <!-- User Info & Logout -->
             <div class="border-t border-slate-300 pt-5 space-y-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-blue-500 text-slate-950 flex items-center justify-center font-bold text-sm">
+                    <div class="w-9 h-9 rounded-full bg-blue-500 text-slate-50 flex items-center justify-center font-bold text-sm shrink-0">
                         {{ user.nama.charAt(0) }}
                     </div>
                     <div class="overflow-hidden">
@@ -154,17 +152,20 @@ const createOrder = () => {
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <main class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
             <!-- Top Nav -->
-            <header class="h-16 border-b border-slate-300 bg-white/50 backdrop-blur-md px-6 flex items-center justify-between">
+            <header class="sticky top-0 z-30 h-16 border-b border-slate-300 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-amber-450 text-lg">explore</span>
-                    <span class="text-xs font-bold text-slate-600">Selamat Bekerja, {{ user.nama }}</span>
+                    <button @click="isSidebarOpen = true" class="md:hidden p-1.5 -ml-2 text-slate-500 hover:text-slate-800 rounded-lg transition mr-1">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <span class="material-symbols-outlined text-amber-500 text-lg hidden sm:block">explore</span>
+                    <span class="text-xs font-bold text-slate-600 truncate">Selamat Bekerja, {{ user.nama }}</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <Link :href="route('unit.welcome', { slug: 'perdagangan-besar' })" class="text-xs text-amber-450 hover:underline font-semibold flex items-center gap-1">
+                    <Link :href="route('unit.welcome', { slug: 'perdagangan-besar' })" class="text-xs text-amber-600 hover:underline font-semibold flex items-center gap-1 bg-amber-50 border border-amber-100 px-3 py-1.5 rounded-full">
                         <span class="material-symbols-outlined text-sm">open_in_new</span>
-                        Lihat Landing Page
+                        <span class="hidden sm:inline">Lihat Landing Page</span>
                     </Link>
                 </div>
             </header>
