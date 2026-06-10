@@ -121,30 +121,30 @@ onMounted(() => {
         </header>
 
         <!-- Hero Section -->
-        <section class="relative pt-28 pb-16 overflow-hidden">
-            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-blue-700/5 rounded-full blur-3xl"></div>
+        <section class="relative pt-28 pb-32 md:pb-48 overflow-hidden min-h-[85vh] flex items-center justify-center">
+            <!-- Video Background -->
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0">
+                <source src="/bumdes.mp4" type="video/mp4" />
+            </video>
+            
+            <!-- Dark Overlay for Readability -->
+            <div class="absolute inset-0 bg-slate-900/60 z-0 backdrop-blur-[2px]"></div>
 
-            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-[10px] font-bold uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                    Portal Terintegrasi BUMDes
-                </span>
-
-                <h2 class="text-3xl md:text-5xl font-extrabold text-blue-800 leading-tight md:leading-none tracking-tight">
+            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6 mt-10">
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
                     {{ settings.hero_title || 'Portal Resmi BUMDesa Dammar Wulan' }}
                 </h2>
 
-                <p class="text-sm md:text-base text-[#404940] max-w-2xl mx-auto leading-relaxed">
+                <p class="text-sm md:text-lg text-slate-200 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
                     {{ settings.hero_subtitle || 'Lembaga ekonomi desa yang berdedikasi mengelola berbagai unit bisnis dan layanan masyarakat.' }}
                 </p>
 
-                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <a :href="settings.hero_cta_link || '#unit-usaha'" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                <div class="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a :href="settings.hero_cta_link || '#unit-usaha'" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 transition-all">
                         {{ settings.hero_cta_text || 'Lihat Unit Usaha' }}
-                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                     </a>
-                    <Link :href="route('welcome')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg shadow-sm transition">
+                    <Link :href="route('welcome')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/30 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white font-bold text-sm rounded-xl shadow-lg hover:-translate-y-0.5 transition-all">
                         Portal Simpan Pinjam
                     </Link>
                 </div>
