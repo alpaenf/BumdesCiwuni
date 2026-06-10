@@ -88,6 +88,18 @@ class LandingPageController extends Controller
             }
         }
 
+        // Gabungkan data pengurus inti dari WebsiteSetting (Portal Pusat)
+        $globalKeys = [
+            'org_bumdes_pembina_name', 'org_bumdes_pembina_image',
+            'org_bumdes_direktur_name', 'org_bumdes_direktur_image'
+        ];
+        $globalSettings = \App\Models\WebsiteSetting::getMany($globalKeys);
+        
+        $settings['org_pembina_name'] = $globalSettings['org_bumdes_pembina_name'] ?? null;
+        $settings['org_pembina_image'] = $globalSettings['org_bumdes_pembina_image'] ?? null;
+        $settings['org_direktur_name'] = $globalSettings['org_bumdes_direktur_name'] ?? null;
+        $settings['org_direktur_image'] = $globalSettings['org_bumdes_direktur_image'] ?? null;
+
         $galeri = GaleriUnit::where('unit', 'simpan-pinjam')
             ->orderBy('urutan')
             ->orderByDesc('id')
