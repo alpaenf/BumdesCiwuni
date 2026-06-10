@@ -68,23 +68,23 @@ const submit = () => {
                 </div>
                 <div>
                     <h1 class="text-3xl font-extrabold tracking-tight leading-tight text-slate-900">
-                        {{ app === 'unit' ? 'Unit Simpan Pinjam' : 'BUMDesa Dammar Wulan' }}
+                        {{ app === 'unit' ? 'Unit Simpan Pinjam' : 'BUMDES Dammar Wulan' }}
                     </h1>
                     <p class="text-blue-600 font-semibold mt-1 uppercase tracking-wider text-xs">
-                        {{ app === 'unit' ? 'Layanan Keuangan Mikro' : 'Portal BUMDesa Terintegrasi' }}
+                        {{ app === 'unit' ? 'Layanan Keuangan Mikro' : 'Portal BUMDES Terintegrasi' }}
                     </p>
                 </div>
                 <p class="text-slate-600 text-sm leading-relaxed">
                     {{ app === 'unit' 
                         ? 'Sistem informasi pengelolaan layanan keuangan mikro, tabungan, dan pinjaman untuk masyarakat Desa Ciwuni.'
-                        : 'Akses terpadu sistem informasi unit usaha BUMDesa Dammar Wulan Desa Ciwuni, termasuk layanan keuangan mikro Simpan Pinjam, air bersih KP-SPAMS, toko desa, dan manajemen eksekutif.' 
+                        : 'Akses terpadu sistem informasi unit usaha BUMDES Dammar Wulan Desa Ciwuni, termasuk layanan keuangan mikro Simpan Pinjam, air bersih KP-SPAMS, toko desa, dan manajemen eksekutif.' 
                     }}
                 </p>
             </div>
 
             <!-- Bottom: Footer Info -->
             <div class="relative z-10 text-xs text-slate-400">
-                <p>© 2026 BUMDesa Dammar Wulan • Desa Ciwuni</p>
+                <p>© 2026 BUMDES Dammar Wulan • Desa Ciwuni</p>
             </div>
         </div>
 
@@ -101,7 +101,7 @@ const submit = () => {
                     
                     <img :src="app === 'unit' ? '/logo.png' : '/logo2.png'" alt="Logo" class="h-14 w-14 object-contain" />
                     <div>
-                        <h1 class="text-xl font-bold">{{ app === 'unit' ? 'Unit Simpan Pinjam' : 'BUMDesa Dammar Wulan' }}</h1>
+                        <h1 class="text-xl font-bold">{{ app === 'unit' ? 'Unit Simpan Pinjam' : 'BUMDES Dammar Wulan' }}</h1>
                         <p class="text-xs text-[color:var(--color-secondary)] uppercase tracking-wider font-semibold">{{ app === 'unit' ? 'Layanan Keuangan Mikro' : 'Portal Terintegrasi' }}</p>
                     </div>
                 </div>
