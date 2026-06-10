@@ -88,7 +88,7 @@ onMounted(() => {
 <template>
     <Head title="Portal BUMDes Dammar Wulan" />
 
-    <div class="min-h-screen bg-white text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white">
+    <div class="min-h-screen bg-white text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden w-full max-w-[100vw]">
         <!-- Header / Navbar -->
         <header :class="[
             'fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/90 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg transition-all duration-300',
@@ -163,7 +163,7 @@ onMounted(() => {
             <!-- Bottom Gradient Fade to White (Pembatas Bawah) -->
             <div class="absolute bottom-0 left-0 w-full h-40 md:h-56 bg-gradient-to-t from-white via-white/60 to-transparent z-0"></div>
 
-            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6 mt-10">
+            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-4 md:space-y-6 -mt-16 md:-mt-20">
                 <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
                     {{ settings.hero_title || 'Portal Resmi BUMDesa Dammar Wulan' }}
                 </h2>
