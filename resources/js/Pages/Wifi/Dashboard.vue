@@ -119,7 +119,7 @@ const addCustomer = () => {
                         <span class="material-symbols-outlined text-lg">dashboard</span>
                         Dashboard
                     </a>
-                    <Link :href="route('admin.landing-page.edit')" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                    <Link :href="route('unit.settings.edit', { slug: unit.slug })" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">web</span>
                         Pengaturan Landing Page
                     </Link>
