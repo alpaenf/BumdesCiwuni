@@ -75,7 +75,7 @@ onMounted(() => {
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center gap-2">
-                    <img :src="settings.custom_logo || '/logo.png'" alt="Logo" class="w-9 h-9 object-contain" />
+                    <img :src="settings?.custom_logo || '/logowifi.png'" alt="Logo" class="w-9 h-9 object-contain" />
                     <div>
                         <h1 class="text-xs font-extrabold text-blue-800 leading-tight">Unit Wifi</h1>
                         <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">BUMDES Dammar Wulan</p>

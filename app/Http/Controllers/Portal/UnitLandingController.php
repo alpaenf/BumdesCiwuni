@@ -33,9 +33,38 @@ class UnitLandingController extends Controller
         $unit = Unit::where('slug', $slug)->firstOrFail();
         $folder = $this->getViewFolder($slug);
 
+        // Retrieve global settings
+        $settingsKeys = [
+            'custom_logo', 'hero_title', 'hero_subtitle', 'hero_cta_text', 'hero_cta_link',
+            'about_title', 'about_description', 'feature_1_title', 'feature_1_desc',
+            'feature_2_title', 'feature_2_desc', 'feature_3_title', 'feature_3_desc',
+            'contact_address', 'contact_phone', 'contact_email', 'faq_items', 'news_items',
+            'org_pembina_name', 'org_pembina_image', 'org_direktur_name', 'org_direktur_image',
+            'org_sekretaris_name', 'org_sekretaris_image', 'org_bendahara_name', 'org_bendahara_image',
+            'org_pengawas_name', 'org_pengawas_image', 'org_unit_sp_name', 'org_unit_sp_image',
+            'org_unit_sp_staff_name', 'org_unit_sp_staff_image', 'about_history'
+        ];
+
+        $settings = [];
+        foreach ($settingsKeys as $key) {
+            $value = \App\Models\LandingPageSetting::getByKey($key);
+            if ($key === 'faq_items' || $key === 'news_items') {
+                $settings[$key] = json_decode($value, true) ?: [];
+            } else {
+                $settings[$key] = $value;
+            }
+        }
+
+        $galeri = \App\Models\GaleriUnit::where('unit', 'simpan-pinjam')
+            ->orderBy('urutan')
+            ->orderByDesc('id')
+            ->get();
+
         return Inertia::render("$folder/Welcome", [
             'unit' => $unit,
             'canLogin' => true,
+            'settings' => $settings,
+            'galeri' => $galeri,
         ]);
     }
 
