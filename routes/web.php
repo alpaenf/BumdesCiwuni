@@ -220,7 +220,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
 // NEW UNITS — WIFI, KETAHANAN PANGAN, PERDAGANGAN BESAR
 // =====================================================
 Route::get('/unit/{slug}', [App\Http\Controllers\Portal\UnitLandingController::class, 'welcome'])->name('unit.welcome');
-Route::get('/unit/{slug}/login', [App\Http\Controllers\Portal\UnitLandingController::class, 'showLogin'])->name('unit.login');
+Route::get('/unit/{slug}/login', [App\Http\Controllers\Portal\UnitLandingController::class, 'login'])->name('unit.login');
 Route::post('/unit/{slug}/login', [App\Http\Controllers\Portal\UnitLandingController::class, 'loginStore']);
 
 Route::middleware(['auth'])->group(function () {
