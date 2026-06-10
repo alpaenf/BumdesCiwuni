@@ -61,6 +61,33 @@ class PortalSeeder extends Seeder
                 'icon' => 'forest',
                 'urutan' => 5,
             ],
+            [
+                'nama_unit' => 'Bumdes Ciwuni Unit Wifi',
+                'slug' => 'wifi',
+                'deskripsi' => 'Layanan internet desa murah dan cepat untuk seluruh masyarakat Desa Ciwuni.',
+                'tipe' => 'internal',
+                'status' => 'aktif',
+                'icon' => 'wifi',
+                'urutan' => 6,
+            ],
+            [
+                'nama_unit' => 'Bumdes Ciwuni Unit Ketahanan Pangan',
+                'slug' => 'ketahanan-pangan',
+                'deskripsi' => 'Pengelolaan lumbung pangan desa dan distribusi bibit serta pupuk untuk ketahanan pangan warga.',
+                'tipe' => 'internal',
+                'status' => 'aktif',
+                'icon' => 'grass',
+                'urutan' => 7,
+            ],
+            [
+                'nama_unit' => 'Bumdes Ciwuni Unit Perdagangan Besar',
+                'slug' => 'perdagangan-besar',
+                'deskripsi' => 'Penyedia dan distributor komoditas skala besar hasil pertanian dan industri kreatif Desa Ciwuni.',
+                'tipe' => 'internal',
+                'status' => 'aktif',
+                'icon' => 'local_shipping',
+                'urutan' => 8,
+            ],
         ];
 
         foreach ($units as $unit) {

@@ -248,7 +248,7 @@ onMounted(() => {
                                         Kunjungi Website
                                         <span class="material-symbols-outlined text-[12px]">open_in_new</span>
                                     </a>
-                                    <Link v-else-if="unit.slug === 'simpan-pinjam'" :href="route('welcome')" class="w-full inline-flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
+                                    <Link v-else :href="unit.slug === 'simpan-pinjam' ? route('welcome') : route('unit.welcome', { slug: unit.slug })" class="w-full inline-flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
                                         Kunjungi Unit
                                         <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
                                     </Link>
