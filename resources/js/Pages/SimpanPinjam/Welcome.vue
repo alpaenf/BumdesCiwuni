@@ -78,7 +78,7 @@ onMounted(() => {
                     <img :src="settings.custom_logo || '/logo.png'" alt="Logo" class="w-9 h-9 object-contain" />
                     <div>
                         <h1 class="text-xs font-extrabold text-blue-800 leading-tight">Simpan Pinjam</h1>
-                        <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">BUMDesa Dammar Wulan</p>
+                        <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">BUMDES Dammar Wulan</p>
                     </div>
                 </div>
 
@@ -170,7 +170,7 @@ onMounted(() => {
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
                 <h2 class="text-3xl md:text-5xl font-extrabold text-blue-800 leading-tight md:leading-none tracking-tight">
-                    {{ settings.hero_title || 'Layanan Simpan Pinjam BUMDesa Dammar Wulan' }}
+                    {{ settings.hero_title || 'Layanan Simpan Pinjam BUMDES Dammar Wulan' }}
                 </h2>
                 
                 <p class="text-sm md:text-base text-[#404940] max-w-2xl mx-auto leading-relaxed">
@@ -199,7 +199,7 @@ onMounted(() => {
                         {{ settings.about_title || 'Tentang Unit Simpan Pinjam' }}
                     </h3>
                     <p class="text-xs md:text-sm text-[#404940] leading-relaxed">
-                        {{ settings.about_description || 'Unit Simpan Pinjam merupakan pilar penting dalam ekosistem BUMDesa Dammar Wulan, yang fokus pada penyediaan akses keuangan terjangkau bagi seluruh warga Desa Ciwuni. Kami menyediakan berbagai macam jenis tabungan serta pembiayaan modal usaha bagi pelaku usaha mikro.' }}
+                        {{ settings.about_description || 'Unit Simpan Pinjam merupakan pilar penting dalam ekosistem BUMDES Dammar Wulan, yang fokus pada penyediaan akses keuangan terjangkau bagi seluruh warga Desa Ciwuni. Kami menyediakan berbagai macam jenis tabungan serta pembiayaan modal usaha bagi pelaku usaha mikro.' }}
                     </p>
                     <div v-if="settings.about_history" class="pt-3 border-t border-slate-100 space-y-2">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Sejarah & Tujuan</h4>
@@ -215,7 +215,7 @@ onMounted(() => {
                     
                     <img src="/logo.png" alt="Logo Simpan Pinjam" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
                     <h4 class="font-extrabold text-slate-800 text-base uppercase tracking-wider">Unit Simpan Pinjam</h4>
-                    <p class="text-[10px] font-bold text-blue-700 tracking-widest uppercase">BUMDesa Dammar Wulan</p>
+                    <p class="text-[10px] font-bold text-blue-700 tracking-widest uppercase">BUMDES Dammar Wulan</p>
                     <div class="w-full border-t border-dashed border-[#bfc9bd] my-4"></div>
                     <p class="text-xs text-[#404940] leading-relaxed max-w-sm">
                         Mendorong pertumbuhan ekonomi desa melalui pengelolaan simpanan yang aman serta penyaluran pinjaman modal yang bijak dan berkeadilan.
@@ -282,7 +282,7 @@ onMounted(() => {
                 <div class="text-center space-y-3 mb-16 scroll-animate scroll-fade-up">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Kepengurusan Unit</span>
                     <h3 class="text-2xl font-bold text-slate-800">Struktur Organisasi Unit Simpan Pinjam</h3>
-                    <p class="text-xs text-[#404940] max-w-md mx-auto">Manajemen pengelola Unit Simpan Pinjam BUMDesa Dammar Wulan yang bertanggung jawab penuh terhadap pelayanan transaksi warga.</p>
+                    <p class="text-xs text-[#404940] max-w-md mx-auto">Manajemen pengelola Unit Simpan Pinjam BUMDES Dammar Wulan yang bertanggung jawab penuh terhadap pelayanan transaksi warga.</p>
                 </div>
                 
                 <!-- Desktop Org Chart Container (Connected Tree) -->
@@ -424,7 +424,7 @@ onMounted(() => {
                 <div class="text-center space-y-3 scroll-animate scroll-fade-up">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Dokumentasi</span>
                     <h3 class="text-2xl font-bold text-slate-800">Galeri Unit Simpan Pinjam</h3>
-                    <p class="text-xs text-[#404940] max-w-md mx-auto">Dokumentasi kegiatan dan aktivitas pelayanan Unit Simpan Pinjam BUMDesa Dammar Wulan.</p>
+                    <p class="text-xs text-[#404940] max-w-md mx-auto">Dokumentasi kegiatan dan aktivitas pelayanan Unit Simpan Pinjam BUMDES Dammar Wulan.</p>
                 </div>
 
                 <!-- Grid Galeri -->
@@ -550,7 +550,7 @@ onMounted(() => {
                     <div class="space-y-3 pt-2 text-xs">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-blue-500 text-[18px]">location_on</span>
-                            <span class="text-slate-300">{{ settings.contact_address || 'Kantor BUMDesa Dammar Wulan, Desa Ciwuni' }}</span>
+                            <span class="text-slate-300">{{ settings.contact_address || 'Kantor BUMDES Dammar Wulan, Desa Ciwuni' }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-blue-500 text-[18px]">call</span>

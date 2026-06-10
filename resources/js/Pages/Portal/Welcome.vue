@@ -165,7 +165,7 @@ onMounted(() => {
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-4 md:space-y-6 -mt-4 md:-mt-8">
                 <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
-                    {{ settings.hero_title || 'Portal Resmi BUMDesa Dammar Wulan' }}
+                    {{ settings.hero_title || 'Portal Resmi BUMDES Dammar Wulan' }}
                 </h2>
 
                 <div class="h-20 md:h-24 flex items-start justify-center">
@@ -192,7 +192,7 @@ onMounted(() => {
                 <div class="space-y-5 portal-animate">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Tentang Kami</span>
                     <h3 class="text-2xl font-bold text-slate-800 leading-tight">
-                        {{ settings.about_title || 'Mengenal BUMDesa Dammar Wulan' }}
+                        {{ settings.about_title || 'Mengenal BUMDES Dammar Wulan' }}
                     </h3>
                     <p class="text-sm text-[#404940] leading-relaxed">
                         {{ settings.about_description || '' }}
@@ -223,7 +223,7 @@ onMounted(() => {
                     <div class="text-center space-y-3 mb-16 portal-animate">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Manajemen Kami</span>
                         <h3 class="text-2xl font-bold text-slate-800">Struktur Pengurus BUMDes</h3>
-                        <p class="text-xs text-[#404940] max-w-md mx-auto">Susunan kepengurusan BUMDesa Dammar Wulan yang menaungi 4 unit usaha produktif.</p>
+                        <p class="text-xs text-[#404940] max-w-md mx-auto">Susunan kepengurusan BUMDES Dammar Wulan yang menaungi 4 unit usaha produktif.</p>
                     </div>
                     
                     <!-- Desktop Org Chart Container (Connected Tree) -->
@@ -594,7 +594,7 @@ onMounted(() => {
                             <p class="text-[10px] text-blue-200">Portal Terintegrasi</p>
                         </div>
                     </div>
-                    <p class="text-xs text-blue-200">{{ settings.footer_text || '© 2024 BUMDesa Dammar Wulan. Hak Cipta Dilindungi.' }}</p>
+                    <p class="text-xs text-blue-200">{{ settings.footer_text || '© 2024 BUMDES Dammar Wulan. Hak Cipta Dilindungi.' }}</p>
                 </div>
             </div>
         </footer>
