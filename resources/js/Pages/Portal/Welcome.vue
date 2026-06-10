@@ -127,8 +127,11 @@ onMounted(() => {
                 <source src="/bumdes.mp4" type="video/mp4" />
             </video>
             
-            <!-- Dark Overlay for Readability -->
-            <div class="absolute inset-0 bg-slate-900/60 z-0 backdrop-blur-[2px]"></div>
+            <!-- Blue Tint Overlay for Readability -->
+            <div class="absolute inset-0 bg-blue-950/60 z-0 backdrop-blur-[2px]"></div>
+
+            <!-- Bottom Gradient Fade to White (Pembatas Bawah) -->
+            <div class="absolute bottom-0 left-0 w-full h-40 md:h-56 bg-gradient-to-t from-white via-white/60 to-transparent z-0"></div>
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6 mt-10">
                 <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
