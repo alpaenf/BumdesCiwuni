@@ -39,7 +39,10 @@ class CmsController extends Controller
         $settingKeys = [
             'bumdes_name', 'bumdes_tagline', 'bumdes_logo',
             'about_title', 'about_description', 'about_history',
-            'visi', 'misi', 'struktur_organisasi',
+            'visi', 'misi',
+            'org_bumdes_direktur_name', 'org_bumdes_direktur_image',
+            'org_bumdes_sekretaris_name', 'org_bumdes_sekretaris_image',
+            'org_bumdes_bendahara_name', 'org_bumdes_bendahara_image',
             'contact_address', 'contact_phone', 'contact_email', 'google_maps_embed',
             'footer_text', 'social_facebook', 'social_instagram', 'social_youtube',
         ];
@@ -63,7 +66,12 @@ class CmsController extends Controller
             'about_history' => 'nullable|string',
             'visi' => 'nullable|string',
             'misi' => 'nullable|string',
-            'struktur_organisasi' => 'nullable',
+            'org_bumdes_direktur_name' => 'nullable|string|max:255',
+            'org_bumdes_direktur_image' => 'nullable|string',
+            'org_bumdes_sekretaris_name' => 'nullable|string|max:255',
+            'org_bumdes_sekretaris_image' => 'nullable|string',
+            'org_bumdes_bendahara_name' => 'nullable|string|max:255',
+            'org_bumdes_bendahara_image' => 'nullable|string',
             'contact_address' => 'nullable|string',
             'contact_phone' => 'nullable|string|max:50',
             'contact_email' => 'nullable|email|max:100',
@@ -82,17 +90,6 @@ class CmsController extends Controller
                 $validated['bumdes_logo'] = null;
             } else {
                 unset($validated['bumdes_logo']);
-            }
-        }
-
-        if ($request->hasFile('struktur_organisasi')) {
-            $path = $request->file('struktur_organisasi')->store('portal/struktur', 'public');
-            $validated['struktur_organisasi'] = '/storage/' . $path;
-        } else {
-            if ($request->has('struktur_organisasi') && $request->struktur_organisasi === null) {
-                $validated['struktur_organisasi'] = null;
-            } else {
-                unset($validated['struktur_organisasi']);
             }
         }
 
