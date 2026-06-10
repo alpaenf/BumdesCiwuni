@@ -195,15 +195,20 @@ const submit = () => {
                     </h3>
                     <p class="text-[11px] text-slate-500">Ubah nama dan unggah foto untuk Direktur, Sekretaris, dan Bendahara BUMDes. Struktur ini akan ditampilkan di halaman depan portal.</p>
 
-                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                         <div v-for="role in [
+                            { label: 'Pembina BUMDes', nameKey: 'org_bumdes_pembina_name', imgKey: 'org_bumdes_pembina_image' },
                             { label: 'Direktur BUMDes', nameKey: 'org_bumdes_direktur_name', imgKey: 'org_bumdes_direktur_image' },
                             { label: 'Sekretaris', nameKey: 'org_bumdes_sekretaris_name', imgKey: 'org_bumdes_sekretaris_image' },
                             { label: 'Bendahara', nameKey: 'org_bumdes_bendahara_name', imgKey: 'org_bumdes_bendahara_image' },
-                        ]" :key="role.nameKey" class="p-4 bg-white border border-slate-200 rounded-xl flex gap-4 items-center">
+                            { label: 'Ka. Unit Simpan Pinjam', nameKey: 'org_bumdes_unit_sp_name', imgKey: 'org_bumdes_unit_sp_image' },
+                            { label: 'Ka. Unit Pemasangan Wifi', nameKey: 'org_bumdes_unit_wifi_name', imgKey: 'org_bumdes_unit_wifi_image' },
+                            { label: 'Ka. Unit Ketahanan Pangan', nameKey: 'org_bumdes_unit_pangan_name', imgKey: 'org_bumdes_unit_pangan_image' },
+                            { label: 'Ka. Unit Perdagangan', nameKey: 'org_bumdes_unit_pasar_name', imgKey: 'org_bumdes_unit_pasar_image' },
+                        ]" :key="role.nameKey" class="p-4 bg-white border border-slate-200 rounded-xl flex gap-4 items-center flex-col text-center">
                             
                             <!-- Foto Upload Preview -->
-                            <div class="w-20 h-20 border border-slate-200 rounded-full overflow-hidden bg-slate-50 flex-shrink-0 flex items-center justify-center relative group cursor-pointer" @click="triggerMemberFileInput(role.imgKey)">
+                            <div class="w-24 h-24 border-2 border-blue-100 rounded-full overflow-hidden bg-slate-50 flex-shrink-0 flex items-center justify-center relative group cursor-pointer shadow-sm hover:shadow transition" @click="triggerMemberFileInput(role.imgKey)">
                                 <input
                                     :id="`input-image-${role.imgKey}`"
                                     type="file"
@@ -217,25 +222,23 @@ const submit = () => {
                                 </div>
                                 <template v-else>
                                     <img v-if="form[role.imgKey]" :src="form[role.imgKey]" class="w-full h-full object-cover" />
-                                    <div v-else class="text-center flex flex-col items-center justify-center text-slate-400">
-                                        <span class="material-symbols-outlined text-lg">add_a_photo</span>
-                                        <span class="text-[8px] uppercase font-bold tracking-wider block mt-0.5">Foto</span>
+                                    <div v-else class="text-center flex flex-col items-center justify-center text-slate-400 group-hover:text-blue-500 transition">
+                                        <span class="material-symbols-outlined text-xl">add_a_photo</span>
+                                        <span class="text-[9px] uppercase font-bold tracking-wider block mt-1">Upload</span>
                                     </div>
                                 </template>
                             </div>
 
                             <!-- Name input & Delete Image -->
-                            <div class="flex-grow space-y-2">
+                            <div class="w-full space-y-2">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">{{ role.label }}</label>
-                                    <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-blue-500 focus:border-blue-500 bg-white py-1 px-2.5" placeholder="Nama Lengkap" />
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">{{ role.label }}</label>
+                                    <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs text-center focus:ring-blue-500 focus:border-blue-500 bg-white py-1.5 px-2.5" placeholder="Nama Lengkap" />
                                 </div>
-                                <div v-if="form[role.imgKey]" class="flex items-center justify-between">
-                                    <span class="text-[9px] text-blue-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
-                                    <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[9px] font-bold text-rose-600 hover:underline">Hapus Foto</button>
+                                <div v-if="form[role.imgKey]" class="flex items-center justify-center pt-1">
+                                    <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[10px] font-bold text-rose-600 hover:text-rose-800 transition bg-rose-50 px-2 py-1 rounded-md">Hapus Foto</button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
