@@ -154,36 +154,36 @@ onMounted(() => {
         </header>
 
         <!-- Hero Section -->
-        <section class="relative min-h-[85vh] flex flex-col justify-center pt-28 pb-20 overflow-hidden">
+        <section class="relative pt-32 pb-24 md:pb-32 overflow-hidden min-h-screen flex items-center justify-center">
             <!-- Video Background -->
-            <div class="absolute inset-0 z-0">
-                <video autoplay loop muted playsinline class="w-full h-full object-cover">
-                    <source src="/simpin.mp4" type="video/mp4" />
-                </video>
-                <!-- Gradient overlay for readability -->
-                <div class="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/95"></div>
-            </div>
+            <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0">
+                <source src="/simpin.mp4" type="video/mp4" />
+            </video>
+            
+            <!-- Blue Tint Overlay for Readability -->
+            <div class="absolute inset-0 bg-blue-950/60 z-0 backdrop-blur-[2px]"></div>
 
-            <!-- Decorative circles -->
-            <div class="absolute top-1/4 -right-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl z-0"></div>
-            <div class="absolute bottom-10 -left-20 w-80 h-80 bg-blue-700/10 rounded-full blur-3xl z-0"></div>
+            <!-- Bottom Gradient Fade to White (Pembatas Bawah) -->
+            <div class="absolute bottom-0 left-0 w-full h-40 md:h-56 bg-gradient-to-t from-white via-white/60 to-transparent z-0"></div>
 
-            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
-                <h2 class="text-3xl md:text-5xl font-extrabold text-blue-800 leading-tight md:leading-none tracking-tight">
+            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-4 md:space-y-6 -mt-4 md:-mt-8">
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
                     {{ (settings.hero_title || 'Layanan Simpan Pinjam BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}
                 </h2>
                 
-                <p class="text-sm md:text-base text-[#404940] max-w-2xl mx-auto leading-relaxed">
-                    {{ settings.hero_subtitle || 'Solusi layanan keuangan mikro desa yang aman, transparan, dan terpercaya untuk meningkatkan permodalan usaha kecil dan pemberdayaan ekonomi masyarakat.' }}
-                </p>
+                <div class="flex items-start justify-center">
+                    <p class="text-sm md:text-lg text-slate-200 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                        {{ settings.hero_subtitle || 'Solusi layanan keuangan mikro desa yang aman, transparan, dan terpercaya untuk meningkatkan permodalan usaha kecil dan pemberdayaan ekonomi masyarakat.' }}
+                    </p>
+                </div>
 
-                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <Link :href="route('login')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                <div class="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link :href="route('login')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 transition-all">
                         Buka Aplikasi Layanan
-                        <span class="material-symbols-outlined text-[16px]">login</span>
+                        <span class="material-symbols-outlined text-[18px]">login</span>
                     </Link>
-                    <Link :href="route('portal.home')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg shadow-sm transition">
-                        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                    <Link :href="route('portal.home')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/20 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold text-sm rounded-xl transition-all">
+                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                         Kembali ke Portal Utama
                     </Link>
                 </div>
