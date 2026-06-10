@@ -56,12 +56,21 @@ const adminNav = [
             :class="{ 'translate-x-0': showingSidebar }"
         >
             <!-- Logo -->
-            <div class="flex h-16 items-center gap-1.5 border-b border-[color:var(--color-outline-variant)] px-5">
-                <img src="/logo.png" alt="Logo" class="h-9 w-9 object-contain" />
-                <div>
-                    <p class="text-xs font-semibold leading-tight text-[color:var(--color-on-surface)]">Simpan Pinjam</p>
-                    <p class="text-[10px] text-[color:var(--color-secondary)]">BUMDes Dammar Wulan</p>
+            <div class="flex h-16 items-center justify-between border-b border-[color:var(--color-outline-variant)] px-5">
+                <div class="flex items-center gap-1.5">
+                    <img src="/logo.png" alt="Logo" class="h-9 w-9 object-contain" />
+                    <div>
+                        <p class="text-xs font-semibold leading-tight text-[color:var(--color-on-surface)]">Simpan Pinjam</p>
+                        <p class="text-[10px] text-[color:var(--color-secondary)]">BUMDes Dammar Wulan</p>
+                    </div>
                 </div>
+                <!-- Close button for mobile -->
+                <button
+                    class="rounded-lg p-1 text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-surface-container)] lg:hidden"
+                    @click="showingSidebar = false"
+                >
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
             </div>
 
             <!-- Navigation -->
@@ -139,6 +148,33 @@ const adminNav = [
                         <span class="material-symbols-outlined text-[18px]">edit_note</span>
                         <span>Kelola Website</span>
                     </NavLink>
+                    <a
+                        :href="route('unit.welcome', { slug: 'wifi' })"
+                        target="_blank"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">wifi</span>
+                        <span>Unit Wifi</span>
+                    </a>
+                    <a
+                        :href="route('unit.welcome', { slug: 'ketahanan-pangan' })"
+                        target="_blank"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">agriculture</span>
+                        <span>Unit Ketahanan Pangan</span>
+                    </a>
+                    <a
+                        :href="route('unit.welcome', { slug: 'perdagangan-besar' })"
+                        target="_blank"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                        <span>Unit Perdagangan Besar</span>
+                    </a>
                 </div>
             </nav>
 

@@ -38,12 +38,21 @@ const portalNav = [
             :class="{ 'translate-x-0': showingSidebar }"
         >
             <!-- Logo -->
-            <div class="flex h-16 items-center gap-2 border-b border-[color:var(--color-outline-variant)] px-5">
-                <img src="/logo2.png" alt="Logo" class="h-9 w-9 object-contain" />
-                <div>
-                    <p class="text-xs font-bold leading-tight text-[color:var(--color-on-surface)]">Portal BUMDes</p>
-                    <p class="text-[10px] text-[color:var(--color-secondary)]">Dammar Wulan</p>
+            <div class="flex h-16 items-center justify-between border-b border-[color:var(--color-outline-variant)] px-5">
+                <div class="flex items-center gap-2">
+                    <img src="/logo2.png" alt="Logo" class="h-9 w-9 object-contain" />
+                    <div>
+                        <p class="text-xs font-bold leading-tight text-[color:var(--color-on-surface)]">Portal BUMDes</p>
+                        <p class="text-[10px] text-[color:var(--color-secondary)]">Dammar Wulan</p>
+                    </div>
                 </div>
+                <!-- Close button for mobile -->
+                <button
+                    class="rounded-lg p-1 text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-surface-container)] lg:hidden"
+                    @click="showingSidebar = false"
+                >
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
             </div>
 
             <!-- Navigation -->
@@ -97,6 +106,36 @@ const portalNav = [
                     >
                         <span class="material-symbols-outlined text-[18px]">savings</span>
                         <span>Unit Simpan Pinjam</span>
+                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Aktif</span>
+                    </a>
+                    <a
+                        :href="route('unit.welcome', { slug: 'wifi' })"
+                        target="_blank"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">wifi</span>
+                        <span>Unit Wifi</span>
+                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Aktif</span>
+                    </a>
+                    <a
+                        :href="route('unit.welcome', { slug: 'ketahanan-pangan' })"
+                        target="_blank"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">agriculture</span>
+                        <span>Unit Ketahanan Pangan</span>
+                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Aktif</span>
+                    </a>
+                    <a
+                        :href="route('unit.welcome', { slug: 'perdagangan-besar' })"
+                        target="_blank"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                        <span>Unit Perdagangan Besar</span>
                         <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Aktif</span>
                     </a>
                     <a
