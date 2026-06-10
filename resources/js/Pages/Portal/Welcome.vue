@@ -151,7 +151,7 @@ onMounted(() => {
         </header>
 
         <!-- Hero Section -->
-        <section class="relative pt-28 pb-32 md:pb-48 overflow-hidden min-h-[85vh] flex items-center justify-center">
+        <section class="relative pt-32 pb-24 md:pb-32 overflow-hidden min-h-[85vh] flex items-center justify-center">
             <!-- Video Background -->
             <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0">
                 <source src="/bumdes.mp4" type="video/mp4" />
@@ -163,7 +163,7 @@ onMounted(() => {
             <!-- Bottom Gradient Fade to White (Pembatas Bawah) -->
             <div class="absolute bottom-0 left-0 w-full h-40 md:h-56 bg-gradient-to-t from-white via-white/60 to-transparent z-0"></div>
 
-            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-4 md:space-y-6 -mt-16 md:-mt-20">
+            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-4 md:space-y-6 -mt-4 md:-mt-8">
                 <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
                     {{ settings.hero_title || 'Portal Resmi BUMDesa Dammar Wulan' }}
                 </h2>
