@@ -311,13 +311,13 @@ onMounted(() => {
                                     <!-- Drops down from horizontal -->
                                     <div class="w-0.5 h-6 bg-blue-500/60 absolute -top-4 left-1/2 -translate-x-1/2 -z-10"></div>
                                     
-                                    <div class="w-[4.5rem] h-[4.5rem] rounded-full border-[3px] border-emerald-500 bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-md text-white font-extrabold text-lg ring-4 ring-emerald-500/10 overflow-hidden z-10 bg-white">
+                                    <div class="w-[4.5rem] h-[4.5rem] rounded-full border-[3px] border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md text-white font-extrabold text-lg ring-4 ring-blue-500/10 overflow-hidden z-10 bg-white">
                                         <img v-if="role.image" :src="role.image" class="w-full h-full object-cover" />
                                         <span v-else>{{ getInitials(role.name) }}</span>
                                     </div>
                                     <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-2.5 w-full text-center shadow-sm">
                                         <p class="text-[11px] font-extrabold text-slate-800 leading-tight">{{ role.name }}</p>
-                                        <p class="text-[8px] font-bold text-emerald-600 uppercase tracking-widest mt-1">{{ role.label }}</p>
+                                        <p class="text-[8px] font-bold text-blue-600 uppercase tracking-widest mt-1">{{ role.label }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -365,20 +365,20 @@ onMounted(() => {
                         </div>
 
                         <div class="space-y-3 border-t border-slate-100 pt-6">
-                            <h5 class="text-center text-[10px] font-bold uppercase text-emerald-600 mb-4">Kepala Unit Usaha</h5>
+                            <h5 class="text-center text-[10px] font-bold uppercase text-blue-600 mb-4">Kepala Unit Usaha</h5>
                             <div v-for="role in [
                                 { label: 'Ka. Unit Simpan Pinjam', name: settings.org_bumdes_unit_sp_name || 'Ka. Unit SP', image: settings.org_bumdes_unit_sp_image },
                                 { label: 'Ka. Unit Wifi', name: settings.org_bumdes_unit_wifi_name || 'Ka. Unit Wifi', image: settings.org_bumdes_unit_wifi_image },
                                 { label: 'Ka. Unit Ketahanan Pangan', name: settings.org_bumdes_unit_pangan_name || 'Ka. Unit Pangan', image: settings.org_bumdes_unit_pangan_image },
                                 { label: 'Ka. Unit Perdagangan', name: settings.org_bumdes_unit_pasar_name || 'Ka. Unit Dagang', image: settings.org_bumdes_unit_pasar_image },
-                            ]" :key="role.label" class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3 flex items-center gap-4">
-                                <div class="w-12 h-12 shrink-0 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold overflow-hidden border-2 border-emerald-300">
+                            ]" :key="role.label" class="bg-blue-50/50 border border-blue-100 rounded-xl p-3 flex items-center gap-4">
+                                <div class="w-12 h-12 shrink-0 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold overflow-hidden border-2 border-blue-300">
                                     <img v-if="role.image" :src="role.image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(role.name) }}</span>
                                 </div>
                                 <div>
                                     <h6 class="text-xs font-extrabold text-slate-800">{{ role.name }}</h6>
-                                    <p class="text-[9px] text-emerald-600 font-bold uppercase mt-0.5">{{ role.label }}</p>
+                                    <p class="text-[9px] text-blue-600 font-bold uppercase mt-0.5">{{ role.label }}</p>
                                 </div>
                             </div>
                         </div>
