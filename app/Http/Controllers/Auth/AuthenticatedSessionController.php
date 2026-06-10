@@ -42,25 +42,21 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        $isPortalLogin = $request->routeIs('portal.login');
-        if (!$isPortalLogin) {
-            return redirect()->intended(route('dashboard', absolute: false));
-        }
-        
+        // Cek secara spesifik apakah request POST dikirim dari /portal/login
         if ($request->is('portal/login')) {
             if ($user->role === 'admin') {
-                return redirect(route('portal.cms.dashboard', absolute: false));
+                return redirect()->intended(route('portal.cms.dashboard', absolute: false));
             } elseif ($user->role === 'manager_pusat' || $user->role === 'manager') {
-                return redirect(route('portal.exec.dashboard', absolute: false));
+                return redirect()->intended(route('portal.exec.dashboard', absolute: false));
             } else {
                 Auth::logout();
                 return redirect()->back()->withErrors(['email' => 'Akun Anda tidak memiliki akses ke Portal Terintegrasi. Silakan masuk melalui portal unit masing-masing.']);
             }
         }
 
-        // Login dari unit Simpan Pinjam
+        // Login default dari unit Simpan Pinjam
         if ($user->role === 'admin' || $user->role === 'admin_unit' || $user->role === 'manager' || $user->role === 'manager_pusat') {
-            return redirect(route('dashboard', absolute: false));
+            return redirect()->intended(route('dashboard', absolute: false));
         }
 
         return redirect('/');
