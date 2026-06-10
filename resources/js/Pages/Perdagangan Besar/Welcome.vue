@@ -213,7 +213,7 @@ onMounted(() => {
                 <div class="scroll-animate scroll-scale-in relative bg-gradient-to-br from-blue-50 to-[#ffffff] p-8 border border-[#bfc9bd] rounded-2xl shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
                     <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/5 rounded-full"></div>
                     
-                    <img src="/logo.png" alt="Logo Perdagangan" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
+                    <img :src="settings.custom_logo || '/logo.png'" alt="Logo Unit" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
                     <h4 class="font-extrabold text-slate-800 text-base uppercase tracking-wider">Perdagangan Besar</h4>
                     <p class="text-[10px] font-bold text-blue-700 tracking-widest uppercase">BUMDES Dammar Wulan</p>
                     <div class="w-full border-t border-dashed border-[#bfc9bd] my-4"></div>
