@@ -55,7 +55,7 @@ onMounted(() => {
     document.querySelectorAll('.portal-animate').forEach((el) => observer.observe(el));
 
     // Typewriter effect logic
-    const fullText = props.settings.hero_subtitle || 'Lembaga ekonomi desa yang berdedikasi mengelola berbagai unit bisnis dan layanan masyarakat mulai dari keuangan mikro, perdagangan sembako, pengelolaan air bersih, hingga pengembangan pariwisata.';
+    const fullText = props.settings.hero_subtitle || 'Lembaga penggerak ekonomi desa yang berdedikasi mengelola layanan keuangan mikro, penyediaan jaringan internet, program ketahanan pangan, hingga pusat perdagangan terpadu.';
     let isTyping = true;
     let textIndex = 0;
 
