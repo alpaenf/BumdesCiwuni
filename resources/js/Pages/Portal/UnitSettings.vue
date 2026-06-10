@@ -1,6 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import axios from 'axios';
 
@@ -44,6 +43,11 @@ const form = useForm({
 const isSuccessMessageVisible = ref(false);
 const uploadingIndices = ref({});
 const isUploadingOrgChart = ref(false);
+const isSidebarOpen = ref(false);
+
+const logout = () => {
+    router.post(route('logout'));
+};
 
 const addFaq = () => {
     form.faq_items.push({ question: '', answer: '' });
@@ -174,10 +178,82 @@ const deleteGaleri = (id) => {
 <template>
     <Head title="Pengaturan Landing Page" />
 
-    <AuthenticatedLayout>
-        <template #header>Pengaturan Landing Page</template>
+    <div class="h-screen flex overflow-hidden bg-[#f1f5f9] font-sans">
+        <!-- Mobile Sidebar Overlay -->
+        <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-slate-900/50 z-40 md:hidden backdrop-blur-sm"></div>
 
-        <div class="max-w-4xl space-y-6">
+        <!-- Sidebar -->
+        <aside :class="['fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-300 shrink-0 flex flex-col justify-between p-6 transition-transform duration-300', isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
+            <div class="space-y-8">
+                <!-- Branding -->
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <img :src="settings.custom_logo || '/logo.png'" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" />
+                        <div>
+                            <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Unit</h2>
+                            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">{{ unit.nama_unit }}</p>
+                        </div>
+                    </div>
+                    <button @click="isSidebarOpen = false" class="md:hidden text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Nav -->
+                <nav class="space-y-1">
+                    <Link :href="route('unit.dashboard', { slug: unit.slug })" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">dashboard</span>
+                        Dashboard
+                    </Link>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600/10 text-blue-600 font-bold text-xs rounded-xl border border-blue-600/20">
+                        <span class="material-symbols-outlined text-lg">web</span>
+                        Pengaturan Landing Page
+                    </a>
+                </nav>
+            </div>
+
+            <!-- User Info & Logout -->
+            <div class="border-t border-slate-300 pt-5 space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                        {{ $page.props.auth.user.nama.charAt(0) }}
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-bold text-slate-900 truncate">{{ $page.props.auth.user.nama }}</p>
+                        <p class="text-[9px] text-slate-500 truncate">{{ $page.props.auth.user.email }}</p>
+                    </div>
+                </div>
+                <button @click="logout" class="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-50 border border-slate-200 hover:bg-red-950/20 hover:border-red-900/30 text-slate-500 hover:text-red-400 text-xs font-bold rounded-xl transition">
+                    Keluar Aplikasi
+                    <span class="material-symbols-outlined text-sm">logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+            <!-- Top Nav -->
+            <header class="sticky top-0 z-30 h-16 border-b border-slate-300 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <button @click="isSidebarOpen = true" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-300 text-slate-600 shadow-sm">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div>
+                        <h1 class="text-sm font-bold text-slate-900 leading-tight">Pengaturan Landing Page</h1>
+                        <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-widest hidden sm:block">Manajemen Konten Publik</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <a :href="route('unit.welcome', { slug: unit.slug })" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-lg border border-slate-300 transition">
+                        <span class="material-symbols-outlined text-[14px]">public</span>
+                        Lihat Website
+                    </a>
+                </div>
+            </header>
+
+            <!-- Content Container -->
+            <div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto w-full">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-xl font-bold text-slate-800">Konten Landing Page {{ unit.nama_unit }}</h2>
@@ -511,8 +587,9 @@ const deleteGaleri = (id) => {
                     </button>
                 </div>
             </form>
-        </div>
-    </AuthenticatedLayout>
+            </div>
+        </main>
+    </div>
 </template>
 
 <style scoped>
