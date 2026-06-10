@@ -10,8 +10,11 @@ const props = defineProps({
     stats: { type: Object, default: () => ({}) },
 });
 
+const fullText = "Portal Terpadu untuk Transparansi dan Kemajuan Ekonomi Desa Dammar Wulan.";
+const displayText = ref("");
+const isScrolled = ref(false);
+
 const isMobileMenuOpen = ref(false);
-const displayText = ref('');
 
 const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -59,6 +62,10 @@ onMounted(() => {
     let isTyping = true;
     let textIndex = 0;
 
+    window.addEventListener('scroll', () => {
+        isScrolled.value = window.scrollY > 50;
+    });
+
     const startTypewriter = () => {
         if (isTyping) {
             if (textIndex < fullText.length) {
@@ -91,35 +98,38 @@ onMounted(() => {
     <div class="min-h-screen bg-white text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden w-full max-w-[100vw]">
         <!-- Header / Navbar -->
         <header :class="[
-            'nav-animate fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] transition-all duration-300',
-            'rounded-full py-2 px-6'
+            'nav-animate fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-300 rounded-full py-2 px-6',
+            isScrolled 
+                ? 'bg-white/95 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg' 
+                : 'bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)]'
         ]">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <img src="/logo2.png" alt="Logo" class="h-9 w-9 object-contain" />
                     <div>
-                        <h1 class="text-xs font-extrabold text-blue-800 leading-tight">{{ (settings.bumdes_name || 'BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}</h1>
-                        <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">Portal Terintegrasi</p>
+                        <h1 :class="['text-xs font-extrabold leading-tight transition-colors', isScrolled ? 'text-blue-800' : 'text-white']">{{ (settings.bumdes_name || 'BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}</h1>
+                        <p :class="['text-[9px] tracking-wider font-semibold uppercase leading-none transition-colors', isScrolled ? 'text-[#5c5f61]' : 'text-slate-300']">Portal Terintegrasi</p>
                     </div>
                 </div>
 
                 <nav class="hidden md:flex items-center gap-5">
-                    <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Tentang</a>
-                    <a href="#unit-usaha" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Unit Usaha</a>
-                    <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Struktur</a>
-                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Berita</a>
-                    <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Kontak</a>
-                    <div class="border-l border-[#bfc9bd] pl-4 flex items-center gap-2">
+                    <a href="#tentang" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Tentang</a>
+                    <a href="#unit-usaha" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Unit Usaha</a>
+                    <a href="#struktur" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Struktur</a>
+                    <a href="#berita" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Berita</a>
+                    <a href="#kontak" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Kontak</a>
+                    
+                    <div :class="['border-l pl-4 flex items-center gap-2 transition-colors', isScrolled ? 'border-[#bfc9bd]' : 'border-white/30']">
                         <Link v-if="$page.props.auth?.user" :href="route('portal.cms.dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-lg hover:bg-blue-700 transition shadow-sm">
                             Dashboard CMS
                         </Link>
-                        <Link v-else :href="route('portal.login')" class="inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-semibold text-xs rounded-lg hover:bg-blue-50 transition">
+                        <Link v-else :href="route('portal.login')" :class="['inline-flex items-center justify-center px-4 py-2 font-semibold text-xs rounded-lg transition-colors border', isScrolled ? 'border-blue-600 text-blue-700 hover:bg-blue-50' : 'border-white/50 text-white hover:bg-white/20']">
                             Masuk Portal
                         </Link>
                     </div>
                 </nav>
 
-                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center text-[#404940] hover:text-blue-700 transition">
+                <button @click="isMobileMenuOpen = !isMobileMenuOpen" :class="['md:hidden w-8 h-8 flex items-center justify-center transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-white hover:text-slate-200']">
                     <span class="material-symbols-outlined text-[22px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
                 </button>
             </div>

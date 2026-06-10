@@ -21,6 +21,7 @@ defineProps({
 
 const activeFaqIndex = ref(null);
 const isMobileMenuOpen = ref(false);
+const isScrolled = ref(false);
 const lightboxFoto = ref(null);
 const lightboxKeterangan = ref(null);
 
@@ -47,6 +48,10 @@ const toggleFaq = (index) => {
 };
 
 onMounted(() => {
+    window.addEventListener('scroll', () => {
+        isScrolled.value = window.scrollY > 50;
+    });
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -69,32 +74,34 @@ onMounted(() => {
     <div class="min-h-screen bg-[#ffffff] text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white">
         <!-- Header / Navbar -->
         <header :class="[
-            'nav-animate fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] transition-all duration-300',
-            'rounded-full py-2 px-6'
+            'nav-animate fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-300 rounded-full py-2 px-6',
+            isScrolled 
+                ? 'bg-white/95 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg' 
+                : 'bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)]'
         ]">
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center gap-2">
                     <img :src="settings?.custom_logo || '/logowifi.png'" alt="Logo" class="w-9 h-9 object-contain" />
                     <div>
-                        <h1 class="text-xs font-extrabold text-blue-800 leading-tight">Unit Wifi</h1>
-                        <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">BUMDES Dammar Wulan</p>
+                        <h1 :class="['text-xs font-extrabold leading-tight transition-colors', isScrolled ? 'text-blue-800' : 'text-white']">Unit Wifi</h1>
+                        <p :class="['text-[9px] tracking-wider font-semibold uppercase leading-none transition-colors', isScrolled ? 'text-[#5c5f61]' : 'text-slate-300']">BUMDES Dammar Wulan</p>
                     </div>
                 </div>
 
                 <!-- Navigation Desktop -->
                 <nav class="hidden md:flex items-center gap-5">
-                    <a href="#tentang" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Tentang</a>
-                    <a href="#layanan" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Layanan</a>
-                    <a href="#struktur" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Struktur</a>
-                    <a href="#galeri" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Galeri</a>
-                    <a href="#berita" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Berita</a>
-                    <a href="#faq" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">FAQ</a>
-                    <a href="#kontak" class="text-xs font-bold text-[#404940] hover:text-blue-700 transition">Kontak</a>
+                    <a href="#tentang" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Tentang</a>
+                    <a href="#layanan" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Layanan</a>
+                    <a href="#struktur" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Struktur</a>
+                    <a href="#galeri" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Galeri</a>
+                    <a href="#berita" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Berita</a>
+                    <a href="#faq" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">FAQ</a>
+                    <a href="#kontak" :class="['text-xs font-bold transition-colors', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-slate-200 hover:text-white']">Kontak</a>
                     
-                    <div class="border-l border-[#bfc9bd] pl-4 flex items-center gap-2">
+                    <div :class="['border-l pl-4 flex items-center gap-2 transition-colors', isScrolled ? 'border-[#bfc9bd]' : 'border-white/30']">
                         <!-- Back to Main Portal -->
-                        <Link :href="route('portal.home')" class="text-xs font-bold text-slate-500 hover:text-slate-800 transition mr-2 flex items-center gap-0.5">
+                        <Link :href="route('portal.home')" :class="['text-xs font-bold transition-colors mr-2 flex items-center gap-0.5', isScrolled ? 'text-slate-500 hover:text-slate-800' : 'text-slate-300 hover:text-white']">
                             <span class="material-symbols-outlined text-sm">home</span>
                             Portal BUMDes
                         </Link>
@@ -103,7 +110,7 @@ onMounted(() => {
                             Dashboard
                         </Link>
                         <template v-else>
-                            <Link :href="route('unit.login', { slug: 'wifi' })" class="inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-semibold text-xs rounded-lg hover:bg-blue-50 transition">
+                            <Link :href="route('unit.login', { slug: 'wifi' })" :class="['inline-flex items-center justify-center px-4 py-2 font-semibold text-xs rounded-lg transition-colors border', isScrolled ? 'border-blue-600 text-blue-700 hover:bg-blue-50' : 'border-white/50 text-white hover:bg-white/20']">
                                 Masuk
                             </Link>
                         </template>
@@ -111,7 +118,7 @@ onMounted(() => {
                 </nav>
 
                 <!-- Hamburger Button (Mobile) -->
-                <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden w-8 h-8 flex items-center justify-center text-[#404940] hover:text-blue-700 transition focus:outline-none">
+                <button @click="isMobileMenuOpen = !isMobileMenuOpen" :class="['md:hidden w-8 h-8 flex items-center justify-center transition-colors focus:outline-none', isScrolled ? 'text-[#404940] hover:text-blue-700' : 'text-white hover:text-slate-200']">
                     <span class="material-symbols-outlined text-[22px]">
                         {{ isMobileMenuOpen ? 'close' : 'menu' }}
                     </span>
