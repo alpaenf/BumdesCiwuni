@@ -91,7 +91,7 @@ onMounted(() => {
     <div class="min-h-screen bg-white text-[#181d18] font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden w-full max-w-[100vw]">
         <!-- Header / Navbar -->
         <header :class="[
-            'fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/90 backdrop-blur-md border border-[#bfc9bd]/70 shadow-lg transition-all duration-300',
+            'nav-animate fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] transition-all duration-300',
             'rounded-full py-2 px-6'
         ]">
             <div class="flex items-center justify-between">
@@ -625,5 +625,19 @@ onMounted(() => {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+@keyframes navSlideDown {
+    from {
+        transform: translate(-50%, -150%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+.nav-animate {
+    animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 </style>
