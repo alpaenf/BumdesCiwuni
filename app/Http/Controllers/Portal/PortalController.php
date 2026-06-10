@@ -23,6 +23,14 @@ class PortalController extends Controller
             'hero_title', 'hero_subtitle', 'hero_cta_text', 'hero_cta_link',
             'about_title', 'about_description', 'about_history',
             'visi', 'misi',
+            'org_bumdes_pembina_name', 'org_bumdes_pembina_image',
+            'org_bumdes_direktur_name', 'org_bumdes_direktur_image',
+            'org_bumdes_sekretaris_name', 'org_bumdes_sekretaris_image',
+            'org_bumdes_bendahara_name', 'org_bumdes_bendahara_image',
+            'org_bumdes_unit_sp_name', 'org_bumdes_unit_sp_image',
+            'org_bumdes_unit_wifi_name', 'org_bumdes_unit_wifi_image',
+            'org_bumdes_unit_pangan_name', 'org_bumdes_unit_pangan_image',
+            'org_bumdes_unit_pasar_name', 'org_bumdes_unit_pasar_image',
             'contact_address', 'contact_phone', 'contact_email', 'google_maps_embed',
             'footer_text', 'social_facebook', 'social_instagram', 'social_youtube',
         ];
@@ -44,27 +52,8 @@ class PortalController extends Controller
             'totalTransaksi' => TransaksiTabungan::count(),
         ];
 
-        $orgKeys = [
-            'org_pembina_name', 'org_pembina_image',
-            'org_direktur_name', 'org_direktur_image',
-            'org_sekretaris_name', 'org_sekretaris_image',
-            'org_bendahara_name', 'org_bendahara_image',
-            'org_pengawas_name', 'org_pengawas_image',
-            'org_unit_sp_name', 'org_unit_sp_image',
-            'org_unit_kpspams_name', 'org_unit_kpspams_image',
-            'org_unit_toko_name', 'org_unit_toko_image',
-            'org_unit_wisata_name', 'org_unit_wisata_image',
-            'org_unit_tps3r_name', 'org_unit_tps3r_image',
-        ];
-
-        $orgSettings = [];
-        foreach ($orgKeys as $key) {
-            $orgSettings[$key] = \App\Models\LandingPageSetting::getByKey($key);
-        }
-
         return Inertia::render('Portal/Welcome', [
             'settings' => $settings,
-            'orgSettings' => $orgSettings,
             'units' => $units,
             'posts' => $posts,
             'stats' => $stats,
