@@ -177,15 +177,27 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- Struktur Organisasi -->
-            <div v-if="settings.struktur_organisasi" class="max-w-5xl mx-auto px-6 mt-16 portal-animate">
+            <!-- Struktur Organisasi / Pengurus -->
+            <div class="max-w-5xl mx-auto px-6 mt-16 portal-animate">
                 <div class="border-t border-slate-200 pt-12 text-center space-y-8">
                     <div class="space-y-2">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Manajemen Kami</span>
-                        <h4 class="text-xl font-bold text-slate-800">Struktur Organisasi Kepengurusan</h4>
+                        <h4 class="text-xl font-bold text-slate-800">Struktur Pengurus BUMDes</h4>
                     </div>
-                    <div class="bg-slate-50 p-2 md:p-4 border border-slate-200 rounded-3xl inline-block max-w-full shadow-inner">
-                        <img :src="settings.struktur_organisasi" alt="Struktur Organisasi BUMDes" class="max-w-full h-auto object-contain rounded-2xl drop-shadow-sm" />
+                    
+                    <div class="flex flex-wrap justify-center gap-6 md:gap-10">
+                        <div v-for="role in [
+                            { label: 'Direktur BUMDes', name: settings.org_bumdes_direktur_name || 'Direktur', image: settings.org_bumdes_direktur_image },
+                            { label: 'Sekretaris', name: settings.org_bumdes_sekretaris_name || 'Sekretaris', image: settings.org_bumdes_sekretaris_image },
+                            { label: 'Bendahara', name: settings.org_bumdes_bendahara_name || 'Bendahara', image: settings.org_bumdes_bendahara_image },
+                        ]" :key="role.label" class="flex flex-col items-center">
+                            <div class="w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-slate-100 shadow-sm overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-600 font-extrabold text-2xl relative mb-3">
+                                <img v-if="role.image" :src="role.image" class="w-full h-full object-cover" />
+                                <span v-else>{{ role.name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() }}</span>
+                            </div>
+                            <h5 class="text-sm font-bold text-slate-800">{{ role.name }}</h5>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700 mt-0.5 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">{{ role.label }}</span>
+                        </div>
                     </div>
                 </div>
             </div>

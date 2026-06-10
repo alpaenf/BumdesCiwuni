@@ -2,6 +2,7 @@
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     settings: { type: Object, required: true },
@@ -13,7 +14,6 @@ const form = useForm({
 });
 const saving = ref(false);
 const previewLogo = ref(props.settings.bumdes_logo || null);
-const previewStruktur = ref(props.settings.struktur_organisasi || null);
 
 const compressImage = (file, callback) => {
     if (!file.type.startsWith('image/')) return callback(file);
@@ -68,15 +68,38 @@ const handleLogoUpload = (e) => {
     });
 };
 
-const handleStrukturUpload = (e) => {
-    const file = e.target.files[0];
+const uploadingMembers = ref({});
+
+const triggerMemberFileInput = (fieldKey) => {
+    const el = document.getElementById(`input-image-${fieldKey}`);
+    if (el) el.click();
+};
+
+const handleMemberImageUpload = async (event, fieldKey) => {
+    const file = event.target.files[0];
     if (!file) return;
-    
-    previewStruktur.value = URL.createObjectURL(file);
-    
-    compressImage(file, (compressedFile) => {
-        form.struktur_organisasi = compressedFile;
-    });
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    uploadingMembers.value[fieldKey] = true;
+    try {
+        const response = await axios.post(route('portal.cms.upload-image'), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        form[fieldKey] = response.data.url;
+    } catch (error) {
+        console.error('Member image upload failed:', error);
+        alert('Gagal mengunggah foto. Pastikan file berupa gambar (JPG, PNG, WebP) dan berukuran kurang dari 5MB.');
+    } finally {
+        uploadingMembers.value[fieldKey] = false;
+    }
+};
+
+const removeMemberImage = (fieldKey) => {
+    form[fieldKey] = '';
 };
 
 const submit = () => {
@@ -165,24 +188,54 @@ const submit = () => {
                 </div>
 
                 <!-- Struktur Organisasi -->
-                <div class="bg-white border border-slate-200 rounded-xl p-6 space-y-4 shadow-sm">
-                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Struktur Organisasi</h3>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-2">Bagan / Struktur Pengurus (Auto Compress)</label>
-                        <div class="flex flex-col md:flex-row items-start gap-4">
-                            <div class="w-full md:w-64 border border-slate-200 rounded-xl overflow-hidden bg-slate-50 flex items-center justify-center shrink-0 min-h-32">
-                                <img v-if="previewStruktur" :src="previewStruktur" class="w-full h-auto object-contain" />
-                                <span v-else class="material-symbols-outlined text-slate-400 text-3xl">account_tree</span>
-                            </div>
-                            <div class="flex-1 w-full">
-                                <input 
-                                    type="file" 
+                <div class="bg-white border border-slate-200 rounded-xl p-6 space-y-6 shadow-sm">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <span class="material-symbols-outlined text-[18px] text-blue-600">group</span>
+                        Struktur Organisasi / Pengurus BUMDes
+                    </h3>
+                    <p class="text-[11px] text-slate-500">Ubah nama dan unggah foto untuk Direktur, Sekretaris, dan Bendahara BUMDes. Struktur ini akan ditampilkan di halaman depan portal.</p>
+
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div v-for="role in [
+                            { label: 'Direktur BUMDes', nameKey: 'org_bumdes_direktur_name', imgKey: 'org_bumdes_direktur_image' },
+                            { label: 'Sekretaris', nameKey: 'org_bumdes_sekretaris_name', imgKey: 'org_bumdes_sekretaris_image' },
+                            { label: 'Bendahara', nameKey: 'org_bumdes_bendahara_name', imgKey: 'org_bumdes_bendahara_image' },
+                        ]" :key="role.nameKey" class="p-4 bg-white border border-slate-200 rounded-xl flex gap-4 items-center">
+                            
+                            <!-- Foto Upload Preview -->
+                            <div class="w-20 h-20 border border-slate-200 rounded-full overflow-hidden bg-slate-50 flex-shrink-0 flex items-center justify-center relative group cursor-pointer" @click="triggerMemberFileInput(role.imgKey)">
+                                <input
+                                    :id="`input-image-${role.imgKey}`"
+                                    type="file"
                                     accept="image/*"
-                                    @change="handleStrukturUpload"
-                                    class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer"
+                                    class="hidden"
+                                    @change="handleMemberImageUpload($event, role.imgKey)"
                                 />
-                                <p class="text-[10px] text-slate-500 mt-1.5">Unggah gambar struktur organisasi. Gambar akan dikompres otomatis ke resolusi maksimal 1200px (format JPG 80%).</p>
+                                
+                                <div v-if="uploadingMembers[role.imgKey]" class="flex items-center justify-center text-slate-500">
+                                    <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                                </div>
+                                <template v-else>
+                                    <img v-if="form[role.imgKey]" :src="form[role.imgKey]" class="w-full h-full object-cover" />
+                                    <div v-else class="text-center flex flex-col items-center justify-center text-slate-400">
+                                        <span class="material-symbols-outlined text-lg">add_a_photo</span>
+                                        <span class="text-[8px] uppercase font-bold tracking-wider block mt-0.5">Foto</span>
+                                    </div>
+                                </template>
                             </div>
+
+                            <!-- Name input & Delete Image -->
+                            <div class="flex-grow space-y-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">{{ role.label }}</label>
+                                    <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-blue-500 focus:border-blue-500 bg-white py-1 px-2.5" placeholder="Nama Lengkap" />
+                                </div>
+                                <div v-if="form[role.imgKey]" class="flex items-center justify-between">
+                                    <span class="text-[9px] text-blue-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
+                                    <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[9px] font-bold text-rose-600 hover:underline">Hapus Foto</button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
