@@ -98,7 +98,7 @@ onMounted(() => {
                 <div class="flex items-center gap-2">
                     <img src="/logo2.png" alt="Logo" class="h-9 w-9 object-contain" />
                     <div>
-                        <h1 class="text-xs font-extrabold text-blue-800 leading-tight">{{ settings.bumdes_name || 'BUMDes Dammar Wulan' }}</h1>
+                        <h1 class="text-xs font-extrabold text-blue-800 leading-tight">{{ (settings.bumdes_name || 'BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}</h1>
                         <p class="text-[9px] text-[#5c5f61] tracking-wider font-semibold uppercase leading-none">Portal Terintegrasi</p>
                     </div>
                 </div>
@@ -165,7 +165,7 @@ onMounted(() => {
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-4 md:space-y-6 -mt-4 md:-mt-8">
                 <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight md:leading-tight tracking-tight drop-shadow-lg">
-                    {{ settings.hero_title || 'Portal Resmi BUMDES Dammar Wulan' }}
+                    {{ (settings.hero_title || 'Portal Resmi BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}
                 </h2>
 
                 <div class="h-20 md:h-24 flex items-start justify-center">
@@ -192,10 +192,10 @@ onMounted(() => {
                 <div class="space-y-5 portal-animate">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Tentang Kami</span>
                     <h3 class="text-2xl font-bold text-slate-800 leading-tight">
-                        {{ settings.about_title || 'Mengenal BUMDES Dammar Wulan' }}
+                        {{ (settings.about_title || 'Mengenal BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}
                     </h3>
                     <p class="text-sm text-[#404940] leading-relaxed">
-                        {{ settings.about_description || '' }}
+                        {{ (settings.about_description || '').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}
                     </p>
                     <div v-if="settings.about_history" class="pt-3 border-t border-slate-100 space-y-2">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Sejarah Singkat</h4>
@@ -594,7 +594,7 @@ onMounted(() => {
                             <p class="text-[10px] text-blue-200">Portal Terintegrasi</p>
                         </div>
                     </div>
-                    <p class="text-xs text-blue-200">{{ settings.footer_text || '© 2024 BUMDES Dammar Wulan. Hak Cipta Dilindungi.' }}</p>
+                    <p class="text-xs text-blue-200">{{ (settings.footer_text || '© 2024 BUMDES Dammar Wulan. Hak Cipta Dilindungi.').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}</p>
                 </div>
             </div>
         </footer>
