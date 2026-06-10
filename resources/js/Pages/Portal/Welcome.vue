@@ -176,6 +176,19 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
+
+            <!-- Struktur Organisasi -->
+            <div v-if="settings.struktur_organisasi" class="max-w-5xl mx-auto px-6 mt-16 portal-animate">
+                <div class="border-t border-slate-200 pt-12 text-center space-y-8">
+                    <div class="space-y-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Manajemen Kami</span>
+                        <h4 class="text-xl font-bold text-slate-800">Struktur Organisasi Kepengurusan</h4>
+                    </div>
+                    <div class="bg-slate-50 p-2 md:p-4 border border-slate-200 rounded-3xl inline-block max-w-full shadow-inner">
+                        <img :src="settings.struktur_organisasi" alt="Struktur Organisasi BUMDes" class="max-w-full h-auto object-contain rounded-2xl drop-shadow-sm" />
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Profil Unit Bisnis Section (Alternating detail) -->

@@ -13,6 +13,7 @@ const form = useForm({
 });
 const saving = ref(false);
 const previewLogo = ref(props.settings.bumdes_logo || null);
+const previewStruktur = ref(props.settings.struktur_organisasi || null);
 
 const compressImage = (file, callback) => {
     if (!file.type.startsWith('image/')) return callback(file);
@@ -64,6 +65,17 @@ const handleLogoUpload = (e) => {
     
     compressImage(file, (compressedFile) => {
         form.bumdes_logo = compressedFile;
+    });
+};
+
+const handleStrukturUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    previewStruktur.value = URL.createObjectURL(file);
+    
+    compressImage(file, (compressedFile) => {
+        form.struktur_organisasi = compressedFile;
     });
 };
 
@@ -149,6 +161,29 @@ const submit = () => {
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Misi</label>
                         <textarea v-model="form.misi" rows="4" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="1. Misi pertama&#10;2. Misi kedua"></textarea>
+                    </div>
+                </div>
+
+                <!-- Struktur Organisasi -->
+                <div class="bg-white border border-slate-200 rounded-xl p-6 space-y-4 shadow-sm">
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Struktur Organisasi</h3>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Bagan / Struktur Pengurus (Auto Compress)</label>
+                        <div class="flex flex-col md:flex-row items-start gap-4">
+                            <div class="w-full md:w-64 border border-slate-200 rounded-xl overflow-hidden bg-slate-50 flex items-center justify-center shrink-0 min-h-32">
+                                <img v-if="previewStruktur" :src="previewStruktur" class="w-full h-auto object-contain" />
+                                <span v-else class="material-symbols-outlined text-slate-400 text-3xl">account_tree</span>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <input 
+                                    type="file" 
+                                    accept="image/*"
+                                    @change="handleStrukturUpload"
+                                    class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer"
+                                />
+                                <p class="text-[10px] text-slate-500 mt-1.5">Unggah gambar struktur organisasi. Gambar akan dikompres otomatis ke resolusi maksimal 1200px (format JPG 80%).</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
