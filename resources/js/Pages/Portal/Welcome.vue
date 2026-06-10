@@ -427,7 +427,7 @@ onMounted(() => {
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Akses cepat ke portal aplikasi internal dan website resmi dari berbagai divisi bisnis kami.</p>
                 </div>
 
-                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     <div v-for="(unit, idx) in units" :key="unit.id || idx"
                          class="portal-animate"
                          :style="{ transitionDelay: `${idx * 80}ms` }">
