@@ -170,7 +170,7 @@ onMounted(() => {
 
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6">
                 <h2 class="text-3xl md:text-5xl font-extrabold text-blue-800 leading-tight md:leading-none tracking-tight">
-                    {{ settings.hero_title || 'Layanan Simpan Pinjam BUMDES Dammar Wulan' }}
+                    {{ (settings.hero_title || 'Layanan Simpan Pinjam BUMDES Dammar Wulan').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}
                 </h2>
                 
                 <p class="text-sm md:text-base text-[#404940] max-w-2xl mx-auto leading-relaxed">
@@ -199,7 +199,7 @@ onMounted(() => {
                         {{ settings.about_title || 'Tentang Unit Simpan Pinjam' }}
                     </h3>
                     <p class="text-xs md:text-sm text-[#404940] leading-relaxed">
-                        {{ settings.about_description || 'Unit Simpan Pinjam merupakan pilar penting dalam ekosistem BUMDES Dammar Wulan, yang fokus pada penyediaan akses keuangan terjangkau bagi seluruh warga Desa Ciwuni. Kami menyediakan berbagai macam jenis tabungan serta pembiayaan modal usaha bagi pelaku usaha mikro.' }}
+                        {{ (settings.about_description || 'Unit Simpan Pinjam merupakan pilar penting dalam ekosistem BUMDES Dammar Wulan, yang fokus pada penyediaan akses keuangan terjangkau bagi seluruh warga Desa Ciwuni. Kami menyediakan berbagai macam jenis tabungan serta pembiayaan modal usaha bagi pelaku usaha mikro.').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}
                     </p>
                     <div v-if="settings.about_history" class="pt-3 border-t border-slate-100 space-y-2">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Sejarah & Tujuan</h4>
@@ -550,7 +550,7 @@ onMounted(() => {
                     <div class="space-y-3 pt-2 text-xs">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-blue-500 text-[18px]">location_on</span>
-                            <span class="text-slate-300">{{ settings.contact_address || 'Kantor BUMDES Dammar Wulan, Desa Ciwuni' }}</span>
+                            <span class="text-slate-300">{{ (settings.contact_address || 'Kantor BUMDES Dammar Wulan, Desa Ciwuni').replace(/BUMDesa|BUMDes/ig, 'BUMDES') }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-blue-500 text-[18px]">call</span>
