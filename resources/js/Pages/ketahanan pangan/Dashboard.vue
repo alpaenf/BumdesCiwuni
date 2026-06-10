@@ -104,6 +104,10 @@ const submitUpdate = () => {
                         <span class="material-symbols-outlined text-lg">receipt</span>
                         Pencatatan Panen
                     </a>
+                    <Link :href="route('admin.landing-page.edit')" class="flex items-center gap-3 px-4 py-3 text-blue-200 hover:text-white font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">web</span>
+                        Pengaturan Landing Page
+                    </Link>
                 </nav>
             </div>
 

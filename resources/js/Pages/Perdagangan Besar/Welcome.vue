@@ -11,7 +11,7 @@ defineProps({
     },
     settings: {
         type: Object,
-        required: true,
+        default: () => ({}),
     },
     galeri: {
         type: Array,
