@@ -42,7 +42,7 @@ class UnitLandingController extends Controller
     /**
      * Show the login form for a unit.
      */
-    public function showLogin(string $slug): Response
+    public function showLogin(string $slug)
     {
         // If already logged in, redirect to dashboard if the user belongs to this unit
         if (Auth::check()) {
