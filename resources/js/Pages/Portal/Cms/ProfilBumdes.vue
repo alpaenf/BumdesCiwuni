@@ -75,27 +75,30 @@ const triggerMemberFileInput = (fieldKey) => {
     if (el) el.click();
 };
 
-const handleMemberImageUpload = async (event, fieldKey) => {
+const handleMemberImageUpload = (event, fieldKey) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('image', file);
-
     uploadingMembers.value[fieldKey] = true;
-    try {
-        const response = await axios.post(route('portal.cms.upload-image'), formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        form[fieldKey] = response.data.url;
-    } catch (error) {
-        console.error('Member image upload failed:', error);
-        alert('Gagal mengunggah foto. Pastikan file berupa gambar (JPG, PNG, WebP) dan berukuran kurang dari 5MB.');
-    } finally {
-        uploadingMembers.value[fieldKey] = false;
-    }
+
+    compressImage(file, async (compressedFile) => {
+        const formData = new FormData();
+        formData.append('image', compressedFile);
+
+        try {
+            const response = await axios.post(route('portal.cms.upload-image'), formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            form[fieldKey] = response.data.url;
+        } catch (error) {
+            console.error('Member image upload failed:', error);
+            alert('Gagal mengunggah foto. Pastikan file berupa gambar (JPG, PNG, WebP) dan berukuran kurang dari 5MB.');
+        } finally {
+            uploadingMembers.value[fieldKey] = false;
+        }
+    });
 };
 
 const removeMemberImage = (fieldKey) => {
