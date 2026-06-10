@@ -11,6 +11,7 @@ const props = defineProps({
 });
 
 const isMobileMenuOpen = ref(false);
+const displayText = ref('');
 
 const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -52,6 +53,35 @@ onMounted(() => {
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
     document.querySelectorAll('.portal-animate').forEach((el) => observer.observe(el));
+
+    // Typewriter effect logic
+    const fullText = props.settings.hero_subtitle || 'Lembaga ekonomi desa yang berdedikasi mengelola berbagai unit bisnis dan layanan masyarakat mulai dari keuangan mikro, perdagangan sembako, pengelolaan air bersih, hingga pengembangan pariwisata.';
+    let isTyping = true;
+    let textIndex = 0;
+
+    const startTypewriter = () => {
+        if (isTyping) {
+            if (textIndex < fullText.length) {
+                displayText.value += fullText.charAt(textIndex);
+                textIndex++;
+                setTimeout(startTypewriter, 60); // Ngetik pelan (60ms per huruf)
+            } else {
+                isTyping = false;
+                setTimeout(startTypewriter, 3000); // Tunggu 3 detik saat teks sudah utuh
+            }
+        } else {
+            if (textIndex > 0) {
+                displayText.value = fullText.substring(0, textIndex - 1);
+                textIndex--;
+                setTimeout(startTypewriter, 30); // Hapus sedikit lebih cepat (30ms per huruf)
+            } else {
+                isTyping = true;
+                setTimeout(startTypewriter, 1000); // Tunggu 1 detik sebelum ngetik ulang
+            }
+        }
+    };
+
+    setTimeout(startTypewriter, 1000); // Mulai efek setelah halaman dimuat 1 detik
 });
 </script>
 
@@ -138,9 +168,11 @@ onMounted(() => {
                     {{ settings.hero_title || 'Portal Resmi BUMDesa Dammar Wulan' }}
                 </h2>
 
-                <p class="text-sm md:text-lg text-slate-200 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-                    {{ settings.hero_subtitle || 'Lembaga ekonomi desa yang berdedikasi mengelola berbagai unit bisnis dan layanan masyarakat.' }}
-                </p>
+                <div class="h-20 md:h-24 flex items-start justify-center">
+                    <p class="text-sm md:text-lg text-slate-200 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                        {{ displayText }}<span class="animate-pulse inline-block w-[2px] h-[1em] bg-slate-200 ml-1 align-middle -mt-1"></span>
+                    </p>
+                </div>
 
                 <div class="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a :href="settings.hero_cta_link || '#unit-usaha'" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 transition-all">
