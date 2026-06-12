@@ -217,22 +217,57 @@
 </div>
 <!-- END: Page Layout -->
 
-<div class="no-print flex flex-col sm:flex-row justify-center gap-2" style="margin-top: 15px;">
-    <a href="{{ route('angsuran.struk.pdf', $angsuran) }}" target="_blank" style="padding: 6px 16px; background: #004c22; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; text-align: center;">
-        &#128196; Download PDF Struk
-    </a>
-    <button onclick="printBluetooth()" style="padding: 6px 16px; background: #2563eb; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 4px;">
-        <svg xmlns="http://www.w3.org/2000/svg" style="height: 16px; width: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-        Cetak Bluetooth (RawBT)
-    </button>
-    <button onclick="window.close()" style="padding: 6px 16px; background: #4b5563; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Tutup Halaman</button>
-</div>
+@php
+use Carbon\Carbon;
+$p = $angsuran->pinjaman;
+$t = $p->total_tagihan > 0 ? $p->total_tagihan : 1;
+$porsiPokok = ($p->pinjaman_pokok / $t) * $angsuran->jumlah_bayar;
+$porsiBunga = (($p->pinjaman_pokok * $p->bunga / 100) / $t) * $angsuran->jumlah_bayar;
+$porsiBiaya = ($p->biaya_tambahan / $t) * $angsuran->jumlah_bayar;
+$tgl = Carbon::parse($angsuran->tanggal)->isoFormat('D MMMM Y')
+      . ($angsuran->pasaran ? ' ('.ucfirst($angsuran->pasaran).')' : '');
 
-<script>
-    function printBluetooth() {
-        var pdfUrl = "{{ route('angsuran.struk.pdf', $angsuran) }}";
-        window.location.href = "intent:" + pdfUrl + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
-    }
-</script>
+$receiptLines = [
+    ['t'=>'center',    'text'=>'BADAN USAHA MILIK DESA (BUMDesa)'],
+    ['t'=>'center_lg', 'text'=>'DAMMAR WULAN'],
+    ['t'=>'center',    'text'=>'DESA CIWUNI'],
+    ['t'=>'center_sm', 'text'=>'Kec. Kesugihan Kab. Cilacap'],
+    ['t'=>'center_sm', 'text'=>'Jl. Pasar Jagang RT 1 RW 4 Ciwuni'],
+    ['t'=>'sep_dbl'],
+    ['t'=>'title',  'text'=>'STRUK TRANSAKSI PINJAMAN'],
+    ['t'=>'sep'],
+    ['t'=>'kv', 'label'=>'NO. REKENING', 'value'=>$p->nasabah->nomor_rekening],
+    ['t'=>'kv', 'label'=>'NAMA',         'value'=>strtoupper($p->nasabah->nama)],
+    ['t'=>'kv', 'label'=>'ALAMAT',       'value'=>$p->nasabah->alamat],
+    ['t'=>'kv', 'label'=>'NO. WA',       'value'=>$p->nasabah->no_hp],
+    ['t'=>'sep'],
+    ['t'=>'kv', 'label'=>'NO. TRANSAKSI','value'=>'#'.($angsuran->nomor_transaksi ?: 'St.'.sprintf('%04d',$angsuran->id))],
+    ['t'=>'kv', 'label'=>'TANGGAL',      'value'=>$tgl],
+    ['t'=>'sep'],
+    ['t'=>'kv', 'label'=>'Pinjaman+Bunga','value'=>'Rp.'.number_format($p->pinjaman_pokok+($p->pinjaman_pokok*$p->bunga/100),0,',','.')],
+    ...($p->biaya_tambahan > 0 ? [['t'=>'kv','label'=>'Biaya Tambahan','value'=>'Rp.'.number_format($p->biaya_tambahan,0,',','.')]] : []),
+    ['t'=>'kv', 'label'=>'Total Tagihan','value'=>'Rp.'.number_format($p->total_tagihan,0,',','.')],
+    ['t'=>'kv', 'label'=>'Setoran ke',  'value'=>$angsuran->angsuran_ke.' / '.$p->jumlah_angsuran],
+    ['t'=>'kv_bold','label'=>'Jumlah Setoran','value'=>'Rp.'.number_format($angsuran->jumlah_bayar,0,',','.')],
+    ['t'=>'kv_sm','label'=>'  - Pokok', 'value'=>'Rp.'.number_format($porsiPokok,0,',','.')],
+    ['t'=>'kv_sm','label'=>'  - Bunga', 'value'=>'Rp.'.number_format($porsiBunga,0,',','.')],
+    ...($p->biaya_tambahan > 0 ? [['t'=>'kv_sm','label'=>'  - Biaya Tmb','value'=>'Rp.'.number_format($porsiBiaya,0,',','.')]] : []),
+    ['t'=>'sep_dot'],
+    ['t'=>'kv_bold','label'=>'Sisa Pinjaman','value'=>'Rp.'.number_format($angsuran->sisa_pinjaman,0,',','.')
+        .($angsuran->sisa_pinjaman<=0?' [LUNAS]':'')],
+    ['t'=>'sep_dbl'],
+    ['t'=>'center_sm','text'=>'Terima kasih atas kepercayaan Anda.'],
+    ['t'=>'center_sm','text'=>'Simpan struk ini sebagai bukti pembayaran.'],
+];
+$pdfUrl = route('angsuran.struk.pdf', $angsuran);
+@endphp
+
+@include('exports.simpan-pinjam.partials.cetak-modal', [
+    'pdfUrl'       => $pdfUrl,
+    'receiptLines' => $receiptLines,
+])
+
 </body>
 </html>
+
+
