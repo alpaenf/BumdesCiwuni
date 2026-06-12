@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Models\Tabungan;
 use App\Models\TransaksiTabungan;
 use App\Services\TabunganService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -110,6 +111,18 @@ class TabunganController extends Controller
         $transaksi->load('tabungan.nasabah');
 
         return view('exports.simpan-pinjam.struk-tabungan', ['transaksi' => $transaksi]);
+    }
+
+    public function pdf(TransaksiTabungan $transaksi)
+    {
+        $transaksi->load('tabungan.nasabah');
+
+        $pdf = Pdf::loadView('exports.simpan-pinjam.struk-tabungan-pdf', ['transaksi' => $transaksi])
+            ->setPaper([0, 0, 226.77, 566.93]);
+
+        $filename = 'struk-tabungan-' . ($transaksi->nomor_transaksi ?? $transaksi->id) . '.pdf';
+
+        return $pdf->stream($filename);
     }
 
     public function riwayat(Nasabah $nasabah)

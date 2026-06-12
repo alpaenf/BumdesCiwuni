@@ -8,6 +8,7 @@ use App\Http\Requests\StoreAngsuranRequest;
 use App\Models\Angsuran;
 use App\Models\Pinjaman;
 use App\Services\AngsuranService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -105,5 +106,20 @@ class AngsuranController extends Controller
         $angsuran->load('pinjaman.nasabah');
 
         return view('exports.simpan-pinjam.struk-pinjaman', ['angsuran' => $angsuran]);
+    }
+
+    public function pdf(Angsuran $angsuran)
+    {
+        $angsuran->load('pinjaman.nasabah');
+
+        // Ukuran kertas thermal 80mm: lebar ~227pt, tinggi auto (panjang)
+        // [left, bottom, right, top] dalam pt — 1mm = 2.8346pt
+        // Lebar 80mm = 226.77pt, tinggi 200mm = 566.93pt (cukup untuk struk panjang)
+        $pdf = Pdf::loadView('exports.simpan-pinjam.struk-pinjaman-pdf', ['angsuran' => $angsuran])
+            ->setPaper([0, 0, 226.77, 566.93]);
+
+        $filename = 'struk-pinjaman-' . ($angsuran->nomor_transaksi ?? $angsuran->id) . '.pdf';
+
+        return $pdf->stream($filename);
     }
 }

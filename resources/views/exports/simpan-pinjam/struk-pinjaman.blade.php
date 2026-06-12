@@ -218,22 +218,21 @@
 <!-- END: Page Layout -->
 
 <div class="no-print flex flex-col sm:flex-row justify-center gap-2" style="margin-top: 15px;">
-    <button onclick="window.print()" style="padding: 6px 16px; background: #004c22; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Cetak Biasa</button>
+    <a href="{{ route('angsuran.struk.pdf', $angsuran) }}" target="_blank" style="padding: 6px 16px; background: #004c22; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; text-align: center;">
+        &#128196; Download PDF Struk
+    </a>
     <button onclick="printBluetooth()" style="padding: 6px 16px; background: #2563eb; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 4px;">
         <svg xmlns="http://www.w3.org/2000/svg" style="height: 16px; width: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-        Cetak Bluetooth
+        Cetak Bluetooth (RawBT)
     </button>
     <button onclick="window.close()" style="padding: 6px 16px; background: #4b5563; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Tutup Halaman</button>
 </div>
 
 <script>
     function printBluetooth() {
-        var url = window.location.href;
-        window.location.href = "intent:" + url + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
+        var pdfUrl = "{{ route('angsuran.struk.pdf', $angsuran) }}";
+        window.location.href = "intent:" + pdfUrl + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
     }
-    window.onload = () => {
-        // window.print();
-    };
 </script>
 </body>
 </html>
