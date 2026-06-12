@@ -163,28 +163,50 @@
             </div>
         </section>
         <!-- END: TransactionSection -->
-
-        <!-- Print Action Area -->
-        <div class="no-print mt-4 flex flex-col sm:flex-row justify-center gap-2">
-            <a href="{{ route('tabungan-sembako.struk.pdf', $transaksi) }}" target="_blank" class="px-4 py-2 bg-black hover:bg-gray-800 text-white text-[11px] font-medium rounded-sm shadow transition duration-200 text-center">
-                &#128196; Download PDF Struk
-            </a>
-            <button onclick="printBluetooth()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium rounded-sm shadow transition duration-200 flex items-center justify-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                Cetak Bluetooth (RawBT)
-            </button>
-            <button onclick="window.close()" class="px-4 py-2 bg-white hover:bg-gray-100 text-black text-[11px] font-medium rounded-sm border border-black shadow transition duration-200">
-                Tutup Halaman
-            </button>
-        </div>
     </div>
     <!-- END: ReceiptPage -->
 
-    <script>
-        function printBluetooth() {
-            var pdfUrl = "{{ route('tabungan-sembako.struk.pdf', $transaksi) }}";
-            window.location.href = "intent:" + pdfUrl + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
-        }
-    </script>
+
+
+@php
+$tglStr = \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('D MMMM Y');
+$jenis  = $isSetor ? 'SETOR' : 'AMBIL';
+
+$receiptLines = [
+    ['t'=>'center',    'text'=>'BADAN USAHA MILIK DESA (BUMDesa)'],
+    ['t'=>'center_lg', 'text'=>'DAMMAR WULAN'],
+    ['t'=>'center',    'text'=>'DESA CIWUNI'],
+    ['t'=>'center_sm', 'text'=>'Kec. Kesugihan Kab. Cilacap'],
+    ['t'=>'sep_dbl'],
+    ['t'=>'title',    'text'=>'STRUK TRANSAKSI TABUNGAN SEMBAKO'],
+    ['t'=>'center_sm','text'=>'[ '.$jenis.' ]'],
+    ['t'=>'sep'],
+    ['t'=>'kv','label'=>'NO. REKENING','value'=>$nasabah->nomor_rekening],
+    ['t'=>'kv','label'=>'NAMA',        'value'=>strtoupper($nasabah->nama)],
+    ['t'=>'kv','label'=>'ALAMAT',      'value'=>$nasabah->alamat],
+    ['t'=>'kv','label'=>'NO. WA',      'value'=>$nasabah->no_hp],
+    ['t'=>'sep'],
+    ['t'=>'kv','label'=>'NO. TRANSAKSI','value'=>'#'.$transaksi->nomor_transaksi],
+    ['t'=>'kv','label'=>'TANGGAL',      'value'=>$tglStr],
+    ...($transaksi->keterangan ? [['t'=>'kv','label'=>'KETERANGAN','value'=>$transaksi->keterangan]] : []),
+    ['t'=>'sep'],
+    ['t'=>'kv',     'label'=>'Saldo Awal',  'value'=>'Rp.'.number_format($saldoAwal,0,',','.')],
+    ['t'=>'kv',     'label'=>'Tabungan',    'value'=>'Rp.'.number_format($tabungan,0,',','.')],
+    ['t'=>'kv',     'label'=>'Pengambilan', 'value'=>'Rp.'.number_format($pengambilan,0,',','.')],
+    ['t'=>'kv',     'label'=>'Administrasi','value'=>'Rp.'.number_format($administrasi,0,',','.')],
+    ['t'=>'sep_dot'],
+    ['t'=>'kv_bold','label'=>'Saldo Akhir', 'value'=>'Rp.'.number_format($saldoAkhir,0,',','.')],
+    ['t'=>'sep_dbl'],
+    ['t'=>'center_sm','text'=>'Terima kasih atas kepercayaan Anda.'],
+    ['t'=>'center_sm','text'=>'Simpan struk ini sebagai bukti transaksi.'],
+];
+$pdfUrl = route('tabungan-sembako.struk.pdf', $transaksi);
+@endphp
+
+@include('exports.simpan-pinjam.partials.cetak-modal', [
+    'pdfUrl'       => $pdfUrl,
+    'receiptLines' => $receiptLines,
+])
+
 </body>
 </html>
