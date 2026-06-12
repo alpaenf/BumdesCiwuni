@@ -104,6 +104,11 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::get('/tabungan-sembako/struk/{transaksi}', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'struk'])->name('tabungan-sembako.struk')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
     Route::get('/angsuran/struk/{angsuran}', [AngsuranController::class, 'struk'])->name('angsuran.struk')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
 
+    // PDF Struk Thermal — Server-side PDF Generation (80mm)
+    Route::get('/tabungan/struk/{transaksi}/pdf', [TabunganController::class, 'pdf'])->name('tabungan.struk.pdf')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
+    Route::get('/tabungan-sembako/struk/{transaksi}/pdf', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'pdf'])->name('tabungan-sembako.struk.pdf')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
+    Route::get('/angsuran/struk/{angsuran}/pdf', [AngsuranController::class, 'pdf'])->name('angsuran.struk.pdf')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
+
     // Pengaturan Tabungan (admin only)
     Route::get('/pengaturan/tabungan', [PengaturanTabunganController::class, 'index'])->name('pengaturan.tabungan')->middleware('role:admin_unit');
     Route::put('/pengaturan/tabungan', [PengaturanTabunganController::class, 'update'])->name('pengaturan.tabungan.update')->middleware('role:admin_unit');
