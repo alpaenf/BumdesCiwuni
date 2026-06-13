@@ -62,7 +62,7 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <!-- Jika ada filter: tampilkan summary hasil filter -->
                 <template v-if="isFiltered">
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
@@ -78,8 +78,12 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
                         <p class="mt-1 text-base font-bold text-[color:var(--color-on-surface)]">{{ formatCurrency(summaryFiltered?.total_tagihan) }}</p>
                     </div>
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
-                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Sisa</p>
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Sisa Tagihan</p>
                         <p class="mt-1 text-base font-bold text-red-600">{{ formatCurrency(summaryFiltered?.total_sisa) }}</p>
+                    </div>
+                    <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Sisa Pokok</p>
+                        <p class="mt-1 text-base font-bold text-blue-600">{{ formatCurrency(summaryFiltered?.total_sisa_pokok) }}</p>
                     </div>
                 </template>
 
@@ -99,6 +103,10 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
                 <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4">
                     <p class="text-xs text-[color:var(--color-secondary)]">Semua Bulan — Total Sisa</p>
                     <p class="mt-1 text-base font-bold text-red-500">{{ formatCurrency(summaryAll?.total_sisa) }}</p>
+                </div>
+                <div class="rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4">
+                    <p class="text-xs text-[color:var(--color-secondary)]">Semua Bulan — Sisa Pokok</p>
+                    <p class="mt-1 text-base font-bold text-blue-600">{{ formatCurrency(summaryAll?.total_sisa_pokok) }}</p>
                 </div>
             </div>
 
