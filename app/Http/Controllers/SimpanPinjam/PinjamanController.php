@@ -128,6 +128,98 @@ class PinjamanController extends Controller
         ]);
     }
 
+    public function edit(Pinjaman $pinjaman): Response
+    {
+        $nasabah = Nasabah::where('status', 'aktif')
+            ->whereJsonContains('kategori', 'pinjaman')
+            ->orderBy('nama')
+            ->get(['id', 'nama', 'nomor_rekening']);
+
+        return Inertia::render('SimpanPinjam/Pinjaman/Edit', [
+            'pinjaman'       => $pinjaman,
+            'nasabahOptions' => $nasabah,
+        ]);
+    }
+
+    public function update(Request $request, Pinjaman $pinjaman)
+    {
+        $validated = $request->validate([
+            'nasabah_id'      => 'required|exists:nasabah,id',
+            'tanggal_akad'    => 'required|date',
+            'jenis_pinjaman'  => 'required|in:uang,barang,sembako',
+            'keterangan'      => 'nullable|string|max:255',
+            'pinjaman_pokok'  => 'required|numeric|min:1',
+            'bunga'           => 'required|numeric|min:0|max:100',
+            'nominal_setoran' => 'required|numeric|min:1',
+            'biaya_tambahan'  => 'nullable|numeric|min:0',
+            'foto_perjanjian' => 'nullable|image|max:2048',
+            'foto_barang'     => 'nullable|image|max:5120',
+        ]);
+
+        \DB::transaction(function () use ($pinjaman, $validated) {
+            $pokok         = (float) $validated['pinjaman_pokok'];
+            $bunga         = (float) $validated['bunga'];
+            $nominalSetor  = (float) $validated['nominal_setoran'];
+            $biayaTambahan = (float) ($validated['biaya_tambahan'] ?? 0);
+
+            $totalTagihan    = $pokok + ($pokok * $bunga / 100) + $biayaTambahan;
+            $jumlahAngsuran  = (int) ceil($totalTagihan / max(1, $nominalSetor));
+
+            $foto_perjanjian = $pinjaman->foto_perjanjian;
+            if (isset($validated['foto_perjanjian'])) {
+                $file = $validated['foto_perjanjian'];
+                $filename = time() . '_perjanjian_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/pinjaman'), $filename);
+                if ($foto_perjanjian && file_exists(public_path('uploads/pinjaman/' . $foto_perjanjian))) {
+                    @unlink(public_path('uploads/pinjaman/' . $foto_perjanjian));
+                }
+                $foto_perjanjian = $filename;
+            }
+
+            $foto_barang = $pinjaman->foto_barang;
+            if (isset($validated['foto_barang'])) {
+                $file = $validated['foto_barang'];
+                $filename = time() . '_barang_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/pinjaman'), $filename);
+                if ($foto_barang && file_exists(public_path('uploads/pinjaman/' . $foto_barang))) {
+                    @unlink(public_path('uploads/pinjaman/' . $foto_barang));
+                }
+                $foto_barang = $filename;
+            }
+
+            $pinjaman->update([
+                'nasabah_id'      => $validated['nasabah_id'],
+                'tanggal_akad'    => $validated['tanggal_akad'],
+                'pinjaman_pokok'  => $pokok,
+                'bunga'           => $bunga,
+                'total_tagihan'   => $totalTagihan,
+                'nominal_setoran' => $nominalSetor,
+                'biaya_tambahan'  => $biayaTambahan,
+                'jumlah_angsuran' => $jumlahAngsuran,
+                'jenis_pinjaman'  => $validated['jenis_pinjaman'],
+                'keterangan'      => $validated['keterangan'] ?? null,
+                'foto_perjanjian' => $foto_perjanjian,
+                'foto_barang'     => $foto_barang,
+            ]);
+
+            // Recalculate sisa_pinjaman for the pinjaman and all its angsuran
+            $allAngsuran = $pinjaman->angsuran()->orderBy('angsuran_ke')->get();
+            $saldo = $totalTagihan;
+            foreach ($allAngsuran as $a) {
+                $saldo = max(0, $saldo - $a->jumlah_bayar);
+                $a->updateQuietly(['sisa_pinjaman' => $saldo]);
+            }
+
+            $pinjaman->update([
+                'sisa_pinjaman' => $saldo,
+                'status'        => $saldo <= 0 ? 'lunas' : 'aktif',
+            ]);
+        });
+
+        return redirect()->route('pinjaman.show', $pinjaman)
+            ->with('success', 'Pinjaman berhasil diperbarui.');
+    }
+
     public function kalkulasi(Request $request)
     {
         $request->validate([
