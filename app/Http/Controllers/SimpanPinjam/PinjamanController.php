@@ -54,7 +54,8 @@ class PinjamanController extends Controller
             COUNT(*) as total_pinjaman,
             SUM(pinjaman_pokok) as total_pokok,
             SUM(total_tagihan) as total_tagihan,
-            SUM(sisa_pinjaman) as total_sisa
+            SUM(sisa_pinjaman) as total_sisa,
+            SUM(sisa_pinjaman * pinjaman_pokok / IF(total_tagihan > 0, total_tagihan, 1)) as total_sisa_pokok
         ')->first();
 
         // Summary total sesuai filter aktif (termasuk bulan jika ada)
@@ -63,7 +64,8 @@ class PinjamanController extends Controller
             COUNT(*) as total_pinjaman,
             SUM(pinjaman_pokok) as total_pokok,
             SUM(total_tagihan) as total_tagihan,
-            SUM(sisa_pinjaman) as total_sisa
+            SUM(sisa_pinjaman) as total_sisa,
+            SUM(sisa_pinjaman * pinjaman_pokok / IF(total_tagihan > 0, total_tagihan, 1)) as total_sisa_pokok
         ');
         if ($request->filled('bulan')) {
             [$year, $month] = explode('-', $request->bulan);
