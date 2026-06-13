@@ -100,10 +100,21 @@ class TabunganExport implements FromCollection, WithHeadings, WithMapping, WithS
         $jenis = $this->request->input('jenis', 'reguler');
         $sheet->setCellValue('B3', 'LAPORAN TABUNGAN ' . strtoupper($jenis));
 
+        $sheet->mergeCells('B4:J4');
+        if ($this->request->filled('tanggal')) {
+            $periodStr = 'TANGGAL: ' . date('d/m/Y', strtotime($this->request->tanggal));
+        } elseif ($this->request->filled('bulan')) {
+            $periodStr = 'BULAN: ' . date('F Y', strtotime($this->request->bulan . '-01'));
+        } else {
+            $periodStr = 'SEMUA PERIODE';
+        }
+        $sheet->setCellValue('B4', $periodStr);
+
         $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);
         $sheet->getStyle('B3')->getFont()->setBold(true)->setSize(12);
-        $sheet->getStyle('B1:B3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('B4')->getFont()->setBold(true)->setSize(10);
+        $sheet->getStyle('B1:B4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $lastRow = $this->data->count() + 6;
         return [

@@ -6,7 +6,16 @@ import ExportButtons from '@/Components/ExportButtons.vue';
 
 const props = defineProps({ transaksi: Array, jenis: String, filters: Object, summary: Object });
 const bulan = ref(props.filters?.bulan ?? '');
+const tanggal = ref(props.filters?.tanggal ?? '');
 const jenis = ref(props.filters?.jenis ?? 'reguler');
+
+watch(bulan, (newVal) => {
+    if (newVal) tanggal.value = '';
+});
+
+watch(tanggal, (newVal) => {
+    if (newVal) bulan.value = '';
+});
 
 const formatBulanLabel = (val) => {
     if (!val) return '';
@@ -14,12 +23,21 @@ const formatBulanLabel = (val) => {
     return new Date(y, parseInt(m) - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 };
 
+const formatTanggalLabel = (val) => {
+    if (!val) return '';
+    return new Date(val).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
 let timeout;
-watch([bulan, jenis], () => {
+watch([bulan, jenis, tanggal], () => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
         const params = { jenis: jenis.value };
-        if (bulan.value) {
+        if (tanggal.value) {
+            params.start_date = tanggal.value;
+            params.end_date   = tanggal.value;
+            params.tanggal    = tanggal.value;
+        } else if (bulan.value) {
             const [y, m] = bulan.value.split('-');
             const lastDay = new Date(y, m, 0).getDate();
             params.start_date = `${y}-${m}-01`;
@@ -35,7 +53,11 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID') : '-';
 
 const buildQuery = computed(() => {
     const q = { jenis: jenis.value };
-    if (bulan.value) {
+    if (tanggal.value) {
+        q.start_date = tanggal.value;
+        q.end_date   = tanggal.value;
+        q.tanggal    = tanggal.value;
+    } else if (bulan.value) {
         const [y, m] = bulan.value.split('-');
         const lastDay = new Date(y, m, 0).getDate();
         q.start_date = `${y}-${m}-01`;
@@ -93,6 +115,16 @@ const excelUrl = computed(() => `${route('laporan.tabungan.excel')}?${buildQuery
                             Gabungan
                         </button>
                     </div>
+                    <!-- Filter Hari -->
+                    <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Hari:</label>
+                    <input v-model="tanggal" type="date"
+                        class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                    <button v-if="tanggal" @click="tanggal = ''" class="text-xs text-[color:var(--color-secondary)] hover:text-red-500">✕ Reset</button>
+                    <span v-if="tanggal" class="text-sm font-semibold text-[color:var(--color-primary)]">{{ formatTanggalLabel(tanggal) }}</span>
+
+                    <span class="hidden sm:inline text-gray-300">|</span>
+
+                    <!-- Filter Bulan -->
                     <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Bulan:</label>
                     <input v-model="bulan" type="month"
                         class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
