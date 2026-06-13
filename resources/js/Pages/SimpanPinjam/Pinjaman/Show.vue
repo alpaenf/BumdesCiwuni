@@ -61,9 +61,14 @@ Terima kasih.`;
     <AuthenticatedLayout>
         <template #header>Detail Pinjaman</template>
         <div class="space-y-5">
-            <Link :href="route('pinjaman.index')" class="inline-flex items-center gap-2 text-sm text-[color:var(--color-secondary)] hover:text-[color:var(--color-on-surface)]">
-                <span class="material-symbols-outlined text-base">arrow_back</span> Kembali ke Daftar Pinjaman
-            </Link>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <Link :href="route('pinjaman.index')" class="inline-flex items-center gap-2 text-sm text-[color:var(--color-secondary)] hover:text-[color:var(--color-on-surface)]">
+                    <span class="material-symbols-outlined text-base">arrow_back</span> Kembali ke Daftar Pinjaman
+                </Link>
+                <Link :href="route('pinjaman.edit', pinjaman.id)" class="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition shadow-sm">
+                    <span class="material-symbols-outlined text-xs">edit</span> Edit Pinjaman
+                </Link>
+            </div>
 
             <div class="grid gap-5 lg:grid-cols-3 min-w-0">
                 <!-- Info Pinjaman -->
