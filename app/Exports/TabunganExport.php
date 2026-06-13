@@ -26,6 +26,11 @@ class TabunganExport implements FromCollection, WithHeadings, WithMapping, WithS
     {
         $query = TransaksiTabungan::with('tabungan.nasabah');
 
+        $jenis = $request->input('jenis', 'reguler');
+        $query->whereHas('tabungan', function ($q) use ($jenis) {
+            $q->where('jenis_tabungan', $jenis);
+        });
+
         if ($request->filled('start_date')) $query->whereDate('tanggal', '>=', $request->start_date);
         if ($request->filled('end_date'))   $query->whereDate('tanggal', '<=', $request->end_date);
 
@@ -34,7 +39,11 @@ class TabunganExport implements FromCollection, WithHeadings, WithMapping, WithS
 
     public function collection() { return $this->data; }
 
-    public function title(): string { return 'Laporan Tabungan'; }
+    public function title(): string
+    {
+        $jenis = $this->request->input('jenis', 'reguler');
+        return 'Laporan Tabungan ' . ucfirst($jenis);
+    }
 
     public function headings(): array
     {
@@ -86,7 +95,8 @@ class TabunganExport implements FromCollection, WithHeadings, WithMapping, WithS
         $sheet->setCellValue('B2', 'DAMMAR WULAN - UNIT SIMPAN PINJAM');
         
         $sheet->mergeCells('B3:J3');
-        $sheet->setCellValue('B3', 'LAPORAN TABUNGAN');
+        $jenis = $this->request->input('jenis', 'reguler');
+        $sheet->setCellValue('B3', 'LAPORAN TABUNGAN ' . strtoupper($jenis));
 
         $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);

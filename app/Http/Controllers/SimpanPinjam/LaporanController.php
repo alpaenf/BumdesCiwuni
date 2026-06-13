@@ -78,12 +78,16 @@ class LaporanController extends Controller
     public function tabungan(Request $request): Response
     {
         $query     = TransaksiTabungan::with('tabungan.nasabah');
+        $jenis     = $request->input('jenis', 'reguler');
+        $query->whereHas('tabungan', function ($q) use ($jenis) {
+            $q->where('jenis_tabungan', $jenis);
+        });
         $this->applyDateFilter($query, $request, 'tanggal');
         $transaksi = $query->orderBy('tanggal')->get();
 
         return Inertia::render('SimpanPinjam/Laporan/Tabungan', [
             'transaksi' => $transaksi,
-            'filters'   => $request->only(['start_date', 'end_date', 'bulan']),
+            'filters'   => $request->only(['start_date', 'end_date', 'bulan', 'jenis']),
             'summary'   => [
                 'total_setoran'   => $transaksi->where('jenis_transaksi', 'setor')->sum('nominal'),
                 'total_penarikan' => $transaksi->whereIn('jenis_transaksi', ['tarik_tunai', 'tarik_sembako'])->sum('nominal'),
@@ -95,6 +99,10 @@ class LaporanController extends Controller
     public function tabunganPdf(Request $request)
     {
         $query     = TransaksiTabungan::with('tabungan.nasabah');
+        $jenis     = $request->input('jenis', 'reguler');
+        $query->whereHas('tabungan', function ($q) use ($jenis) {
+            $q->where('jenis_tabungan', $jenis);
+        });
         $this->applyDateFilter($query, $request, 'tanggal');
         $transaksi = $query->orderBy('tanggal')->get();
         $summary   = [
@@ -104,9 +112,9 @@ class LaporanController extends Controller
         ];
         $filters = $request->only(['start_date', 'end_date']);
 
-        $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.tabungan', compact('transaksi', 'summary', 'filters'))
+        $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.tabungan', compact('transaksi', 'summary', 'filters', 'jenis'))
             ->setPaper('a4', 'landscape');
-        return $pdf->download('laporan-tabungan-' . now()->format('Ymd') . '.pdf');
+        return $pdf->download('laporan-tabungan-' . $jenis . '-' . now()->format('Ymd') . '.pdf');
     }
 
     public function tabunganExcel(Request $request)
