@@ -146,7 +146,7 @@ async function submit() {
                                 </div>
                                 <p v-if="errors.jumlah_bayar" class="text-xs text-red-600 mt-1">{{ errors.jumlah_bayar[0] }}</p>
                                 <p class="text-xs text-amber-600 mt-1">
-                                    ⚠️ Mengubah jumlah bayar akan menghitung ulang sisa pinjaman otomatis.
+                                    Perhatian: Mengubah jumlah bayar akan menghitung ulang sisa pinjaman otomatis.
                                 </p>
                             </div>
                             <div>
@@ -175,7 +175,7 @@ async function submit() {
                                 </div>
                                 <p v-if="errors.nominal" class="text-xs text-red-600 mt-1">{{ errors.nominal[0] }}</p>
                                 <p class="text-xs text-amber-600 mt-1">
-                                    ⚠️ Mengubah nominal akan menghitung ulang saldo tabungan otomatis.
+                                    Perhatian: Mengubah nominal akan menghitung ulang saldo tabungan otomatis.
                                 </p>
                             </div>
                             <div>

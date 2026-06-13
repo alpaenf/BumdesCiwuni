@@ -217,18 +217,18 @@ $receiptLines = [
             
             {{-- Variabel $porsiPokok, $porsiBunga, $porsiBiaya sudah dihitung di @php atas --}}
             <div class="flex pl-4">
-                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Pokok</span>
+                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">- Pokok</span>
                 <span class="colon-col text-[10px] italic text-gray-600">:</span>
                 <span class="data-text text-[10px] italic text-gray-600">Rp. {{ number_format($porsiPokok, 0, ',', '.') }}</span>
             </div>
             <div class="flex pl-4">
-                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Bunga</span>
+                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">- Bunga</span>
                 <span class="colon-col text-[10px] italic text-gray-600">:</span>
                 <span class="data-text text-[10px] italic text-gray-600">Rp. {{ number_format($porsiBunga, 0, ',', '.') }}</span>
             </div>
             @if($p->biaya_tambahan > 0)
             <div class="flex pl-4">
-                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Biaya Tambahan</span>
+                <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">- Biaya Tambahan</span>
                 <span class="colon-col text-[10px] italic text-gray-600">:</span>
                 <span class="data-text text-[10px] italic text-gray-600">Rp. {{ number_format($porsiBiaya, 0, ',', '.') }}</span>
             </div>
