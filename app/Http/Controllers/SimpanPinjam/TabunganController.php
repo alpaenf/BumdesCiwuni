@@ -36,7 +36,7 @@ class TabunganController extends Controller
             });
         }
 
-        $nasabah = $query->orderBy('nama')->paginate(15)->withQueryString();
+        $nasabah = $query->where('status', 'aktif')->orderBy('nama')->paginate(15)->withQueryString();
 
         return Inertia::render('SimpanPinjam/Tabungan/Index', [
             'nasabah' => $nasabah,
