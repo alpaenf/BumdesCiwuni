@@ -1,3 +1,47 @@
+@php
+use Carbon\Carbon;
+$p          = $angsuran->pinjaman;
+$t          = $p->total_tagihan > 0 ? $p->total_tagihan : 1;
+$porsiPokok = ($p->pinjaman_pokok / $t) * $angsuran->jumlah_bayar;
+$porsiBunga = (($p->pinjaman_pokok * $p->bunga / 100) / $t) * $angsuran->jumlah_bayar;
+$porsiBiaya = ($p->biaya_tambahan / $t) * $angsuran->jumlah_bayar;
+$tgl        = Carbon::parse($angsuran->tanggal)->isoFormat('D MMMM Y')
+              . ($angsuran->pasaran ? ' ('.ucfirst($angsuran->pasaran).')' : '');
+$pdfUrl     = route('angsuran.struk.pdf', $angsuran);
+
+$receiptLines = [
+    ['t'=>'center',    'text'=>'BADAN USAHA MILIK DESA (BUMDesa)'],
+    ['t'=>'center_lg', 'text'=>'DAMMAR WULAN'],
+    ['t'=>'center',    'text'=>'DESA CIWUNI'],
+    ['t'=>'center_sm', 'text'=>'Kec. Kesugihan Kab. Cilacap'],
+    ['t'=>'center_sm', 'text'=>'Jl. Pasar Jagang RT 1 RW 4 Ciwuni'],
+    ['t'=>'sep_dbl'],
+    ['t'=>'title',  'text'=>'STRUK TRANSAKSI PINJAMAN'],
+    ['t'=>'sep'],
+    ['t'=>'kv', 'label'=>'NO. REKENING', 'value'=>$p->nasabah->nomor_rekening],
+    ['t'=>'kv', 'label'=>'NAMA',         'value'=>strtoupper($p->nasabah->nama)],
+    ['t'=>'kv', 'label'=>'ALAMAT',       'value'=>$p->nasabah->alamat],
+    ['t'=>'kv', 'label'=>'NO. WA',       'value'=>$p->nasabah->no_hp],
+    ['t'=>'sep'],
+    ['t'=>'kv', 'label'=>'NO. TRANSAKSI','value'=>'#'.($angsuran->nomor_transaksi ?: 'St.'.sprintf('%04d',$angsuran->id))],
+    ['t'=>'kv', 'label'=>'TANGGAL',      'value'=>$tgl],
+    ['t'=>'sep'],
+    ['t'=>'kv', 'label'=>'Pinjaman+Bunga','value'=>'Rp.'.number_format($p->pinjaman_pokok+($p->pinjaman_pokok*$p->bunga/100),0,',','.')],
+    ...($p->biaya_tambahan > 0 ? [['t'=>'kv','label'=>'Biaya Tambahan','value'=>'Rp.'.number_format($p->biaya_tambahan,0,',','.')]] : []),
+    ['t'=>'kv', 'label'=>'Total Tagihan','value'=>'Rp.'.number_format($p->total_tagihan,0,',','.')],
+    ['t'=>'kv', 'label'=>'Setoran ke',  'value'=>$angsuran->angsuran_ke.' / '.$p->jumlah_angsuran],
+    ['t'=>'kv_bold','label'=>'Jumlah Setoran','value'=>'Rp.'.number_format($angsuran->jumlah_bayar,0,',','.')],
+    ['t'=>'kv_sm','label'=>'  - Pokok', 'value'=>'Rp.'.number_format($porsiPokok,0,',','.')],
+    ['t'=>'kv_sm','label'=>'  - Bunga', 'value'=>'Rp.'.number_format($porsiBunga,0,',','.')],
+    ...($p->biaya_tambahan > 0 ? [['t'=>'kv_sm','label'=>'  - Biaya Tmb','value'=>'Rp.'.number_format($porsiBiaya,0,',','.')]] : []),
+    ['t'=>'sep_dot'],
+    ['t'=>'kv_bold','label'=>'Sisa Pinjaman','value'=>'Rp.'.number_format($angsuran->sisa_pinjaman,0,',','.')
+        .($angsuran->sisa_pinjaman<=0?' [LUNAS]':'')],
+    ['t'=>'sep_dbl'],
+    ['t'=>'center_sm','text'=>'Terima kasih atas kepercayaan Anda.'],
+    ['t'=>'center_sm','text'=>'Simpan struk ini sebagai bukti pembayaran.'],
+];
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -138,12 +182,7 @@
             <div class="flex">
                 <span class="label-col label-text">TANGGAL</span>
                 <span class="colon-col">:</span>
-                <span class="data-text">
-                    {{ \Carbon\Carbon::parse($angsuran->tanggal)->isoFormat('D MMMM Y') }}
-                    @if($angsuran->pasaran)
-                        ({{ ucfirst($angsuran->pasaran) }})
-                    @endif
-                </span>
+                <span class="data-text">{{ $tgl }}</span>
             </div>
         </div>
         <hr class="border-black border-t my-2">
@@ -176,13 +215,7 @@
                 <span class="data-text font-bold">Rp. {{ number_format($angsuran->jumlah_bayar, 0, ',', '.') }}</span>
             </div>
             
-            @php
-                $p = $angsuran->pinjaman;
-                $t = $p->total_tagihan > 0 ? $p->total_tagihan : 1;
-                $porsiPokok = ($p->pinjaman_pokok / $t) * $angsuran->jumlah_bayar;
-                $porsiBunga = (($p->pinjaman_pokok * $p->bunga / 100) / $t) * $angsuran->jumlah_bayar;
-                $porsiBiaya = ($p->biaya_tambahan / $t) * $angsuran->jumlah_bayar;
-            @endphp
+            {{-- Variabel $porsiPokok, $porsiBunga, $porsiBiaya sudah dihitung di @php atas --}}
             <div class="flex pl-4">
                 <span class="label-col label-text text-[10px] italic text-gray-600 w-[110px]">↳ Pokok</span>
                 <span class="colon-col text-[10px] italic text-gray-600">:</span>
@@ -217,50 +250,7 @@
 </div>
 <!-- END: Page Layout -->
 
-@php
-use Carbon\Carbon;
-$p = $angsuran->pinjaman;
-$t = $p->total_tagihan > 0 ? $p->total_tagihan : 1;
-$porsiPokok = ($p->pinjaman_pokok / $t) * $angsuran->jumlah_bayar;
-$porsiBunga = (($p->pinjaman_pokok * $p->bunga / 100) / $t) * $angsuran->jumlah_bayar;
-$porsiBiaya = ($p->biaya_tambahan / $t) * $angsuran->jumlah_bayar;
-$tgl = Carbon::parse($angsuran->tanggal)->isoFormat('D MMMM Y')
-      . ($angsuran->pasaran ? ' ('.ucfirst($angsuran->pasaran).')' : '');
-
-$receiptLines = [
-    ['t'=>'center',    'text'=>'BADAN USAHA MILIK DESA (BUMDesa)'],
-    ['t'=>'center_lg', 'text'=>'DAMMAR WULAN'],
-    ['t'=>'center',    'text'=>'DESA CIWUNI'],
-    ['t'=>'center_sm', 'text'=>'Kec. Kesugihan Kab. Cilacap'],
-    ['t'=>'center_sm', 'text'=>'Jl. Pasar Jagang RT 1 RW 4 Ciwuni'],
-    ['t'=>'sep_dbl'],
-    ['t'=>'title',  'text'=>'STRUK TRANSAKSI PINJAMAN'],
-    ['t'=>'sep'],
-    ['t'=>'kv', 'label'=>'NO. REKENING', 'value'=>$p->nasabah->nomor_rekening],
-    ['t'=>'kv', 'label'=>'NAMA',         'value'=>strtoupper($p->nasabah->nama)],
-    ['t'=>'kv', 'label'=>'ALAMAT',       'value'=>$p->nasabah->alamat],
-    ['t'=>'kv', 'label'=>'NO. WA',       'value'=>$p->nasabah->no_hp],
-    ['t'=>'sep'],
-    ['t'=>'kv', 'label'=>'NO. TRANSAKSI','value'=>'#'.($angsuran->nomor_transaksi ?: 'St.'.sprintf('%04d',$angsuran->id))],
-    ['t'=>'kv', 'label'=>'TANGGAL',      'value'=>$tgl],
-    ['t'=>'sep'],
-    ['t'=>'kv', 'label'=>'Pinjaman+Bunga','value'=>'Rp.'.number_format($p->pinjaman_pokok+($p->pinjaman_pokok*$p->bunga/100),0,',','.')],
-    ...($p->biaya_tambahan > 0 ? [['t'=>'kv','label'=>'Biaya Tambahan','value'=>'Rp.'.number_format($p->biaya_tambahan,0,',','.')]] : []),
-    ['t'=>'kv', 'label'=>'Total Tagihan','value'=>'Rp.'.number_format($p->total_tagihan,0,',','.')],
-    ['t'=>'kv', 'label'=>'Setoran ke',  'value'=>$angsuran->angsuran_ke.' / '.$p->jumlah_angsuran],
-    ['t'=>'kv_bold','label'=>'Jumlah Setoran','value'=>'Rp.'.number_format($angsuran->jumlah_bayar,0,',','.')],
-    ['t'=>'kv_sm','label'=>'  - Pokok', 'value'=>'Rp.'.number_format($porsiPokok,0,',','.')],
-    ['t'=>'kv_sm','label'=>'  - Bunga', 'value'=>'Rp.'.number_format($porsiBunga,0,',','.')],
-    ...($p->biaya_tambahan > 0 ? [['t'=>'kv_sm','label'=>'  - Biaya Tmb','value'=>'Rp.'.number_format($porsiBiaya,0,',','.')]] : []),
-    ['t'=>'sep_dot'],
-    ['t'=>'kv_bold','label'=>'Sisa Pinjaman','value'=>'Rp.'.number_format($angsuran->sisa_pinjaman,0,',','.')
-        .($angsuran->sisa_pinjaman<=0?' [LUNAS]':'')],
-    ['t'=>'sep_dbl'],
-    ['t'=>'center_sm','text'=>'Terima kasih atas kepercayaan Anda.'],
-    ['t'=>'center_sm','text'=>'Simpan struk ini sebagai bukti pembayaran.'],
-];
-$pdfUrl = route('angsuran.struk.pdf', $angsuran);
-@endphp
+{{-- Semua variabel ($receiptLines, $pdfUrl, $tgl, dll) sudah disiapkan di @php awal file --}}
 
 @include('exports.simpan-pinjam.partials.cetak-modal', [
     'pdfUrl'       => $pdfUrl,
