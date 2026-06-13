@@ -22,11 +22,10 @@ class TabunganController extends Controller
 
     public function index(Request $request): Response
     {
-        $query = Nasabah::whereHas('tabungan', function ($q) {
-            $q->where('jenis_tabungan', Tabungan::JENIS_REGULER);
-        })->with(['tabungan' => function($q) {
-            $q->where('jenis_tabungan', Tabungan::JENIS_REGULER);
-        }]);
+        $query = Nasabah::whereJsonContains('kategori', 'tabungan')
+            ->with(['tabungan' => function($q) {
+                $q->where('jenis_tabungan', Tabungan::JENIS_REGULER);
+            }]);
 
         if ($request->filled('search')) {
             $search = '%' . $request->search . '%';
