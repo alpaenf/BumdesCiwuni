@@ -88,6 +88,10 @@ const excelUrl = computed(() => `${route('laporan.tabungan.excel')}?${buildQuery
                             :class="jenis === 'sembako' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
                             Sembako
                         </button>
+                        <button @click="jenis = 'gabungan'" class="px-4 py-2.5 text-sm font-semibold transition"
+                            :class="jenis === 'gabungan' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
+                            Gabungan
+                        </button>
                     </div>
                     <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Bulan:</label>
                     <input v-model="bulan" type="month"
