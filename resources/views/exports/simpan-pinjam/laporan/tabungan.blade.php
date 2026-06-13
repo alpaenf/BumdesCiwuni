@@ -3,9 +3,15 @@
     $headerColor = '#1B5E20';
     $jenisLabel  = 'Tabungan ' . ($jenis === 'gabungan' ? 'Gabungan' : ucfirst($jenis ?? 'reguler'));
     $reportTitle = 'Laporan Transaksi ' . $jenisLabel;
-    $periodLabel = ($filters['start_date'] ?? $filters['end_date'])
-        ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
-        : 'Semua periode';
+    if (isset($filters['tanggal']) && $filters['tanggal']) {
+        $periodLabel = 'Tanggal: ' . \Carbon\Carbon::parse($filters['tanggal'])->format('d/m/Y');
+    } elseif (isset($filters['bulan']) && $filters['bulan']) {
+        $periodLabel = 'Bulan: ' . \Carbon\Carbon::createFromFormat('Y-m', $filters['bulan'])->translatedFormat('F Y');
+    } else {
+        $periodLabel = ($filters['start_date'] ?? $filters['end_date'])
+            ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
+            : 'Semua periode';
+    }
     $summaryItems = [
         ['label' => 'Total Setoran',   'value' => 'Rp ' . number_format($summary['total_setoran'], 0, ',', '.')],
         ['label' => 'Total Penarikan', 'value' => 'Rp ' . number_format($summary['total_penarikan'], 0, ',', '.')],
