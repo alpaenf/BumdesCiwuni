@@ -12,6 +12,7 @@ use App\Models\TransaksiTabungan;
 use App\Services\TabunganService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -122,6 +123,44 @@ class TabunganSembakoController extends Controller
         $filename = 'struk-sembako-' . ($transaksi->nomor_transaksi ?? $transaksi->id) . '.pdf';
 
         return $pdf->stream($filename);
+    }
+
+    public function updateTransaksi(Request $request, TransaksiTabungan $transaksi)
+    {
+        $validated = $request->validate([
+            'tanggal'    => 'required|date',
+            'keterangan' => 'nullable|string|max:255',
+            'nominal'    => 'required|numeric|min:1',
+        ]);
+
+        DB::transaction(function () use ($transaksi, $validated) {
+            $selisih = (float)$validated['nominal'] - (float)$transaksi->nominal;
+
+            $transaksi->update([
+                'tanggal'    => $validated['tanggal'],
+                'keterangan' => $validated['keterangan'],
+                'nominal'    => $validated['nominal'],
+            ]);
+
+            if ($selisih != 0) {
+                $tabungan = $transaksi->tabungan;
+                $allTrx = $tabungan->transaksi()->orderBy('tanggal')->orderBy('id')->get();
+
+                $saldo = 0;
+                foreach ($allTrx as $trx) {
+                    if ($trx->jenis_transaksi === TransaksiTabungan::JENIS_SETOR) {
+                        $saldo += $trx->nominal;
+                    } else {
+                        $saldo = max(0, $saldo - $trx->nominal - $trx->administrasi);
+                    }
+                    $trx->updateQuietly(['saldo_setelah' => $saldo]);
+                }
+
+                $tabungan->update(['saldo' => $saldo]);
+            }
+        });
+
+        return response()->json(['success' => true, 'message' => 'Transaksi berhasil diperbarui.']);
     }
 
     public function riwayat(Nasabah $nasabah)

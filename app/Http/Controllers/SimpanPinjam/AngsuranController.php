@@ -101,6 +101,51 @@ class AngsuranController extends Controller
             ->with('struk_url', route('angsuran.struk', $angsuran));
     }
 
+    public function update(Request $request, Angsuran $angsuran)
+    {
+        $validated = $request->validate([
+            'tanggal'     => 'required|date',
+            'pasaran'     => 'nullable|in:legi,pahing,pon,wage,kliwon',
+            'jumlah_bayar'=> 'required|numeric|min:1',
+            'keterangan'  => 'nullable|string|max:255',
+        ]);
+
+        \DB::transaction(function () use ($angsuran, $validated) {
+            $selisih = (float)$validated['jumlah_bayar'] - (float)$angsuran->jumlah_bayar;
+
+            // Update data angsuran ini
+            $angsuran->update([
+                'tanggal'     => $validated['tanggal'],
+                'pasaran'     => $validated['pasaran'],
+                'jumlah_bayar'=> $validated['jumlah_bayar'],
+            ]);
+
+            if ($selisih != 0) {
+                // Recalculate sisa_pinjaman untuk semua angsuran setelah ini (termasuk yang ini)
+                $pinjaman = $angsuran->pinjaman;
+                $allAngsuran = $pinjaman->angsuran()->orderBy('angsuran_ke')->get();
+
+                // Hitung ulang dari awal berdasar pinjaman_pokok + bunga
+                $pokokTotal = $pinjaman->pinjaman_pokok
+                            + ($pinjaman->pinjaman_pokok * $pinjaman->bunga / 100)
+                            + $pinjaman->biaya_tambahan;
+                $saldo = $pokokTotal;
+                foreach ($allAngsuran as $a) {
+                    $saldo = max(0, $saldo - $a->jumlah_bayar);
+                    $a->updateQuietly(['sisa_pinjaman' => $saldo]);
+                }
+
+                // Update sisa_pinjaman di tabel pinjaman
+                $pinjaman->update([
+                    'sisa_pinjaman' => $saldo,
+                    'status'        => $saldo <= 0 ? 'lunas' : 'aktif',
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Transaksi angsuran berhasil diperbarui.');
+    }
+
     public function struk(Angsuran $angsuran)
     {
         $angsuran->load('pinjaman.nasabah');
