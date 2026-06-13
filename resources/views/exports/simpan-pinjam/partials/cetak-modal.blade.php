@@ -102,9 +102,9 @@
         <span id="cmBTLabel">Bluetooth</span>
     </button>
     <div id="cmBtWarning" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;margin-bottom:9px;">
-        ⚠️ <strong>Browser ini tidak mendukung Bluetooth.</strong><br>
+        <strong>Browser ini tidak mendukung Bluetooth.</strong><br>
         Untuk cetak via Bluetooth, buka halaman ini menggunakan <strong>Chrome Android</strong>.<br>
-        <a href="https://play.google.com/store/apps/details?id=com.android.chrome" target="_blank" style="color:#b45309;font-weight:700;">→ Download Chrome di Play Store</a>
+        <a href="https://play.google.com/store/apps/details?id=com.android.chrome" target="_blank" style="color:#b45309;font-weight:700;">Download Chrome di Play Store</a>
     </div>
     <button class="cm-btn cm-btn-orange" onclick="cmBukaTab()">Buka di Tab (Bagikan / Print App)</button>
 
