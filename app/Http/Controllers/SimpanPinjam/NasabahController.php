@@ -35,11 +35,24 @@ class NasabahController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('kategori')) {
+            $query->whereJsonContains('kategori', $request->kategori);
+        }
+
         $nasabah = $query->orderBy('nama')->paginate(15)->withQueryString();
+
+        $countTabungan = Nasabah::whereJsonContains('kategori', 'tabungan')->count();
+        $countPinjaman = Nasabah::whereJsonContains('kategori', 'pinjaman')->count();
+        $countSembako  = Nasabah::whereJsonContains('kategori', 'sembako')->count();
 
         return Inertia::render('SimpanPinjam/Nasabah/Index', [
             'nasabah' => $nasabah,
-            'filters' => $request->only(['search', 'status']),
+            'filters' => $request->only(['search', 'status', 'kategori']),
+            'counts' => [
+                'tabungan' => $countTabungan,
+                'pinjaman' => $countPinjaman,
+                'sembako'  => $countSembako,
+            ],
         ]);
     }
 

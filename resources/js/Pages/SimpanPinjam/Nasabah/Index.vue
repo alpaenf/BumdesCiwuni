@@ -7,16 +7,18 @@ import WaTemplateModal from '@/Components/WaTemplateModal.vue';
 const props = defineProps({
     nasabah: Object,
     filters: Object,
+    counts: Object,
 });
 
 const search = ref(props.filters?.search ?? '');
 const status = ref(props.filters?.status ?? '');
+const kategori = ref(props.filters?.kategori ?? '');
 
 let searchTimeout;
-watch([search, status], () => {
+watch([search, status, kategori], () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-        router.get(route('nasabah.index'), { search: search.value, status: status.value }, { preserveState: true, replace: true });
+        router.get(route('nasabah.index'), { search: search.value, status: status.value, kategori: kategori.value }, { preserveState: true, replace: true });
     }, 400);
 });
 
@@ -69,6 +71,15 @@ function openWaModal(row) {
                         class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/20"
                     />
                 </div>
+                <select
+                    v-model="kategori"
+                    class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
+                >
+                    <option value="">Semua Program</option>
+                    <option value="tabungan">Tabungan ({{ counts?.tabungan ?? 0 }})</option>
+                    <option value="sembako">Sembako ({{ counts?.sembako ?? 0 }})</option>
+                    <option value="pinjaman">Pinjaman ({{ counts?.pinjaman ?? 0 }})</option>
+                </select>
                 <select
                     v-model="status"
                     class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none"
