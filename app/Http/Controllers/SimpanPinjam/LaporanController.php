@@ -79,9 +79,11 @@ class LaporanController extends Controller
     {
         $query     = TransaksiTabungan::with('tabungan.nasabah');
         $jenis     = $request->input('jenis', 'reguler');
-        $query->whereHas('tabungan', function ($q) use ($jenis) {
-            $q->where('jenis_tabungan', $jenis);
-        });
+        if ($jenis !== 'gabungan') {
+            $query->whereHas('tabungan', function ($q) use ($jenis) {
+                $q->where('jenis_tabungan', $jenis);
+            });
+        }
         $this->applyDateFilter($query, $request, 'tanggal');
         $transaksi = $query->orderBy('tanggal')->get();
 
@@ -100,9 +102,11 @@ class LaporanController extends Controller
     {
         $query     = TransaksiTabungan::with('tabungan.nasabah');
         $jenis     = $request->input('jenis', 'reguler');
-        $query->whereHas('tabungan', function ($q) use ($jenis) {
-            $q->where('jenis_tabungan', $jenis);
-        });
+        if ($jenis !== 'gabungan') {
+            $query->whereHas('tabungan', function ($q) use ($jenis) {
+                $q->where('jenis_tabungan', $jenis);
+            });
+        }
         $this->applyDateFilter($query, $request, 'tanggal');
         $transaksi = $query->orderBy('tanggal')->get();
         $summary   = [
