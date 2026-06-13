@@ -101,9 +101,14 @@
     <button class="cm-btn cm-btn-blue" id="cmBtnBT" onclick="cmCetakBluetooth()">
         <span id="cmBTLabel">Bluetooth</span>
     </button>
+    <div id="cmBtWarning" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;margin-bottom:9px;">
+        ⚠️ <strong>Browser ini tidak mendukung Bluetooth.</strong><br>
+        Untuk cetak via Bluetooth, buka halaman ini menggunakan <strong>Chrome Android</strong>.<br>
+        <a href="https://play.google.com/store/apps/details?id=com.android.chrome" target="_blank" style="color:#b45309;font-weight:700;">→ Download Chrome di Play Store</a>
+    </div>
     <button class="cm-btn cm-btn-orange" onclick="cmBukaTab()">Buka di Tab (Bagikan / Print App)</button>
 
-    <div id="cmStatus" class="cm-status error">Tidak ada printer dipilih.</div>
+    <div id="cmStatus" class="cm-status" style="display:none;"></div>
 
     <button class="cm-btn cm-btn-close" onclick="cmClose()">Tutup</button>
   </div>
@@ -122,7 +127,24 @@ const CM_PDF_URL = @json($pdfUrl);
 const CM_LINES = @json($receiptLines);
 
 // ─── Modal open/close ───────────────────────────────────────────────────────
-function cmOpen()  { document.getElementById('cmOverlay').style.display='flex'; }
+function cmOpen()  {
+    document.getElementById('cmOverlay').style.display='flex';
+    // Cek dukungan Web Bluetooth
+    const btSupported = ('bluetooth' in navigator);
+    const btBtn     = document.getElementById('cmBtnBT');
+    const btWarning = document.getElementById('cmBtWarning');
+    if (!btSupported) {
+        btBtn.disabled = true;
+        btBtn.style.opacity = '0.45';
+        btBtn.style.cursor  = 'not-allowed';
+        btWarning.style.display = 'block';
+    } else {
+        btBtn.disabled = false;
+        btBtn.style.opacity = '1';
+        btBtn.style.cursor  = 'pointer';
+        btWarning.style.display = 'none';
+    }
+}
 function cmClose() { document.getElementById('cmOverlay').style.display='none'; }
 
 // ─── Pilih kertas ───────────────────────────────────────────────────────────
@@ -144,6 +166,7 @@ function cmSetStatus(msg, type='info') {
     const el = document.getElementById('cmStatus');
     el.textContent = msg;
     el.className = 'cm-status ' + type;
+    el.style.display = 'block';
 }
 
 // ─── Cetak biasa (CSS Print) ─────────────────────────────────────────────────
