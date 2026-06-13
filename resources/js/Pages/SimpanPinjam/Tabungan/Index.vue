@@ -188,6 +188,24 @@ async function handleEditSaved() {
                         </tbody>
                     </table>
                 </div>
+                <!-- Pagination -->
+                <div v-if="nasabah.last_page > 1" class="flex items-center justify-between border-t border-[color:var(--color-outline-variant)] px-4 py-3">
+                    <p class="text-sm text-[color:var(--color-secondary)]">
+                        Menampilkan {{ nasabah.from }}–{{ nasabah.to }} dari {{ nasabah.total }}
+                    </p>
+                    <div class="flex gap-1">
+                        <Link
+                            v-for="link in nasabah.links"
+                            :key="link.label"
+                            :href="link.url ?? '#'"
+                            v-html="link.label"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium transition"
+                            :class="link.active
+                                ? 'bg-[color:var(--color-primary)] text-white'
+                                : link.url ? 'text-[color:var(--color-on-surface-variant)] hover:bg-[color:var(--color-surface-container)]' : 'cursor-not-allowed text-[color:var(--color-outline-variant)]'"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
 
