@@ -62,62 +62,79 @@ const formatCurrency = (value) =>
             </div>
 
             <!-- Bento Grid Stats -->
-            <div class="grid grid-cols-12 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <!-- Tabungan Reguler -->
-                <div class="col-span-12 md:col-span-3 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-primary transition-all shadow-sm">
+                <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-primary transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="p-2.5 bg-blue-50 rounded-lg text-blue-700">
                             <span class="material-symbols-outlined">account_balance_wallet</span>
                         </div>
-                        <span class="text-slate-700 font-semibold text-xs flex items-center gap-1">
+                        <span class="text-slate-700 font-semibold text-[10px] flex items-center gap-1">
                             Aktif
                         </span>
                     </div>
                     <div class="mt-4">
-                        <p class="text-secondary text-sm font-medium">Tabungan Reguler</p>
-                        <h3 class="text-xl font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalTabunganReguler) }}</h3>
-                        <p class="text-[11px] text-outline mt-1">Total saldo tabungan reguler</p>
+                        <p class="text-secondary text-xs font-medium">Tabungan Reguler</p>
+                        <h3 class="text-lg font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalTabunganReguler) }}</h3>
+                        <p class="text-[10px] text-outline mt-1 leading-tight">Total saldo tabungan reguler</p>
                     </div>
                 </div>
 
                 <!-- Tabungan Sembako -->
-                <div class="col-span-12 md:col-span-3 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-orange-500 transition-all shadow-sm">
+                <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-orange-500 transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="p-2.5 bg-orange-50 rounded-lg text-orange-700">
                             <span class="material-symbols-outlined">savings</span>
                         </div>
-                        <span class="text-slate-700 font-semibold text-xs flex items-center gap-1">
+                        <span class="text-slate-700 font-semibold text-[10px] flex items-center gap-1">
                             Aktif
                         </span>
                     </div>
                     <div class="mt-4">
-                        <p class="text-secondary text-sm font-medium">Tabungan Sembako</p>
-                        <h3 class="text-xl font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalTabunganSembako) }}</h3>
-                        <p class="text-[11px] text-outline mt-1">Total saldo tabungan sembako</p>
+                        <p class="text-secondary text-xs font-medium">Tabungan Sembako</p>
+                        <h3 class="text-lg font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalTabunganSembako) }}</h3>
+                        <p class="text-[10px] text-outline mt-1 leading-tight">Total saldo tabungan sembako</p>
                     </div>
                 </div>
 
                 <!-- Piutang Berjalan -->
-                <div class="col-span-12 md:col-span-3 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-indigo-500 transition-all shadow-sm">
+                <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-indigo-500 transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="p-2.5 bg-indigo-50 rounded-lg text-indigo-700">
                             <span class="material-symbols-outlined">payments</span>
                         </div>
-                        <span class="text-slate-700 font-semibold text-xs">
-                            Outstanding
+                        <span class="text-slate-700 font-semibold text-[10px]">
+                            Total
                         </span>
                     </div>
                     <div class="mt-4">
-                        <p class="text-secondary text-sm font-medium">Piutang Berjalan</p>
-                        <h3 class="text-xl font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalPiutangBerjalan) }}</h3>
-                        <p class="text-[11px] text-outline mt-1">Total pinjaman aktif yang belum lunas</p>
+                        <p class="text-secondary text-xs font-medium">Piutang Berjalan</p>
+                        <h3 class="text-lg font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalPiutangBerjalan) }}</h3>
+                        <p class="text-[10px] text-outline mt-1 leading-tight">Termasuk bunga yang belum lunas</p>
+                    </div>
+                </div>
+
+                <!-- Piutang Tanpa Bunga -->
+                <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-teal-500 transition-all shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div class="p-2.5 bg-teal-50 rounded-lg text-teal-700">
+                            <span class="material-symbols-outlined">credit_score</span>
+                        </div>
+                        <span class="text-slate-700 font-semibold text-[10px]">
+                            Pokok
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-secondary text-xs font-medium">Piutang Pokok</p>
+                        <h3 class="text-lg font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalPiutangTanpaBunga) }}</h3>
+                        <p class="text-[10px] text-outline mt-1 leading-tight">Estimasi pokok pinjaman tanpa bunga</p>
                     </div>
                 </div>
 
                 <!-- Nasabah Aktif -->
-                <div class="col-span-12 md:col-span-3 bg-primary text-white p-5 rounded-xl flex flex-col justify-between relative overflow-hidden shadow-sm">
+                <div class="bg-primary text-white p-4 rounded-xl flex flex-col justify-between relative overflow-hidden shadow-sm">
                     <div class="absolute -right-4 -bottom-4 opacity-10">
-                        <span class="material-symbols-outlined text-[100px]">groups</span>
+                        <span class="material-symbols-outlined text-[80px]">groups</span>
                     </div>
                     <div class="flex justify-between items-start relative z-10">
                         <div class="p-2.5 bg-white/20 rounded-lg">
@@ -126,9 +143,9 @@ const formatCurrency = (value) =>
                         <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Nasabah</span>
                     </div>
                     <div class="mt-4 relative z-10">
-                        <p class="text-blue-100 text-sm font-medium">Total Nasabah Terdaftar</p>
-                        <h3 class="text-3xl font-bold mt-1">{{ stats.totalNasabah }} <span class="text-sm font-normal opacity-70">Orang</span></h3>
-                        <p class="text-[11px] text-blue-100 mt-1">Tergabung dalam unit simpan pinjam</p>
+                        <p class="text-blue-100 text-xs font-medium">Total Nasabah</p>
+                        <h3 class="text-2xl font-bold mt-1">{{ stats.totalNasabah }} <span class="text-[10px] font-normal opacity-70">Orang</span></h3>
+                        <p class="text-[10px] text-blue-100 mt-1 leading-tight">Tergabung di simpan pinjam</p>
                     </div>
                 </div>
             </div>
