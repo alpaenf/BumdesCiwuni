@@ -16,7 +16,8 @@ class ResetNomorRegistrasi extends Command
             return self::SUCCESS;
         }
 
-        $nasabahList = Nasabah::orderBy('id')->get();
+        // Urutkan berdasarkan nomor rekening agar sinkron dengan urutan rekening
+        $nasabahList = Nasabah::orderBy('nomor_rekening')->get();
         $counter = 1;
 
         foreach ($nasabahList as $nasabah) {
