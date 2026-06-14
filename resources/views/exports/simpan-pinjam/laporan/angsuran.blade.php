@@ -9,7 +9,7 @@
         ['label' => 'Total Dibayar',    'value' => 'Rp ' . number_format($summary['total_bayar'], 0, ',', '.')],
     ];
 @endphp
-@include('exports.laporan.layout')
+@include('exports.simpan-pinjam.laporan.layout')
 
 <table>
     <thead>

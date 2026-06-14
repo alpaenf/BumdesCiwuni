@@ -10,7 +10,7 @@
         ['label' => 'Tidak Aktif',     'value' => $summary['tidak_aktif']],
     ];
 @endphp
-@include('exports.laporan.layout')
+@include('exports.simpan-pinjam.laporan.layout')
 
 <table>
     <thead>
@@ -33,8 +33,8 @@
             <td>{{ $row->nomor_registrasi }}</td>
             <td>{{ $row->nomor_rekening }}</td>
             <td>{{ $row->nama }}</td>
-            <td>{{ $row->nik }}</td>
-            <td>{{ $row->no_hp }}</td>
+            <td style="mso-number-format:'\@'">{{ $row->nik }}</td>
+            <td style="mso-number-format:'\@'">{{ $row->no_hp }}</td>
             <td>{{ $row->alamat }}</td>
             <td>{{ $row->tanggal_bergabung ? \Carbon\Carbon::parse($row->tanggal_bergabung)->format('d/m/Y') : '-' }}</td>
             <td class="text-center">{{ ucfirst($row->status) }}</td>

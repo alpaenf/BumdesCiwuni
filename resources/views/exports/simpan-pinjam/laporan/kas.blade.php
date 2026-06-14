@@ -6,7 +6,7 @@
         : 'Semua periode';
     $summaryItems = [];
 @endphp
-@include('exports.laporan.layout')
+@include('exports.simpan-pinjam.laporan.layout')
 
 <table style="margin-bottom:16px">
     <thead>
