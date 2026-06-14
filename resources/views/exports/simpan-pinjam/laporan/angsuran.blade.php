@@ -9,7 +9,24 @@
         ['label' => 'Total Dibayar',    'value' => 'Rp ' . number_format($summary['total_bayar'], 0, ',', '.')],
     ];
 @endphp
-@include('exports.simpan-pinjam.laporan.layout')
+@if(!isset($isExcel))
+    @include('exports.simpan-pinjam.laporan.layout')
+@else
+    <table>
+        <tr><td colspan="9"></td></tr>
+        <tr><td colspan="9"></td></tr>
+        <tr>
+            <th colspan="9" style="font-size:14pt; font-weight:bold; text-align:center">BUMDes Dammar Wulan - Unit Simpan Pinjam</th>
+        </tr>
+        <tr>
+            <th colspan="9" style="font-size:12pt; font-weight:bold; text-align:center">{{ $reportTitle }}</th>
+        </tr>
+        <tr>
+            <th colspan="9" style="font-size:10pt; text-align:center">{{ $periodLabel }}</th>
+        </tr>
+        <tr><td colspan="9"></td></tr>
+    </table>
+@endif
 
 <table>
     <thead>
@@ -31,7 +48,7 @@
             <td class="text-center">{{ $i + 1 }}</td>
             <td>{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y') }}</td>
             <td>{{ $row->pinjaman?->nasabah?->nama ?? '-' }}</td>
-            <td>{{ $row->pinjaman?->nasabah?->nomor_rekening ?? '-' }}</td>
+            <td style="mso-number-format:'\@'">{{ $row->pinjaman?->nasabah?->nomor_rekening ?? '-' }}</td>
             <td class="text-center">{{ $row->ke }}</td>
             <td class="text-right">{{ number_format($row->jumlah_bayar, 0, ',', '.') }}</td>
             <td class="text-right">{{ number_format($row->pokok, 0, ',', '.') }}</td>

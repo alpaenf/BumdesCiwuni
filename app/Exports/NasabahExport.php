@@ -6,10 +6,13 @@ use App\Models\Nasabah;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithDrawings;
 use Illuminate\Contracts\View\View;
 
-class NasabahExport implements FromView, ShouldAutoSize
+class NasabahExport implements FromView, ShouldAutoSize, WithDrawings
 {
+    use WithLogo;
+
     private $data;
     private $filters;
     private $summary;
