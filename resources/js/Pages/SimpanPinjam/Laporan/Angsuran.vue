@@ -66,13 +66,14 @@ const excelUrl = computed(() => `${route('laporan.angsuran.excel')}?${buildQuery
                 </div>
             </div>
 
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex gap-3 items-center">
-                    <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Bulan:</label>
-                    <input v-model="bulan" type="month"
-                        class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
-                    <button v-if="bulan" @click="bulan = ''" class="text-xs text-[color:var(--color-secondary)] hover:text-red-500">✕ Reset</button>
-                    <span v-if="bulan" class="text-sm font-semibold text-[color:var(--color-primary)]">{{ formatBulanLabel(bulan) }}</span>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+                    <label class="text-xs font-medium text-[color:var(--color-secondary)]">Filter Bulan</label>
+                    <div class="flex items-center gap-2">
+                        <input v-model="bulan" type="month"
+                            class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                        <button v-if="bulan" @click="bulan = ''" class="flex-shrink-0 text-xs text-[color:var(--color-secondary)] hover:text-red-500">Reset</button>
+                    </div>
                 </div>
                 <ExportButtons :pdf-url="pdfUrl" :excel-url="excelUrl" />
             </div>
