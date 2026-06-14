@@ -41,7 +41,7 @@ class LaporanController extends Controller
     {
         $query = Nasabah::query();
         $this->applyDateFilter($query, $request, 'tanggal_bergabung');
-        $data = $query->orderBy('nama')->get();
+        $data = $query->orderBy('nomor_rekening')->get();
 
         return Inertia::render('SimpanPinjam/Laporan/Nasabah', [
             'data'    => $data,
@@ -58,7 +58,7 @@ class LaporanController extends Controller
     {
         $query = Nasabah::query();
         $this->applyDateFilter($query, $request, 'tanggal_bergabung');
-        $data = $query->orderBy('nama')->get();
+        $data = $query->orderBy('nomor_rekening')->get();
         $summary = ['total' => $data->count(), 'aktif' => $data->where('status', 'aktif')->count(), 'tidak_aktif' => $data->where('status', 'tidak aktif')->count()];
         $filters = $request->only(['start_date', 'end_date']);
 
