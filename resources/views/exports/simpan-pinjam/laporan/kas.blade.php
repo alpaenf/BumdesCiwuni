@@ -1,7 +1,7 @@
 @php
     $headerColor = '#00695C';
     $reportTitle = 'Laporan Kas';
-    $periodLabel = ($filters['start_date'] ?? $filters['end_date'])
+    $periodLabel = (isset($filters['start_date']) || isset($filters['end_date']))
         ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
         : 'Semua periode';
     $summaryItems = [];
