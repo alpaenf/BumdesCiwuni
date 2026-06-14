@@ -26,7 +26,7 @@ class NasabahExport implements FromCollection, WithHeadings, WithMapping, WithSt
         $query = Nasabah::query();
         if ($request->filled('start_date')) $query->whereDate('tanggal_bergabung', '>=', $request->start_date);
         if ($request->filled('end_date'))   $query->whereDate('tanggal_bergabung', '<=', $request->end_date);
-        $this->data = $query->orderBy('nama')->get();
+        $this->data = $query->orderBy('nomor_rekening')->get();
     }
 
     public function collection() { return $this->data; }
