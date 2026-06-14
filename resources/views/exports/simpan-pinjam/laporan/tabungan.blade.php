@@ -22,6 +22,8 @@
     @include('exports.simpan-pinjam.laporan.layout')
 @else
     <table>
+        <tr><td colspan="9"></td></tr>
+        <tr><td colspan="9"></td></tr>
         <tr>
             <th colspan="9" style="font-size:14pt; font-weight:bold; text-align:center">BUMDes Dammar Wulan - Unit Simpan Pinjam</th>
         </tr>

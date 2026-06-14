@@ -7,10 +7,13 @@ use App\Models\TransaksiTabungan;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithDrawings;
 use Illuminate\Contracts\View\View;
 
-class TabunganExport implements FromView, ShouldAutoSize
+class TabunganExport implements FromView, ShouldAutoSize, WithDrawings
 {
+    use WithLogo;
+
     private $transaksi;
     private $filters;
     private $summary;
