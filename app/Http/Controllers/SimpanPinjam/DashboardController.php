@@ -31,9 +31,16 @@ class DashboardController extends Controller
             'kredit_macet' => 0,
         ];
 
+        $totalPiutangTanpaBunga = 0;
+
         foreach ($pinjamanAktif as $pinjaman) {
             $pinjaman->loadMissing('angsuran');
             $status = $statusService->status($pinjaman);
+
+            // Hitung sisa pinjaman pokok (proporsional)
+            if ($pinjaman->total_tagihan > 0) {
+                $totalPiutangTanpaBunga += ($pinjaman->pinjaman_pokok / $pinjaman->total_tagihan) * $pinjaman->sisa_pinjaman;
+            }
 
             if ($status === 'kredit-macet') { $loanChart['kredit_macet']++; continue; }
             if ($status === 'menunggak')    { $loanChart['menunggak']++;    continue; }
@@ -81,6 +88,7 @@ class DashboardController extends Controller
                 'totalTabunganSembako'=> $totalTabunganSembako,
                 'totalPinjamanAktif'  => $pinjamanAktif->count(),
                 'totalPiutangBerjalan'=> Pinjaman::where('status', 'aktif')->sum('sisa_pinjaman'),
+                'totalPiutangTanpaBunga'=> $totalPiutangTanpaBunga,
                 'transaksiPeriode'    => $transaksiQuery->count(),
                 'angsuranPeriode'     => $angsuranQuery->count(),
             ],
