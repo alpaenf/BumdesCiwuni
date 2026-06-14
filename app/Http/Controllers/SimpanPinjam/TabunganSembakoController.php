@@ -35,7 +35,7 @@ class TabunganSembakoController extends Controller
             });
         }
 
-        $nasabah = $query->where('status', 'aktif')->orderBy('nama')->paginate(15)->withQueryString();
+        $nasabah = $query->where('status', 'aktif')->orderBy('nomor_rekening')->paginate(15)->withQueryString();
 
         return Inertia::render('SimpanPinjam/TabunganSembako/Index', [
             'nasabah' => $nasabah,
