@@ -20,6 +20,12 @@ class ResetNomorRegistrasi extends Command
         $nasabahList = Nasabah::orderBy('nomor_rekening')->get();
         $counter = 1;
 
+        // Langkah 1: Ubah semua nomor registrasi menjadi temporary agar tidak bentrok (UNIQUE constraint)
+        foreach ($nasabahList as $nasabah) {
+            $nasabah->updateQuietly(['nomor_registrasi' => 'temp_' . $nasabah->id]);
+        }
+
+        // Langkah 2: Berikan nomor urut yang rapi mulai dari 1
         foreach ($nasabahList as $nasabah) {
             $nasabah->updateQuietly(['nomor_registrasi' => (string) $counter]);
             $counter++;
