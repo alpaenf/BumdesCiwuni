@@ -15,7 +15,7 @@ class NomorService
         $last = Nasabah::orderByDesc('id')->value('nomor_registrasi');
 
         if (!$last) {
-            return '934';
+            return '1';
         }
 
         $next = ((int) $last) + 1;
