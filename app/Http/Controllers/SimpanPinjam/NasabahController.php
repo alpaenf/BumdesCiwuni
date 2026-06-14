@@ -39,7 +39,7 @@ class NasabahController extends Controller
             $query->whereJsonContains('kategori', $request->kategori);
         }
 
-        $nasabah = $query->orderBy('nama')->paginate(15)->withQueryString();
+        $nasabah = $query->orderBy('nomor_rekening')->paginate(15)->withQueryString();
 
         $countTabungan = Nasabah::whereJsonContains('kategori', 'tabungan')->count();
         $countPinjaman = Nasabah::whereJsonContains('kategori', 'pinjaman')->count();
