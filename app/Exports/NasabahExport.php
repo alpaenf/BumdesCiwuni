@@ -6,17 +6,15 @@ use App\Models\Nasabah;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Contracts\View\View;
 
-class NasabahExport implements FromView, ShouldAutoSize, WithStyles
+class NasabahExport implements FromView, ShouldAutoSize
 {
     private $data;
     private $filters;
     private $summary;
 
-    public function __construct(private Request $request)
+    public function __construct(Request $request)
     {
         $query = Nasabah::query();
         if ($request->filled('start_date')) $query->whereDate('tanggal_bergabung', '>=', $request->start_date);
@@ -33,19 +31,11 @@ class NasabahExport implements FromView, ShouldAutoSize, WithStyles
 
     public function view(): View
     {
-        // Gunakan view yang sama dengan PDF
         return view('exports.simpan-pinjam.laporan.nasabah', [
             'data'    => $this->data,
             'filters' => $this->filters,
             'summary' => $this->summary,
-            'isExcel' => true, // Flag opsional jika butuh penyesuaian di Blade
+            'isExcel' => true,
         ]);
-    }
-
-    public function styles(Worksheet $sheet)
-    {
-        return [
-            1 => ['font' => ['bold' => true]],
-        ];
     }
 }

@@ -10,8 +10,20 @@
         ['label' => 'Tidak Aktif',     'value' => $summary['tidak_aktif']],
     ];
 @endphp
-@include('exports.simpan-pinjam.laporan.layout')
-
+@if(!isset($isExcel))
+    @include('exports.simpan-pinjam.laporan.layout')
+@else
+    <!-- Saat mode Excel, tambahkan baris judul manual sebagai baris tabel agar tercetak -->
+    <table>
+        <tr>
+            <th colspan="9" style="font-size:14pt; font-weight:bold; text-align:center">BUMDes Dammar Wulan - Unit Simpan Pinjam</th>
+        </tr>
+        <tr>
+            <th colspan="9" style="font-size:12pt; font-weight:bold; text-align:center">Laporan Data Nasabah</th>
+        </tr>
+        <tr><td colspan="9"></td></tr>
+    </table>
+@endif
 <table>
     <thead>
         <tr>
