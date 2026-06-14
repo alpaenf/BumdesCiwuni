@@ -63,8 +63,8 @@ const formatCurrency = (value) =>
 
             <!-- Bento Grid Stats -->
             <div class="grid grid-cols-12 gap-4">
-                <!-- Saldo Kas -->
-                <div class="col-span-12 md:col-span-4 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-primary transition-all shadow-sm">
+                <!-- Tabungan Reguler -->
+                <div class="col-span-12 md:col-span-3 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-primary transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="p-2.5 bg-blue-50 rounded-lg text-blue-700">
                             <span class="material-symbols-outlined">account_balance_wallet</span>
@@ -74,14 +74,31 @@ const formatCurrency = (value) =>
                         </span>
                     </div>
                     <div class="mt-4">
-                        <p class="text-secondary text-sm font-medium">Total Saldo Kas</p>
-                        <h3 class="text-xl font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalSaldoKas) }}</h3>
-                        <p class="text-[11px] text-outline mt-1">Akumulasi tabungan reguler & sembako</p>
+                        <p class="text-secondary text-sm font-medium">Tabungan Reguler</p>
+                        <h3 class="text-xl font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalTabunganReguler) }}</h3>
+                        <p class="text-[11px] text-outline mt-1">Total saldo tabungan reguler</p>
+                    </div>
+                </div>
+
+                <!-- Tabungan Sembako -->
+                <div class="col-span-12 md:col-span-3 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-orange-500 transition-all shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div class="p-2.5 bg-orange-50 rounded-lg text-orange-700">
+                            <span class="material-symbols-outlined">savings</span>
+                        </div>
+                        <span class="text-slate-700 font-semibold text-xs flex items-center gap-1">
+                            Aktif
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-secondary text-sm font-medium">Tabungan Sembako</p>
+                        <h3 class="text-xl font-bold text-slate-900 font-mono mt-1">{{ formatCurrency(stats.totalTabunganSembako) }}</h3>
+                        <p class="text-[11px] text-outline mt-1">Total saldo tabungan sembako</p>
                     </div>
                 </div>
 
                 <!-- Piutang Berjalan -->
-                <div class="col-span-12 md:col-span-4 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-indigo-500 transition-all shadow-sm">
+                <div class="col-span-12 md:col-span-3 bg-white p-5 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-indigo-500 transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="p-2.5 bg-indigo-50 rounded-lg text-indigo-700">
                             <span class="material-symbols-outlined">payments</span>
@@ -98,7 +115,7 @@ const formatCurrency = (value) =>
                 </div>
 
                 <!-- Nasabah Aktif -->
-                <div class="col-span-12 md:col-span-4 bg-primary text-white p-5 rounded-xl flex flex-col justify-between relative overflow-hidden shadow-sm">
+                <div class="col-span-12 md:col-span-3 bg-primary text-white p-5 rounded-xl flex flex-col justify-between relative overflow-hidden shadow-sm">
                     <div class="absolute -right-4 -bottom-4 opacity-10">
                         <span class="material-symbols-outlined text-[100px]">groups</span>
                     </div>
