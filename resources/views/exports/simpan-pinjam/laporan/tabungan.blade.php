@@ -18,7 +18,7 @@
         ['label' => 'Total Administrasi','value'=> 'Rp ' . number_format($summary['total_admin'], 0, ',', '.')],
     ];
 @endphp
-@include('exports.laporan.layout')
+@include('exports.simpan-pinjam.laporan.layout')
 
 <table>
     <thead>
