@@ -65,28 +65,20 @@ class MigrasiNomorRekening extends Command
 
         $rows = [];
 
-        // Konversi format lama dulu
-        foreach ($standardOnes as $nasabah) {
+        // Gabungkan yang format lama dan custom
+        $toFix = array_merge($standardOnes, $customOnes);
+
+        // Urutkan berdasarkan ID agar adil
+        usort($toFix, fn($a, $b) => $a->id <=> $b->id);
+
+        foreach ($toFix as $nasabah) {
             $maxStdSeq++;
             $newRek  = $maxStdSeq . $year;
             $rows[] = [
                 'nasabah' => $nasabah,
                 'lama'    => $nasabah->nomor_rekening,
                 'baru'    => $newRek,
-                'jenis'   => 'Format lama',
-            ];
-        }
-
-        // Custom diletakkan di akhir range (mulai dari 9001)
-        $customSeq = 9000;
-        foreach ($customOnes as $nasabah) {
-            $customSeq++;
-            $newRek  = $customSeq . $year;
-            $rows[] = [
-                'nasabah' => $nasabah,
-                'lama'    => $nasabah->nomor_rekening,
-                'baru'    => $newRek,
-                'jenis'   => 'Custom',
+                'jenis'   => 'Dikonversi ke otomatis',
             ];
         }
 
