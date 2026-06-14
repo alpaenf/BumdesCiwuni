@@ -26,27 +26,45 @@ class NomorService
     public function generateNomorRekening(): string
     {
         $year = now()->year;
-        
-        // Ambil nomor rekening terakhir untuk melanjutkan urutan
-        $last = Nasabah::orderByDesc('id')->value('nomor_rekening');
+        $suffix = (string) $year; // "2026"
+        $sufLen = strlen($suffix); // 4
 
-        $seq = 1001; // Urutan default awal
+        // Format standar = tepat 8 karakter: 4 digit seq (1001-9999) + 4 digit tahun
+        // Nomor custom (lebih dari 8 karakter atau format lain) TIDAK ikut dihitung,
+        // sehingga urutan auto selalu bersih dari 1001 ke atas.
+        $standardLength = 4 + $sufLen; // 8 karakter
 
-        if ($last) {
-            // Cek jika nomor rekening sebelumnya menggunakan format lama (misal: 00001.2026)
-            if (str_contains($last, '.')) {
-                $parts = explode('.', $last);
-                $oldSeq = (int) $parts[0];
-                $seq = $oldSeq >= 1001 ? $oldSeq + 1 : 1001;
-            } 
-            // Cek jika nomor rekening sebelumnya menggunakan format baru (misal: 10012026)
-            elseif (strlen($last) >= 8 && is_numeric($last)) {
-                $seqStr = substr($last, 0, -4); // Ambil urutannya saja dengan membuang 4 digit terakhir (tahun)
-                $seq = ((int) $seqStr) + 1;
+        $maxSeq = 1000; // default, akan jadi 1001 saat di-increment
+
+        Nasabah::whereNotNull('nomor_rekening')->pluck('nomor_rekening')->each(function ($rekening) use (&$maxSeq, $suffix, $sufLen, $standardLength) {
+            $rekening = trim($rekening);
+
+            // Hanya proses format standar: tepat 8 digit numerik, diakhiri tahun ini
+            if (
+                is_numeric($rekening) &&
+                strlen($rekening) === $standardLength &&
+                str_ends_with($rekening, $suffix)
+            ) {
+                $seq = (int) substr($rekening, 0, -$sufLen);
+                if ($seq >= 1001 && $seq > $maxSeq) {
+                    $maxSeq = $seq;
+                }
             }
-        }
 
-        return $seq . $year;
+            // Kompatibilitas format lama: 00001.2026 (seq maks 5 digit sebelum titik)
+            if (str_contains($rekening, '.')) {
+                $parts = explode('.', $rekening);
+                $seq = (int) $parts[0];
+                // geser ke rentang 1001+ agar tidak bertabrakan
+                $seq = $seq < 1001 ? $seq + 1000 : $seq;
+                // hanya ikut dihitung jika masih dalam range standar (1001-9999)
+                if ($seq >= 1001 && $seq <= 9999 && $seq > $maxSeq) {
+                    $maxSeq = $seq;
+                }
+            }
+        });
+
+        return ($maxSeq + 1) . $year;
     }
 
     /**
