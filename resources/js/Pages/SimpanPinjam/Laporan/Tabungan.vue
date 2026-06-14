@@ -99,37 +99,41 @@ const excelUrl = computed(() => `${route('laporan.tabungan.excel')}?${buildQuery
             </div>
 
             <!-- Filters + Export -->
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex flex-col gap-3 sm:flex-row items-center">
-                    <div class="flex rounded-lg border border-[color:var(--color-outline-variant)] overflow-hidden">
-                        <button @click="jenis = 'reguler'" class="px-4 py-2.5 text-sm font-semibold transition"
-                            :class="jenis === 'reguler' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
-                            Reguler
-                        </button>
-                        <button @click="jenis = 'sembako'" class="px-4 py-2.5 text-sm font-semibold transition"
-                            :class="jenis === 'sembako' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
-                            Sembako
-                        </button>
-                        <button @click="jenis = 'gabungan'" class="px-4 py-2.5 text-sm font-semibold transition"
-                            :class="jenis === 'gabungan' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
-                            Gabungan
-                        </button>
+            <!-- Jenis Toggle -->
+            <div class="flex overflow-x-auto rounded-lg border border-[color:var(--color-outline-variant)]">
+                <button @click="jenis = 'reguler'" class="flex-shrink-0 px-4 py-2.5 text-sm font-semibold transition"
+                    :class="jenis === 'reguler' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
+                    Reguler
+                </button>
+                <button @click="jenis = 'sembako'" class="flex-shrink-0 px-4 py-2.5 text-sm font-semibold transition"
+                    :class="jenis === 'sembako' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
+                    Sembako
+                </button>
+                <button @click="jenis = 'gabungan'" class="flex-shrink-0 px-4 py-2.5 text-sm font-semibold transition"
+                    :class="jenis === 'gabungan' ? 'bg-[color:var(--color-primary)] text-white' : 'bg-white text-[color:var(--color-secondary)] hover:bg-[color:var(--color-surface-container-low)]'">
+                    Gabungan
+                </button>
+            </div>
+
+            <!-- Filters + Export -->
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center lg:gap-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-medium text-[color:var(--color-secondary)]">Filter Hari</label>
+                        <div class="flex items-center gap-2">
+                            <input v-model="tanggal" type="date"
+                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                            <button v-if="tanggal" @click="tanggal = ''" class="flex-shrink-0 text-xs text-[color:var(--color-secondary)] hover:text-red-500">Reset</button>
+                        </div>
                     </div>
-                    <!-- Filter Hari -->
-                    <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Hari:</label>
-                    <input v-model="tanggal" type="date"
-                        class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
-                    <button v-if="tanggal" @click="tanggal = ''" class="text-xs text-[color:var(--color-secondary)] hover:text-red-500">✕ Reset</button>
-                    <span v-if="tanggal" class="text-sm font-semibold text-[color:var(--color-primary)]">{{ formatTanggalLabel(tanggal) }}</span>
-
-                    <span class="hidden sm:inline text-gray-300">|</span>
-
-                    <!-- Filter Bulan -->
-                    <label class="text-sm font-medium text-[color:var(--color-secondary)]">Filter Bulan:</label>
-                    <input v-model="bulan" type="month"
-                        class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
-                    <button v-if="bulan" @click="bulan = ''" class="text-xs text-[color:var(--color-secondary)] hover:text-red-500">✕ Reset</button>
-                    <span v-if="bulan" class="text-sm font-semibold text-[color:var(--color-primary)]">{{ formatBulanLabel(bulan) }}</span>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-medium text-[color:var(--color-secondary)]">Filter Bulan</label>
+                        <div class="flex items-center gap-2">
+                            <input v-model="bulan" type="month"
+                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                            <button v-if="bulan" @click="bulan = ''" class="flex-shrink-0 text-xs text-[color:var(--color-secondary)] hover:text-red-500">Reset</button>
+                        </div>
+                    </div>
                 </div>
                 <ExportButtons :pdf-url="pdfUrl" :excel-url="excelUrl" />
             </div>
