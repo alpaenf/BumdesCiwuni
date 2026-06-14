@@ -24,9 +24,31 @@ watch([search, status, kategori], () => {
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
 
-const deleteNasabah = (id, nama) => {
-    if (!confirm(`PERINGATAN: Menghapus nasabah "${nama}" akan ikut MENGHAPUS SEMUA DATA TRANSAKSI (Tabungan, Pinjaman, Setoran/Uang Masuk, dll) miliknya secara permanen.\n\nApakah Anda yakin tetap ingin menghapusnya?`)) return;
-    router.delete(route('nasabah.destroy', id));
+import Modal from '@/Components/Modal.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+
+const confirmingUserDeletion = ref(false);
+const nasabahToDelete = ref(null);
+
+const confirmUserDeletion = (id, nama) => {
+    nasabahToDelete.value = { id, nama };
+    confirmingUserDeletion.value = true;
+};
+
+const deleteNasabah = () => {
+    if (!nasabahToDelete.value) return;
+    router.delete(route('nasabah.destroy', nasabahToDelete.value.id), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
+};
+
+const closeModal = () => {
+    confirmingUserDeletion.value = false;
+    setTimeout(() => {
+        nasabahToDelete.value = null;
+    }, 200);
 };
 
 // WA modal
@@ -156,7 +178,7 @@ function openWaModal(row) {
                                         <Link :href="route('nasabah.edit', row.id)" class="rounded-lg p-1.5 text-blue-600 transition hover:bg-blue-50" title="Edit">
                                             <span class="material-symbols-outlined text-base">edit</span>
                                         </Link>
-                                        <button @click="deleteNasabah(row.id, row.nama)" class="rounded-lg p-1.5 text-red-600 transition hover:bg-red-50" title="Hapus">
+                                        <button @click="confirmUserDeletion(row.id, row.nama)" class="rounded-lg p-1.5 text-red-600 transition hover:bg-red-50" title="Hapus">
                                             <span class="material-symbols-outlined text-base">delete</span>
                                         </button>
                                     </div>
@@ -195,4 +217,28 @@ function openWaModal(row) {
         :nasabah="selectedNasabahWa"
         :pinjaman-aktif="selectedNasabahWa?.pinjaman?.filter(p => p.status === 'aktif') ?? []"
     />
+
+    <!-- Delete Confirmation Modal -->
+    <Modal :show="confirmingUserDeletion" @close="closeModal">
+        <div class="p-6">
+            <h2 class="text-lg font-semibold text-slate-900">
+                Peringatan: Hapus Nasabah
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-600">
+                Menghapus nasabah <strong class="text-slate-900">"{{ nasabahToDelete?.nama }}"</strong> akan ikut menghapus semua data transaksi (Tabungan, Pinjaman, Setoran/Uang Masuk, dll) miliknya secara permanen.
+            </p>
+            <p class="mt-1 text-sm text-slate-600">
+                Apakah Anda yakin tetap ingin menghapusnya?
+            </p>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <SecondaryButton @click="closeModal"> Batal </SecondaryButton>
+
+                <DangerButton @click="deleteNasabah">
+                    Ya, Hapus Permanen
+                </DangerButton>
+            </div>
+        </div>
+    </Modal>
 </template>
