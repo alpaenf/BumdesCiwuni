@@ -196,7 +196,7 @@ class LaporanController extends Controller
 
         return Inertia::render('SimpanPinjam/Laporan/Angsuran', [
             'angsuran' => $angsuran,
-            'filters'  => $request->only(['start_date', 'end_date', 'bulan']),
+            'filters'  => $request->only(['start_date', 'end_date', 'bulan', 'tanggal']),
             'summary'  => [
                 'total_transaksi' => $angsuran->count(),
                 'total_bayar'     => $angsuran->sum('jumlah_bayar'),
@@ -210,7 +210,7 @@ class LaporanController extends Controller
         $this->applyDateFilter($query, $request, 'tanggal');
         $angsuran = $query->orderByDesc('tanggal')->get();
         $summary  = ['total_transaksi' => $angsuran->count(), 'total_bayar' => $angsuran->sum('jumlah_bayar')];
-        $filters  = $request->only(['start_date', 'end_date']);
+        $filters  = $request->only(['start_date', 'end_date', 'bulan', 'tanggal']);
 
         $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.angsuran', compact('angsuran', 'summary', 'filters'))
             ->setPaper('a4', 'landscape');
@@ -254,6 +254,11 @@ class LaporanController extends Controller
     // =====================================================================
     private function applyDateFilter($query, Request $request, string $field): void
     {
+        if ($request->filled('tanggal')) {
+            $query->whereDate($field, '=', $request->tanggal);
+            return;
+        }
+
         if ($request->filled('bulan')) {
             try {
                 $date = \Carbon\Carbon::createFromFormat('Y-m', $request->bulan);

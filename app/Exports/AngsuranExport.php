@@ -20,15 +20,19 @@ class AngsuranExport implements FromView, ShouldAutoSize, WithDrawings
     public function __construct(Request $request)
     {
         $query = Angsuran::with('pinjaman.nasabah');
-        if ($request->filled('start_date')) $query->whereDate('tanggal', '>=', $request->start_date);
-        if ($request->filled('end_date'))   $query->whereDate('tanggal', '<=', $request->end_date);
-        if ($request->filled('bulan')) {
-            $query->whereYear('tanggal', substr($request->bulan, 0, 4))
-                  ->whereMonth('tanggal', substr($request->bulan, 5, 2));
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', '=', $request->tanggal);
+        } else {
+            if ($request->filled('start_date')) $query->whereDate('tanggal', '>=', $request->start_date);
+            if ($request->filled('end_date'))   $query->whereDate('tanggal', '<=', $request->end_date);
+            if ($request->filled('bulan')) {
+                $query->whereYear('tanggal', substr($request->bulan, 0, 4))
+                      ->whereMonth('tanggal', substr($request->bulan, 5, 2));
+            }
         }
         $this->angsuran = $query->orderByDesc('tanggal')->get();
 
-        $this->filters = $request->only(['start_date', 'end_date', 'bulan']);
+        $this->filters = $request->only(['start_date', 'end_date', 'bulan', 'tanggal']);
         $this->summary = [
             'total_transaksi' => $this->angsuran->count(),
             'total_bayar'     => $this->angsuran->sum('jumlah_bayar'),
