@@ -38,9 +38,9 @@
     <thead>
         <tr>
             <th class="text-center" style="width:24px">No</th>
-            <th>Tanggal</th>
             <th>Nasabah</th>
             <th>No. Rekening</th>
+            <th>Tanggal</th>
             <th class="text-center">Angsuran Ke</th>
             <th>Hari Pasaran</th>
             <th class="text-right">Jumlah Bayar (Rp)</th>
@@ -51,9 +51,9 @@
         @forelse($angsuran as $i => $row)
         <tr>
             <td class="text-center">{{ $i + 1 }}</td>
-            <td>{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y') }}</td>
             <td>{{ $row->pinjaman?->nasabah?->nama ?? '-' }}</td>
             <td style="mso-number-format:'\@'">{{ $row->pinjaman?->nasabah?->nomor_rekening ?? '-' }}</td>
+            <td>{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y') }}</td>
             <td class="text-center">{{ $row->angsuran_ke }}</td>
             <td>{{ ucfirst($row->pasaran ?? '-') }}</td>
             <td class="text-right">{{ number_format($row->jumlah_bayar, 0, ',', '.') }}</td>

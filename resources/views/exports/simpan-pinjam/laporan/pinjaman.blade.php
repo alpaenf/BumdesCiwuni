@@ -11,11 +11,12 @@
             : 'Semua periode';
     }
     $summaryItems = [
-        ['label' => 'Total Pinjaman', 'value' => $summary['total']],
-        ['label' => 'Aktif',          'value' => $summary['aktif']],
-        ['label' => 'Lunas',          'value' => $summary['lunas']],
-        ['label' => 'Total Pokok',    'value' => 'Rp ' . number_format($summary['total_pokok'], 0, ',', '.')],
-        ['label' => 'Sisa Tagihan',   'value' => 'Rp ' . number_format($summary['total_sisa'], 0, ',', '.')],
+        ['label' => 'Total Pinjaman',  'value' => $summary['total']],
+        ['label' => 'Aktif',           'value' => $summary['aktif']],
+        ['label' => 'Lunas',           'value' => $summary['lunas']],
+        ['label' => 'Total Pokok',     'value' => 'Rp ' . number_format($summary['total_pokok'], 0, ',', '.')],
+        ['label' => 'Total Tagihan',   'value' => 'Rp ' . number_format($summary['total_tagihan'], 0, ',', '.')],
+        ['label' => 'Total Sisa',      'value' => 'Rp ' . number_format($summary['total_sisa'], 0, ',', '.')],
     ];
 @endphp
 @if(!isset($isExcel))
