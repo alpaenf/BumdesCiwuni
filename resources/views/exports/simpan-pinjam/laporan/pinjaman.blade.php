@@ -1,9 +1,15 @@
 @php
     $headerColor = '#1A237E';
     $reportTitle = 'Laporan Data Pinjaman';
-    $periodLabel = (isset($filters['start_date']) || isset($filters['end_date']))
-        ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
-        : 'Semua periode';
+    if (isset($filters['tanggal']) && $filters['tanggal']) {
+        $periodLabel = 'Tanggal: ' . \Carbon\Carbon::parse($filters['tanggal'])->format('d/m/Y');
+    } elseif (isset($filters['bulan']) && $filters['bulan']) {
+        $periodLabel = 'Bulan: ' . \Carbon\Carbon::createFromFormat('Y-m', $filters['bulan'])->translatedFormat('F Y');
+    } else {
+        $periodLabel = (isset($filters['start_date']) || isset($filters['end_date']))
+            ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
+            : 'Semua periode';
+    }
     $summaryItems = [
         ['label' => 'Total Pinjaman', 'value' => $summary['total']],
         ['label' => 'Aktif',          'value' => $summary['aktif']],

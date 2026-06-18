@@ -143,7 +143,7 @@ class LaporanController extends Controller
 
         return Inertia::render('SimpanPinjam/Laporan/Pinjaman', [
             'pinjaman' => $enriched,
-            'filters'  => $request->only(['start_date', 'end_date', 'status', 'bulan']),
+            'filters'  => $request->only(['start_date', 'end_date', 'status', 'bulan', 'tanggal']),
             'summary'  => [
                 'total'         => $pinjaman->count(),
                 'aktif'         => $pinjaman->where('status', 'aktif')->count(),
@@ -173,7 +173,7 @@ class LaporanController extends Controller
             'total_tagihan' => $rawPinjaman->sum('total_tagihan'),
             'total_sisa'    => $rawPinjaman->sum('sisa_pinjaman'),
         ];
-        $filters = $request->only(['start_date', 'end_date', 'status']);
+        $filters = $request->only(['start_date', 'end_date', 'status', 'bulan', 'tanggal']);
 
         $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.pinjaman', compact('pinjaman', 'summary', 'filters'))
             ->setPaper('a4', 'landscape');

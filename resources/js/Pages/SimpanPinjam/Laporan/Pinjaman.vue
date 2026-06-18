@@ -6,7 +6,16 @@ import ExportButtons from '@/Components/ExportButtons.vue';
 
 const props = defineProps({ pinjaman: Array, filters: Object, summary: Object });
 const bulan  = ref(props.filters?.bulan  ?? '');
+const tanggal = ref(props.filters?.tanggal ?? '');
 const status = ref(props.filters?.status ?? '');
+
+watch(bulan, (newVal) => {
+    if (newVal) tanggal.value = '';
+});
+
+watch(tanggal, (newVal) => {
+    if (newVal) bulan.value = '';
+});
 
 const formatBulanLabel = (val) => {
     if (!val) return '';
@@ -14,12 +23,21 @@ const formatBulanLabel = (val) => {
     return new Date(y, parseInt(m) - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 };
 
+const formatTanggalLabel = (val) => {
+    if (!val) return '';
+    return new Date(val).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
 let timeout;
-watch([bulan, status], () => {
+watch([bulan, tanggal, status], () => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
         const params = { status: status.value };
-        if (bulan.value) {
+        if (tanggal.value) {
+            params.start_date = tanggal.value;
+            params.end_date   = tanggal.value;
+            params.tanggal    = tanggal.value;
+        } else if (bulan.value) {
             const [y, m] = bulan.value.split('-');
             const lastDay = new Date(y, m, 0).getDate();
             params.start_date = `${y}-${m}-01`;
@@ -43,7 +61,11 @@ const statusColor = {
 
 const buildQuery = computed(() => {
     const q = { status: status.value };
-    if (bulan.value) {
+    if (tanggal.value) {
+        q.start_date = tanggal.value;
+        q.end_date   = tanggal.value;
+        q.tanggal    = tanggal.value;
+    } else if (bulan.value) {
         const [y, m] = bulan.value.split('-');
         const lastDay = new Date(y, m, 0).getDate();
         q.start_date = `${y}-${m}-01`;
@@ -98,7 +120,15 @@ const excelUrl = computed(() => `${route('laporan.pinjaman.excel')}?${buildQuery
 
             <!-- Filters + Export -->
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center lg:gap-3">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:flex lg:items-center lg:gap-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-medium text-[color:var(--color-secondary)]">Filter Hari</label>
+                        <div class="flex items-center gap-2">
+                            <input v-model="tanggal" type="date"
+                                class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                            <button v-if="tanggal" @click="tanggal = ''" class="flex-shrink-0 text-xs text-[color:var(--color-secondary)] hover:text-red-500">Reset</button>
+                        </div>
+                    </div>
                     <div class="flex flex-col gap-1">
                         <label class="text-xs font-medium text-[color:var(--color-secondary)]">Filter Bulan</label>
                         <div class="flex items-center gap-2">
