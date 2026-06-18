@@ -21,18 +21,22 @@ class PinjamanExport implements FromView, ShouldAutoSize, WithDrawings
     public function __construct(Request $request, private PinjamanStatusService $statusService)
     {
         $query = Pinjaman::with(['nasabah', 'angsuran']);
-        if ($request->filled('start_date')) $query->whereDate('tanggal_akad', '>=', $request->start_date);
-        if ($request->filled('end_date'))   $query->whereDate('tanggal_akad', '<=', $request->end_date);
-        if ($request->filled('status'))     $query->where('status', $request->status);
-        if ($request->filled('bulan')) {
-            $query->whereYear('tanggal_akad', substr($request->bulan, 0, 4))
-                  ->whereMonth('tanggal_akad', substr($request->bulan, 5, 2));
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal_akad', '=', $request->tanggal);
+        } else {
+            if ($request->filled('start_date')) $query->whereDate('tanggal_akad', '>=', $request->start_date);
+            if ($request->filled('end_date'))   $query->whereDate('tanggal_akad', '<=', $request->end_date);
+            if ($request->filled('bulan')) {
+                $query->whereYear('tanggal_akad', substr($request->bulan, 0, 4))
+                      ->whereMonth('tanggal_akad', substr($request->bulan, 5, 2));
+            }
         }
+        if ($request->filled('status')) $query->where('status', $request->status);
 
         $rawPinjaman = $query->orderByDesc('tanggal_akad')->get();
         $this->pinjaman = $rawPinjaman->map(fn($p) => array_merge($p->toArray(), ['computed_status' => $statusService->status($p)]));
 
-        $this->filters = $request->only(['start_date', 'end_date', 'status', 'bulan']);
+        $this->filters = $request->only(['start_date', 'end_date', 'status', 'bulan', 'tanggal']);
         $this->summary = [
             'total'         => $rawPinjaman->count(),
             'aktif'         => $rawPinjaman->where('status', 'aktif')->count(),
