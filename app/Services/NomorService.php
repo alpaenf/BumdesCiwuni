@@ -12,15 +12,11 @@ class NomorService
      */
     public function generateNomorRegistrasi(): string
     {
-        $last = Nasabah::orderByDesc('id')->value('nomor_registrasi');
+        $max = Nasabah::pluck('nomor_registrasi')
+            ->map(fn($n) => (int) $n)
+            ->max();
 
-        if (!$last) {
-            return '1';
-        }
-
-        $next = ((int) $last) + 1;
-
-        return (string) $next;
+        return (string) ($max ? $max + 1 : 1);
     }
 
     public function generateNomorRekening(): string

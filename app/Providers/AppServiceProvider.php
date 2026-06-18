@@ -12,7 +12,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Jika folder public_html ada (kondisi di hosting cPanel), gunakan sebagai public_path
+        if (is_dir(base_path('../public_html'))) {
+            $this->app->usePublicPath(base_path('../public_html'));
+        }
     }
 
     /**
