@@ -247,11 +247,27 @@ class LaporanController extends Controller
         return $pdf->download('laporan-kas-' . now()->format('Ymd') . '.pdf');
     }
 
-    // Kas doesn't need tabular Excel — use PDF only (summary report)
-
     // =====================================================================
     // HELPERS
     // =====================================================================
+    private function getBulanOptions()
+    {
+        return collect([
+            ['value' => '',  'label' => 'Semua Bulan'],
+            ['value' => 1,   'label' => 'Januari'],
+            ['value' => 2,   'label' => 'Februari'],
+            ['value' => 3,   'label' => 'Maret'],
+            ['value' => 4,   'label' => 'April'],
+            ['value' => 5,   'label' => 'Mei'],
+            ['value' => 6,   'label' => 'Juni'],
+            ['value' => 7,   'label' => 'Juli'],
+            ['value' => 8,   'label' => 'Agustus'],
+            ['value' => 9,   'label' => 'September'],
+            ['value' => 10,  'label' => 'Oktober'],
+            ['value' => 11,  'label' => 'November'],
+            ['value' => 12,  'label' => 'Desember'],
+        ]);
+    }
     private function applyDateFilter($query, Request $request, string $field): void
     {
         if ($request->filled('tanggal')) {
@@ -278,6 +294,21 @@ class LaporanController extends Controller
 
     private function buildKasSummary(Request $request): array
     {
+        $tahun = $request->input('tahun', now()->year);
+        $bulan = $request->input('bulan');
+        $tanggal = $request->input('tanggal');
+
+        $applyDateFilterKas = function ($query, string $field) use ($tahun, $bulan, $tanggal) {
+            if ($tanggal) {
+                $query->whereDate($field, $tanggal);
+            } else {
+                $query->whereYear($field, $tahun);
+                if ($bulan) {
+                    $query->whereMonth($field, $bulan);
+                }
+            }
+        };
+
         $querySetorReguler = TransaksiTabungan::where('jenis_transaksi', 'setor')
             ->whereHas('tabungan', fn($q) => $q->where('jenis_tabungan', Tabungan::JENIS_REGULER));
         $querySetorSembako = TransaksiTabungan::where('jenis_transaksi', 'setor')
@@ -291,12 +322,12 @@ class LaporanController extends Controller
         $queryAngsuran = Angsuran::query();
         $queryPinjaman = Pinjaman::query();
 
-        $this->applyDateFilter($querySetorReguler, $request, 'tanggal');
-        $this->applyDateFilter($querySetorSembako, $request, 'tanggal');
-        $this->applyDateFilter($queryTarikReguler, $request, 'tanggal');
-        $this->applyDateFilter($queryTarikSembako, $request, 'tanggal');
-        $this->applyDateFilter($queryAngsuran, $request, 'tanggal');
-        $this->applyDateFilter($queryPinjaman, $request, 'tanggal_akad');
+        $applyDateFilterKas($querySetorReguler, 'tanggal');
+        $applyDateFilterKas($querySetorSembako, 'tanggal');
+        $applyDateFilterKas($queryTarikReguler, 'tanggal');
+        $applyDateFilterKas($queryTarikSembako, 'tanggal');
+        $applyDateFilterKas($queryAngsuran, 'tanggal');
+        $applyDateFilterKas($queryPinjaman, 'tanggal_akad');
 
         $masukReguler  = $querySetorReguler->sum('nominal');
         $masukSembako  = $querySetorSembako->sum('nominal');
@@ -309,11 +340,15 @@ class LaporanController extends Controller
         $totalMasuk  = $masukReguler + $masukSembako + $masukAngsuran;
         $totalKeluar = $keluarReguler + $keluarSembako + $keluarPinjaman;
 
-        $saldoReguler = Tabungan::where('jenis_tabungan', Tabungan::JENIS_REGULER)->sum('saldo');
-        $saldoSembako = Tabungan::where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->sum('saldo');
-        $totalAngsuranAll = Angsuran::sum('jumlah_bayar');
-        $totalPinjamanAll = Pinjaman::sum('pinjaman_pokok');
-        $totalPinjamanAllTagihan = Pinjaman::sum('total_tagihan');
+        // Apply filters to the "All" metrics too
+        $saldoReguler = $masukReguler - $keluarReguler;
+        $saldoSembako = $masukSembako - $keluarSembako;
+        $totalAngsuranAll = $masukAngsuran;
+        $totalPinjamanAll = $keluarPinjaman;
+        
+        $queryPinjamanTagihan = Pinjaman::query();
+        $applyDateFilterKas($queryPinjamanTagihan, 'tanggal_akad');
+        $totalPinjamanAllTagihan = $queryPinjamanTagihan->sum('total_tagihan');
 
         $masukRegulerItems = (clone $querySetorReguler)->with('tabungan.nasabah')->get();
         $masukSembakoItems = (clone $querySetorSembako)->with('tabungan.nasabah')->get();
@@ -345,6 +380,12 @@ class LaporanController extends Controller
             'keluar_reguler'  => $keluarRegulerItems,
             'keluar_sembako'  => $keluarSembakoItems,
             'keluar_pinjaman' => $keluarPinjamanItems,
+            
+            'tahunOptions'    => collect(range(now()->year, now()->year - 5))->values(),
+            'bulanOptions'    => $this->getBulanOptions(),
+            'tahun'           => (int) $tahun,
+            'bulan'           => $bulan ? (int) $bulan : null,
+            'tanggal'         => $tanggal,
         ]];
     }
 }

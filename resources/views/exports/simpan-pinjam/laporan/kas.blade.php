@@ -1,9 +1,14 @@
 @php
     $headerColor = '#00695C';
     $reportTitle = 'Laporan Kas';
-    $periodLabel = (isset($filters['start_date']) || isset($filters['end_date']))
-        ? 'Periode: ' . ($filters['start_date'] ?? '...') . ' s/d ' . ($filters['end_date'] ?? 'sekarang')
-        : 'Semua periode';
+    
+    $periodLabel = 'Periode: Semua Bulan ' . ($filters['tahun'] ?? date('Y'));
+    if (!empty($filters['tanggal'])) {
+        $periodLabel = 'Periode: ' . \Carbon\Carbon::parse($filters['tanggal'])->translatedFormat('d F Y');
+    } elseif (!empty($filters['bulan'])) {
+        $periodLabel = 'Periode: Bulan ' . $filters['bulan'] . ' Tahun ' . ($filters['tahun'] ?? date('Y'));
+    }
+    
     $summaryItems = [];
 @endphp
 @include('exports.simpan-pinjam.laporan.layout')

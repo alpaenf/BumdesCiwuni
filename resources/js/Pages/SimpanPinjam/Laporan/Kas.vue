@@ -5,28 +5,31 @@ import { ref, watch, computed } from 'vue';
 import ExportButtons from '@/Components/ExportButtons.vue';
 
 const props = defineProps({ summary: Object, rincian: Object, filters: Object });
-const startDate = ref(props.filters?.start_date ?? '');
-const endDate = ref(props.filters?.end_date ?? '');
+
+const selectedTahun = ref(props.rincian?.tahun || props.filters?.tahun || new Date().getFullYear());
+const selectedBulan = ref(props.rincian?.bulan ?? props.filters?.bulan ?? '');
+const selectedTanggal = ref(props.rincian?.tanggal ?? props.filters?.tanggal ?? '');
 
 let timeout;
 const applyFilter = () => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-        const params = {};
-        if (startDate.value) params.start_date = startDate.value;
-        if (endDate.value) params.end_date = endDate.value;
+        const params = { tahun: selectedTahun.value };
+        if (selectedBulan.value) params.bulan = selectedBulan.value;
+        if (selectedTanggal.value) params.tanggal = selectedTanggal.value;
         router.get(route('laporan.kas'), params, { preserveState: true, replace: true });
     }, 400);
 };
 
-watch([startDate, endDate], applyFilter);
+watch([selectedTahun, selectedBulan, selectedTanggal], applyFilter);
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
 const buildQuery = computed(() => {
     const params = new URLSearchParams();
-    if (startDate.value) params.append('start_date', startDate.value);
-    if (endDate.value) params.append('end_date', endDate.value);
+    if (selectedTahun.value) params.append('tahun', selectedTahun.value);
+    if (selectedBulan.value) params.append('bulan', selectedBulan.value);
+    if (selectedTanggal.value) params.append('tanggal', selectedTanggal.value);
     return params.toString();
 });
 const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`);
@@ -51,8 +54,8 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                         <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800">Total Akumulasi Keseluruhan (Sepanjang Waktu)</h3>
-                        <p class="text-xs text-[color:var(--color-secondary)]">Akumulasi total dari awal berdirinya sistem (mengabaikan filter tanggal)</p>
+                        <h3 class="font-bold text-slate-800">Ringkasan Saldo & Transaksi Periode Ini</h3>
+                        <p class="text-xs text-[color:var(--color-secondary)]">Akumulasi pada periode yang dipilih pada filter di bawah</p>
                     </div>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -108,21 +111,18 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
             <!-- Filters + Export -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-[color:var(--color-outline-variant)] bg-white p-4 shadow-sm">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div class="flex flex-col">
-                        <label class="text-xs font-semibold text-[color:var(--color-secondary)] mb-1">Mulai Tanggal</label>
-                        <input v-model="startDate" type="date" :max="endDate"
-                            class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
+                    <div class="flex items-center gap-1">
+                        <input type="date" v-model="selectedTanggal" @change="() => { selectedBulan = ''; }" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        <button v-if="selectedTanggal" @click="() => { selectedTanggal = ''; }" class="text-xs text-red-500 font-medium hover:underline">Reset</button>
                     </div>
-                    <div class="flex flex-col">
-                        <label class="text-xs font-semibold text-[color:var(--color-secondary)] mb-1">Sampai Tanggal</label>
-                        <input v-model="endDate" type="date" :min="startDate"
-                            class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2 text-sm focus:outline-none focus:border-[color:var(--color-primary)]" />
-                    </div>
-                    <div class="flex items-end h-full pt-5">
-                         <button v-if="startDate || endDate" @click="startDate = ''; endDate = ''" class="text-xs font-semibold text-red-600 hover:text-red-800">✕ Reset Filter</button>
-                    </div>
+                    <select v-model="selectedBulan" @change="() => { selectedTanggal = ''; }" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        <option v-for="b in rincian?.bulanOptions" :key="b.value" :value="b.value">{{ b.label }}</option>
+                    </select>
+                    <select v-model="selectedTahun" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        <option v-for="y in rincian?.tahunOptions" :key="y" :value="y">{{ y }}</option>
+                    </select>
                 </div>
-                <div class="pt-5">
+                <div>
                      <ExportButtons :pdf-url="pdfUrl" />
                 </div>
             </div>
