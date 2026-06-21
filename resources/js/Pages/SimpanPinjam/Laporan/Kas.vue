@@ -89,9 +89,9 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                             <div class="flex items-center justify-between">
                                 <p class="text-xs font-bold text-sky-700 uppercase">Total Uang Cash</p>
                             </div>
-                            <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium w-fit">Uang BUMDes + Angsuran - Pinjaman (Pokok)</span>
+                            <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium w-fit">Total Uang BUMDes - Total Pinjaman (Tanpa Bunga)</span>
                         </div>
-                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako) + Number(summary.total_angsuran_all)) - Number(summary.total_pinjaman_all)) }}</p>
+                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) - Number(summary.total_pinjaman_all)) }}</p>
                     </div>
                     <div class="rounded-lg border border-violet-100 bg-violet-50 p-4 shadow-sm">
                         <div class="flex flex-col gap-1">
