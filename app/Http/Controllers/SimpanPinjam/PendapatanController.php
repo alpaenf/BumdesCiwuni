@@ -75,7 +75,7 @@ class PendapatanController extends Controller
 
             // Detail Bunga Pinjaman
             fputcsv($handle, ['DETAIL BUNGA PINJAMAN DARI ANGSURAN']);
-            fputcsv($handle, ['Tanggal', 'Nasabah', 'Pokok Pinjaman', 'Bunga (%)', 'Angsuran Ke', 'Pendapatan Bunga']);
+            fputcsv($handle, ['Tanggal', 'Nasabah', 'Pokok Pinjaman', 'Bunga (%)', 'Angsuran Ke', 'Bayar Pokok', 'Pendapatan Bunga']);
             foreach ($data['detailPinjaman'] as $p) {
                 fputcsv($handle, [
                     $p['tanggal'],
@@ -83,6 +83,7 @@ class PendapatanController extends Controller
                     $p['pokok'],
                     $p['bunga_persen'],
                     $p['angsuran_ke'] ?? '-',
+                    $p['angsuran_pokok'],
                     $p['bunga_nominal']
                 ]);
             }
@@ -267,6 +268,7 @@ class PendapatanController extends Controller
                     'pokok' => $a->pinjaman_pokok,
                     'bunga_persen' => $a->bunga,
                     'bunga_nominal' => $p_bunga,
+                    'angsuran_pokok' => $a->jumlah_bayar - $p_bunga,
                     'status' => $a->p_status,
                     'angsuran_ke' => $a->angsuran_ke,
                 ];

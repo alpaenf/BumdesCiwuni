@@ -239,6 +239,7 @@ const activeTab = ref('tabungan');
                                     <th class="py-2 pe-4 text-center">Angsuran Ke</th>
                                     <th class="py-2 pe-4 text-right">Pokok Pinjaman</th>
                                     <th class="py-2 pe-4 text-right">Bunga (%)</th>
+                                    <th class="py-2 pe-4 text-right">Bayar Angsuran Pokok</th>
                                     <th class="py-2 pe-4 text-right">Pendapatan Bunga</th>
                                     <th class="py-2 text-center">Status</th>
                                 </tr>
@@ -250,6 +251,7 @@ const activeTab = ref('tabungan');
                                     <td class="py-2.5 pe-4 text-center text-slate-600">{{ item.angsuran_ke ?? '-' }}</td>
                                     <td class="py-2.5 pe-4 text-right text-slate-600">{{ fmt(item.pokok) }}</td>
                                     <td class="py-2.5 pe-4 text-right text-slate-600">{{ item.bunga_persen }}%</td>
+                                    <td class="py-2.5 pe-4 text-right font-medium text-slate-700">{{ fmt(item.angsuran_pokok) }}</td>
                                     <td class="py-2.5 pe-4 text-right font-semibold text-blue-700">{{ fmt(item.bunga_nominal) }}</td>
                                     <td class="py-2.5 text-center">
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
@@ -259,12 +261,12 @@ const activeTab = ref('tabungan');
                                     </td>
                                 </tr>
                                 <tr v-if="detailPinjaman.length === 0">
-                                    <td colspan="6" class="py-8 text-center text-slate-400">Belum ada data pinjaman di tahun ini.</td>
+                                    <td colspan="8" class="py-8 text-center text-slate-400">Belum ada data pinjaman di tahun ini.</td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="detailPinjaman.length > 0">
                                 <tr class="border-t-2 border-slate-200">
-                                    <td colspan="5" class="py-2.5 font-bold text-slate-800">Total Pendapatan Bunga</td>
+                                    <td colspan="6" class="py-2.5 font-bold text-slate-800 text-right pr-4">Total Pendapatan Bunga</td>
                                     <td class="py-2.5 text-right font-bold text-blue-700">{{ fmt(bungaPinjaman) }}</td>
                                     <td></td>
                                 </tr>
