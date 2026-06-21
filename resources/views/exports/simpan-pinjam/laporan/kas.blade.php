@@ -8,8 +8,19 @@
     } elseif (!empty($filters['bulan'])) {
         $periodLabel = 'Periode: Bulan ' . $filters['bulan'] . ' Tahun ' . ($filters['tahun'] ?? date('Y'));
     }
-    
-    $summaryItems = [];
+    $uang_bumdes = $summary['saldo_reguler'] + $summary['saldo_sembako'];
+    $pinjaman_pokok = $summary['total_pinjaman_all'];
+    $angsuran_pokok = $summary['total_angsuran_pokok'];
+    $selisih = $pinjaman_pokok - $angsuran_pokok;
+    $uang_cash = $uang_bumdes - $selisih;
+
+    $summaryItems = [
+        ['label' => 'Total Uang BUMDes', 'value' => 'Rp ' . number_format($uang_bumdes, 0, ',', '.')],
+        ['label' => 'Pinjaman (Pokok)',  'value' => 'Rp ' . number_format($pinjaman_pokok, 0, ',', '.')],
+        ['label' => 'Angsuran (Pokok)',  'value' => 'Rp ' . number_format($angsuran_pokok, 0, ',', '.')],
+        ['label' => 'Selisih Pinjaman',  'value' => 'Rp ' . number_format($selisih, 0, ',', '.')],
+        ['label' => 'Total Uang Cash',   'value' => 'Rp ' . number_format($uang_cash, 0, ',', '.')],
+    ];
 @endphp
 @extends('exports.simpan-pinjam.laporan.layout')
 
