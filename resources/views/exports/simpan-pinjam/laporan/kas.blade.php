@@ -11,7 +11,9 @@
     
     $summaryItems = [];
 @endphp
-@include('exports.simpan-pinjam.laporan.layout')
+@extends('exports.simpan-pinjam.laporan.layout')
+
+@section('content')
 
 <table style="margin-bottom:16px">
     <thead>
@@ -61,3 +63,4 @@
         </tr>
     </tbody>
 </table>
+@endsection

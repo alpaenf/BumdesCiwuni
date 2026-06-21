@@ -10,9 +10,10 @@
         ['label' => 'Tidak Aktif',     'value' => $summary['tidak_aktif']],
     ];
 @endphp
-@if(!isset($isExcel))
-    @include('exports.simpan-pinjam.laporan.layout')
-@else
+@extends(isset($isExcel) ? 'exports.simpan-pinjam.laporan.excel_layout' : 'exports.simpan-pinjam.laporan.layout')
+
+@section('content')
+@if(isset($isExcel))
     <table>
         <tr><td colspan="9"></td></tr>
         <tr><td colspan="9"></td></tr>
@@ -69,3 +70,4 @@
         @endforelse
     </tbody>
 </table>
+@endsection
