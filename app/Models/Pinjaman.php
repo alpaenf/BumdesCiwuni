@@ -21,6 +21,8 @@ class Pinjaman extends Model
         'biaya_tambahan',
         'jumlah_angsuran',
         'sisa_pinjaman',
+        'jenis_pinjaman',
+        'keterangan',
         'status',
         'foto_perjanjian',
         'foto_barang',
