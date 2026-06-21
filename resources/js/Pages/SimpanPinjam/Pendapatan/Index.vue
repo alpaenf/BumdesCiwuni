@@ -20,9 +20,12 @@ const props = defineProps({
 
 const selectedTahun = ref(props.tahun);
 const selectedBulan = ref(props.bulan ?? '');
+const selectedTanggal = ref(props.tanggal ?? '');
+
 const applyFilter = () => {
     const params = { tahun: selectedTahun.value };
     if (selectedBulan.value) params.bulan = selectedBulan.value;
+    if (selectedTanggal.value) params.tanggal = selectedTanggal.value;
     router.get(route('pendapatan.index'), params, { preserveState: true });
 };
 
@@ -35,6 +38,7 @@ const exportFilters = computed(() => {
     const payload = {};
     if (selectedTahun.value) payload.tahun = selectedTahun.value;
     if (selectedBulan.value) payload.bulan = selectedBulan.value;
+    if (selectedTanggal.value) payload.tanggal = selectedTanggal.value;
     return payload;
 });
 
@@ -51,7 +55,7 @@ const activeTab = ref('tabungan');
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800">Ringkasan Pendapatan Kotor</h2>
-                    <p class="text-sm text-slate-500">Periode: {{ bulanNama }} {{ tahun }}</p>
+                    <p class="text-sm text-slate-500">Periode: {{ selectedTanggal ? selectedTanggal : (bulanNama + ' ' + tahun) }}</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <a :href="route('pendapatan.pdf', exportFilters)" target="_blank" class="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 flex items-center gap-1">
@@ -60,7 +64,14 @@ const activeTab = ref('tabungan');
                     <a :href="route('pendapatan.excel', exportFilters)" class="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">description</span> Export Excel
                     </a>
-                    <select v-model="selectedBulan" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    
+                    <!-- Filter Harian -->
+                    <div class="flex items-center gap-1">
+                        <input type="date" v-model="selectedTanggal" @change="() => { selectedBulan = ''; applyFilter(); }" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        <button v-if="selectedTanggal" @click="() => { selectedTanggal = ''; applyFilter(); }" class="text-xs text-red-500 font-medium hover:underline">Reset</button>
+                    </div>
+
+                    <select v-model="selectedBulan" @change="() => { selectedTanggal = ''; applyFilter(); }" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                         <option v-for="b in bulanOptions" :key="b.value" :value="b.value">{{ b.label }}</option>
                     </select>
                     <select v-model="selectedTahun" @change="applyFilter" class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
@@ -223,9 +234,10 @@ const activeTab = ref('tabungan');
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="border-b text-left text-xs uppercase tracking-wider text-slate-500">
-                                    <th class="py-2 pe-4">Tanggal Akad</th>
+                                    <th class="py-2 pe-4">Tanggal Pembayaran</th>
                                     <th class="py-2 pe-4">Nasabah</th>
-                                    <th class="py-2 pe-4 text-right">Pokok</th>
+                                    <th class="py-2 pe-4 text-center">Angsuran Ke</th>
+                                    <th class="py-2 pe-4 text-right">Pokok Pinjaman</th>
                                     <th class="py-2 pe-4 text-right">Bunga (%)</th>
                                     <th class="py-2 pe-4 text-right">Pendapatan Bunga</th>
                                     <th class="py-2 text-center">Status</th>
@@ -235,6 +247,7 @@ const activeTab = ref('tabungan');
                                 <tr v-for="(item, i) in detailPinjaman" :key="i" class="border-b border-slate-50">
                                     <td class="py-2.5 pe-4 text-slate-600">{{ item.tanggal }}</td>
                                     <td class="py-2.5 pe-4 font-medium text-slate-800">{{ item.nasabah }}</td>
+                                    <td class="py-2.5 pe-4 text-center text-slate-600">{{ item.angsuran_ke ?? '-' }}</td>
                                     <td class="py-2.5 pe-4 text-right text-slate-600">{{ fmt(item.pokok) }}</td>
                                     <td class="py-2.5 pe-4 text-right text-slate-600">{{ item.bunga_persen }}%</td>
                                     <td class="py-2.5 pe-4 text-right font-semibold text-blue-700">{{ fmt(item.bunga_nominal) }}</td>
@@ -251,7 +264,7 @@ const activeTab = ref('tabungan');
                             </tbody>
                             <tfoot v-if="detailPinjaman.length > 0">
                                 <tr class="border-t-2 border-slate-200">
-                                    <td colspan="4" class="py-2.5 font-bold text-slate-800">Total Pendapatan Bunga</td>
+                                    <td colspan="5" class="py-2.5 font-bold text-slate-800">Total Pendapatan Bunga</td>
                                     <td class="py-2.5 text-right font-bold text-blue-700">{{ fmt(bungaPinjaman) }}</td>
                                     <td></td>
                                 </tr>

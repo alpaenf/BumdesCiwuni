@@ -74,14 +74,15 @@ class PendapatanController extends Controller
             fputcsv($handle, []);
 
             // Detail Bunga Pinjaman
-            fputcsv($handle, ['DETAIL BUNGA PINJAMAN']);
-            fputcsv($handle, ['Tanggal', 'Nasabah', 'Pokok Pinjaman', 'Bunga (%)', 'Bunga Nominal']);
+            fputcsv($handle, ['DETAIL BUNGA PINJAMAN DARI ANGSURAN']);
+            fputcsv($handle, ['Tanggal', 'Nasabah', 'Pokok Pinjaman', 'Bunga (%)', 'Angsuran Ke', 'Pendapatan Bunga']);
             foreach ($data['detailPinjaman'] as $p) {
                 fputcsv($handle, [
                     $p['tanggal'],
                     $p['nasabah'],
                     $p['pokok'],
                     $p['bunga_persen'],
+                    $p['angsuran_ke'] ?? '-',
                     $p['bunga_nominal']
                 ]);
             }
@@ -122,11 +123,16 @@ class PendapatanController extends Controller
     {
         $year  = $request->input('tahun', now()->year);
         $month = $request->input('bulan');
+        $tanggal = $request->input('tanggal');
 
-        $applyDateFilter = function ($query, string $dateColumn) use ($year, $month) {
-            $query->whereYear($dateColumn, $year);
-            if ($month) {
-                $query->whereMonth($dateColumn, $month);
+        $applyDateFilter = function ($query, string $dateColumn) use ($year, $month, $tanggal) {
+            if ($tanggal) {
+                $query->whereDate($dateColumn, $tanggal);
+            } else {
+                $query->whereYear($dateColumn, $year);
+                if ($month) {
+                    $query->whereMonth($dateColumn, $month);
+                }
             }
             return $query;
         };
@@ -145,14 +151,17 @@ class PendapatanController extends Controller
             'tanggal'
         )->sum('administrasi');
 
-        // === Pendapatan Bunga Pinjaman ===
-        $pinjamanQuery = Pinjaman::whereYear('tanggal_akad', $year);
-        if ($month) {
-            $pinjamanQuery->whereMonth('tanggal_akad', $month);
+        // === Pendapatan Bunga Pinjaman (Dari Angsuran) ===
+        $angsuranQuery = \App\Models\Angsuran::join('pinjaman', 'angsuran.pinjaman_id', '=', 'pinjaman.id');
+        if ($tanggal) {
+            $angsuranQuery->whereDate('angsuran.tanggal', $tanggal);
+        } else {
+            $angsuranQuery->whereYear('angsuran.tanggal', $year);
+            if ($month) {
+                $angsuranQuery->whereMonth('angsuran.tanggal', $month);
+            }
         }
-        $bungaPinjaman = (float) $pinjamanQuery
-            ->selectRaw('COALESCE(SUM(total_tagihan - pinjaman_pokok), 0) as total_bunga')
-            ->value('total_bunga');
+        $bungaPinjaman = (float) $angsuranQuery->sum(\Illuminate\Support\Facades\DB::raw('( (pinjaman.pinjaman_pokok * pinjaman.bunga / 100) / GREATEST(pinjaman.total_tagihan, 1) ) * angsuran.jumlah_bayar'));
 
         $pendapatanKotor = $bungaPinjaman;
 
@@ -229,25 +238,39 @@ class PendapatanController extends Controller
             ]);
 
         // Detail pinjaman & bunga
-        $detailPinjamanQuery = Pinjaman::with('nasabah')->whereYear('tanggal_akad', $year);
-        if ($month) {
-            $detailPinjamanQuery->whereMonth('tanggal_akad', $month);
+        $detailPinjamanQuery = \App\Models\Angsuran::join('pinjaman', 'angsuran.pinjaman_id', '=', 'pinjaman.id')
+            ->join('nasabah', 'pinjaman.nasabah_id', '=', 'nasabah.id')
+            ->select('angsuran.*', 'pinjaman.pinjaman_pokok', 'pinjaman.bunga', 'pinjaman.total_tagihan', 'pinjaman.status as p_status', 'nasabah.nama as nasabah_nama');
+        
+        if ($tanggal) {
+            $detailPinjamanQuery->whereDate('angsuran.tanggal', $tanggal);
+        } else {
+            $detailPinjamanQuery->whereYear('angsuran.tanggal', $year);
+            if ($month) {
+                $detailPinjamanQuery->whereMonth('angsuran.tanggal', $month);
+            }
         }
-        $detailPinjamanQuery->orderByDesc('tanggal_akad');
+        $detailPinjamanQuery->orderByDesc('angsuran.tanggal');
 
         if ($limit) {
             $detailPinjamanQuery->limit(20);
         }
 
         $detailPinjaman = $detailPinjamanQuery->get()
-            ->map(fn ($p) => [
-                'tanggal' => $p->tanggal_akad->format('Y-m-d'),
-                'nasabah' => $p->nasabah?->nama ?? '-',
-                'pokok' => $p->pinjaman_pokok,
-                'bunga_persen' => $p->bunga,
-                'bunga_nominal' => $p->total_tagihan - $p->pinjaman_pokok,
-                'status' => $p->status,
-            ]);
+            ->map(function ($a) {
+                $t_tagihan = max($a->total_tagihan, 1);
+                $t_bunga = ($a->pinjaman_pokok * $a->bunga) / 100;
+                $p_bunga = ($t_bunga / $t_tagihan) * $a->jumlah_bayar;
+                return [
+                    'tanggal' => $a->tanggal->format('Y-m-d'),
+                    'nasabah' => $a->nasabah_nama,
+                    'pokok' => $a->pinjaman_pokok,
+                    'bunga_persen' => $a->bunga,
+                    'bunga_nominal' => $p_bunga,
+                    'status' => $a->p_status,
+                    'angsuran_ke' => $a->angsuran_ke,
+                ];
+            });
 
         $tahunOptions = collect(range(now()->year, now()->year - 5))->values();
         
@@ -272,6 +295,7 @@ class PendapatanController extends Controller
         return [
             'tahun' => (int) $year,
             'bulan' => $month ? (int) $month : null,
+            'tanggal' => $tanggal,
             'tahunOptions' => $tahunOptions,
             'bulanOptions' => $bulanOptions,
             'labaTabungan' => (float) $labaTabungan,

@@ -346,14 +346,15 @@
         </header>
 
         <!-- Detail Bunga Pinjaman -->
-        <div class="summary-section-title" style="margin-top: 10px;">Detail Bunga Pinjaman</div>
+        <div class="summary-section-title" style="margin-top: 10px;">Detail Bunga Pinjaman (Dari Angsuran)</div>
         <div class="table-responsive">
             <table>
                 <colgroup>
                     <col style="width: 15%;" />
                     <col style="width: 30%;" />
-                    <col style="width: 20%;" />
                     <col style="width: 15%;" />
+                    <col style="width: 10%;" />
+                    <col style="width: 10%;" />
                     <col style="width: 20%;" />
                 </colgroup>
                 <thead>
@@ -362,7 +363,8 @@
                         <th>Nama Nasabah</th>
                         <th class="angka">Pokok Pinjaman</th>
                         <th class="angka">Bunga (%)</th>
-                        <th class="angka">Bunga Nominal</th>
+                        <th class="angka">Angsuran Ke</th>
+                        <th class="angka">Pendapatan Bunga</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -372,6 +374,7 @@
                             <td>{{ $p['nasabah'] }}</td>
                             <td class="angka">Rp{{ number_format($p['pokok'], 0, ',', '.') }}</td>
                             <td class="angka">{{ $p['bunga_persen'] }}%</td>
+                            <td class="angka">{{ $p['angsuran_ke'] ?? '-' }}</td>
                             <td class="angka">Rp{{ number_format($p['bunga_nominal'], 0, ',', '.') }}</td>
                         </tr>
                     @empty
