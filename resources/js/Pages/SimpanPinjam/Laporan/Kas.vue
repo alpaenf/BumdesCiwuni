@@ -77,7 +77,7 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                     </div>
                 </div>
                 
-                <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     <div class="rounded-lg border border-teal-100 bg-teal-50 p-4 shadow-sm">
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center justify-between">
@@ -85,25 +85,45 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                             </div>
                             <span class="text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-medium w-fit">Reguler + Sembako</span>
                         </div>
-                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency(Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) }}</p>
+                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency(Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) }}</p>
                     </div>
                     <div class="rounded-lg border border-sky-100 bg-sky-50 p-4 shadow-sm">
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center justify-between">
                                 <p class="text-xs font-bold text-sky-700 uppercase">Total Uang Cash</p>
                             </div>
-                            <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium w-fit">Total Uang BUMDes - Total Pinjaman (Tanpa Bunga)</span>
+                            <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium w-fit">Uang BUMDes - Pinjaman (Tanpa Bunga)</span>
                         </div>
-                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) - Number(summary.total_pinjaman_all)) }}</p>
+                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) - Number(summary.total_pinjaman_all)) }}</p>
                     </div>
                     <div class="rounded-lg border border-violet-100 bg-violet-50 p-4 shadow-sm">
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center justify-between">
                                 <p class="text-xs font-bold text-violet-700 uppercase">Total Pinjaman (Tanpa Bunga)</p>
                             </div>
-                            <span class="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium w-fit">Total Pokok Pinjaman Keseluruhan</span>
+                            <span class="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium w-fit">Total Pokok Keseluruhan</span>
                         </div>
-                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency(summary.total_pinjaman_all) }}</p>
+                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency(summary.total_pinjaman_all) }}</p>
+                    </div>
+                    <div class="rounded-lg border border-fuchsia-100 bg-fuchsia-50 p-4 shadow-sm">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-fuchsia-700 uppercase">Angsuran Masuk (Tanpa Bunga)</p>
+                            </div>
+                            <span class="text-[10px] bg-fuchsia-100 text-fuchsia-700 px-2 py-0.5 rounded-full font-medium w-fit">Total Pembayaran Pokok</span>
+                        </div>
+                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency(summary.total_angsuran_pokok) }}</p>
+                    </div>
+                    <div class="rounded-lg border border-amber-100 bg-amber-50 p-4 shadow-sm">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-amber-700 uppercase">Selisih Angsuran & Pinjaman</p>
+                            </div>
+                            <span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium w-fit">Angsuran (Pokok) - Pinjaman (Pokok)</span>
+                        </div>
+                        <p class="text-xl font-black text-slate-800 mt-2" :class="Number(summary.total_angsuran_pokok) - Number(summary.total_pinjaman_all) < 0 ? 'text-red-600' : 'text-slate-800'">
+                            {{ formatCurrency(Number(summary.total_angsuran_pokok) - Number(summary.total_pinjaman_all)) }}
+                        </p>
                     </div>
                 </div>
             </div>

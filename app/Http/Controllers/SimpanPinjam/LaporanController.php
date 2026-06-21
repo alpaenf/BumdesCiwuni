@@ -345,6 +345,18 @@ class LaporanController extends Controller
         $saldoSembako = $masukSembako - $keluarSembako;
         $totalAngsuranAll = $masukAngsuran;
         $totalPinjamanAll = $keluarPinjaman;
+        // Calculate Total Angsuran Pokok (Tanpa Bunga)
+        $queryAngsuranBunga = Angsuran::join('pinjaman', 'angsuran.pinjaman_id', '=', 'pinjaman.id');
+        if ($tanggal) {
+            $queryAngsuranBunga->whereDate('angsuran.tanggal', $tanggal);
+        } else {
+            $queryAngsuranBunga->whereYear('angsuran.tanggal', $tahun);
+            if ($bulan) {
+                $queryAngsuranBunga->whereMonth('angsuran.tanggal', $bulan);
+            }
+        }
+        $totalBungaMasuk = (float) $queryAngsuranBunga->sum(\Illuminate\Support\Facades\DB::raw('( (pinjaman.pinjaman_pokok * pinjaman.bunga / 100) / GREATEST(pinjaman.total_tagihan, 1) ) * angsuran.jumlah_bayar'));
+        $totalAngsuranPokok = $totalAngsuranAll - $totalBungaMasuk;
         
         $queryPinjamanTagihan = Pinjaman::query();
         $applyDateFilterKas($queryPinjamanTagihan, 'tanggal_akad');
@@ -371,6 +383,7 @@ class LaporanController extends Controller
             'saldo_sembako'      => (float) $saldoSembako,
             'total_saldo_all'    => (float) ($saldoReguler + $saldoSembako),
             'total_angsuran_all' => (float) $totalAngsuranAll,
+            'total_angsuran_pokok' => (float) $totalAngsuranPokok,
             'total_pinjaman_all' => (float) $totalPinjamanAll,
             'total_pinjaman_all_tagihan' => (float) $totalPinjamanAllTagihan,
         ], [
