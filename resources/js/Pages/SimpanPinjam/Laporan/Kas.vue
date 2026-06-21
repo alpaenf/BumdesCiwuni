@@ -65,29 +65,42 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                         <p class="text-xl font-bold text-slate-800">{{ formatCurrency(summary.saldo_sembako) }}</p>
                     </div>
                     <div class="rounded-lg border border-blue-100 bg-blue-50/50 p-4">
-                        <p class="text-xs font-semibold text-blue-700 uppercase mb-1">Total Angsuran Masuk</p>
+                        <p class="text-xs font-semibold text-blue-700 uppercase mb-1">Total Angsuran Masuk (+ Bunga)</p>
                         <p class="text-xl font-bold text-slate-800">{{ formatCurrency(summary.total_angsuran_all) }}</p>
                     </div>
                     <div class="rounded-lg border border-rose-100 bg-rose-50/50 p-4">
-                        <p class="text-xs font-semibold text-rose-700 uppercase mb-1">Total Pinjaman Disalurkan</p>
-                        <p class="text-xl font-bold text-slate-800">{{ formatCurrency(summary.total_pinjaman_all) }}</p>
+                        <p class="text-xs font-semibold text-rose-700 uppercase mb-1">Total Pinjaman Disalurkan (+ Bunga)</p>
+                        <p class="text-xl font-bold text-slate-800">{{ formatCurrency(summary.total_pinjaman_all_tagihan) }}</p>
                     </div>
                 </div>
                 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="mt-4 grid gap-4 sm:grid-cols-3">
                     <div class="rounded-lg border border-teal-100 bg-teal-50 p-4 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <p class="text-xs font-bold text-teal-700 uppercase">Total Uang BUMDes</p>
-                            <span class="text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-medium">Reguler + Sembako + Angsuran</span>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-teal-700 uppercase">Total Uang BUMDes</p>
+                            </div>
+                            <span class="text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-medium w-fit">Reguler + Sembako</span>
                         </div>
-                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency(Number(summary.saldo_reguler) + Number(summary.saldo_sembako) + Number(summary.total_angsuran_all)) }}</p>
+                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency(Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) }}</p>
                     </div>
                     <div class="rounded-lg border border-sky-100 bg-sky-50 p-4 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <p class="text-xs font-bold text-sky-700 uppercase">Sisa Uang BUMDes (Setelah Dipinjamkan)</p>
-                            <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium">Total Uang - Pinjaman</span>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-sky-700 uppercase">Total Uang Cash</p>
+                            </div>
+                            <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium w-fit">Uang BUMDes + Angsuran - Pinjaman (Pokok)</span>
                         </div>
                         <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako) + Number(summary.total_angsuran_all)) - Number(summary.total_pinjaman_all)) }}</p>
+                    </div>
+                    <div class="rounded-lg border border-violet-100 bg-violet-50 p-4 shadow-sm">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-violet-700 uppercase">Total Pinjaman (Tanpa Bunga)</p>
+                            </div>
+                            <span class="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium w-fit">Total Pokok Pinjaman Keseluruhan</span>
+                        </div>
+                        <p class="text-2xl font-black text-slate-800 mt-2">{{ formatCurrency(summary.total_pinjaman_all) }}</p>
                     </div>
                 </div>
             </div>

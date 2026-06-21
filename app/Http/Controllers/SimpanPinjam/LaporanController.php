@@ -313,6 +313,7 @@ class LaporanController extends Controller
         $saldoSembako = Tabungan::where('jenis_tabungan', Tabungan::JENIS_SEMBAKO)->sum('saldo');
         $totalAngsuranAll = Angsuran::sum('jumlah_bayar');
         $totalPinjamanAll = Pinjaman::sum('pinjaman_pokok');
+        $totalPinjamanAllTagihan = Pinjaman::sum('total_tagihan');
 
         $masukRegulerItems = (clone $querySetorReguler)->with('tabungan.nasabah')->get();
         $masukSembakoItems = (clone $querySetorSembako)->with('tabungan.nasabah')->get();
@@ -336,6 +337,7 @@ class LaporanController extends Controller
             'total_saldo_all'    => (float) ($saldoReguler + $saldoSembako),
             'total_angsuran_all' => (float) $totalAngsuranAll,
             'total_pinjaman_all' => (float) $totalPinjamanAll,
+            'total_pinjaman_all_tagihan' => (float) $totalPinjamanAllTagihan,
         ], [
             'masuk_reguler'   => $masukRegulerItems,
             'masuk_sembako'   => $masukSembakoItems,

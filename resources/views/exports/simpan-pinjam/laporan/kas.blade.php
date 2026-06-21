@@ -21,8 +21,8 @@
             <td class="text-right" style="background:#e8f5e9"></td>
         </tr>
         <tr>
-            <td style="padding-left:20px">Setoran Tabungan</td>
-            <td class="text-right">{{ number_format($summary['masuk_tabungan'], 0, ',', '.') }}</td>
+            <td style="padding-left:20px">Setoran Tabungan (Reguler & Sembako)</td>
+            <td class="text-right">{{ number_format($summary['masuk_reguler'] + $summary['masuk_sembako'], 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td style="padding-left:20px">Pembayaran Angsuran Pinjaman</td>
@@ -37,8 +37,12 @@
             <td class="text-right" style="background:#fce4ec"></td>
         </tr>
         <tr>
-            <td style="padding-left:20px">Penarikan Tabungan + Administrasi</td>
-            <td class="text-right">{{ number_format($summary['keluar_tabungan'], 0, ',', '.') }}</td>
+            <td style="padding-left:20px">Penarikan Tabungan (Reguler & Sembako) + Admin</td>
+            <td class="text-right">{{ number_format($summary['keluar_reguler'] + $summary['keluar_sembako'], 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td style="padding-left:20px">Pencairan Dana Pinjaman Baru</td>
+            <td class="text-right">{{ number_format($summary['keluar_pinjaman'], 0, ',', '.') }}</td>
         </tr>
         <tr style="font-weight:bold;background:#ffcdd2">
             <td>Total Kas Keluar</td>
