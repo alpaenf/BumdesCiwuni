@@ -101,15 +101,15 @@
             color: #1e3a8a;
             border-bottom: 2px solid #cbd5e1;
             padding-bottom: 4px;
-            margin-top: 25px;
-            margin-bottom: 10px;
+            margin-top: 12px;
+            margin-bottom: 6px;
         }
 
         .summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .summary-card {
             border: 1px solid #e2e8f0;
@@ -140,7 +140,7 @@
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
         }
@@ -151,7 +151,7 @@
         }
         th, td {
             border-bottom: 1px solid #e2e8f0;
-            padding: 8px 10px;
+            padding: 4px 6px;
             font-size: 10px;
             text-align: left;
             word-break: break-word;
@@ -289,7 +289,14 @@
 
         <!-- Judul Laporan -->
         <h1 class="report-title">Laporan Pendapatan Kotor</h1>
-        <div class="report-period">Periode: {{ $bulanNama }} {{ $tahun }}</div>
+        <div class="report-period">
+            Periode: 
+            @if(!empty($tanggal))
+                {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}
+            @else
+                {{ $bulanNama }} {{ $tahun }}
+            @endif
+        </div>
 
         <!-- Ringkasan Pendapatan -->
         <div class="summary-section-title">Ringkasan Pendapatan</div>
@@ -339,7 +346,13 @@
                 <img class="kop-logo" style="height: 45px;" src="{{ asset('logo.png') }}" alt="Logo BUMDes">
                 <div class="kop-text">
                     <div class="kop-title-1" style="font-size: 11px;">BUMDesa Dammar Wulan - Unit Simpan Pinjam</div>
-                    <div class="kop-subtitle" style="font-size: 7px;">Lampiran Detail Transaksi Pendapatan Periode {{ $bulanNama }} {{ $tahun }}</div>
+                    <div class="kop-subtitle" style="font-size: 7px;">Lampiran Detail Transaksi Pendapatan Periode 
+                        @if(!empty($tanggal))
+                            {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}
+                        @else
+                            {{ $bulanNama }} {{ $tahun }}
+                        @endif
+                    </div>
                 </div>
             </div>
             <div style="border-bottom: 2px solid #0f172a; margin-top: 8px; margin-bottom: 15px;"></div>

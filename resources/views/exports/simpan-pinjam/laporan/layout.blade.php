@@ -8,21 +8,21 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Poppins', 'DejaVu Sans', sans-serif; font-size: 9pt; color: #1a1a1a; }
 
-    .page-header { border-bottom: 2.5px solid {{ $headerColor ?? '#1B5E20' }}; padding-bottom: 10px; margin-bottom: 14px; }
+    .page-header { border-bottom: 2.5px solid {{ $headerColor ?? '#1B5E20' }}; padding-bottom: 6px; margin-bottom: 10px; }
     .org-name { font-size: 14pt; font-weight: bold; color: {{ $headerColor ?? '#1B5E20' }}; }
     .report-title { font-size: 11pt; font-weight: bold; margin-top: 2px; }
     .report-meta { font-size: 8pt; color: #555; margin-top: 3px; }
 
-    .summary-box { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-    .summary-card { border: 1px solid #ddd; border-radius: 4px; padding: 8px 12px; flex: 1; min-width: 100px; background: #f9f9f9; }
+    .summary-box { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .summary-card { border: 1px solid #ddd; border-radius: 4px; padding: 6px 10px; flex: 1; min-width: 100px; background: #f9f9f9; }
     .summary-card .label { font-size: 7.5pt; color: #666; margin-bottom: 2px; }
     .summary-card .value { font-size: 10pt; font-weight: bold; color: {{ $headerColor ?? '#1B5E20' }}; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+    table { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 10px; }
     thead tr { background-color: {{ $headerColor ?? '#1B5E20' }}; color: white; }
-    thead th { padding: 6px 7px; text-align: left; font-weight: bold; font-size: 8pt; }
+    thead th { padding: 4px 5px; text-align: left; font-weight: bold; font-size: 8pt; }
     tbody tr:nth-child(even) { background-color: #f5f5f5; }
-    tbody tr td { padding: 5px 7px; border-bottom: 1px solid #eee; vertical-align: top; }
+    tbody tr td { padding: 3px 5px; border-bottom: 1px solid #eee; vertical-align: top; }
     tbody tr:last-child td { border-bottom: 2px solid {{ $headerColor ?? '#1B5E20' }}; }
 
     .text-right { text-align: right; }

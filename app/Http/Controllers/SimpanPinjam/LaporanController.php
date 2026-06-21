@@ -231,7 +231,7 @@ class LaporanController extends Controller
         [$summary, $rincian] = $this->buildKasSummary($request);
 
         return Inertia::render('SimpanPinjam/Laporan/Kas', [
-            'filters' => $request->only(['start_date', 'end_date', 'bulan']),
+            'filters' => $request->only(['tahun', 'bulan', 'tanggal']),
             'summary' => $summary,
             'rincian' => $rincian,
         ]);
@@ -240,7 +240,7 @@ class LaporanController extends Controller
     public function kasPdf(Request $request)
     {
         [$summary, $rincian] = $this->buildKasSummary($request);
-        $filters = $request->only(['start_date', 'end_date']);
+        $filters = $request->only(['tahun', 'bulan', 'tanggal']);
 
         $pdf = Pdf::loadView('exports.simpan-pinjam.laporan.kas', compact('summary', 'rincian', 'filters'))
             ->setPaper('a4', 'portrait');

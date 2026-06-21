@@ -35,6 +35,15 @@
             <th colspan="9" style="font-size:10pt; text-align:center">{{ $periodLabel }}</th>
         </tr>
         <tr><td colspan="9"></td></tr>
+        @if(isset($summaryItems) && count($summaryItems))
+            @foreach($summaryItems as $item)
+            <tr>
+                <td colspan="2" style="font-weight:bold;">{{ $item['label'] }}</td>
+                <td colspan="7" style="font-weight:bold;text-align:left;">: {{ $item['value'] }}</td>
+            </tr>
+            @endforeach
+            <tr><td colspan="9"></td></tr>
+        @endif
     </table>
 @endif
 
