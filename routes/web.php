@@ -193,6 +193,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::get('/laporan/pinjaman', [LaporanController::class, 'pinjaman'])->name('laporan.pinjaman');
     Route::get('/laporan/angsuran', [LaporanController::class, 'angsuran'])->name('laporan.angsuran');
     Route::get('/laporan/kas', [LaporanController::class, 'kas'])->name('laporan.kas');
+    Route::get('/laporan/kas/selisih', [LaporanController::class, 'kasSelisih'])->name('laporan.kas.selisih');
 
     // Laporan — Ekspor PDF
     Route::get('/laporan/nasabah/pdf',  [LaporanController::class, 'nasabahPdf'])->name('laporan.nasabah.pdf');

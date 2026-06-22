@@ -3,7 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
 import ExportButtons from '@/Components/ExportButtons.vue';
-import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({ summary: Object, rincian: Object, filters: Object });
 
@@ -34,42 +33,6 @@ const buildQuery = computed(() => {
     return params.toString();
 });
 const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`);
-
-const showSelisihModal = ref(false);
-
-const rincianSelisih = computed(() => {
-    if (!props.rincian) return [];
-    
-    const map = {};
-    
-    // Tambah Pinjaman (Pokok)
-    props.rincian.keluar_pinjaman?.forEach(p => {
-        const nasabahId = p.nasabah?.id || 'unknown';
-        const nama = p.nasabah?.nama || 'Hamba Allah';
-        if (!map[nasabahId]) map[nasabahId] = { id: nasabahId, nama, pinjaman: 0, angsuran: 0, selisih: 0 };
-        map[nasabahId].pinjaman += Number(p.pinjaman_pokok);
-        map[nasabahId].selisih += Number(p.pinjaman_pokok);
-    });
-    
-    // Kurang Angsuran (Pokok)
-    props.rincian.masuk_angsuran?.forEach(a => {
-        const p = a.pinjaman;
-        if (!p) return;
-        const nasabahId = p.nasabah?.id || 'unknown';
-        const nama = p.nasabah?.nama || 'Hamba Allah';
-        
-        if (!map[nasabahId]) map[nasabahId] = { id: nasabahId, nama, pinjaman: 0, angsuran: 0, selisih: 0 };
-        
-        const totalTagihan = Number(p.total_tagihan);
-        const bungaValue = totalTagihan > 0 ? ((Number(p.pinjaman_pokok) * Number(p.bunga) / 100) / totalTagihan) * Number(a.jumlah_bayar) : 0;
-        const pokok = Number(a.jumlah_bayar) - bungaValue;
-        
-        map[nasabahId].angsuran += pokok;
-        map[nasabahId].selisih -= pokok;
-    });
-    
-    return Object.values(map).sort((a, b) => b.selisih - a.selisih);
-});
 </script>
 
 <template>
@@ -142,7 +105,7 @@ const rincianSelisih = computed(() => {
                         </div>
                         <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency(summary.total_angsuran_pokok) }}</p>
                     </div>
-                    <div @click="showSelisihModal = true" class="rounded-lg border border-amber-100 bg-amber-50 p-4 shadow-sm cursor-pointer hover:bg-amber-100 transition-colors group relative">
+                    <Link :href="route('laporan.kas.selisih', { tahun: selectedTahun, bulan: selectedBulan, tanggal: selectedTanggal })" class="block rounded-lg border border-amber-100 bg-amber-50 p-4 shadow-sm cursor-pointer hover:bg-amber-100 transition-colors group relative">
                         <div class="absolute top-2 right-2 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity">
                             <span class="material-symbols-outlined text-sm">open_in_new</span>
                         </div>
@@ -155,7 +118,7 @@ const rincianSelisih = computed(() => {
                         <p class="text-xl font-black text-slate-800 mt-2" :class="Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_pokok) < 0 ? 'text-red-600' : 'text-slate-800'">
                             {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_pokok)) }}
                         </p>
-                    </div>
+                    </Link>
                     <div class="rounded-lg border border-sky-100 bg-sky-50 p-4 shadow-sm">
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center justify-between">
@@ -324,59 +287,5 @@ const rincianSelisih = computed(() => {
             </div>
 
         </div>
-
-        <!-- Modal Breakdown Selisih -->
-        <Modal :show="showSelisihModal" @close="showSelisihModal = false" maxWidth="2xl">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                    <h3 class="text-lg font-bold text-slate-800">Rincian Selisih Pinjaman & Angsuran</h3>
-                    <button @click="showSelisihModal = false" class="text-slate-400 hover:text-slate-600">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                
-                <div class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-100 text-sm text-amber-800">
-                    Menampilkan total nilai pinjaman (pokok) yang dicairkan dikurangi angsuran (pokok) yang dibayarkan oleh masing-masing nasabah pada periode yang dipilih.
-                </div>
-
-                <div class="max-h-[60vh] overflow-y-auto pr-2">
-                    <table class="w-full text-sm text-left">
-                        <thead class="text-xs text-slate-500 bg-slate-50 uppercase sticky top-0 shadow-sm">
-                            <tr>
-                                <th class="px-4 py-3 rounded-tl-lg">Nasabah</th>
-                                <th class="px-4 py-3 text-right">Pinjaman Pokok<br/><span class="text-[10px] lowercase font-normal">(+) Masuk/Cair</span></th>
-                                <th class="px-4 py-3 text-right">Angsuran Pokok<br/><span class="text-[10px] lowercase font-normal">(-) Dibayar</span></th>
-                                <th class="px-4 py-3 text-right rounded-tr-lg">Selisih</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr v-for="item in rincianSelisih" :key="item.id" class="hover:bg-slate-50">
-                                <td class="px-4 py-3 font-medium text-slate-800">{{ item.nama }}</td>
-                                <td class="px-4 py-3 text-right text-blue-600">{{ formatCurrency(item.pinjaman) }}</td>
-                                <td class="px-4 py-3 text-right text-teal-600">{{ formatCurrency(item.angsuran) }}</td>
-                                <td class="px-4 py-3 text-right font-bold" :class="item.selisih < 0 ? 'text-red-600' : 'text-slate-800'">
-                                    {{ formatCurrency(item.selisih) }}
-                                </td>
-                            </tr>
-                            <tr v-if="rincianSelisih.length === 0">
-                                <td colspan="4" class="px-4 py-8 text-center text-slate-500">
-                                    Tidak ada data transaksi pinjaman atau angsuran pada periode ini.
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot v-if="rincianSelisih.length > 0" class="sticky bottom-0 bg-white border-t-2 border-slate-200">
-                            <tr>
-                                <td class="px-4 py-3 font-bold text-slate-800">TOTAL</td>
-                                <td class="px-4 py-3 text-right font-bold text-blue-600">{{ formatCurrency(rincianSelisih.reduce((acc, curr) => acc + curr.pinjaman, 0)) }}</td>
-                                <td class="px-4 py-3 text-right font-bold text-teal-600">{{ formatCurrency(rincianSelisih.reduce((acc, curr) => acc + curr.angsuran, 0)) }}</td>
-                                <td class="px-4 py-3 text-right font-bold text-amber-600 text-base">
-                                    {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_pokok)) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </Modal>
     </AuthenticatedLayout>
 </template>

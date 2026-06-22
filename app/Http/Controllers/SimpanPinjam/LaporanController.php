@@ -237,6 +237,18 @@ class LaporanController extends Controller
         ]);
     }
 
+    public function kasSelisih(Request $request): Response
+    {
+        $this->logRequest($request, 'kasSelisih');
+        [$summary, $rincian] = $this->buildKasSummary($request);
+
+        return Inertia::render('SimpanPinjam/Laporan/KasSelisih', [
+            'filters' => $request->only(['tahun', 'bulan', 'tanggal']),
+            'summary' => $summary,
+            'rincian' => $rincian,
+        ]);
+    }
+
     public function kasPdf(Request $request)
     {
         [$summary, $rincian] = $this->buildKasSummary($request);
