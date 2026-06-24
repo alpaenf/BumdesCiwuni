@@ -21,7 +21,7 @@ const rincianSelisih = computed(() => {
         map[nasabahId].selisih += Number(p.pinjaman_pokok);
     });
     
-    // Kurang Angsuran (Pokok)
+    // Kurang Angsuran (Total)
     props.rincian.masuk_angsuran?.forEach(a => {
         const p = a.pinjaman;
         if (!p) return;
@@ -30,12 +30,10 @@ const rincianSelisih = computed(() => {
         
         if (!map[nasabahId]) map[nasabahId] = { id: nasabahId, nama, pinjaman: 0, angsuran: 0, selisih: 0 };
         
-        const totalTagihan = Number(p.total_tagihan);
-        const bungaValue = totalTagihan > 0 ? ((Number(p.pinjaman_pokok) * Number(p.bunga) / 100) / totalTagihan) * Number(a.jumlah_bayar) : 0;
-        const pokok = Number(a.jumlah_bayar) - bungaValue;
+        const total = Number(a.jumlah_bayar);
         
-        map[nasabahId].angsuran += pokok;
-        map[nasabahId].selisih -= pokok;
+        map[nasabahId].angsuran += total;
+        map[nasabahId].selisih -= total;
     });
     
     return Object.values(map).sort((a, b) => b.selisih - a.selisih);
@@ -71,13 +69,13 @@ const getFilterLabel = computed(() => {
                     <div>
                         <h3 class="font-bold text-amber-800 mb-1">Periode: {{ getFilterLabel }}</h3>
                         <p class="text-sm text-amber-700">
-                            Menampilkan total nilai pinjaman (pokok) yang dicairkan dikurangi angsuran (pokok) yang dibayarkan oleh masing-masing nasabah pada periode ini.
+                            Menampilkan total nilai pinjaman (pokok) yang dicairkan dikurangi angsuran (total) yang dibayarkan oleh masing-masing nasabah pada periode ini.
                         </p>
                     </div>
                     <div class="text-right">
                         <p class="text-xs font-bold text-amber-700 uppercase mb-1">Total Selisih Keseluruhan</p>
-                        <p class="text-2xl font-black text-slate-800" :class="Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_pokok) < 0 ? 'text-red-600' : 'text-amber-600'">
-                            {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_pokok)) }}
+                        <p class="text-2xl font-black text-slate-800" :class="Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all) < 0 ? 'text-red-600' : 'text-amber-600'">
+                            {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all)) }}
                         </p>
                     </div>
                 </div>
@@ -88,7 +86,7 @@ const getFilterLabel = computed(() => {
                             <tr>
                                 <th class="px-6 py-4">Nasabah</th>
                                 <th class="px-6 py-4 text-right">Pinjaman Pokok<br/><span class="text-[10px] lowercase font-normal text-blue-600">(+) Masuk/Cair ke Nasabah</span></th>
-                                <th class="px-6 py-4 text-right">Angsuran Pokok<br/><span class="text-[10px] lowercase font-normal text-teal-600">(-) Dibayar oleh Nasabah</span></th>
+                                <th class="px-6 py-4 text-right">Angsuran Total<br/><span class="text-[10px] lowercase font-normal text-teal-600">(-) Dibayar oleh Nasabah</span></th>
                                 <th class="px-6 py-4 text-right">Selisih Bersih</th>
                             </tr>
                         </thead>
@@ -114,7 +112,7 @@ const getFilterLabel = computed(() => {
                                 <td class="px-6 py-4 text-right font-bold text-blue-600">{{ formatCurrency(rincianSelisih.reduce((acc, curr) => acc + curr.pinjaman, 0)) }}</td>
                                 <td class="px-6 py-4 text-right font-bold text-teal-600">{{ formatCurrency(rincianSelisih.reduce((acc, curr) => acc + curr.angsuran, 0)) }}</td>
                                 <td class="px-6 py-4 text-right font-bold text-amber-600 text-lg">
-                                    {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_pokok)) }}
+                                    {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all)) }}
                                 </td>
                             </tr>
                         </tfoot>
