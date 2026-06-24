@@ -1,9 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({ summary: Object, rincian: Object, filters: Object });
+
+const searchQuery = ref('');
 
 const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0);
 
@@ -38,9 +40,16 @@ const rincianSelisih = computed(() => {
     });
     
     // Filter out nasabah yang sudah lunas (selisih <= 0) agar tidak membingungkan
-    return Object.values(map)
+    let result = Object.values(map)
         .filter(item => Math.round(item.selisih) > 0)
         .sort((a, b) => b.selisih - a.selisih);
+        
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        result = result.filter(item => item.nama.toLowerCase().includes(query));
+    }
+    
+    return result;
 });
 
 const getFilterLabel = computed(() => {
@@ -84,6 +93,15 @@ const getFilterLabel = computed(() => {
                         </p>
                     </div>
                 </div>
+                
+                <div class="mb-4">
+                    <div class="relative max-w-md">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <span class="material-symbols-outlined text-slate-400 text-sm">search</span>
+                        </div>
+                        <input type="text" v-model="searchQuery" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Cari nama nasabah...">
+                    </div>
+                </div>
 
                 <div class="overflow-x-auto rounded-lg border border-slate-200">
                     <table class="w-full text-sm text-left">
@@ -107,7 +125,8 @@ const getFilterLabel = computed(() => {
                             <tr v-if="rincianSelisih.length === 0">
                                 <td colspan="4" class="px-6 py-12 text-center text-slate-500">
                                     <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">inbox</span>
-                                    <p>Tidak ada data transaksi pinjaman atau angsuran pada periode ini.</p>
+                                    <p v-if="searchQuery">Tidak ada nasabah yang cocok dengan pencarian "{{ searchQuery }}".</p>
+                                    <p v-else>Tidak ada data transaksi pinjaman atau angsuran pada periode ini.</p>
                                 </td>
                             </tr>
                         </tbody>
