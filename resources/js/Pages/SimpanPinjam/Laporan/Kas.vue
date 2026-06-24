@@ -113,10 +113,10 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                             <div class="flex items-center justify-between">
                                 <p class="text-xs font-bold text-amber-700 uppercase">Selisih Pinjaman & Angsuran</p>
                             </div>
-                            <span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium w-fit">Pinjaman (Pokok) - Angsuran (Total)</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium w-fit">Pinjaman Aktif (Pokok) - Angsuran (Total)</span>
                         </div>
-                        <p class="text-xl font-black text-slate-800 mt-2" :class="Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all) < 0 ? 'text-red-600' : 'text-slate-800'">
-                            {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all)) }}
+                        <p class="text-xl font-black text-slate-800 mt-2" :class="summary.selisih_aktif < 0 ? 'text-red-600' : 'text-slate-800'">
+                            {{ formatCurrency(summary.selisih_aktif) }}
                         </p>
                     </Link>
                     <div class="rounded-lg border border-sky-100 bg-sky-50 p-4 shadow-sm">
@@ -126,7 +126,7 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                             </div>
                             <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium w-fit">Uang BUMDes - Selisih Pinjaman & Angsuran</span>
                         </div>
-                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) - (Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all))) }}</p>
+                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) - summary.selisih_aktif) }}</p>
                     </div>
                 </div>
             </div>

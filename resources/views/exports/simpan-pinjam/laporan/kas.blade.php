@@ -9,14 +9,14 @@
         $periodLabel = 'Periode: Bulan ' . $filters['bulan'] . ' Tahun ' . ($filters['tahun'] ?? date('Y'));
     }
     $uang_bumdes = $summary['saldo_reguler'] + $summary['saldo_sembako'];
-    $pinjaman_pokok = $summary['total_pinjaman_all'];
-    $angsuran_total = $summary['total_angsuran_all'];
-    $selisih = $pinjaman_pokok - $angsuran_total;
+    $pinjaman_pokok = $summary['pinjaman_aktif_pokok'];
+    $angsuran_total = $summary['angsuran_aktif_total'];
+    $selisih = $summary['selisih_aktif'];
     $uang_cash = $uang_bumdes - $selisih;
 
     $summaryItems = [
         ['label' => 'Total Uang BUMDes', 'value' => 'Rp ' . number_format($uang_bumdes, 0, ',', '.')],
-        ['label' => 'Pinjaman (Pokok)',  'value' => 'Rp ' . number_format($pinjaman_pokok, 0, ',', '.')],
+        ['label' => 'Pinjaman Aktif (Pokok)',  'value' => 'Rp ' . number_format($pinjaman_pokok, 0, ',', '.')],
         ['label' => 'Angsuran (Total)',  'value' => 'Rp ' . number_format($angsuran_total, 0, ',', '.')],
         ['label' => 'Selisih Pinjaman',  'value' => 'Rp ' . number_format($selisih, 0, ',', '.')],
         ['label' => 'Total Uang Cash',   'value' => 'Rp ' . number_format($uang_cash, 0, ',', '.')],

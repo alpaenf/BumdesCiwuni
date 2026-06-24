@@ -12,8 +12,9 @@ const rincianSelisih = computed(() => {
     
     const map = {};
     
-    // Tambah Pinjaman (Pokok)
+    // Tambah Pinjaman Aktif (Pokok)
     props.rincian.keluar_pinjaman?.forEach(p => {
+        if (p.status === 'lunas') return;
         const nasabahId = p.nasabah?.id || 'unknown';
         const nama = p.nasabah?.nama || 'Hamba Allah';
         if (!map[nasabahId]) map[nasabahId] = { id: nasabahId, nama, pinjaman: 0, angsuran: 0, selisih: 0 };
@@ -21,10 +22,10 @@ const rincianSelisih = computed(() => {
         map[nasabahId].selisih += Number(p.pinjaman_pokok);
     });
     
-    // Kurang Angsuran (Total)
+    // Kurang Angsuran Aktif (Total)
     props.rincian.masuk_angsuran?.forEach(a => {
         const p = a.pinjaman;
-        if (!p) return;
+        if (!p || p.status === 'lunas') return;
         const nasabahId = p.nasabah?.id || 'unknown';
         const nama = p.nasabah?.nama || 'Hamba Allah';
         
@@ -36,7 +37,10 @@ const rincianSelisih = computed(() => {
         map[nasabahId].selisih -= total;
     });
     
-    return Object.values(map).sort((a, b) => b.selisih - a.selisih);
+    // Filter out nasabah yang sudah lunas (selisih <= 0) agar tidak membingungkan
+    return Object.values(map)
+        .filter(item => Math.round(item.selisih) > 0)
+        .sort((a, b) => b.selisih - a.selisih);
 });
 
 const getFilterLabel = computed(() => {
@@ -69,13 +73,14 @@ const getFilterLabel = computed(() => {
                     <div>
                         <h3 class="font-bold text-amber-800 mb-1">Periode: {{ getFilterLabel }}</h3>
                         <p class="text-sm text-amber-700">
-                            Menampilkan total nilai pinjaman (pokok) yang dicairkan dikurangi angsuran (total) yang dibayarkan oleh masing-masing nasabah pada periode ini.
+                            Menampilkan total nilai pinjaman (pokok) yang dicairkan dikurangi angsuran (total beserta bunga) <strong>KHUSUS untuk pinjaman yang statusnya MASIH AKTIF</strong> pada periode ini. <br/>
+                            <strong>Catatan:</strong> Nasabah dengan pinjaman lunas tidak ditampilkan.
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs font-bold text-amber-700 uppercase mb-1">Total Selisih Keseluruhan</p>
-                        <p class="text-2xl font-black text-slate-800" :class="Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all) < 0 ? 'text-red-600' : 'text-amber-600'">
-                            {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all)) }}
+                        <p class="text-xs font-bold text-amber-700 uppercase mb-1">Total Sisa Pokok Beredar</p>
+                        <p class="text-2xl font-black text-slate-800" :class="summary.selisih_aktif < 0 ? 'text-red-600' : 'text-amber-600'">
+                            {{ formatCurrency(summary.selisih_aktif) }}
                         </p>
                     </div>
                 </div>
@@ -112,7 +117,7 @@ const getFilterLabel = computed(() => {
                                 <td class="px-6 py-4 text-right font-bold text-blue-600">{{ formatCurrency(rincianSelisih.reduce((acc, curr) => acc + curr.pinjaman, 0)) }}</td>
                                 <td class="px-6 py-4 text-right font-bold text-teal-600">{{ formatCurrency(rincianSelisih.reduce((acc, curr) => acc + curr.angsuran, 0)) }}</td>
                                 <td class="px-6 py-4 text-right font-bold text-amber-600 text-lg">
-                                    {{ formatCurrency(Number(summary.total_pinjaman_all) - Number(summary.total_angsuran_all)) }}
+                                    {{ formatCurrency(summary.selisih_aktif) }}
                                 </td>
                             </tr>
                         </tfoot>

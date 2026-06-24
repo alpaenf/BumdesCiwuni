@@ -381,6 +381,12 @@ class LaporanController extends Controller
         $keluarSembakoItems = (clone $queryTarikSembako)->with('tabungan.nasabah')->get();
         $keluarPinjamanItems = (clone $queryPinjaman)->with('nasabah')->get();
 
+        $pinjamanAktifPokok = $keluarPinjamanItems->where('status', '!=', 'lunas')->sum('pinjaman_pokok');
+        $angsuranAktifTotal = $masukAngsuranItems->filter(function($a) {
+            return $a->pinjaman && $a->pinjaman->status !== 'lunas';
+        })->sum('jumlah_bayar');
+        $selisihAktif = $pinjamanAktifPokok - $angsuranAktifTotal;
+
         return [[
             'masuk_reguler'      => (float) $masukReguler,
             'masuk_sembako'      => (float) $masukSembako,
@@ -398,6 +404,9 @@ class LaporanController extends Controller
             'total_angsuran_pokok' => (float) $totalAngsuranPokok,
             'total_pinjaman_all' => (float) $totalPinjamanAll,
             'total_pinjaman_all_tagihan' => (float) $totalPinjamanAllTagihan,
+            'pinjaman_aktif_pokok' => (float) $pinjamanAktifPokok,
+            'angsuran_aktif_total' => (float) $angsuranAktifTotal,
+            'selisih_aktif'        => (float) $selisihAktif,
         ], [
             'masuk_reguler'   => $masukRegulerItems,
             'masuk_sembako'   => $masukSembakoItems,
