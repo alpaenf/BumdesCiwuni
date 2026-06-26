@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps({ pinjaman: Object });
@@ -54,6 +54,12 @@ Terima kasih.`;
 
     window.open(`https://wa.me/${no}?text=${encodeURIComponent(pesan)}`, '_blank');
 }
+
+function deletePinjaman() {
+    if (confirm('Apakah Anda yakin ingin menghapus data pinjaman ini? Semua data angsuran terkait juga akan terhapus dan tidak dapat dikembalikan.')) {
+        router.delete(route('pinjaman.destroy', props.pinjaman.id));
+    }
+}
 </script>
 
 <template>
@@ -65,9 +71,14 @@ Terima kasih.`;
                 <Link :href="route('pinjaman.index')" class="inline-flex items-center gap-2 text-sm text-[color:var(--color-secondary)] hover:text-[color:var(--color-on-surface)]">
                     <span class="material-symbols-outlined text-base">arrow_back</span> Kembali ke Daftar Pinjaman
                 </Link>
-                <Link :href="route('pinjaman.edit', pinjaman.id)" class="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition shadow-sm">
-                    <span class="material-symbols-outlined text-xs">edit</span> Edit Pinjaman
-                </Link>
+                <div class="flex gap-2">
+                    <button @click="deletePinjaman" class="inline-flex items-center gap-1 rounded-lg bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 transition shadow-sm">
+                        <span class="material-symbols-outlined text-xs">delete</span> Hapus
+                    </button>
+                    <Link :href="route('pinjaman.edit', pinjaman.id)" class="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition shadow-sm">
+                        <span class="material-symbols-outlined text-xs">edit</span> Edit Pinjaman
+                    </Link>
+                </div>
             </div>
 
             <div class="grid gap-5 lg:grid-cols-3 min-w-0">

@@ -156,6 +156,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::get('/pinjaman/{pinjaman}', [PinjamanController::class, 'show'])->name('pinjaman.show');
     Route::get('/pinjaman/{pinjaman}/edit', [PinjamanController::class, 'edit'])->name('pinjaman.edit')->middleware('role:admin_unit');
     Route::post('/pinjaman/{pinjaman}/update', [PinjamanController::class, 'update'])->name('pinjaman.update')->middleware('role:admin_unit');
+    Route::delete('/pinjaman/{pinjaman}', [PinjamanController::class, 'destroy'])->name('pinjaman.destroy')->middleware('role:admin_unit');
 
     // Angsuran — static routes FIRST, then dynamic {angsuran}
     Route::get('/angsuran', [AngsuranController::class, 'index'])->name('angsuran.index');

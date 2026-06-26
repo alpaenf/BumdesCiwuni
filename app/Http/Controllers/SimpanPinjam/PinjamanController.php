@@ -240,4 +240,18 @@ class PinjamanController extends Controller
             )
         );
     }
+
+    public function destroy(Pinjaman $pinjaman)
+    {
+        if ($pinjaman->foto_perjanjian && file_exists(public_path('uploads/pinjaman/' . $pinjaman->foto_perjanjian))) {
+            @unlink(public_path('uploads/pinjaman/' . $pinjaman->foto_perjanjian));
+        }
+        if ($pinjaman->foto_barang && file_exists(public_path('uploads/pinjaman/' . $pinjaman->foto_barang))) {
+            @unlink(public_path('uploads/pinjaman/' . $pinjaman->foto_barang));
+        }
+
+        $pinjaman->delete();
+
+        return redirect()->route('pinjaman.index')->with('success', 'Data pinjaman berhasil dihapus.');
+    }
 }
