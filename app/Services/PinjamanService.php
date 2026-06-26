@@ -21,7 +21,7 @@ class PinjamanService
             $nominalSetor  = (float) $data['nominal_setoran'];
             $biayaTambahan = (float) ($data['biaya_tambahan'] ?? 0);
 
-            $totalTagihan    = $pokok + ($pokok * $bunga / 100) + $biayaTambahan;
+            $totalTagihan    = $pokok + ($pokok * $bunga / 100); // Biaya tambahan tidak dimasukkan ke hutang
             $jumlahAngsuran  = (int) ceil($totalTagihan / max(1, $nominalSetor));
 
             $foto_perjanjian = null;
@@ -66,7 +66,7 @@ class PinjamanService
     public function kalkulasi(float $pokok, float $bunga, float $nominalSetor, float $biayaTambahan = 0): array
     {
         $totalBunga     = $pokok * $bunga / 100;
-        $totalTagihan   = $pokok + $totalBunga + $biayaTambahan;
+        $totalTagihan   = $pokok + $totalBunga; // Biaya tambahan tidak masuk ke hutang yang diangsur
         $jumlahAngsuran = $nominalSetor > 0 ? (int) ceil($totalTagihan / $nominalSetor) : 0;
         
         $porsiPokok = $totalTagihan > 0 ? ($pokok / $totalTagihan) * $nominalSetor : 0;

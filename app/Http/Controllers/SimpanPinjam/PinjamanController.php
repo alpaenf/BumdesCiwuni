@@ -172,7 +172,7 @@ class PinjamanController extends Controller
             $nominalSetor  = (float) $validated['nominal_setoran'];
             $biayaTambahan = (float) ($validated['biaya_tambahan'] ?? 0);
 
-            $totalTagihan    = $pokok + ($pokok * $bunga / 100) + $biayaTambahan;
+            $totalTagihan    = $pokok + ($pokok * $bunga / 100); // Biaya tambahan bayar di awal
             $jumlahAngsuran  = (int) ceil($totalTagihan / max(1, $nominalSetor));
 
             $foto_perjanjian = $pinjaman->foto_perjanjian;
