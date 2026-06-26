@@ -192,6 +192,11 @@ class PendapatanController extends Controller
                 'persen' => $calcPersen($biayaAsuransi),
             ],
             [
+                'nama' => 'Total Pengambilan',
+                'nominal' => $totalPengurangan,
+                'persen' => $calcPersen($totalPengurangan),
+            ],
+            [
                 'nama' => 'Laba Bersih',
                 'nominal' => $labaBersih,
                 'persen' => $calcPersen($labaBersih),

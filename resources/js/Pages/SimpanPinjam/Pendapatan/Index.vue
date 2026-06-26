@@ -108,18 +108,23 @@ const activeTab = ref('tabungan');
                     Rincian Pengurangan Pendapatan
                 </h3>
                 <div class="space-y-4">
-                    <div v-for="item in distribusi" :key="item.nama" class="flex items-center justify-between border-b border-slate-50 pb-2">
+                    <div v-for="item in distribusi" :key="item.nama" 
+                        class="flex items-center justify-between pb-2"
+                        :class="item.nama === 'Total Pengambilan' ? 'border-t-2 border-slate-100 pt-2 mt-2' : 'border-b border-slate-50'">
                         <div class="flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full" 
+                            <span v-if="item.nama !== 'Total Pengambilan' && item.nama !== 'Laba Bersih'" class="h-2 w-2 rounded-full" 
                                 :class="{
-                                    'bg-blue-500': item.nama === 'Laba Bersih',
                                     'bg-blue-500': item.nama === 'Biaya Gaji',
                                     'bg-amber-500': item.nama === 'Biaya Operasional',
                                     'bg-purple-500': item.nama === 'Biaya Asuransi',
                                 }"></span>
-                            <span class="text-sm font-medium text-slate-700" :class="{'font-bold text-blue-700': item.nama === 'Laba Bersih'}">{{ item.nama }}</span>
+                            <span v-else-if="item.nama === 'Laba Bersih'" class="h-2 w-2 rounded-full bg-blue-500"></span>
+                            <span v-else class="material-symbols-outlined text-sm text-red-500">logout</span>
+                            <span class="text-sm font-medium text-slate-700" 
+                                :class="{'font-bold text-blue-700': item.nama === 'Laba Bersih', 'font-bold text-red-600': item.nama === 'Total Pengambilan'}">{{ item.nama }}</span>
                         </div>
-                        <div class="text-right text-sm font-semibold" :class="item.nominal < 0 ? 'text-red-600' : 'text-slate-800'">
+                        <div class="text-right text-sm font-semibold" 
+                            :class="item.nama === 'Laba Bersih' ? 'text-blue-700 font-bold' : (item.nama === 'Total Pengambilan' ? 'text-red-600 font-bold' : 'text-slate-800')">
                             {{ fmt(item.nominal) }}
                         </div>
                     </div>
