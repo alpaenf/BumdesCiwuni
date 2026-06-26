@@ -11,18 +11,27 @@ const props = defineProps({
     availableBulan: Array,
 });
 
-const search = ref(props.filters?.search ?? '');
-const status = ref(props.filters?.status ?? '');
-const bulan  = ref(props.filters?.bulan  ?? '');
+const search  = ref(props.filters?.search ?? '');
+const status  = ref(props.filters?.status ?? '');
+const bulan   = ref(props.filters?.bulan  ?? '');
+const tanggal = ref(props.filters?.tanggal ?? '');
 
 let timeout;
-watch([search, status, bulan], () => {
+watch([search, status, bulan, tanggal], ([newSearch, newStatus, newBulan, newTanggal], [oldSearch, oldStatus, oldBulan, oldTanggal]) => {
+    // Make bulan and tanggal mutually exclusive
+    if (newTanggal && newTanggal !== oldTanggal) {
+        bulan.value = '';
+    } else if (newBulan && newBulan !== oldBulan) {
+        tanggal.value = '';
+    }
+
     clearTimeout(timeout);
     timeout = setTimeout(() => {
         router.get(route('pinjaman.index'), {
             search: search.value,
             status: status.value,
             bulan:  bulan.value,
+            tanggal: tanggal.value,
         }, { preserveState: true, replace: true });
     }, 400);
 });
@@ -42,8 +51,18 @@ const formatBulanLabel = (val) => {
     const date = new Date(y, parseInt(m) - 1, 1);
     return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 };
+const formatTanggalLabel = (val) => {
+    if (!val) return '';
+    return new Date(val).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+};
 
-const isFiltered = computed(() => !!bulan.value || !!status.value);
+const filterLabel = computed(() => {
+    if (tanggal.value) return formatTanggalLabel(tanggal.value);
+    if (bulan.value) return formatBulanLabel(bulan.value);
+    return 'Filter Aktif';
+});
+
+const isFiltered = computed(() => !!bulan.value || !!tanggal.value || !!status.value);
 </script>
 
 <template>
@@ -54,7 +73,7 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-lg font-semibold">Daftar Pinjaman</h2>
-                    <p class="text-sm text-[color:var(--color-secondary)]">Total {{ pinjaman.total }} data pinjaman{{ bulan ? ' pada ' + formatBulanLabel(bulan) : '' }}</p>
+                    <p class="text-sm text-[color:var(--color-secondary)]">Total {{ pinjaman.total }} data pinjaman{{ tanggal ? ' pada ' + formatTanggalLabel(tanggal) : (bulan ? ' pada ' + formatBulanLabel(bulan) : '') }}</p>
                 </div>
                 <Link :href="route('pinjaman.create')" class="inline-flex items-center gap-2 rounded-lg bg-[color:var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 active:scale-95">
                     <span class="material-symbols-outlined text-base">add</span> Pinjaman Baru
@@ -66,23 +85,23 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
                 <!-- Jika ada filter: tampilkan summary hasil filter -->
                 <template v-if="isFiltered">
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
-                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Pinjaman</p>
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ filterLabel }} — Pinjaman</p>
                         <p class="mt-1 text-lg font-bold text-[color:var(--color-on-surface)]">{{ summaryFiltered?.total_pinjaman ?? 0 }} akad</p>
                     </div>
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
-                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Total Pokok</p>
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ filterLabel }} — Total Pokok</p>
                         <p class="mt-1 text-base font-bold text-[color:var(--color-on-surface)]">{{ formatCurrency(summaryFiltered?.total_pokok) }}</p>
                     </div>
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
-                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Total Tagihan</p>
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ filterLabel }} — Total Tagihan</p>
                         <p class="mt-1 text-base font-bold text-[color:var(--color-on-surface)]">{{ formatCurrency(summaryFiltered?.total_tagihan) }}</p>
                     </div>
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
-                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Sisa Tagihan</p>
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ filterLabel }} — Sisa Tagihan</p>
                         <p class="mt-1 text-base font-bold text-red-600">{{ formatCurrency(summaryFiltered?.total_sisa) }}</p>
                     </div>
                     <div class="rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4">
-                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ bulan ? formatBulanLabel(bulan) : 'Filter Aktif' }} — Sisa Pokok</p>
+                        <p class="text-xs font-medium text-[color:var(--color-primary)]">{{ filterLabel }} — Sisa Pokok</p>
                         <p class="mt-1 text-base font-bold text-blue-600">{{ formatCurrency(summaryFiltered?.total_sisa_pokok) }}</p>
                     </div>
                 </template>
@@ -117,8 +136,13 @@ const isFiltered = computed(() => !!bulan.value || !!status.value);
                     <input v-model="search" type="text" placeholder="Cari nama atau nomor rekening..."
                         class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white py-2.5 pl-10 pr-4 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
                 </div>
+                <!-- Filter Hari -->
+                <div class="relative w-full sm:w-36">
+                    <input v-model="tanggal" type="date" title="Filter Hari"
+                        class="w-full rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:border-[color:var(--color-primary)] focus:outline-none" />
+                </div>
                 <!-- Filter Bulan -->
-                <select v-model="bulan" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none">
+                <select v-model="bulan" class="rounded-lg border border-[color:var(--color-outline-variant)] bg-white px-3 py-2.5 text-sm focus:outline-none sm:w-40">
                     <option value="">Semua Bulan</option>
                     <option v-for="b in availableBulan" :key="b" :value="b">{{ formatBulanLabel(b) }}</option>
                 </select>

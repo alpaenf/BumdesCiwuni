@@ -40,6 +40,11 @@ class PinjamanController extends Controller
             }
         }
 
+        // Filter tanggal (format: YYYY-MM-DD)
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal_akad', $request->tanggal);
+        }
+
         // Filter bulan (format: YYYY-MM)
         if ($request->filled('bulan')) {
             [$year, $month] = explode('-', $request->bulan);
@@ -67,6 +72,9 @@ class PinjamanController extends Controller
             SUM(sisa_pinjaman) as total_sisa,
             SUM(sisa_pinjaman * pinjaman_pokok / IF(total_tagihan > 0, total_tagihan, 1)) as total_sisa_pokok
         ');
+        if ($request->filled('tanggal')) {
+            $summaryFiltered->whereDate('tanggal_akad', $request->tanggal);
+        }
         if ($request->filled('bulan')) {
             [$year, $month] = explode('-', $request->bulan);
             $summaryFiltered->whereYear('tanggal_akad', $year)
@@ -93,7 +101,7 @@ class PinjamanController extends Controller
 
         return Inertia::render('SimpanPinjam/Pinjaman/Index', [
             'pinjaman'         => $pinjaman,
-            'filters'          => $request->only(['search', 'status', 'bulan']),
+            'filters'          => $request->only(['search', 'status', 'bulan', 'tanggal']),
             'summaryAll'       => $summaryAll,
             'summaryFiltered'  => $summaryFiltered,
             'availableBulan'   => $availableBulan,
