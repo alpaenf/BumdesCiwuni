@@ -176,6 +176,7 @@ class PendapatanController extends Controller
 
         $calcPersen = fn($val) => $pendapatanKotor > 0 ? round(($val / $pendapatanKotor) * 100, 1) : 0;
 
+        $distribusi = [
             [
                 'nama' => 'Biaya Gaji',
                 'nominal' => $biayaGaji,
