@@ -13,6 +13,10 @@ const props = defineProps({
     bungaPinjaman: Number,
     pendapatanKotor: Number,
     distribusi: Array,
+    biayaGaji: Number,
+    biayaOps: Number,
+    biayaAsuransi: Number,
+    penarikanLaba: Number,
     detailTabungan: Array,
     detailSembako: Array,
     detailPinjaman: Array,
@@ -22,10 +26,19 @@ const selectedTahun = ref(props.tahun);
 const selectedBulan = ref(props.bulan ?? '');
 const selectedTanggal = ref(props.tanggal ?? '');
 
+const inputBiayaGaji = ref(props.biayaGaji ?? 560000);
+const inputBiayaOps = ref(props.biayaOps ?? 240000);
+const inputBiayaAsuransi = ref(props.biayaAsuransi ?? 40000);
+const inputPenarikanLaba = ref(props.penarikanLaba ?? 0);
+
 const applyFilter = () => {
     const params = { tahun: selectedTahun.value };
     if (selectedBulan.value) params.bulan = selectedBulan.value;
     if (selectedTanggal.value) params.tanggal = selectedTanggal.value;
+    params.biaya_gaji = inputBiayaGaji.value;
+    params.biaya_ops = inputBiayaOps.value;
+    params.biaya_asuransi = inputBiayaAsuransi.value;
+    params.penarikan_laba = inputPenarikanLaba.value;
     router.get(route('pendapatan.index'), params, { preserveState: true });
 };
 
@@ -39,6 +52,10 @@ const exportFilters = computed(() => {
     if (selectedTahun.value) payload.tahun = selectedTahun.value;
     if (selectedBulan.value) payload.bulan = selectedBulan.value;
     if (selectedTanggal.value) payload.tanggal = selectedTanggal.value;
+    payload.biaya_gaji = inputBiayaGaji.value;
+    payload.biaya_ops = inputBiayaOps.value;
+    payload.biaya_asuransi = inputBiayaAsuransi.value;
+    payload.penarikan_laba = inputPenarikanLaba.value;
     return payload;
 });
 
@@ -103,29 +120,95 @@ const activeTab = ref('tabungan');
 
             <!-- Rincian Pengurangan Pendapatan -->
             <div class="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4">
-                    <span class="material-symbols-outlined text-lg text-blue-600">receipt_long</span>
-                    Rincian Pengurangan Pendapatan
-                </h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg text-blue-600">receipt_long</span>
+                        Rincian Pengurangan Pendapatan
+                    </h3>
+                    <button @click="applyFilter" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+                        <span class="material-symbols-outlined text-sm">save</span> Terapkan Nilai Manual
+                    </button>
+                </div>
                 <div class="space-y-4">
-                    <div v-for="item in distribusi" :key="item.nama" 
-                        class="flex items-center justify-between pb-2"
-                        :class="item.nama === 'Total Pengambilan' ? 'border-t-2 border-slate-100 pt-2 mt-2' : 'border-b border-slate-50'">
+                    <!-- Biaya Gaji -->
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-50">
                         <div class="flex items-center gap-2">
-                            <span v-if="item.nama !== 'Total Pengambilan' && item.nama !== 'Laba Bersih'" class="h-2 w-2 rounded-full" 
-                                :class="{
-                                    'bg-blue-500': item.nama === 'Biaya Gaji',
-                                    'bg-amber-500': item.nama === 'Biaya Operasional',
-                                    'bg-purple-500': item.nama === 'Biaya Asuransi',
-                                }"></span>
-                            <span v-else-if="item.nama === 'Laba Bersih'" class="h-2 w-2 rounded-full bg-blue-500"></span>
-                            <span v-else class="material-symbols-outlined text-sm text-red-500">logout</span>
-                            <span class="text-sm font-medium text-slate-700" 
-                                :class="{'font-bold text-blue-700': item.nama === 'Laba Bersih', 'font-bold text-red-600': item.nama === 'Total Pengambilan'}">{{ item.nama }}</span>
+                            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                            <span class="text-sm font-medium text-slate-700">Biaya Gaji</span>
                         </div>
-                        <div class="text-right text-sm font-semibold" 
-                            :class="item.nama === 'Laba Bersih' ? 'text-blue-700 font-bold' : (item.nama === 'Total Pengambilan' ? 'text-red-600 font-bold' : 'text-slate-800')">
-                            {{ fmt(item.nominal) }}
+                        <div class="w-1/3 flex items-center gap-2">
+                            <span class="text-sm font-medium text-slate-500">Rp</span>
+                            <input type="number" v-model="inputBiayaGaji" class="w-full text-right text-sm font-semibold text-slate-800 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+                    </div>
+                    
+                    <!-- Biaya Operasional -->
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-50">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                            <span class="text-sm font-medium text-slate-700">Biaya Operasional</span>
+                        </div>
+                        <div class="w-1/3 flex items-center gap-2">
+                            <span class="text-sm font-medium text-slate-500">Rp</span>
+                            <input type="number" v-model="inputBiayaOps" class="w-full text-right text-sm font-semibold text-slate-800 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+                    </div>
+
+                    <!-- Biaya Asuransi -->
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-50">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                            <span class="text-sm font-medium text-slate-700">Biaya Asuransi</span>
+                        </div>
+                        <div class="w-1/3 flex items-center gap-2">
+                            <span class="text-sm font-medium text-slate-500">Rp</span>
+                            <input type="number" v-model="inputBiayaAsuransi" class="w-full text-right text-sm font-semibold text-slate-800 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+                    </div>
+
+                    <!-- Biaya Asuransi -->
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-50">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                            <span class="text-sm font-medium text-slate-700">Biaya Asuransi</span>
+                        </div>
+                        <div class="w-1/3 flex items-center gap-2">
+                            <span class="text-sm font-medium text-slate-500">Rp</span>
+                            <input type="number" v-model="inputBiayaAsuransi" class="w-full text-right text-sm font-semibold text-slate-800 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+                    </div>
+
+                    <!-- Penarikan Laba / Lainnya -->
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-50">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+                            <span class="text-sm font-medium text-slate-700">Penarikan Laba / Lainnya</span>
+                        </div>
+                        <div class="w-1/3 flex items-center gap-2">
+                            <span class="text-sm font-medium text-slate-500">Rp</span>
+                            <input type="number" v-model="inputPenarikanLaba" class="w-full text-right text-sm font-semibold text-slate-800 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+                        </div>
+                    </div>
+
+                    <!-- Total Pengambilan -->
+                    <div class="flex items-center justify-between pb-2 border-t-2 border-slate-100 pt-2 mt-2">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm text-red-500">logout</span>
+                            <span class="text-sm font-bold text-red-600">Total Pengambilan</span>
+                        </div>
+                        <div class="text-right text-sm font-bold text-red-600">
+                            {{ fmt(Number(inputBiayaGaji) + Number(inputBiayaOps) + Number(inputBiayaAsuransi) + Number(inputPenarikanLaba)) }}
+                        </div>
+                    </div>
+
+                    <!-- Laba Bersih -->
+                    <div class="flex items-center justify-between pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                            <span class="text-sm font-bold text-blue-700">Laba Bersih</span>
+                        </div>
+                        <div class="text-right text-sm font-bold text-blue-700">
+                            {{ fmt(pendapatanKotor - (Number(inputBiayaGaji) + Number(inputBiayaOps) + Number(inputBiayaAsuransi) + Number(inputPenarikanLaba))) }}
                         </div>
                     </div>
                 </div>

@@ -120,7 +120,7 @@
 
     {{-- ===== HEADER ===== --}}
     <div class="logo">
-        <img src="{{ public_path('logo2.png') }}" alt="Logo BUMDes">
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('logo2.png'))) }}" alt="Logo BUMDes">
     </div>
     <div class="center org-name">Badan Usaha Milik Desa (BUMDesa)</div>
     <div class="center org-bumdes">DAMMAR WULAN</div>

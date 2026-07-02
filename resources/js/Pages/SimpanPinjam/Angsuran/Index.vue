@@ -70,6 +70,28 @@ function handleSaved() {
     router.reload({ preserveScroll: true });
 }
 
+async function deleteTrx(row) {
+    if (!confirm('Apakah Anda yakin ingin menghapus transaksi angsuran ini? Sisa pinjaman akan dihitung ulang secara otomatis.')) return;
+    
+    try {
+        const url = route('angsuran.destroy', row.id);
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Gagal menghapus transaksi');
+        
+        router.reload({ preserveScroll: true });
+    } catch(e) {
+        alert(e.message);
+    }
+}
+
 function kirimStrukWa(row) {
     const noHp = row.pinjaman?.nasabah?.no_hp;
     if (!noHp) {
@@ -216,6 +238,9 @@ Terima kasih.`;
                                         </button>
                                         <button @click="openEdit(row)" class="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-amber-600 transition">
                                             <span class="material-symbols-outlined text-xs">edit</span> Edit
+                                        </button>
+                                        <button @click="deleteTrx(row)" class="inline-flex items-center gap-1 rounded-lg bg-red-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-600 transition">
+                                            <span class="material-symbols-outlined text-xs">delete</span> Hapus
                                         </button>
                                     </div>
                                 </td>

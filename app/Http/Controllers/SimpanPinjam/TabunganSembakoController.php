@@ -162,6 +162,30 @@ class TabunganSembakoController extends Controller
         return response()->json(['success' => true, 'message' => 'Transaksi berhasil diperbarui.']);
     }
 
+    public function destroyTransaksi(TransaksiTabungan $transaksi)
+    {
+        DB::transaction(function () use ($transaksi) {
+            $tabungan = $transaksi->tabungan;
+            $transaksi->delete();
+
+            $allTrx = $tabungan->transaksi()->orderBy('tanggal')->orderBy('id')->get();
+
+            $saldo = 0;
+            foreach ($allTrx as $trx) {
+                if ($trx->jenis_transaksi === TransaksiTabungan::JENIS_SETOR) {
+                    $saldo += $trx->nominal;
+                } else {
+                    $saldo = max(0, $saldo - $trx->nominal - $trx->administrasi);
+                }
+                $trx->updateQuietly(['saldo_setelah' => $saldo]);
+            }
+
+            $tabungan->update(['saldo' => $saldo]);
+        });
+
+        return response()->json(['success' => true, 'message' => 'Transaksi berhasil dihapus.']);
+    }
+
     public function riwayat(Nasabah $nasabah)
     {
         $tabungan = $nasabah->tabungan()->firstOrCreate(

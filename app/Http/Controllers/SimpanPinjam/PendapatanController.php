@@ -166,16 +166,16 @@ class PendapatanController extends Controller
 
         $pendapatanKotor = $bungaPinjaman;
 
-        $biayaGaji = 560000;
-        $biayaOps = 240000;
-        $biayaAsuransi = 40000;
+        $biayaGaji = (float) $request->input('biaya_gaji', 560000);
+        $biayaOps = (float) $request->input('biaya_ops', 240000);
+        $biayaAsuransi = (float) $request->input('biaya_asuransi', 40000);
+        $penarikanLaba = (float) $request->input('penarikan_laba', 0);
 
-        $totalPengurangan = $biayaGaji + $biayaOps + $biayaAsuransi;
+        $totalPengurangan = $biayaGaji + $biayaOps + $biayaAsuransi + $penarikanLaba;
         $labaBersih = $pendapatanKotor - $totalPengurangan;
 
         $calcPersen = fn($val) => $pendapatanKotor > 0 ? round(($val / $pendapatanKotor) * 100, 1) : 0;
 
-        $distribusi = [
             [
                 'nama' => 'Biaya Gaji',
                 'nominal' => $biayaGaji,
@@ -190,6 +190,11 @@ class PendapatanController extends Controller
                 'nama' => 'Biaya Asuransi',
                 'nominal' => $biayaAsuransi,
                 'persen' => $calcPersen($biayaAsuransi),
+            ],
+            [
+                'nama' => 'Penarikan Laba / Lainnya',
+                'nominal' => $penarikanLaba,
+                'persen' => $calcPersen($penarikanLaba),
             ],
             [
                 'nama' => 'Total Pengambilan',
@@ -310,6 +315,10 @@ class PendapatanController extends Controller
             'bungaPinjaman' => (float) $bungaPinjaman,
             'pendapatanKotor' => (float) $pendapatanKotor,
             'distribusi' => $distribusi,
+            'biayaGaji' => $biayaGaji,
+            'biayaOps' => $biayaOps,
+            'biayaAsuransi' => $biayaAsuransi,
+            'penarikanLaba' => $penarikanLaba,
             'detailTabungan' => $detailTabungan,
             'detailSembako' => $detailSembako,
             'detailPinjaman' => $detailPinjaman,

@@ -128,6 +128,15 @@ const pdfUrl = computed(() => `${route('laporan.kas.pdf')}?${buildQuery.value}`)
                         </div>
                         <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency((Number(summary.saldo_reguler) + Number(summary.saldo_sembako)) - summary.selisih_aktif) }}</p>
                     </div>
+                    <div class="rounded-lg border border-green-100 bg-green-50 p-4 shadow-sm">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-green-700 uppercase">Laba Bersih (Bunga)</p>
+                            </div>
+                            <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium w-fit">Pendapatan Bunga Pinjaman</span>
+                        </div>
+                        <p class="text-xl font-black text-slate-800 mt-2">{{ formatCurrency(summary.total_angsuran_all - summary.total_angsuran_pokok) }}</p>
+                    </div>
                 </div>
             </div>
 

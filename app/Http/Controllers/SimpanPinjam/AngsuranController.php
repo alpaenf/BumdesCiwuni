@@ -146,6 +146,41 @@ class AngsuranController extends Controller
         return back()->with('success', 'Transaksi angsuran berhasil diperbarui.');
     }
 
+    public function destroy(Angsuran $angsuran)
+    {
+        \DB::transaction(function () use ($angsuran) {
+            $pinjaman = $angsuran->pinjaman;
+            $angsuran->delete();
+
+            // Recalculate sisa_pinjaman untuk semua angsuran
+            $allAngsuran = $pinjaman->angsuran()->orderBy('angsuran_ke')->get();
+
+            // Hitung ulang dari awal berdasar pinjaman_pokok + bunga
+            $pokokTotal = $pinjaman->pinjaman_pokok
+                        + ($pinjaman->pinjaman_pokok * $pinjaman->bunga / 100)
+                        + $pinjaman->biaya_tambahan;
+            $saldo = $pokokTotal;
+            
+            // Perbaiki angsuran_ke secara berurutan dan hitung sisa saldo
+            $ke = 1;
+            foreach ($allAngsuran as $a) {
+                $saldo = max(0, $saldo - $a->jumlah_bayar);
+                $a->updateQuietly([
+                    'angsuran_ke' => $ke++,
+                    'sisa_pinjaman' => $saldo
+                ]);
+            }
+
+            // Update sisa_pinjaman di tabel pinjaman
+            $pinjaman->update([
+                'sisa_pinjaman' => $saldo,
+                'status'        => $saldo <= 0 ? 'lunas' : 'aktif',
+            ]);
+        });
+
+        return back()->with('success', 'Transaksi angsuran berhasil dihapus.');
+    }
+
     public function struk(Angsuran $angsuran)
     {
         $angsuran->load('pinjaman.nasabah');

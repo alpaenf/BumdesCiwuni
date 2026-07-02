@@ -121,6 +121,34 @@ async function handleEditSaved() {
     }
     router.reload({ preserveScroll: true });
 }
+
+async function deleteTrx(trx) {
+    if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini? Saldo akan dihitung ulang secara otomatis.')) return;
+    
+    try {
+        const url = route('tabungan.transaksi.destroy', trx.id);
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Gagal menghapus transaksi');
+        
+        const resData = await response.json();
+        
+        // Reload riwayat
+        if (modalNasabah.value) {
+            await openStrukModal(modalNasabah.value);
+        }
+        router.reload({ preserveScroll: true });
+    } catch(e) {
+        alert(e.message);
+    }
+}
 </script>
 
 <template>
@@ -268,6 +296,10 @@ async function handleEditSaved() {
                                     <button @click="openEditTrx(trx)"
                                         class="flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600">
                                         <span class="material-symbols-outlined text-xs">edit</span> Edit
+                                    </button>
+                                    <button @click="deleteTrx(trx)"
+                                        class="flex items-center gap-1 rounded-lg bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600">
+                                        <span class="material-symbols-outlined text-xs">delete</span> Hapus
                                     </button>
                                 </div>
                             </li>

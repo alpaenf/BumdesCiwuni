@@ -137,6 +137,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::post('/tabungan/{nasabah}/tarik', [TabunganController::class, 'storeTarik'])->name('tabungan.tarik.store')->middleware('role:admin_unit');
     Route::get('/tabungan/{nasabah}/riwayat', [TabunganController::class, 'riwayat'])->name('tabungan.riwayat');
     Route::put('/tabungan/transaksi/{transaksi}/edit', [TabunganController::class, 'updateTransaksi'])->name('tabungan.transaksi.update')->middleware('role:admin_unit');
+    Route::delete('/tabungan/transaksi/{transaksi}', [TabunganController::class, 'destroyTransaksi'])->name('tabungan.transaksi.destroy')->middleware('role:admin_unit');
 
 
     // Tabungan Sembako
@@ -147,6 +148,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::post('/tabungan-sembako/{nasabah}/ambil', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'storeAmbil'])->name('tabungan-sembako.ambil.store')->middleware('role:admin_unit');
     Route::get('/tabungan-sembako/{nasabah}/riwayat', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'riwayat'])->name('tabungan-sembako.riwayat');
     Route::put('/tabungan-sembako/transaksi/{transaksi}/edit', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'updateTransaksi'])->name('tabungan-sembako.transaksi.update')->middleware('role:admin_unit');
+    Route::delete('/tabungan-sembako/transaksi/{transaksi}', [\App\Http\Controllers\SimpanPinjam\TabunganSembakoController::class, 'destroyTransaksi'])->name('tabungan-sembako.transaksi.destroy')->middleware('role:admin_unit');
 
     // Pinjaman — static routes FIRST, then dynamic {pinjaman}
     Route::get('/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman.index');
@@ -163,6 +165,7 @@ Route::middleware(['auth', 'role:admin_unit,manager,manager_pusat'])->prefix('un
     Route::get('/angsuran/bayar', [AngsuranController::class, 'create'])->name('angsuran.create')->middleware('role:admin_unit');
     Route::post('/angsuran', [AngsuranController::class, 'store'])->name('angsuran.store')->middleware('role:admin_unit');
     Route::put('/angsuran/{angsuran}/edit', [AngsuranController::class, 'update'])->name('angsuran.update')->middleware('role:admin_unit');
+    Route::delete('/angsuran/{angsuran}', [AngsuranController::class, 'destroy'])->name('angsuran.destroy')->middleware('role:admin_unit');
 
     // Buku Tabungan
     Route::get('/buku-tabungan', [BukuTabunganController::class, 'index'])->name('buku-tabungan.index');
