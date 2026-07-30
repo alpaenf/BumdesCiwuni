@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\SimpanPinjam;
 
+use App\Exports\PendapatanKotorExport;
 use App\Http\Controllers\Controller;
 use App\Models\Pinjaman;
 use App\Models\Tabungan;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PendapatanController extends Controller
 {
@@ -44,80 +46,10 @@ class PendapatanController extends Controller
     {
         $data = $this->getLaporanData($request, false);
 
-        return response()->streamDownload(function () use ($data) {
-            $handle = fopen('php://output', 'w');
-            
-            // Header Info
-            fputcsv($handle, ['LAPORAN PENDAPATAN KOTOR']);
-            fputcsv($handle, ['BUMDesa Dammar Wulan - Unit Simpan Pinjam']);
-            fputcsv($handle, ['Periode: ' . $data['bulanNama'] . ' ' . $data['tahun']]);
-            fputcsv($handle, []);
-
-            // Summary
-            fputcsv($handle, ['RINGKASAN PENDAPATAN']);
-            fputcsv($handle, ['Total Pendapatan Kotor', $data['pendapatanKotor']]);
-            fputcsv($handle, ['Bunga Pinjaman', $data['bungaPinjaman']]);
-            fputcsv($handle, ['Biaya Promosi (Tabungan Reguler)', $data['labaTabungan']]);
-            fputcsv($handle, ['Biaya Promosi (Tabungan Sembako)', $data['labaSembako']]);
-            fputcsv($handle, []);
-
-            // Distribusi Pengurangan Pendapatan
-            fputcsv($handle, ['RINCIAN PENGURANGAN PENDAPATAN']);
-            fputcsv($handle, ['Nama Pengurangan', 'Nominal', 'Persentase (%)']);
-            foreach ($data['distribusi'] as $item) {
-                fputcsv($handle, [
-                    $item['nama'],
-                    $item['nominal'],
-                    $item['persen'] . '%'
-                ]);
-            }
-            fputcsv($handle, []);
-
-            // Detail Bunga Pinjaman
-            fputcsv($handle, ['DETAIL BUNGA PINJAMAN DARI ANGSURAN']);
-            fputcsv($handle, ['Tanggal', 'Nasabah', 'Pokok Pinjaman', 'Bunga (%)', 'Angsuran Ke', 'Bayar Pokok', 'Pendapatan Bunga']);
-            foreach ($data['detailPinjaman'] as $p) {
-                fputcsv($handle, [
-                    $p['tanggal'],
-                    $p['nasabah'],
-                    $p['pokok'],
-                    $p['bunga_persen'],
-                    $p['angsuran_ke'] ?? '-',
-                    $p['angsuran_pokok'],
-                    $p['bunga_nominal']
-                ]);
-            }
-            fputcsv($handle, []);
-
-            // Detail Biaya Promosi Reguler
-            fputcsv($handle, ['DETAIL BIAYA PROMOSI (TABUNGAN REGULER)']);
-            fputcsv($handle, ['Tanggal', 'Nasabah', 'Keterangan', 'Biaya Promosi']);
-            foreach ($data['detailTabungan'] as $t) {
-                fputcsv($handle, [
-                    $t['tanggal'],
-                    $t['nasabah'],
-                    $t['keterangan'],
-                    $t['laba']
-                ]);
-            }
-            fputcsv($handle, []);
-
-            // Detail Biaya Promosi Sembako
-            fputcsv($handle, ['DETAIL BIAYA PROMOSI (TABUNGAN SEMBAKO)']);
-            fputcsv($handle, ['Tanggal', 'Nasabah', 'Keterangan', 'Biaya Promosi']);
-            foreach ($data['detailSembako'] as $s) {
-                fputcsv($handle, [
-                    $s['tanggal'],
-                    $s['nasabah'],
-                    $s['keterangan'],
-                    $s['laba']
-                ]);
-            }
-
-            fclose($handle);
-        }, 'laporan-pendapatan-kotor.csv', [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-        ]);
+        return Excel::download(
+            new PendapatanKotorExport($data),
+            'laporan-pendapatan-kotor.xlsx'
+        );
     }
 
     private function getLaporanData(Request $request, bool $limit = false): array
