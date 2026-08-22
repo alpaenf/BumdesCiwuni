@@ -21,6 +21,7 @@ use App\Http\Controllers\Portal\CmsController;
 use App\Http\Controllers\Portal\PostController;
 use App\Http\Controllers\Portal\UnitController;
 use App\Http\Controllers\Portal\ExecDashboardController;
+use App\Http\Controllers\Wifi\WifiPelangganController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -249,6 +250,38 @@ Route::middleware(['auth'])->group(function () {
     // Unit Galeri
     Route::post('/unit/{slug}/galeri', [App\Http\Controllers\Portal\UnitLandingController::class, 'galeriStore'])->name('unit.galeri.store');
     Route::delete('/unit/{slug}/galeri/{id}', [App\Http\Controllers\Portal\UnitLandingController::class, 'galeriDestroy'])->name('unit.galeri.destroy');
+});
+
+// =====================================================
+// WIFI UNIT — PELANGGAN MANAGEMENT
+// =====================================================
+Route::middleware(['auth'])->prefix('unit/wifi')->group(function () {
+    Route::get('/pelanggan', [WifiPelangganController::class, 'index'])->name('wifi.pelanggan.index');
+    Route::get('/pelanggan/cetak-pdf', [WifiPelangganController::class, 'cetakPdf'])->name('wifi.pelanggan.cetak-pdf');
+    Route::post('/pelanggan', [WifiPelangganController::class, 'store'])->name('wifi.pelanggan.store');
+    Route::put('/pelanggan/{pelanggan}', [WifiPelangganController::class, 'update'])->name('wifi.pelanggan.update');
+    Route::delete('/pelanggan/{pelanggan}', [WifiPelangganController::class, 'destroy'])->name('wifi.pelanggan.destroy');
+    Route::get('/pelanggan/export', [WifiPelangganController::class, 'export'])->name('wifi.pelanggan.export');
+    Route::post('/pelanggan/import', [WifiPelangganController::class, 'import'])->name('wifi.pelanggan.import');
+    Route::get('/peta', [WifiPelangganController::class, 'peta'])->name('wifi.peta');
+
+    // Pembayaran & Tagihan
+    Route::get('/pembayaran', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'index'])->name('wifi.pembayaran.index');
+    Route::post('/pembayaran', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'store'])->name('wifi.pembayaran.store');
+    Route::post('/pembayaran/masal', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'bayarMasal'])->name('wifi.pembayaran.masal');
+    Route::get('/pembayaran/history/{pelanggan}', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'history'])->name('wifi.pembayaran.history');
+    Route::get('/pembayaran/struk/{pembayaran}', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'struk'])->name('wifi.pembayaran.struk');
+
+    // Master Provider & Skema Bagi Hasil
+    Route::get('/provider', [\App\Http\Controllers\Wifi\WifiProviderController::class, 'index'])->name('wifi.provider.index');
+    Route::post('/provider', [\App\Http\Controllers\Wifi\WifiProviderController::class, 'store'])->name('wifi.provider.store');
+    Route::put('/provider/{provider}', [\App\Http\Controllers\Wifi\WifiProviderController::class, 'update'])->name('wifi.provider.update');
+    Route::delete('/provider/{provider}', [\App\Http\Controllers\Wifi\WifiProviderController::class, 'destroy'])->name('wifi.provider.destroy');
+
+    // Laporan WiFi Per Provider
+    Route::get('/laporan', [\App\Http\Controllers\Wifi\WifiLaporanController::class, 'index'])->name('wifi.laporan.index');
+    Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\Wifi\WifiLaporanController::class, 'cetakPdf'])->name('wifi.laporan.cetak-pdf');
+    Route::get('/laporan/export', [\App\Http\Controllers\Wifi\WifiLaporanController::class, 'export'])->name('wifi.laporan.export');
 });
 
 require __DIR__.'/auth.php';

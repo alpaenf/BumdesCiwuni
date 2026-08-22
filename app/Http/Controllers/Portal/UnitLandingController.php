@@ -154,11 +154,84 @@ class UnitLandingController extends Controller
 
         $folder = $this->getViewFolder($slug);
 
+        // ── WiFi: real stats from pelanggan_wifi table ──────────────────
+        $stats = [];
+        if ($slug === 'wifi') {
+            $bulanIni = now()->month;
+            $tahunIni = now()->year;
+
+            $allPelanggan = \App\Models\PelangganWifi::all();
+            $latestPembayaran = \App\Models\PembayaranWifi::whereIn('pelanggan_wifi_id', $allPelanggan->pluck('id'))
+                ->where('periode_bulan', $bulanIni)
+                ->where('periode_tahun', $tahunIni)
+                ->get()
+                ->keyBy('pelanggan_wifi_id');
+
+            $lunasCount     = 0;
+            $tunggakanCount = 0;
+            $isolirCount    = 0;
+            $kosongCount    = 0;
+
+            foreach ($allPelanggan as $p) {
+                $st = $latestPembayaran->get($p->id)?->status ?? ($p->gelombang === '16_30' ? $p->status_16_30 : $p->status_1_15);
+                if ($st === 'LUNAS') $lunasCount++;
+                elseif ($st === 'TUNGGAKAN') $tunggakanCount++;
+                elseif ($st === 'ISOLIR') $isolirCount++;
+                else $kosongCount++;
+            }
+
+            $recentList = \App\Models\PelangganWifi::orderByDesc('tanggal_daftar')
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get(['id','no','nama','paket','no_wa','alamat','rt','rw','gelombang',
+                       'status_1_15','status_16_30','tanggal_daftar','total_tarikan']);
+
+            $recentList->transform(function ($item) use ($latestPembayaran) {
+                $pay = $latestPembayaran->get($item->id);
+                $item->current_status = $pay?->status ?? ($item->gelombang === '16_30' ? $item->status_16_30 : $item->status_1_15);
+                return $item;
+            });
+
+            $stats = [
+                'total_pelanggan'  => $allPelanggan->count(),
+                'daftar_bulan_ini' => \App\Models\PelangganWifi::whereMonth('tanggal_daftar', $bulanIni)
+                                        ->whereYear('tanggal_daftar', $tahunIni)->count(),
+
+                'total_tarikan'    => $allPelanggan->sum('total_tarikan'),
+                'hasil_bumdes'     => $allPelanggan->sum('hasil_bumdes'),
+                'total_provider'   => $allPelanggan->sum('total_provider'),
+                'total_dasar'      => $allPelanggan->sum('total_dasar_tarikan_non_ppn'),
+
+                'gel1' => \App\Models\PelangganWifi::where('gelombang', '1_15')->count(),
+                'gel2' => \App\Models\PelangganWifi::where('gelombang', '16_30')->count(),
+
+                'status_summary' => [
+                    'LUNAS'     => $lunasCount,
+                    'TUNGGAKAN' => $tunggakanCount,
+                    'ISOLIR'    => $isolirCount,
+                    'kosong'    => $kosongCount,
+                ],
+
+                'per_paket' => \App\Models\PelangganWifi::select(
+                                    'paket',
+                                    \Illuminate\Support\Facades\DB::raw('count(*) as jumlah'),
+                                    \Illuminate\Support\Facades\DB::raw('sum(total_tarikan) as total')
+                                )->whereNotNull('paket')
+                                 ->groupBy('paket')
+                                 ->orderByDesc('jumlah')
+                                 ->get(),
+
+                'recent' => $recentList,
+            ];
+        }
+
         return Inertia::render("$folder/Dashboard", [
-            'unit' => $unit,
-            'user' => $user,
+            'unit'  => $unit,
+            'user'  => $user,
+            'stats' => $stats,
         ]);
     }
+
 
     /**
      * Show the unit landing page settings.

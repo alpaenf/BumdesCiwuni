@@ -26,5 +26,10 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         \Carbon\Carbon::setLocale('id');
         setlocale(LC_TIME, 'id_ID', 'id_ID.utf8', 'Indonesian');
+
+        // Register subfolder migrations
+        $this->loadMigrationsFrom([
+            database_path('migrations/wifi'),
+        ]);
     }
 }

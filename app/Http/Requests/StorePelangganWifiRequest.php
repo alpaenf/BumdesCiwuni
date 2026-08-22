@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StorePelangganWifiRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'no'                          => 'nullable|integer',
+            'nama'                        => 'required|string|max:255',
+            'tanggal_daftar'              => 'nullable|date',
+            'paket'                       => 'nullable|string|max:100',
+            'nik'                         => 'nullable|string|max:20',
+            'alamat'                      => 'nullable|string',
+            'rt'                          => 'nullable|string|max:10',
+            'rw'                          => 'nullable|string|max:10',
+            'no_id_pel'                   => 'nullable|string|max:50|unique:pelanggan_wifi,no_id_pel',
+            'no_wa'                       => 'nullable|string|max:20',
+            'total_dasar_tarikan_non_ppn' => 'nullable|numeric|min:0',
+            'ppn_dan_pph'                 => 'nullable|numeric|min:0',
+            'ppn_pph'                     => 'nullable|numeric|min:0',
+            'total_tarikan'               => 'nullable|numeric|min:0',
+            'bagi_hasil_bumdes'           => 'nullable|numeric|min:0',
+            'hasil_bumdes'                => 'nullable|numeric|min:0',
+            'nota_bayar_provider'         => 'nullable|numeric|min:0',
+            'total_provider'              => 'nullable|numeric|min:0',
+            'gelombang'                   => 'nullable|in:1_15,16_30',
+            'gps_long'                    => 'nullable|numeric|between:-180,180',
+            'gps_lat'                     => 'nullable|numeric|between:-90,90',
+            'foto_rumah'                  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'nama'                        => 'Nama',
+            'tanggal_daftar'              => 'Tanggal Daftar',
+            'paket'                       => 'Paket',
+            'nik'                         => 'NIK',
+            'alamat'                      => 'Alamat',
+            'rt'                          => 'RT',
+            'rw'                          => 'RW',
+            'no_id_pel'                   => 'No ID Pelanggan',
+            'no_wa'                       => 'No WhatsApp',
+            'total_dasar_tarikan_non_ppn' => 'Total Dasar Tarikan Non PPN',
+            'ppn_dan_pph'                 => 'PPN dan PPH',
+            'ppn_pph'                     => 'PPN/PPH',
+            'total_tarikan'               => 'Total Tarikan',
+            'bagi_hasil_bumdes'           => 'Bagi Hasil BUMDes',
+            'hasil_bumdes'                => 'Hasil BUMDes',
+            'nota_bayar_provider'         => 'Nota Bayar Provider',
+            'total_provider'              => 'Total Provider',
+            'gelombang'                   => 'Jadwal Gelombang Tagihan',
+            'gps_long'                    => 'GPS Longitude',
+            'gps_lat'                     => 'GPS Latitude',
+            'foto_rumah'                  => 'Foto Rumah',
+        ];
+    }
+}
