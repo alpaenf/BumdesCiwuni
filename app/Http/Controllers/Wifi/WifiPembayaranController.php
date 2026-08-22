@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PelangganWifi;
 use App\Models\PembayaranWifi;
 use App\Models\Unit;
+use App\Traits\ComputesWifiStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,7 @@ use Inertia\Response;
 
 class WifiPembayaranController extends Controller
 {
+    use ComputesWifiStatus;
     private function authorizeUnit(): Unit
     {
         $unit = Unit::where('slug', 'wifi')->firstOrFail();
@@ -95,9 +97,10 @@ class WifiPembayaranController extends Controller
 
         $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords, $gelombang) {
             $item->pembayaran_periode = $pembayaranRecords->get($item->id);
-            // Primary status comes directly from the payment record of selected period & gelombang
-            $item->current_status = $item->pembayaran_periode?->status
-                ?? ($gelombang === '1_15' ? $item->status_1_15 : $item->status_16_30);
+            // If paid this period, use that status; otherwise apply auto-isolir logic
+            $item->current_status = $item->pembayaran_periode
+                ? $item->pembayaran_periode->status
+                : $this->computeCurrentStatus($item, null);
             return $item;
         });
 

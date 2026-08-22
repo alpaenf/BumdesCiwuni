@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Unit;
+use App\Traits\ComputesWifiStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ use Inertia\Response;
 
 class UnitLandingController extends Controller
 {
+    use ComputesWifiStatus;
     /**
      * Map slug to the view directory name.
      */
@@ -173,7 +175,8 @@ class UnitLandingController extends Controller
             $kosongCount    = 0;
 
             foreach ($allPelanggan as $p) {
-                $st = $latestPembayaran->get($p->id)?->status ?? ($p->gelombang === '16_30' ? $p->status_16_30 : $p->status_1_15);
+                $pay = $latestPembayaran->get($p->id);
+                $st = $this->computeCurrentStatus($p, $pay);
                 if ($st === 'LUNAS') $lunasCount++;
                 elseif ($st === 'TUNGGAKAN') $tunggakanCount++;
                 elseif ($st === 'ISOLIR') $isolirCount++;
@@ -188,7 +191,7 @@ class UnitLandingController extends Controller
 
             $recentList->transform(function ($item) use ($latestPembayaran) {
                 $pay = $latestPembayaran->get($item->id);
-                $item->current_status = $pay?->status ?? ($item->gelombang === '16_30' ? $item->status_16_30 : $item->status_1_15);
+                $item->current_status = $this->computeCurrentStatus($item, $pay);
                 return $item;
             });
 

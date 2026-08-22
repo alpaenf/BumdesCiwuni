@@ -7,6 +7,7 @@ use App\Http\Requests\StorePelangganWifiRequest;
 use App\Http\Requests\UpdatePelangganWifiRequest;
 use App\Models\PelangganWifi;
 use App\Models\Unit;
+use App\Traits\ComputesWifiStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use Inertia\Response;
 
 class WifiPelangganController extends Controller
 {
+    use ComputesWifiStatus;
     /**
      * Authorize: only admin or user belonging to the wifi unit.
      */
@@ -57,7 +59,7 @@ class WifiPelangganController extends Controller
 
         $allPelanggan->transform(function ($item) use ($latestPembayaran) {
             $pay = $latestPembayaran->get($item->id);
-            $item->current_status = $pay?->status ?? ($item->gelombang === '16_30' ? $item->status_16_30 : $item->status_1_15);
+            $item->current_status = $this->computeCurrentStatus($item, $pay);
             return $item;
         });
 
@@ -183,8 +185,11 @@ class WifiPelangganController extends Controller
         $pelanggan->getCollection()->transform(function ($item) use ($latestPembayaran, $lastEverPembayaran) {
             $thisMonth = $latestPembayaran->get($item->id);
             $lastEver  = $lastEverPembayaran->get($item->id);
-            $item->current_status    = $thisMonth?->status ?? $lastEver?->status ?? null;
-            $item->last_pembayaran   = $thisMonth ?? $lastEver;
+            // If paid this month, trust that status; otherwise use auto-isolir logic
+            $item->current_status  = $thisMonth
+                ? $thisMonth->status
+                : $this->computeCurrentStatus($item, null);
+            $item->last_pembayaran = $thisMonth ?? $lastEver;
             return $item;
         });
 

@@ -7,6 +7,7 @@ use App\Models\PelangganWifi;
 use App\Models\PembayaranWifi;
 use App\Models\ProviderWifi;
 use App\Models\Unit;
+use App\Traits\ComputesWifiStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class WifiLaporanController extends Controller
 {
+    use ComputesWifiStatus;
     private function authorizeUnit(): Unit
     {
         $unit = Unit::where('slug', 'wifi')->firstOrFail();
@@ -65,7 +67,7 @@ class WifiLaporanController extends Controller
 
         $pelangganList->transform(function ($item) use ($pembayaranRecords) {
             $pay = $pembayaranRecords->get($item->id);
-            $item->current_status = $pay?->status ?? ($item->gelombang === '16_30' ? $item->status_16_30 : $item->status_1_15);
+            $item->current_status     = $this->computeCurrentStatus($item, $pay);
             $item->pembayaran_periode = $pay;
             return $item;
         });
@@ -190,7 +192,7 @@ class WifiLaporanController extends Controller
 
         $pelangganList->transform(function ($item) use ($pembayaranRecords) {
             $pay = $pembayaranRecords->get($item->id);
-            $item->current_status = $pay?->status ?? ($item->gelombang === '16_30' ? $item->status_16_30 : $item->status_1_15);
+            $item->current_status     = $this->computeCurrentStatus($item, $pay);
             $item->pembayaran_periode = $pay;
             return $item;
         });

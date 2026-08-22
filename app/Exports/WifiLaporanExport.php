@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\PelangganWifi;
 use App\Models\ProviderWifi;
+use App\Traits\ComputesWifiStatus;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -13,7 +14,7 @@ use Illuminate\Contracts\View\View;
 
 class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithTitle
 {
-    use WithLogo;
+    use WithLogo, ComputesWifiStatus;
 
     public function title(): string
     {
@@ -57,7 +58,7 @@ class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithT
 
         $this->pelangganList->transform(function ($item) use ($pembayaranRecords) {
             $pay = $pembayaranRecords->get($item->id);
-            $item->current_status = $pay?->status ?? ($item->gelombang === '16_30' ? $item->status_16_30 : $item->status_1_15);
+            $item->current_status     = $this->computeCurrentStatus($item, $pay);
             $item->pembayaran_periode = $pay;
             return $item;
         });
