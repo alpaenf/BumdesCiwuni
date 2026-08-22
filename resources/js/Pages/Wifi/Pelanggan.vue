@@ -532,11 +532,11 @@ const activeFilterCount = computed(() =>
                     <span class="text-xs font-bold text-slate-600 truncate">Data Pelanggan WiFi</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <Link :href="route('unit.welcome', { slug: 'wifi' })"
+                    <a :href="route('unit.welcome', { slug: 'wifi' })" target="_blank" rel="noopener"
                           class="text-xs text-blue-600 hover:underline font-semibold flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
                         <span class="material-symbols-outlined text-sm">open_in_new</span>
                         <span class="hidden sm:inline">Landing Page</span>
-                    </Link>
+                    </a>
                 </div>
             </header>
 

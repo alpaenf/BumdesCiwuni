@@ -188,10 +188,10 @@ const deleteGaleri = (id) => {
                 <!-- Branding -->
                 <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <img :src="settings.custom_logo || '/logo.png'" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" />
+                        <img :src="unit.slug === 'wifi' ? '/logowifi.png' : (settings.custom_logo || '/logo.png')" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" />
                         <div>
-                            <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Unit</h2>
-                            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">{{ unit.nama_unit }}</p>
+                            <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Unit WiFi</h2>
+                            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
                         </div>
                     </div>
                     <button @click="isSidebarOpen = false" class="md:hidden text-slate-400 hover:text-slate-600">
@@ -204,6 +204,31 @@ const deleteGaleri = (id) => {
                     <Link :href="route('unit.dashboard', { slug: unit.slug })" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">dashboard</span>
                         Dashboard
+                    </Link>
+                    <Link :href="route('wifi.pelanggan.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">group</span>
+                        Pelanggan
+                    </Link>
+                    <Link :href="route('wifi.peta')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">map</span>
+                        Peta Pelanggan
+                    </Link>
+                    <Link :href="route('wifi.pembayaran.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">payments</span>
+                        Kasir &amp; Pembayaran
+                    </Link>
+                    <Link :href="route('wifi.provider.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">cell_tower</span>
+                        Master Provider
+                    </Link>
+                    <Link :href="route('wifi.laporan.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">summarize</span>
+                        Laporan WiFi
                     </Link>
                     <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600/10 text-blue-600 font-bold text-xs rounded-xl border border-blue-600/20">
                         <span class="material-symbols-outlined text-lg">web</span>
