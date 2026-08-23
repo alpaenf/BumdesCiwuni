@@ -25,10 +25,10 @@ class RoleMiddleware
             abort(403, 'Akses tidak diizinkan.');
         }
 
-        // Proteksi Ketat Unit ID:
+        // Proteksi Ketat Unit ID khusus rute Simpan Pinjam:
         // Jika user terdaftar khusus pada unit lain (misal: Unit WiFi, Ketahanan Pangan, Perdagangan Besar),
         // batasi akses ke modul Simpan Pinjam dan alihkan ke dashboard unitnya sendiri.
-        if ($user->unit_id) {
+        if ($user->unit_id && ($request->is('unit/simpan-pinjam*') || $request->routeIs('dashboard'))) {
             $unit = $user->unit ?: \App\Models\Unit::find($user->unit_id);
             if ($unit && $unit->slug && $unit->slug !== 'simpan-pinjam') {
                 return redirect("/unit/{$unit->slug}/dashboard")

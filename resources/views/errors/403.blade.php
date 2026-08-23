@@ -23,7 +23,7 @@
             border: 1px solid #bfc9bd;
             border-radius: 16px;
             padding: 32px 24px;
-            max-width: 380px;
+            max-width: 400px;
             width: 100%;
             text-align: center;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
@@ -39,6 +39,7 @@
             justify-content: center;
             margin: 0 auto 16px auto;
             font-size: 28px;
+            font-weight: 700;
         }
         h1 {
             font-size: 18px;
@@ -52,32 +53,75 @@
             margin: 0 0 24px 0;
             line-height: 1.6;
         }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
         .btn {
-            display: inline-block;
+            display: block;
+            width: 100%;
             background-color: #004c22;
             color: #ffffff;
             text-decoration: none;
             padding: 10px 20px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
+            border: none;
             border-radius: 8px;
+            cursor: pointer;
+            box-sizing: border-box;
             transition: all 0.2s ease;
         }
         .btn:hover {
             background-color: #003316;
-            transform: translateY(-1px);
         }
-        .btn:active {
-            transform: translateY(0);
+        .btn-secondary {
+            display: block;
+            width: 100%;
+            background-color: #f1f5f9;
+            color: #334155;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
         }
     </style>
 </head>
 <body>
+    @php
+        $user = auth()->user();
+        $targetUrl = url('/');
+        if ($user) {
+            if ($user->role === 'admin' || $user->role === 'manager_pusat') {
+                $targetUrl = route('portal.exec.dashboard');
+            } elseif ($user->unit_id && ($unit = $user->unit ?: \App\Models\Unit::find($user->unit_id)) && $unit->slug !== 'simpan-pinjam') {
+                $targetUrl = url("/unit/{$unit->slug}/dashboard");
+            } else {
+                $targetUrl = route('dashboard');
+            }
+        }
+    @endphp
     <div class="card">
         <div class="icon">403</div>
         <h1>Akses Dibatasi</h1>
         <p>Maaf, Anda tidak memiliki izin atau otoritas yang diperlukan untuk membuka halaman ini.</p>
-        <a href="{{ url('/') }}" class="btn">Kembali ke Beranda</a>
+        <div class="btn-group">
+            <button onclick="window.top.location.href='{{ $targetUrl }}';" class="btn">
+                Kembali ke Dashboard Saya
+            </button>
+            <button onclick="if(window.history.length > 1){ window.history.back(); } else { window.top.location.href='{{ $targetUrl }}'; }" class="btn-secondary">
+                Kembali ke Halaman Sebelumnya
+            </button>
+        </div>
     </div>
 </body>
 </html>
