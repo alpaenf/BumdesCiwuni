@@ -12,6 +12,19 @@ class UpdatePelangganWifiRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $lat = $this->input('gps_lat');
+        $long = $this->input('gps_long');
+
+        if ($lat !== null && (float)$lat > 90 && $long !== null && (float)$long < 0) {
+            $this->merge([
+                'gps_lat'  => $long,
+                'gps_long' => $lat,
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $id = $this->route('pelanggan') instanceof \App\Models\PelangganWifi
@@ -40,7 +53,7 @@ class UpdatePelangganWifiRequest extends FormRequest
             'total_provider'              => 'nullable|numeric|min:0',
             'gelombang'                   => 'nullable|in:1_15,16_30',
             'gps_long'                    => 'nullable|numeric|between:-180,180',
-            'gps_lat'                     => 'nullable|numeric|between:-90,90',
+            'gps_lat'                     => 'nullable|numeric|between:-180,180',
             'foto_rumah'                  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ];
     }

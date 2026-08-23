@@ -1084,6 +1084,17 @@ const activeFilterCount = computed(() =>
 
             <form @submit.prevent="submitForm" class="p-6 space-y-6">
 
+                <!-- Alert Error Validation -->
+                <div v-if="Object.keys(form.errors).length > 0" class="p-3 bg-red-50 border border-red-200 rounded-xl space-y-1">
+                    <p class="text-xs font-bold text-red-800 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">warning</span>
+                        Gagal Menyimpan Data. Mohon periksa kolom berikut:
+                    </p>
+                    <ul class="text-[11px] text-red-700 list-disc list-inside">
+                        <li v-for="(err, field) in form.errors" :key="field">{{ err }}</li>
+                    </ul>
+                </div>
+
                 <!-- ── IDENTITAS ───────────────────────────────────────── -->
                 <div>
                     <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -1260,14 +1271,16 @@ const activeFilterCount = computed(() =>
                     </h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">GPS Longitude</label>
-                            <input v-model="form.gps_long" type="number" step="any" placeholder="-7.xxxxxx" id="form-gps-long"
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">GPS Latitude (Lintang)</label>
+                            <input v-model="form.gps_lat" type="number" step="any" placeholder="-7.331245" id="form-gps-lat"
                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-mono" />
+                            <span v-if="form.errors.gps_lat" class="text-[10px] font-bold text-red-500 mt-1 block">{{ form.errors.gps_lat }}</span>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">GPS Latitude</label>
-                            <input v-model="form.gps_lat" type="number" step="any" placeholder="109.xxxxxx" id="form-gps-lat"
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">GPS Longitude (Bujur)</label>
+                            <input v-model="form.gps_long" type="number" step="any" placeholder="109.230521" id="form-gps-long"
                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-mono" />
+                            <span v-if="form.errors.gps_long" class="text-[10px] font-bold text-red-500 mt-1 block">{{ form.errors.gps_long }}</span>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Foto Rumah</label>
@@ -1283,6 +1296,7 @@ const activeFilterCount = computed(() =>
                                     <input ref="fotoInput" type="file" accept="image/*" @change="onFotoChange" class="sr-only" id="form-foto-rumah" />
                                 </label>
                             </div>
+                            <span v-if="form.errors.foto_rumah" class="text-[10px] font-bold text-red-500 mt-1 block">{{ form.errors.foto_rumah }}</span>
                         </div>
                     </div>
                 </div>
