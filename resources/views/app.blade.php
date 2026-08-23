@@ -18,17 +18,18 @@
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
         
-        <!-- PWA Service Worker Registration -->
+        <!-- PWA Service Worker Registration & Cache Purge -->
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
                     navigator.serviceWorker.register("{{ asset('sw.js') }}").then(function(registration) {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                        // Force update to ensure buggy SW is replaced
                         registration.update();
-                    }, function(err) {
-                        console.log('ServiceWorker registration failed: ', err);
                     });
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) caches.delete(name);
                 });
             }
         </script>

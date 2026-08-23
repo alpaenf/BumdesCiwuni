@@ -3,10 +3,13 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
+    event.waitUntil(
+        caches.keys().then((keys) => {
+            return Promise.all(keys.map((key) => caches.delete(key)));
+        }).then(() => self.clients.claim())
+    );
 });
 
 self.addEventListener('fetch', (event) => {
-    // We only need an empty fetch handler to satisfy PWA installability criteria.
-    // Let the browser handle all network requests natively to avoid caching bugs and POST errors.
+    // Pass-through to network natively
 });
