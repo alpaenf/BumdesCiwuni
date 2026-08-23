@@ -124,8 +124,8 @@ class UnitLandingController extends Controller
 
             $user = Auth::user();
 
-            // Check if user is Super Admin or Admin of this specific Unit
-            if ($user->role === 'admin' || ($user->unit_id == $unit->id && in_array($user->role, ['admin_unit', 'manager']))) {
+            // Check if user is Super Admin, Manager Pusat, or Admin of this specific Unit
+            if ($user->role === 'admin' || $user->role === 'manager_pusat' || ($user->unit_id == $unit->id && in_array($user->role, ['admin_unit', 'manager']))) {
                 return redirect()->intended("/unit/$slug/dashboard");
             }
 
