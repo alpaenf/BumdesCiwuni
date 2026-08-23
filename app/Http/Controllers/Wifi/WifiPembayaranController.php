@@ -126,11 +126,21 @@ class WifiPembayaranController extends Controller
 
         $paketOptions = PelangganWifi::select('paket')->whereNotNull('paket')->distinct()->orderBy('paket')->pluck('paket');
 
+        $settingsKeys = ['bank_accounts', 'wa_company_name'];
+        $wifiSettings = [];
+        foreach ($settingsKeys as $key) {
+            $unitSetting = \App\Models\LandingPageSetting::where('key', "wifi_{$key}")->first();
+            if ($unitSetting) {
+                $wifiSettings[$key] = $key === 'bank_accounts' ? (json_decode($unitSetting->value, true) ?: []) : $unitSetting->value;
+            }
+        }
+
         return Inertia::render('Wifi/Pembayaran', [
             'unit'         => $unit,
             'user'         => $user,
             'pelanggan'    => $pelanggan,
             'paketOptions' => $paketOptions,
+            'wifiSettings' => $wifiSettings,
             'filters'      => [
                 'bulan'     => $bulan,
                 'tahun'     => $tahun,

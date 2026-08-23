@@ -7,6 +7,7 @@ const props = defineProps({
     user:         { type: Object, required: true },
     pelanggan:    { type: Object, required: true },
     paketOptions: { type: Array,  default: () => [] },
+    wifiSettings: { type: Object, default: () => ({}) },
     filters:      { type: Object, default: () => ({}) },
     stats:        { type: Object, default: () => ({}) },
 });
@@ -42,12 +43,23 @@ const getWaReminderUrl = (item) => {
     if (phone.startsWith('0')) {
         phone = '62' + phone.substring(1);
     }
-    const nama = item.nama || 'Pelanggan';
     const nominal = rupiah(item.total_tarikan || 0);
     const bulan = getBulanName(selectedBulan.value);
     const tahun = selectedTahun.value;
 
-    const message = `Halo Bpk/Ibu ${nama}, mengingatkan tagihan WiFi BUMDes Ciwuni sebesar ${nominal} untuk bulan ${bulan} ${tahun} jatuh tempo hari ini (Tanggal 10). Silakan melakukan pembayaran sebelum pukul 23:59 WIB agar layanan tetap aktif. Terima kasih!`;
+    const companyName = props.wifiSettings?.wa_company_name || 'PT. MEDIA CEPAT INDONESIA';
+    const bankAccounts = (props.wifiSettings?.bank_accounts && props.wifiSettings.bank_accounts.length)
+        ? props.wifiSettings.bank_accounts
+        : [
+            { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
+            { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
+            { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' }
+        ];
+
+    const bankText = bankAccounts.map(b => `${b.bank} ${b.no_rek} a/n ${b.atas_nama}`).join('\n\n');
+
+    const message = `${companyName}\n\nPelanggan yang terhormat,\n\nTagihan internet bulan *${bulan} ${tahun}* anda sebesar *${nominal}* ,- \n\nPembayaran bisa melalui bank transfer ke Rek:\n\n${bankText}\n\n\n Note :\n\n ~  *Setelah transfer harap kirimkan bukti transfer nya, untuk memudahkan pengecekan*\n\n ~  *Jatuh tempo tagihan maksimal tanggal 10*\n \n ~  *Mohon untuk melakukan pembayaran sebelum tanggal jatuh tempo untuk menghindari isolasi jaringan automatis oleh system*\n\n~  *Abaikan pesan ini jika sudah melakukan pembayaran*\n\n\nTerimakasih.`;
+
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 };
 

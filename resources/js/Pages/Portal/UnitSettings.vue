@@ -18,6 +18,12 @@ const props = defineProps({
     },
 });
 
+const defaultBankAccounts = [
+    { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
+    { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
+    { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' },
+];
+
 const form = useForm({
     hero_title: props.settings.hero_title || '',
     hero_subtitle: props.settings.hero_subtitle || '',
@@ -38,6 +44,8 @@ const form = useForm({
     org_unit_sp_image: props.settings.org_unit_sp_image || '',
     org_unit_sp_staff_name: props.settings.org_unit_sp_staff_name || '',
     org_unit_sp_staff_image: props.settings.org_unit_sp_staff_image || '',
+    wa_company_name: props.settings.wa_company_name || 'PT. MEDIA CEPAT INDONESIA',
+    bank_accounts: props.settings.bank_accounts && props.settings.bank_accounts.length ? props.settings.bank_accounts : defaultBankAccounts,
 });
 
 const isSuccessMessageVisible = ref(false);
@@ -47,6 +55,14 @@ const isSidebarOpen = ref(false);
 
 const logout = () => {
     router.post(route('logout'));
+};
+
+const addBankAccount = () => {
+    form.bank_accounts.push({ bank: '', no_rek: '', atas_nama: '' });
+};
+
+const removeBankAccount = (index) => {
+    form.bank_accounts.splice(index, 1);
 };
 
 const addFaq = () => {
@@ -330,6 +346,54 @@ const deleteGaleri = (id) => {
 
             <form @submit.prevent="submit" class="space-y-6">
 
+                <!-- REKENING BANK & TEMPLATE WA (KHUSUS UNIT WIFI) -->
+                <div v-if="unit.slug === 'wifi'" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px] text-blue-600">account_balance</span>
+                            Daftar Rekening Bank &amp; Template Pesan WA Tagihan
+                        </h3>
+                        <button type="button" @click="addBankAccount" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs rounded-lg border border-blue-200 flex items-center gap-1 transition shadow-sm">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            Tambah Rekening Bank
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Nama Perusahaan / Judul Header WA Tagihan</label>
+                            <input v-model="form.wa_company_name" type="text" placeholder="PT. MEDIA CEPAT INDONESIA" class="w-full rounded-lg border-slate-200 text-xs font-bold focus:ring-blue-500 focus:border-blue-500" />
+                            <p class="text-[10px] text-slate-400 mt-1">Nama ini akan menjadi header utama pada pesan WhatsApp pengingat tagihan warga.</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Daftar Rekening Pembayaran Transfer</label>
+                            <div v-for="(acc, index) in form.bank_accounts" :key="index" class="p-3 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                                <div class="sm:col-span-3">
+                                    <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Nama Bank</label>
+                                    <input v-model="acc.bank" type="text" placeholder="BRI / BCA / Mandiri" class="w-full rounded-lg border-slate-200 text-xs font-bold" />
+                                </div>
+                                <div class="sm:col-span-5">
+                                    <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Nomor Rekening</label>
+                                    <input v-model="acc.no_rek" type="text" placeholder="3117-01-022918-53-6" class="w-full rounded-lg border-slate-200 text-xs font-mono font-bold" />
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Atas Nama (a/n)</label>
+                                    <input v-model="acc.atas_nama" type="text" placeholder="Nama Pemilik Rekening" class="w-full rounded-lg border-slate-200 text-xs font-bold" />
+                                </div>
+                                <div class="sm:col-span-1 text-right">
+                                    <button type="button" @click="removeBankAccount(index)" class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition" title="Hapus Rekening">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div v-if="form.bank_accounts.length === 0" class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-slate-400 text-xs">
+                                Belum ada rekening bank yang ditambahkan. Klik "Tambah Rekening Bank" di atas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- HERO SECTION -->
                 <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">

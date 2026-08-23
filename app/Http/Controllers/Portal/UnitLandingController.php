@@ -256,7 +256,8 @@ class UnitLandingController extends Controller
             'org_pembina_name', 'org_pembina_image', 'org_direktur_name', 'org_direktur_image',
             'org_sekretaris_name', 'org_sekretaris_image', 'org_bendahara_name', 'org_bendahara_image',
             'org_pengawas_name', 'org_pengawas_image', 'org_unit_sp_name', 'org_unit_sp_image',
-            'org_unit_sp_staff_name', 'org_unit_sp_staff_image', 'about_history'
+            'org_unit_sp_staff_name', 'org_unit_sp_staff_image', 'about_history',
+            'bank_accounts', 'wa_company_name'
         ];
 
         $settings = [];
@@ -269,7 +270,7 @@ class UnitLandingController extends Controller
                 $value = ''; // No fallback in settings page so form starts completely empty!
             }
 
-            if ($key === 'faq_items' || $key === 'news_items') {
+            if ($key === 'faq_items' || $key === 'news_items' || $key === 'bank_accounts') {
                 $settings[$key] = json_decode($value, true) ?: [];
             } else {
                 $settings[$key] = $value;
