@@ -18,8 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             LandingPageSettingSeeder::class,
-            PortalSeeder::class,
-            PelangganWifiSeeder::class, // seeds providers (firstOrCreate) + dummy pelanggan (updateOrCreate)
+            PortalSeeder::class, // seeds Units & WebsiteSettings - safe, uses updateOrCreate
         ]);
     }
 }
