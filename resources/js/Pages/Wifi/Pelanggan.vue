@@ -772,7 +772,6 @@ const activeFilterCount = computed(() =>
                                             { key:'hasil_bumdes',   label:'Hasil BUMDes',   w:'140px' },
                                             { key:'nota_bayar_provider', label:'Nota Bayar Provider', w:'170px' },
                                             { key:'total_provider', label:'Total Provider', w:'140px' },
-                                            { key:'gelombang',      label:'Gelombang',      w:'130px' },
                                             { key:'status_tagihan', label:'Status Tagihan', w:'130px' },
                                             { key:'gps_long',       label:'GPS Long',       w:'110px' },
                                             { key:'gps_lat',        label:'GPS Lat',        w:'110px' },
@@ -918,18 +917,6 @@ const activeFilterCount = computed(() =>
                                         {{ rupiah(row.total_provider) }}
                                     </td>
 
-                                    <!-- Gelombang (jadwal tagihan warga) -->
-                                    <td class="border-r border-slate-100 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:120px">
-                                        <span v-if="row.gelombang === '1_15'"
-                                              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-700 border border-indigo-200">
-                                            <span class="material-symbols-outlined text-xs">schedule</span> Gel. 1
-                                        </span>
-                                        <span v-else-if="row.gelombang === '16_30'"
-                                              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-violet-100 text-violet-700 border border-violet-200">
-                                            <span class="material-symbols-outlined text-xs">schedule</span> Gel. 2
-                                        </span>
-                                        <span v-else class="text-slate-400 text-[10px]">-</span>
-                                    </td>
 
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:120px">
                                         <span v-if="row.current_status === 'ISOLIR'"
