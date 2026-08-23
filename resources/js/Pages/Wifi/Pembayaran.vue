@@ -38,17 +38,6 @@ const customerHistory   = ref([]);
 const historyLoading    = ref(false);
 
 // ── Formatting Helpers ──────────────────────────────────────────────────────
-const rupiah = (val) => {
-    if (!val && val !== 0) return 'Rp 0';
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-};
-
-const formatDate = (val) => {
-    if (!val) return '-';
-    try { return new Date(val).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); }
-    catch { return val; }
-};
-
 const namaBulanMap = [
     { id: 1, name: 'Januari' }, { id: 2, name: 'Februari' }, { id: 3, name: 'Maret' },
     { id: 4, name: 'April' },   { id: 5, name: 'Mei' },      { id: 6, name: 'Juni' },
@@ -56,34 +45,64 @@ const namaBulanMap = [
     { id: 10, name: 'Oktober' },{ id: 11, name: 'November' },{ id: 12, name: 'Desember' },
 ];
 
-const getBulanName = (id) => namaBulanMap.find(b => Number(b.id) === Number(id))?.name ?? id;
+function getBulanName(id) {
+    if (!id && id !== 0) return '-';
+    const val = (id && typeof id === 'object' && 'value' in id) ? id.value : id;
+    const found = namaBulanMap.find(b => Number(b.id) === Number(val));
+    return found ? found.name : String(val);
+}
+
+function rupiah(val) {
+    if (val === null || val === undefined || val === '') return 'Rp 0';
+    try {
+        const num = Number(val) || 0;
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    } catch {
+        return 'Rp ' + val;
+    }
+}
+
+function formatDate(val) {
+    if (!val) return '-';
+    try {
+        return new Date(val).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+        return String(val);
+    }
+}
 
 function getWaReminderUrl(item) {
     if (!item || !item.no_wa) return '#';
-    let phone = String(item.no_wa).replace(/\D/g, '');
-    if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+    try {
+        let phone = String(item.no_wa).replace(/\D/g, '');
+        if (phone.startsWith('0')) phone = '62' + phone.slice(1);
 
-    const bulan = getBulanName(selectedBulan.value);
-    const tahun = selectedTahun.value;
-    const nominal = rupiah(item.total_tarikan || 0);
+        const blnVal = (selectedBulan && typeof selectedBulan === 'object' && 'value' in selectedBulan) ? selectedBulan.value : selectedBulan;
+        const thnVal = (selectedTahun && typeof selectedTahun === 'object' && 'value' in selectedTahun) ? selectedTahun.value : selectedTahun;
+        const bulan = getBulanName(blnVal);
+        const tahun = thnVal;
+        const nominal = rupiah(item.total_tarikan || 0);
 
-    const provider = item.provider;
-    const companyName = provider?.header_wa || provider?.nama_provider || 'PT. MEDIA CEPAT INDONESIA';
-    const bankAccounts = (provider?.bank_accounts && provider.bank_accounts.length)
-        ? provider.bank_accounts
-        : (props.wifiSettings?.bank_accounts && props.wifiSettings.bank_accounts.length)
-            ? props.wifiSettings.bank_accounts
-            : [
-                { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
-                { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
-                { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' }
-            ];
+        const provider = item.provider;
+        const companyName = provider?.header_wa || provider?.nama_provider || 'PT. MEDIA CEPAT INDONESIA';
+        const bankAccounts = (provider?.bank_accounts && provider.bank_accounts.length)
+            ? provider.bank_accounts
+            : (props.wifiSettings?.bank_accounts && props.wifiSettings.bank_accounts.length)
+                ? props.wifiSettings.bank_accounts
+                : [
+                    { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
+                    { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
+                    { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' }
+                ];
 
-    const bankText = bankAccounts.map(b => `• *${b.bank}*: ${b.no_rek} a/n ${b.atas_nama}`).join('\n');
+        const bankText = bankAccounts.map(b => `• *${b.bank}*: ${b.no_rek} a/n ${b.atas_nama}`).join('\n');
 
-    const message = `*PENGINGAT TAGIHAN INTERNET BUMDES CIWUNI*\n----------------------------------------\nKepada Yth. Bpk/Ibu *${item.nama}*\nID Pelanggan : *${item.no_id_pel || '-'}*\nPaket        : *${item.paket || '-'}*\nTagihan      : *${bulan} ${tahun}*\nTotal        : *${nominal}*\n\n*Masa Pembayaran: Tanggal 1 s.d. 10*\nMohon melakukan pembayaran sebelum tanggal 10 agar jaringan internet tetap AKTIF dan tidak ter-ISOLIR.\n\n*PILIHAN REKENING TRANSFER:*\n${bankText}\n\n(Setelah transfer, mohon kirimkan bukti transfer ke nomor ini. Abaikan pesan ini jika sudah bayar.)\n\nTerima kasih atas perhatian & kerja samanya.\n\n_${companyName} / BUMDes Ciwuni_`;
+        const message = `*PENGINGAT TAGIHAN INTERNET BUMDES CIWUNI*\n----------------------------------------\nKepada Yth. Bpk/Ibu *${item.nama}*\nID Pelanggan : *${item.no_id_pel || '-'}*\nPaket        : *${item.paket || '-'}*\nTagihan      : *${bulan} ${tahun}*\nTotal        : *${nominal}*\n\n*Masa Pembayaran: Tanggal 1 s.d. 10*\nMohon melakukan pembayaran sebelum tanggal 10 agar jaringan internet tetap AKTIF dan tidak ter-ISOLIR.\n\n*PILIHAN REKENING TRANSFER:*\n${bankText}\n\n(Setelah transfer, mohon kirimkan bukti transfer ke nomor ini. Abaikan pesan ini jika sudah bayar.)\n\nTerima kasih atas perhatian & kerja samanya.\n\n_${companyName} / BUMDes Ciwuni_`;
 
-    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    } catch {
+        return '#';
+    }
 }
 
 const openWaBroadcastModal = () => {
