@@ -71,7 +71,7 @@
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $r['total_tarikan'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $r['total_hasil_bumdes'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $r['total_hak_provider'] }}</td>
-                <td style="text-align:center;">{{ $r['lunas_count'] }} Lunas / {{ $r['tunggakan_count'] }} Tunggakan</td>
+                <td style="text-align:center;">{{ $r['aktif_count'] ?? 0 }} Aktif / {{ $r['isolir_count'] ?? 0 }} Isolir</td>
                 <td colspan="5"></td>
             </tr>
             @empty
@@ -120,7 +120,7 @@
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $p->total_tarikan }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $p->hasil_bumdes }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $p->total_provider }}</td>
-                <td style="text-align:center; font-weight:bold;">{{ $st ?? 'Belum bayar' }}</td>
+                <td style="text-align:center; font-weight:bold;">{{ $st === 'ISOLIR' ? 'ISOLIR' : 'AKTIF' }}</td>
             </tr>
             @empty
             <tr>

@@ -309,7 +309,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-2">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Total Pelanggan</span>
                         <p class="text-xl font-black text-slate-800">{{ stats.total_pelanggan }} <span class="text-xs font-normal text-slate-400">warga</span></p>
-                        <span class="text-[10px] text-emerald-600 font-bold">{{ stats.lunas_115 }} Lunas &bull; {{ stats.tunggakan_115 }} Tunggakan</span>
+                        <span class="text-[10px] text-emerald-600 font-bold">{{ stats.aktif_count ?? 0 }} Aktif &bull; {{ stats.isolir_count ?? 0 }} Isolir</span>
                     </div>
                 </div>
 
@@ -346,8 +346,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <td class="p-3.5 text-right font-mono font-extrabold text-emerald-600">{{ rupiah(r.total_hasil_bumdes) }}</td>
                                     <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(r.total_hak_provider) }}</td>
                                     <td class="p-3.5 text-center">
-                                        <span class="text-[11px] font-semibold text-emerald-600">{{ r.lunas_count }} Lunas</span>
-                                        <span v-if="r.tunggakan_count > 0" class="ml-2 text-[11px] font-semibold text-amber-600">{{ r.tunggakan_count }} Tunggakan</span>
+                                        <span class="text-[11px] font-semibold text-emerald-600">{{ r.aktif_count ?? 0 }} Aktif</span>
+                                        <span v-if="r.isolir_count > 0" class="ml-2 text-[11px] font-semibold text-red-600">{{ r.isolir_count }} Isolir</span>
                                     </td>
                                 </tr>
                             </tbody>

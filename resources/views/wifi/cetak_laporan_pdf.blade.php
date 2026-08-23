@@ -366,14 +366,10 @@
                 <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->hasil_bumdes, 0, ',', '.') }}</td>
                 <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->total_provider, 0, ',', '.') }}</td>
                 <td class="text-center">
-                    @if($stVal === 'LUNAS')
-                        <span class="badge badge-lunas">LUNAS</span>
-                    @elseif($stVal === 'TUNGGAKAN')
-                        <span class="badge badge-tunggakan">TGK</span>
-                    @elseif($stVal === 'ISOLIR')
+                    @if($stVal === 'ISOLIR')
                         <span class="badge badge-isolir">ISOLIR</span>
                     @else
-                        <span style="color:#94a3b8; font-size:7.5pt;">Belum bayar</span>
+                        <span class="badge badge-lunas">AKTIF</span>
                     @endif
                 </td>
             </tr>

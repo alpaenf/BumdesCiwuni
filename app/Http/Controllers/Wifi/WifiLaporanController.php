@@ -78,10 +78,9 @@ class WifiLaporanController extends Controller
         $totalHasilBumdes  = $pelangganList->sum('hasil_bumdes');
         $totalHakProvider  = $pelangganList->sum('total_provider');
 
-        // Status Lunas vs Tunggakan vs Isolir untuk periode aktif
-        $totalLunas115     = $pelangganList->where('current_status', 'LUNAS')->count();
-        $totalTunggakan115 = $pelangganList->where('current_status', 'TUNGGAKAN')->count();
-        $totalIsolir115    = $pelangganList->where('current_status', 'ISOLIR')->count();
+        // Status AKTIF vs ISOLIR untuk periode aktif
+        $totalAktif  = $pelangganList->where('current_status', 'AKTIF')->count();
+        $totalIsolir = $pelangganList->where('current_status', 'ISOLIR')->count();
 
         // Rekapitulasi Per Provider Grouping
         $rekapPerProvider = ProviderWifi::all()->map(function ($prov) use ($pelangganList) {
@@ -90,8 +89,8 @@ class WifiLaporanController extends Controller
             $tarikan   = $provPelanggan->sum('total_tarikan');
             $bumdes    = $provPelanggan->sum('hasil_bumdes');
             $provider  = $provPelanggan->sum('total_provider');
-            $lunas     = $provPelanggan->where('current_status', 'LUNAS')->count();
-            $tunggakan = $provPelanggan->whereIn('current_status', ['TUNGGAKAN', 'ISOLIR'])->count();
+            $aktif     = $provPelanggan->where('current_status', 'AKTIF')->count();
+            $isolir    = $provPelanggan->where('current_status', 'ISOLIR')->count();
 
             return [
                 'id'                 => $prov->id,
@@ -102,8 +101,8 @@ class WifiLaporanController extends Controller
                 'total_tarikan'      => $tarikan,
                 'total_hasil_bumdes' => $bumdes,
                 'total_hak_provider' => $provider,
-                'lunas_count'        => $lunas,
-                'tunggakan_count'    => $tunggakan,
+                'aktif_count'        => $aktif,
+                'isolir_count'       => $isolir,
             ];
         });
 
@@ -119,8 +118,8 @@ class WifiLaporanController extends Controller
                 'total_tarikan'      => $tanpaProvPelanggan->sum('total_tarikan'),
                 'total_hasil_bumdes' => $tanpaProvPelanggan->sum('hasil_bumdes'),
                 'total_hak_provider' => $tanpaProvPelanggan->sum('total_provider'),
-                'lunas_count'        => $tanpaProvPelanggan->where('current_status', 'LUNAS')->count(),
-                'tunggakan_count'    => $tanpaProvPelanggan->whereIn('current_status', ['TUNGGAKAN', 'ISOLIR'])->count(),
+                'aktif_count'        => $tanpaProvPelanggan->where('current_status', 'AKTIF')->count(),
+                'isolir_count'       => $tanpaProvPelanggan->where('current_status', 'ISOLIR')->count(),
             ]);
         }
 
@@ -149,9 +148,8 @@ class WifiLaporanController extends Controller
                 'total_tarikan_bruto' => $totalTarikanBruto,
                 'total_hasil_bumdes'  => $totalHasilBumdes,
                 'total_hak_provider'  => $totalHakProvider,
-                'lunas_115'           => $totalLunas115,
-                'tunggakan_115'       => $totalTunggakan115,
-                'isolir_115'          => $totalIsolir115,
+                'aktif_count'         => $totalAktif,
+                'isolir_count'        => $totalIsolir,
             ],
         ]);
     }
