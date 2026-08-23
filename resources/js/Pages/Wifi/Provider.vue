@@ -166,11 +166,11 @@ const rupiah = (val) => {
                             <span class="material-symbols-outlined text-lg">edit_note</span>
                             Kelola Website
                         </Link>
-                        <a :href="route('unit.welcome', { slug: 'wifi' })" target="_blank"
-                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">wifi</span>
-                            Unit Wifi
-                        </a>
+                        <Link :href="route('dashboard')"
+                              class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                            <span class="material-symbols-outlined text-lg">account_balance</span>
+                            Unit Simpan Pinjam
+                        </Link>
                         <a :href="route('unit.welcome', { slug: 'ketahanan-pangan' })" target="_blank"
                            class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                             <span class="material-symbols-outlined text-lg">agriculture</span>
