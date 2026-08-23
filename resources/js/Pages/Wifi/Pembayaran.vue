@@ -366,7 +366,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         <h1 class="text-lg font-black text-slate-900 mt-0.5">
                             {{ getBulanName(selectedBulan) }} {{ selectedTahun }} &mdash;
                             <span class="text-blue-600 font-bold">
-                                {{ selectedGelombang === '1_15' ? 'Gelombang 1 (Tgl 1-15)' : 'Gelombang 2 (Tgl 16-Akhir Bulan)' }}
+                                Masa Pembayaran (Tgl 1 - 10)
                             </span>
                         </h1>
                         <p class="text-xs text-slate-500 mt-0.5">Kelola input pembayaran tunai / transfer dan cetak struk tagihan warga</p>
@@ -386,12 +386,10 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                             <option v-for="y in [2025, 2026, 2027, 2028]" :key="y" :value="y">{{ y }}</option>
                         </select>
 
-                        <!-- Gelombang -->
-                        <select v-model="selectedGelombang" @change="applyFilters"
-                                class="text-xs border border-blue-200 bg-blue-50 text-blue-700 rounded-xl px-3 py-2 font-black focus:border-blue-500 focus:outline-none">
-                            <option value="1_15">Gelombang 1 (Tgl 1-15)</option>
-                            <option value="16_30">Gelombang 2 (Tgl 16-Akhir Bulan)</option>
-                        </select>
+                        <!-- Masa Pembayaran Info -->
+                        <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl font-black border border-emerald-200 shadow-sm">
+                            🗓️ Tenggat Tgl 10
+                        </span>
                     </div>
                 </div>
 
@@ -660,7 +658,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     <p class="text-xs font-bold text-slate-900">{{ selectedCustomer.nama }}</p>
                     <p class="text-[11px] text-slate-500">ID: {{ selectedCustomer.no_id_pel || '-' }} &bull; Paket: {{ selectedCustomer.paket || '-' }}</p>
                     <p class="text-[11px] text-blue-700 font-bold mt-1">
-                        Periode: {{ getBulanName(selectedBulan) }} {{ selectedTahun }} ({{ selectedGelombang === '1_15' ? 'Gel. 1' : 'Gel. 2' }})
+                        Periode: {{ getBulanName(selectedBulan) }} {{ selectedTahun }} (Masa Bayar Tgl 1 - 10)
                     </p>
                 </div>
 
@@ -727,7 +725,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
             <form @submit.prevent="submitMassPay" class="space-y-3">
                 <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs text-emerald-800">
                     <p class="font-bold">Akan memproses {{ selectedIds.length }} pelanggan dipilih</p>
-                    <p class="text-[11px] mt-0.5">Periode: {{ getBulanName(selectedBulan) }} {{ selectedTahun }} ({{ selectedGelombang === '1_15' ? 'Gel. 1' : 'Gel. 2' }})</p>
+                    <p class="text-[11px] mt-0.5">Periode: {{ getBulanName(selectedBulan) }} {{ selectedTahun }} (Masa Bayar Tgl 1 - 10)</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">

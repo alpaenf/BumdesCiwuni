@@ -640,32 +640,12 @@ const activeFilterCount = computed(() =>
                     </div>
                 </div>
 
-                <!-- GELOMBANG QUICK TABS (Elderly-Friendly Visual Pills) -->
+                <!-- MASA PEMBAYARAN INFORMATIONAL BADGE -->
                 <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                    <button @click="setGelombangFilter('')"
-                            :class="[
-                                'px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 border shadow-2xs cursor-pointer',
-                                filterGelombang === '' ? 'bg-slate-900 text-white border-slate-900 ring-2 ring-slate-900/20' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                            ]">
-                        <span class="material-symbols-outlined text-base">groups</span>
-                        Semua Pelanggan
-                    </button>
-                    <button @click="setGelombangFilter('1_15')"
-                            :class="[
-                                'px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 border shadow-2xs cursor-pointer',
-                                filterGelombang === '1_15' ? 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-600/20' : 'bg-white text-slate-700 border-slate-200 hover:bg-blue-50'
-                            ]">
-                        <span class="material-symbols-outlined text-base">event_upcoming</span>
-                        Gelombang 1 (Tgl 1 - 15)
-                    </button>
-                    <button @click="setGelombangFilter('16_30')"
-                            :class="[
-                                'px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 shrink-0 border shadow-2xs cursor-pointer',
-                                filterGelombang === '16_30' ? 'bg-indigo-600 text-white border-indigo-600 ring-2 ring-indigo-600/20' : 'bg-white text-slate-700 border-slate-200 hover:bg-indigo-50'
-                            ]">
-                        <span class="material-symbols-outlined text-base">event_available</span>
-                        Gelombang 2 (Tgl 16 - Akhir Bulan)
-                    </button>
+                    <div class="px-4 py-2 rounded-xl text-xs font-black bg-blue-600 text-white shadow-sm flex items-center gap-2 shrink-0">
+                        <span class="material-symbols-outlined text-base">calendar_month</span>
+                        Masa Pembayaran Resmi Tagihan WiFi: Tanggal 1 s.d 10 (Tenggat Jatuh Tempo Tanggal 10)
+                    </div>
                 </div>
 
                 <!-- Filter Panel -->
@@ -680,16 +660,7 @@ const activeFilterCount = computed(() =>
                             <option v-for="p in paketOptions" :key="p" :value="p">{{ p }}</option>
                         </select>
                     </div>
-                    <!-- Gelombang Tagihan -->
-                    <div class="space-y-1">
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Gelombang Tagihan</label>
-                        <select v-model="filterGelombang" @change="applyFilters"
-                                class="w-full text-xs border border-blue-200 bg-blue-50 text-blue-800 font-bold rounded-xl px-2 py-1.5 focus:border-blue-500 focus:outline-none">
-                            <option value="">Semua Gelombang</option>
-                            <option value="1_15">Gelombang 1 (Tgl 1-15)</option>
-                            <option value="16_30">Gelombang 2 (Tgl 16-Akhir Bulan)</option>
-                        </select>
-                    </div>
+
                     <!-- Status Tagihan -->
                     <div class="space-y-1">
                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status Tagihan</label>
@@ -1390,15 +1361,10 @@ const activeFilterCount = computed(() =>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Total Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_provider) }}</span></div>
 
                     <div>
-                        <span class="font-bold text-slate-500 block text-[10px] uppercase">Jadwal Gelombang</span>
-                        <span :class="selectedRow.gelombang === '1_15'
-                                     ? 'bg-indigo-100 text-indigo-700 border-indigo-200'
-                                     : selectedRow.gelombang === '16_30'
-                                     ? 'bg-violet-100 text-violet-700 border-violet-200'
-                                     : 'bg-slate-100 text-slate-500 border-slate-300'"
-                               class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold border uppercase mt-0.5">
+                        <span class="font-bold text-slate-500 block text-[10px] uppercase">Masa Pembayaran</span>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase mt-0.5 bg-blue-50 text-blue-700 border-blue-200">
                             <span class="material-symbols-outlined text-xs">schedule</span>
-                            {{ selectedRow.gelombang === '1_15' ? 'Gelombang 1 (Tgl 1-15)' : selectedRow.gelombang === '16_30' ? 'Gelombang 2 (Tgl 16-Akhir Bulan)' : '-' }}
+                            Tanggal 1 - 10
                         </span>
                     </div>
                     <div>
@@ -1598,18 +1564,16 @@ const activeFilterCount = computed(() =>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Gelombang</label>
-                        <select v-model="quickPayForm.gelombang" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option value="1_15">Gelombang 1 (1-15)</option>
-                            <option value="16_30">Gelombang 2 (16-30)</option>
-                        </select>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Masa Pembayaran</label>
+                        <div class="w-full text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 font-bold text-slate-700">
+                            Tanggal 1 - 10
+                        </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
                         <select v-model="quickPayForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option value="LUNAS">LUNAS</option>
-                            <option value="TUNGGAKAN">TUNGGAKAN</option>
-                            <option value="ISOLIR">ISOLIR</option>
+                            <option value="AKTIF">🟢 AKTIF (LUNAS)</option>
+                            <option value="ISOLIR">🔴 ISOLIR</option>
                         </select>
                     </div>
                 </div>
@@ -1742,8 +1706,8 @@ const activeFilterCount = computed(() =>
                             <td class="py-3 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">{{ h.no_transaksi }}</td>
                             <td class="py-3 px-3 whitespace-nowrap">
                                 <div class="font-bold text-slate-900">Bulan {{ getBulanName(h.periode_bulan) }} {{ h.periode_tahun }}</div>
-                                <span class="inline-block mt-0.5 text-[9px] font-bold px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-slate-600 rounded">
-                                    {{ h.gelombang === '1_15' ? 'Gel. 1 (Tgl 1-15)' : 'Gel. 2 (Tgl 16-30)' }}
+                                <span class="inline-block mt-0.5 text-[9px] font-bold px-1.5 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded">
+                                    Tgl 1 - 10
                                 </span>
                             </td>
                             <td class="py-3 px-3 text-center font-mono text-slate-600 whitespace-nowrap">{{ formatDate(h.tanggal_bayar) }}</td>
