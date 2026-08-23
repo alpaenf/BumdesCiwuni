@@ -37,28 +37,30 @@ const selectedCustomer  = ref(null);
 const customerHistory   = ref([]);
 const historyLoading    = ref(false);
 
-const getWaReminderUrl = (item) => {
-    if (!item || !item.no_wa) return '#';
+const createWaReminderUrl = (item) => {
+    if (!item.no_wa) return '#';
     let phone = item.no_wa.replace(/\D/g, '');
-    if (phone.startsWith('0')) {
-        phone = '62' + phone.substring(1);
-    }
-    const nominal = rupiah(item.total_tarikan || 0);
+    if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+
     const bulan = getBulanName(selectedBulan.value);
     const tahun = selectedTahun.value;
+    const nominal = rupiah(item.total_tarikan || 0);
 
-    const companyName = item.provider?.nama_provider || props.wifiSettings?.wa_company_name || 'PT. MEDIA CEPAT INDONESIA';
-    const bankAccounts = (props.wifiSettings?.bank_accounts && props.wifiSettings.bank_accounts.length)
-        ? props.wifiSettings.bank_accounts
-        : [
-            { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
-            { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
-            { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' }
-        ];
+    const provider = item.provider;
+    const companyName = provider?.header_wa || provider?.nama_provider || 'PT. MEDIA CEPAT INDONESIA';
+    const bankAccounts = (provider?.bank_accounts && provider.bank_accounts.length)
+        ? provider.bank_accounts
+        : (props.wifiSettings?.bank_accounts && props.wifiSettings.bank_accounts.length)
+            ? props.wifiSettings.bank_accounts
+            : [
+                { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
+                { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
+                { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' }
+            ];
 
-    const bankText = bankAccounts.map(b => `${b.bank} ${b.no_rek} a/n ${b.atas_nama}`).join('\n\n');
+    const bankText = bankAccounts.map(b => `• *${b.bank}*: ${b.no_rek} a/n ${b.atas_nama}`).join('\n');
 
-    const message = `${companyName}\n\nPelanggan yang terhormat,\n\nTagihan internet bulan *${bulan} ${tahun}* anda sebesar *${nominal}* ,- \n\nPembayaran bisa melalui bank transfer ke Rek:\n\n${bankText}\n\n\n Note :\n\n ~  *Setelah transfer harap kirimkan bukti transfer nya, untuk memudahkan pengecekan*\n\n ~  *Jatuh tempo tagihan maksimal tanggal 10*\n \n ~  *Mohon untuk melakukan pembayaran sebelum tanggal jatuh tempo untuk menghindari isolasi jaringan automatis oleh system*\n\n~  *Abaikan pesan ini jika sudah melakukan pembayaran*\n\n\nTerimakasih.`;
+    const message = `*PENGINGAT TAGIHAN INTERNET BUMDES CIWUNI*\n----------------------------------------\nKepada Yth. Bpk/Ibu *${item.nama}*\nID Pelanggan : *${item.no_id_pel || '-'}*\nPaket        : *${item.paket || '-'}*\nTagihan      : *${bulan} ${tahun}*\nTotal        : *${nominal}*\n\n📌 *Masa Pembayaran: Tanggal 1 s.d. 10*\n_Mohon melakukan pembayaran sebelum tanggal 10 agar jaringan internet tetap AKTIF dan tidak ter-ISOLIR._\n\n💳 *PILIHAN REKENING TRANSFER:*\n${bankText}\n\n_(Setelah transfer, mohon kirimkan bukti transfer ke nomor ini. Abaikan pesan ini jika sudah bayar.)_\n\nTerima kasih atas perhatian & kerja samanya. 🙏😊\n\n_${companyName} / BUMDes Ciwuni_`;
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 };

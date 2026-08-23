@@ -65,22 +65,12 @@ function sendWaStruk(trx) {
     if (no.startsWith('0')) no = '62' + no.slice(1);
     if (!no.startsWith('62')) no = '62' + no;
 
-    const strukUrl = route('tabungan-sembako.struk', trx.id);
-    const jenis = trx.jenis_transaksi === 'setor' ? 'Setoran' : 'Pengambilan';
-    const pesan =
-`Assalamu'alaikum, Bapak/Ibu *${modalNasabah.value.nama}*.
+    const strukUrl = window.location.origin + route('tabungan-sembako.struk', trx.id);
+    const jenis = trx.jenis_transaksi === 'setor' ? 'SETOR TABUNGAN SEMBAKO' : 'PENGAMBILAN SEMBAKO';
+    const nominal = formatCurrency(trx.nominal);
+    const tgl = formatTanggal(trx.tanggal);
 
-Berikut informasi transaksi tabungan sembako Anda di *BUMDes Dammar Wulan*:
-
-No. Transaksi : #${trx.nomor_transaksi}
-Tanggal       : ${formatTanggal(trx.tanggal)}
-Jenis         : ${jenis}
-Nominal       : ${formatCurrency(trx.nominal)}
-
-Lihat struk lengkap di:
-${strukUrl}
-
-Terima kasih.`;
+    const pesan = `*BUKTI TRANSAKSI TABUNGAN SEMBAKO BUMDES CIWUNI*\n----------------------------------------\nNo. Transaksi : *#${trx.nomor_transaksi || '-'}*\nTanggal       : ${tgl}\n\n*DATA NASABAH*\n• Nama        : *${modalNasabah.value.nama}*\n• No. Rekening: *${modalNasabah.value.no_rekening || '-'}*\n\n*DETAIL TRANSAKSI*\n• Jenis       : *${jenis}*\n• Nominal     : *${nominal}*\n----------------------------------------\n📄 *Cetak / Lihat Struk Digital:*\n${strukUrl}\n\nTerima kasih telah bertransaksi di BUMDes Ciwuni. 🙏😊\n\n_Unit Simpan Pinjam BUMDes Ciwuni_`;
 
     window.open(`https://wa.me/${no}?text=${encodeURIComponent(pesan)}`, '_blank');
 }

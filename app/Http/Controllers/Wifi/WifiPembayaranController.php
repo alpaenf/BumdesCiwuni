@@ -310,7 +310,6 @@ class WifiPembayaranController extends Controller
      */
     public function struk(PembayaranWifi $pembayaran)
     {
-        $this->authorizeUnit();
         $pembayaran->load(['pelanggan', 'kasir']);
 
         return view('wifi.struk', [

@@ -70,22 +70,12 @@ function sendWaStruk(trx) {
     if (no.startsWith('0')) no = '62' + no.slice(1);
     if (!no.startsWith('62')) no = '62' + no;
 
-    const strukUrl = route('tabungan.struk', trx.id);
-    const jenis = trx.jenis_transaksi === 'setor' ? 'Setoran' : 'Penarikan';
-    const pesan =
-`Assalamu'alaikum, Bapak/Ibu *${modalNasabah.value.nama}*.
+    const strukUrl = window.location.origin + route('tabungan.struk', trx.id);
+    const jenis = trx.jenis_transaksi === 'setor' ? 'SETOR TABUNGAN' : 'PENARIKAN TABUNGAN';
+    const nominal = formatCurrency(trx.nominal);
+    const tgl = formatTanggal(trx.tanggal);
 
-Berikut informasi transaksi tabungan Anda di *BUMDes Dammar Wulan*:
-
-No. Transaksi : #${trx.nomor_transaksi}
-Tanggal       : ${formatTanggal(trx.tanggal)}
-Jenis         : ${jenis}
-Nominal       : ${formatCurrency(trx.nominal)}
-
-Lihat struk lengkap di:
-${strukUrl}
-
-Terima kasih.`;
+    const pesan = `*BUKTI TRANSAKSI TABUNGAN BUMDES CIWUNI*\n----------------------------------------\nNo. Transaksi : *#${trx.nomor_transaksi || '-'}*\nTanggal       : ${tgl}\n\n*DATA NASABAH*\n• Nama        : *${modalNasabah.value.nama}*\n• No. Rekening: *${modalNasabah.value.no_rekening || '-'}*\n\n*DETAIL TRANSAKSI*\n• Jenis       : *${jenis}*\n• Nominal     : *${nominal}*\n----------------------------------------\n📄 *Cetak / Lihat Struk Digital:*\n${strukUrl}\n\nTerima kasih telah menabung di BUMDes Ciwuni. Semoga usahanya semakin berkah! 🙏😊\n\n_Unit Simpan Pinjam BUMDes Ciwuni_`;
 
     window.open(`https://wa.me/${no}?text=${encodeURIComponent(pesan)}`, '_blank');
 }

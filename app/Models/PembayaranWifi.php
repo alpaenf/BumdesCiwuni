@@ -65,24 +65,28 @@ class PembayaranWifi extends Model
         ];
 
         $bulanStr = $namaBulan[$this->periode_bulan] ?? $this->periode_bulan;
-        $gelombangStr = $this->gelombang === '1_15' ? 'Gelombang 1 (Tgl 1-15)' : 'Gelombang 2 (Tgl 16-30)';
         $nominalStr = 'Rp ' . number_format($this->jumlah_bayar, 0, ',', '.');
         $tglBayarStr = $this->tanggal_bayar ? $this->tanggal_bayar->format('d/m/Y') : date('d/m/Y');
+        $strukPublicUrl = route('wifi.pembayaran.struk', $this->id);
 
-        $pesan = "*BUKTI PEMBAYARAN WIFI BUMDES DAMAR WULAN*\n";
+        $pesan = "*BUKTI PEMBAYARAN WIFI BUMDES CIWUNI*\n";
         $pesan .= "----------------------------------------\n";
-        $pesan .= "No. Struk : *{$this->no_transaksi}*\n";
-        $pesan .= "Nama Pelanggan : *{$this->pelanggan->nama}*\n";
-        $pesan .= "No ID Pelanggan : *{$this->pelanggan->no_id_pel}*\n";
-        $pesan .= "Paket : *{$this->pelanggan->paket}*\n";
-        $pesan .= "Periode : *{$bulanStr} {$this->periode_tahun}* ({$gelombangStr})\n";
-        $pesan .= "Tanggal Bayar : {$tglBayarStr}\n";
-        $pesan .= "Metode Bayar : {$this->metode_pembayaran}\n";
-        $pesan .= "Status : *{$this->status}*\n";
-        $pesan .= "Total Bayar : *{$nominalStr}*\n";
+        $pesan .= "No. Struk      : *{$this->no_transaksi}*\n";
+        $pesan .= "Tanggal        : {$tglBayarStr}\n\n";
+        $pesan .= "*DATA PELANGGAN*\n";
+        $pesan .= "• Nama         : *{$this->pelanggan->nama}*\n";
+        $pesan .= "• ID Pelanggan : *{$this->pelanggan->no_id_pel}*\n";
+        $pesan .= "• Paket        : *{$this->pelanggan->paket}*\n";
+        $pesan .= "• Periode      : *{$bulanStr} {$this->periode_tahun}*\n\n";
+        $pesan .= "*RINCIAN PEMBAYARAN*\n";
+        $pesan .= "• Metode Bayar : *{$this->metode_pembayaran}*\n";
+        $pesan .= "• Status        : *{$this->status}* 🟢\n";
+        $pesan .= "• Total Bayar  : *{$nominalStr}*\n";
         $pesan .= "----------------------------------------\n";
-        $pesan .= "Terima kasih atas pembayaran Anda. Semoga koneksi internet Anda lancar selalu! 🙏😊\n\n";
-        $pesan .= "_Unit Internet BUMDes Damar Wulan Ciwuni_";
+        $pesan .= "📄 *Cetak / Lihat Struk Digital:*\n";
+        $pesan .= "{$strukPublicUrl}\n\n";
+        $pesan .= "Terima kasih atas pembayaran Anda. Semoga koneksi internet Anda senantiasa lancar! 🙏😊\n\n";
+        $pesan .= "_Unit Usaha WiFi BUMDes Ciwuni_";
 
         return 'https://wa.me/' . $phone . '?text=' . urlencode($pesan);
     }

@@ -27,30 +27,18 @@ function kirimStrukWa(row) {
     if (no.startsWith('0')) no = '62' + no.slice(1);
     if (!no.startsWith('62')) no = '62' + no;
 
-    const strukUrl = route('angsuran.struk', row.id);
-    const nama = props.pinjaman.nasabah?.nama;
+    const strukUrl = window.location.origin + route('angsuran.struk', row.id);
+    const nama = props.pinjaman.nasabah?.nama || '-';
     
     const p = props.pinjaman;
     const t = p.total_tagihan > 0 ? p.total_tagihan : 1;
     const porsiPokok = (p.pinjaman_pokok / t) * row.jumlah_bayar;
     const porsiBunga = ((p.pinjaman_pokok * p.bunga / 100) / t) * row.jumlah_bayar;
-    
-    const pesan =
-`Assalamu'alaikum, Bapak/Ibu *${nama}*.
+    const tgl = formatDate(row.tanggal);
+    const jmlBayar = formatCurrency(row.jumlah_bayar);
+    const sisa = formatCurrency(row.sisa_pinjaman);
 
-Berikut informasi transaksi pembayaran angsuran Anda di *BUMDes Dammar Wulan*:
-
-No. Transaksi : #${row.nomor_transaksi || '-'}
-Tanggal       : ${formatDate(row.tanggal)}
-Angsuran Ke   : ${row.angsuran_ke}
-Jumlah Bayar  : ${formatCurrency(row.jumlah_bayar)}
-(Pokok: ${formatCurrency(porsiPokok)}, Bunga: ${formatCurrency(porsiBunga)})
-Sisa Pinjaman : ${formatCurrency(row.sisa_pinjaman)}
-
-Lihat struk lengkap di:
-${strukUrl}
-
-Terima kasih.`;
+    const pesan = `*BUKTI PEMBAYARAN ANGSURAN BUMDES CIWUNI*\n----------------------------------------\nNo. Kwitansi  : *#${row.nomor_transaksi || '-'}*\nTanggal       : ${tgl}\n\n*DATA NASABAH*\n• Nama        : *${nama}*\n• No. Pinjaman: *${p?.nomor_transaksi || '-'}*\n• Angsuran Ke : *Ke-${row.angsuran_ke}*\n\n*DETAIL ANGSURAN*\n• Pokok       : *${formatCurrency(porsiPokok)}*\n• Bunga       : *${formatCurrency(porsiBunga)}*\n• Total Bayar : *${jmlBayar}*\n• Sisa Pinjaman: *${sisa}*\n----------------------------------------\n📄 *Cetak / Lihat Struk Digital:*\n${strukUrl}\n\nTerima kasih atas pembayaran angsuran Anda. Semoga rezekinya semakin lancar! 🙏😊\n\n_Unit Simpan Pinjam BUMDes Ciwuni_`;
 
     window.open(`https://wa.me/${no}?text=${encodeURIComponent(pesan)}`, '_blank');
 }
