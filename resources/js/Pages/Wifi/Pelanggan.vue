@@ -31,7 +31,8 @@ const sortField       = ref(props.filters.sort            ?? 'no');
 const sortDir         = ref(props.filters.dir             ?? 'asc');
 const perPage         = ref(props.filters.per_page        ?? '25');
 
-const isFilterOpen = ref(false);
+const viewMode        = ref('table'); // 'table' | 'card'
+const isFilterOpen    = ref(false);
 
 let searchTimeout = null;
 const applySearch = () => {
@@ -629,6 +630,24 @@ const activeFilterCount = computed(() =>
                         </span>
                     </button>
 
+                    <!-- View Mode Toggle -->
+                    <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
+                        <button @click="viewMode = 'table'"
+                                :class="['px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition',
+                                         viewMode === 'table' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800']"
+                                title="Tampilan Tabel Scroll">
+                            <span class="material-symbols-outlined text-base">table_chart</span>
+                            <span class="hidden sm:inline">Tabel</span>
+                        </button>
+                        <button @click="viewMode = 'card'"
+                                :class="['px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition',
+                                         viewMode === 'card' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800']"
+                                title="Tampilan Kartu">
+                            <span class="material-symbols-outlined text-base">grid_view</span>
+                            <span class="hidden sm:inline">Kartu</span>
+                        </button>
+                    </div>
+
                     <!-- Per Page -->
                     <div class="flex items-center gap-2 ml-auto">
                         <span class="text-[11px] text-slate-500 font-medium whitespace-nowrap hidden sm:block">Tampilkan:</span>
@@ -730,8 +749,8 @@ const activeFilterCount = computed(() =>
                         </button>
                     </div>
 
-                    <!-- Mobile: Card List (hidden md+) -->
-                    <div v-else class="md:hidden divide-y divide-slate-100">
+                    <!-- Mobile / Responsive: Card List -->
+                    <div v-if="viewMode === 'card'" class="divide-y divide-slate-100">
                         <div v-for="row in pelanggan.data" :key="row.id"
                              class="p-4 hover:bg-slate-50 transition">
                             <!-- Header row: Nama + Status -->
@@ -812,9 +831,8 @@ const activeFilterCount = computed(() =>
                         </div>
                     </div>
 
-                    <!-- Desktop: Full Scroll Table (hidden on mobile) -->
-                    <!-- Table Scroll Wrapper — Full Horizontal Scroll -->
-                    <div v-if="pelanggan.data.length > 0" class="hidden md:block overflow-x-auto" style="overflow-x: auto;">
+                    <!-- Full Scroll Table View -->
+                    <div v-else-if="viewMode === 'table' && pelanggan.data.length > 0" class="overflow-x-auto" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
 
                         <table class="border-collapse text-xs" style="min-width: 2800px; width: max-content;">
 
@@ -822,16 +840,16 @@ const activeFilterCount = computed(() =>
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-slate-500">
 
-                                    <!-- Sticky: No -->
-                                    <th class="sticky left-0 z-20 bg-slate-50 border-r border-slate-200 px-3 py-3 text-center font-bold uppercase tracking-wider text-[10px] whitespace-nowrap" style="min-width:52px">
+                                    <!-- Sticky Desktop: No -->
+                                    <th class="lg:sticky lg:left-0 lg:z-20 bg-slate-50 border-r border-slate-200 px-3 py-3 text-center font-bold uppercase tracking-wider text-[10px] whitespace-nowrap" style="min-width:52px">
                                         <button @click="setSort('no')" aria-label="Sort No" class="inline-flex items-center gap-0.5 hover:text-blue-600 transition">
                                             No
                                             <span class="material-symbols-outlined text-xs">{{ sortField==='no' ? (sortDir==='asc'?'arrow_upward':'arrow_downward') : 'unfold_more' }}</span>
                                         </button>
                                     </th>
 
-                                    <!-- Sticky: Nama -->
-                                    <th class="sticky z-20 bg-slate-50 border-r border-slate-200 px-3 py-3 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap" style="left:52px; min-width:180px">
+                                    <!-- Sticky Desktop: Nama -->
+                                    <th class="lg:sticky lg:left-[52px] lg:z-20 bg-slate-50 border-r border-slate-200 px-3 py-3 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap" style="min-width:180px">
                                         <button @click="setSort('nama')" aria-label="Sort Nama" class="inline-flex items-center gap-0.5 hover:text-blue-600 transition">
                                             Nama
                                             <span class="material-symbols-outlined text-xs">{{ sortField==='nama' ? (sortDir==='asc'?'arrow_upward':'arrow_downward') : 'unfold_more' }}</span>
@@ -877,8 +895,8 @@ const activeFilterCount = computed(() =>
                                         Foto Rumah
                                     </th>
 
-                                    <!-- Sticky Right: Aksi -->
-                                    <th class="sticky right-0 z-20 bg-slate-100 border-l border-slate-200 px-3 py-3 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap text-center" style="min-width:180px">
+                                    <!-- Sticky Desktop Right: Aksi -->
+                                    <th class="lg:sticky lg:right-0 lg:z-20 bg-slate-100 border-l border-slate-200 px-3 py-3 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap text-center" style="min-width:180px">
                                         Aksi
                                     </th>
                                 </tr>
@@ -889,13 +907,13 @@ const activeFilterCount = computed(() =>
                                 <tr v-for="row in pelanggan.data" :key="row.id"
                                     class="border-b border-slate-100 hover:bg-blue-50/30 transition-colors">
 
-                                    <!-- Sticky: No -->
-                                    <td class="sticky left-0 z-10 bg-white border-r border-slate-200 px-3 py-2.5 text-center font-mono text-slate-600 whitespace-nowrap" style="min-width:52px">
+                                    <!-- Sticky Desktop: No -->
+                                    <td class="lg:sticky lg:left-0 lg:z-10 bg-white border-r border-slate-200 px-3 py-2.5 text-center font-mono text-slate-600 whitespace-nowrap" style="min-width:52px">
                                         {{ row.no ?? '-' }}
                                     </td>
 
-                                    <!-- Sticky: Nama -->
-                                    <td class="sticky z-10 bg-white border-r border-slate-200 px-3 py-2.5 whitespace-nowrap" style="left:52px; min-width:180px">
+                                    <!-- Sticky Desktop: Nama -->
+                                    <td class="lg:sticky lg:left-[52px] lg:z-10 bg-white border-r border-slate-200 px-3 py-2.5 whitespace-nowrap" style="min-width:180px">
                                         <p class="font-bold text-slate-900 truncate max-w-[160px]">{{ row.nama }}</p>
                                     </td>
 
@@ -1045,8 +1063,8 @@ const activeFilterCount = computed(() =>
                                         </span>
                                     </td>
 
-                                    <!-- Sticky Right: Aksi -->
-                                    <td class="sticky right-0 z-10 bg-white border-l border-slate-200 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:180px">
+                                    <!-- Sticky Desktop Right: Aksi -->
+                                    <td class="lg:sticky lg:right-0 lg:z-10 bg-white border-l border-slate-200 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:180px">
                                         <div class="flex items-center justify-center gap-1">
                                             <button @click="openModal('quick_pay', row)"
                                                     aria-label="Input Pembayaran Tagihan" title="Bayar Tagihan WiFi"

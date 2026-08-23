@@ -24,10 +24,11 @@ const props = defineProps({
 });
 
 // ── Sidebar & UI state ─────────────────────────────────────────────────────
-const isSidebarOpen    = ref(false);
-const isFilterOpen     = ref(false);
-const selectedPelanggan = ref(null);
-const isSideListOpen   = ref(false);
+const isSidebarOpen      = ref(false);
+const isFilterOpen       = ref(false);
+const isMobileFilterOpen = ref(false);
+const selectedPelanggan  = ref(null);
+const isSideListOpen     = ref(false);
 const logout = () => router.post(route('logout'));
 
 // ── Filters ────────────────────────────────────────────────────────────────
@@ -103,27 +104,50 @@ const statusClass = (s) => {
 
 const buildPopup = (p) => {
     const fotoHtml = p.foto_rumah
-        ? `<img src="/uploads/pelanggan_wifi/${p.foto_rumah}" class="w-full h-24 object-cover rounded-md mb-2" />`
+        ? `<div style="margin:-12px -12px 8px -12px;height:100px;overflow:hidden;background:#f1f5f9"><img src="/uploads/pelanggan_wifi/${p.foto_rumah}" style="width:100%;height:100%;object-fit:cover" /></div>`
         : '';
-    const gelLabel = 'Tgl 1 - 10';
     const statusVal = p.current_status || p.status_1_15 || '-';
+    const isIsolir = statusVal === 'ISOLIR';
+    const statusBg = isIsolir ? '#fef2f2' : '#ecfdf5';
+    const statusColor = isIsolir ? '#b91c1c' : '#047857';
+    const statusBorder = isIsolir ? '#fca5a5' : '#6ee7b7';
+    const dotBg = isIsolir ? '#ef4444' : '#10b981';
+
     return `
-        <div style="min-width:220px;font-family:system-ui,sans-serif;font-size:12px">
+        <div style="padding:12px;font-family:system-ui,-apple-system,sans-serif;color:#334155">
             ${fotoHtml}
-            <p style="font-weight:800;color:#0f172a;font-size:13px;margin:0 0 2px">${p.nama}</p>
-            <p style="color:#64748b;margin:0 0 6px;font-size:11px">No. ${p.no ?? '-'} &bull; ID: ${p.no_id_pel ?? p.id}</p>
-            ${p.paket ? `<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${p.paket}</span><br/>` : ''}
-            <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
-                <div><span style="color:#94a3b8;font-size:10px">Masa Bayar</span><br/><b style="color:#2563eb">Tgl 1 - 10</b></div>
-                <div><span style="color:#94a3b8;font-size:10px">Status Tagihan</span><br/><b style="color:${statusVal==='ISOLIR'?'#dc2626':'#059669'}"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${statusVal==='ISOLIR'?'#ef4444':'#10b981'};margin-right:4px;vertical-align:middle"></span>${statusVal === 'ISOLIR' ? 'ISOLIR' : 'AKTIF'}</b></div>
-                <div style="margin-top:4px"><span style="color:#94a3b8;font-size:10px">RT/RW</span><br/><b>${p.rt ?? '-'}/${p.rw ?? '-'}</b></div>
-                <div style="margin-top:4px"><span style="color:#94a3b8;font-size:10px">No WA</span><br/><b>${p.no_wa ?? '-'}</b></div>
-                <div style="margin-top:4px;grid-column:1/-1"><span style="color:#94a3b8;font-size:10px">Total Tarikan</span><br/><b>${rupiah(p.total_tarikan)}</b></div>
+            <div style="margin-bottom:6px">
+                <h4 style="font-size:13px;font-weight:800;color:#0f172a;margin:0;line-height:1.3">${p.nama}</h4>
+                <p style="font-size:10px;color:#64748b;margin:2px 0 0;font-family:monospace">No. ${p.no ?? '-'} &bull; ID: ${p.no_id_pel ?? p.id}</p>
             </div>
-            <div style="margin-top:8px;display:flex;gap:6px">
+
+            <div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;flex-wrap:wrap">
+                ${p.paket ? `<span style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:700;font-family:monospace">${p.paket}</span>` : ''}
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:1px 6px;border-radius:9999px;font-size:10px;font-weight:800;background:${statusBg};color:${statusColor};border:1px solid ${statusBorder}">
+                    <span style="width:6px;height:6px;border-radius:50%;background:${dotBg};display:inline-block"></span>
+                    ${isIsolir ? 'ISOLIR' : 'AKTIF'}
+                </span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 8px;margin-bottom:8px">
+                <div>
+                    <span style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;display:block">RT/RW</span>
+                    <span style="font-size:10px;font-weight:600;color:#1e293b">${p.rt ?? '-'}/${p.rw ?? '-'}</span>
+                </div>
+                <div>
+                    <span style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;display:block">Masa Bayar</span>
+                    <span style="font-size:10px;font-weight:700;color:#2563eb">Tgl 1 - 10</span>
+                </div>
+                <div style="grid-column:1/-1;margin-top:2px">
+                    <span style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;display:block">Total Tarikan</span>
+                    <span style="font-size:11px;font-weight:800;color:#0f172a;font-family:monospace">${rupiah(p.total_tarikan)}</span>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:4px">
                 <a href="https://www.google.com/maps?q=${p.gps_lat},${p.gps_long}" target="_blank"
-                   style="flex:1;text-align:center;padding:4px 0;background:#3b82f6;color:white;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none">
-                   Buka Maps
+                   style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 8px;background:#2563eb;color:#ffffff;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none">
+                   Google Maps
                 </a>
             </div>
         </div>`;
@@ -136,7 +160,7 @@ const renderMarkers = () => {
     filtered.value.forEach(p => {
         if (!p.gps_lat || !p.gps_long) return;
         const marker = L.marker([p.gps_lat, p.gps_long], { icon: markerIcon(p.current_status || p.status_1_15) });
-        marker.bindPopup(buildPopup(p), { maxWidth: 260 });
+        marker.bindPopup(buildPopup(p), { maxWidth: 280, minWidth: 220, autoPan: true, autoPanPadding: [20, 20] });
         marker.on('click', () => { selectedPelanggan.value = p; });
         markerGroup.addLayer(marker);
     });
@@ -353,7 +377,8 @@ const resetFilters = () => {
 
                 <!-- ── FLOATING FILTER TOOLBAR ───────────────────────────── -->
                 <div class="absolute top-3 left-3 right-3 z-[400] pointer-events-none">
-                    <div class="flex flex-wrap gap-2 pointer-events-auto">
+                    <!-- Desktop Filter Bar (sm+) -->
+                    <div class="hidden sm:flex flex-wrap gap-2 pointer-events-auto">
 
                         <!-- Search nama -->
                         <div class="relative">
@@ -407,10 +432,69 @@ const resetFilters = () => {
                             Daftar ({{ filtered.length }})
                         </button>
                     </div>
+
+                    <!-- Mobile Compact Top Control Bar (< sm) -->
+                    <div class="sm:hidden flex items-center gap-1.5 pointer-events-auto">
+                        <div class="relative flex-1">
+                            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                            <input v-model="searchNama" type="search" placeholder="Cari nama..."
+                                   class="w-full pl-8 pr-2 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-lg focus:border-blue-500 focus:outline-none" />
+                        </div>
+                        <button @click="isMobileFilterOpen = !isMobileFilterOpen"
+                                :class="['px-2.5 py-2 text-xs border rounded-xl shadow-lg transition font-bold flex items-center gap-1 shrink-0',
+                                         isMobileFilterOpen || activeFilterCount > 0 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-700']">
+                            <span class="material-symbols-outlined text-sm">filter_list</span>
+                            <span v-if="activeFilterCount > 0" class="w-4 h-4 rounded-full bg-white text-blue-600 text-[10px] font-black flex items-center justify-center">{{ activeFilterCount }}</span>
+                        </button>
+                        <button @click="isSideListOpen = !isSideListOpen"
+                                class="px-2.5 py-2 text-xs bg-white border border-slate-200 text-slate-700 rounded-xl shadow-lg font-bold flex items-center gap-1 shrink-0">
+                            <span class="material-symbols-outlined text-sm">format_list_bulleted</span>
+                            ({{ filtered.length }})
+                        </button>
+                    </div>
+
+                    <!-- Mobile Collapsible Filter Panel -->
+                    <div v-if="isMobileFilterOpen" class="sm:hidden mt-2 p-3 bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl shadow-xl pointer-events-auto grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-extrabold text-slate-400 uppercase mb-1">Paket</label>
+                            <select v-model="filterPaket" class="w-full px-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg">
+                                <option value="">Semua Paket</option>
+                                <option v-for="p in paketOptions" :key="p" :value="p">{{ p }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-extrabold text-slate-400 uppercase mb-1">Status</label>
+                            <select v-model="filterStatus" class="w-full px-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg">
+                                <option value="">Semua Status</option>
+                                <option value="AKTIF">Aktif</option>
+                                <option value="ISOLIR">Isolir</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-extrabold text-slate-400 uppercase mb-1">RT</label>
+                            <select v-model="filterRt" class="w-full px-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg">
+                                <option value="">Semua RT</option>
+                                <option v-for="r in rtOptions" :key="r" :value="r">RT {{ r }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-extrabold text-slate-400 uppercase mb-1">RW</label>
+                            <select v-model="filterRw" class="w-full px-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg">
+                                <option value="">Semua RW</option>
+                                <option v-for="r in rwOptions" :key="r" :value="r">RW {{ r }}</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2 flex justify-end pt-1">
+                            <button v-if="activeFilterCount > 0" @click="resetFilters" class="text-xs text-red-500 font-bold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">filter_list_off</span> Reset Filter
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- ── LEGEND ─────────────────────────────────────────────── -->
-                <div class="absolute bottom-4 left-3 z-[400] bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-lg px-3 py-2.5 space-y-1.5 min-w-[170px]">
+                <div :class="[selectedPelanggan ? 'hidden sm:block' : '']"
+                     class="absolute bottom-4 left-3 z-[390] bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-lg px-3 py-2.5 space-y-1.5 min-w-[150px] sm:min-w-[170px]">
                     <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Legenda Status Tagihan</p>
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
@@ -436,11 +520,11 @@ const resetFilters = () => {
 
                 <!-- ── SELECTED PELANGGAN CARD ────────────────────────────── -->
                 <Transition enter-active-class="transition-all duration-200 ease-out"
-                            enter-from-class="opacity-0 translate-y-2"
+                            enter-from-class="opacity-0 translate-y-2 sm:translate-y-2"
                             leave-active-class="transition-all duration-150 ease-in"
-                            leave-to-class="opacity-0 translate-y-2">
+                            leave-to-class="opacity-0 translate-y-2 sm:translate-y-2">
                     <div v-if="selectedPelanggan"
-                         class="absolute bottom-4 right-3 z-[400] w-72 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
+                         class="fixed sm:absolute bottom-0 sm:bottom-4 left-0 right-0 sm:left-auto sm:right-3 z-[450] w-full sm:w-72 bg-white border-t sm:border border-slate-200 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] overflow-y-auto">
                         <!-- Foto header -->
                         <div class="relative h-28 bg-slate-100">
                             <img v-if="selectedPelanggan.foto_rumah"
@@ -531,7 +615,7 @@ const resetFilters = () => {
                             leave-active-class="transition-all duration-150 ease-in"
                             leave-to-class="opacity-0 translate-x-4">
                     <div v-if="isSideListOpen"
-                         class="absolute top-14 right-3 bottom-3 z-[400] w-72 bg-white/98 backdrop-blur-sm border border-slate-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+                         class="absolute top-14 left-3 right-3 sm:left-auto sm:right-3 bottom-3 z-[450] w-auto sm:w-80 bg-white/98 backdrop-blur-sm border border-slate-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
                         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50 shrink-0">
                             <p class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
                                 Daftar Titik ({{ filtered.length }})
@@ -588,3 +672,41 @@ const resetFilters = () => {
         </main>
     </div>
 </template>
+
+<style>
+/* Leaflet Popup Responsive Styling Override */
+.leaflet-popup-content-wrapper {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.15) !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+}
+.leaflet-popup-content {
+    margin: 0 !important;
+    width: 250px !important;
+    max-width: 80vw !important;
+    line-height: 1.4 !important;
+}
+.leaflet-container a.leaflet-popup-close-button {
+    top: 8px !important;
+    right: 8px !important;
+    color: #64748b !important;
+    padding: 4px !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 9999px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(4px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    z-index: 10 !important;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+    color: #0f172a !important;
+    background: #ffffff !important;
+}
+</style>
