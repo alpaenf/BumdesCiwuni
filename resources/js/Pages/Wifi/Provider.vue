@@ -26,12 +26,22 @@ watch(search, () => {
 
 const form = useForm({
     nama_provider:    '',
+    header_wa:        '',
+    bank_accounts:    [],
     tipe_bagi_hasil:  'PERSENTASE',
     nilai_bagi_hasil: 9,
     penanggung_jawab: '',
     no_telepon:       '',
     keterangan:       '',
 });
+
+const addBankAccount = () => {
+    form.bank_accounts.push({ bank: '', no_rek: '', atas_nama: '' });
+};
+
+const removeBankAccount = (index) => {
+    form.bank_accounts.splice(index, 1);
+};
 
 const openModal = (mode, item = null) => {
     modalMode.value = mode;
@@ -40,6 +50,8 @@ const openModal = (mode, item = null) => {
     if (mode === 'edit' && item) {
         form.reset();
         form.nama_provider    = item.nama_provider;
+        form.header_wa        = item.header_wa ?? '';
+        form.bank_accounts    = item.bank_accounts && Array.isArray(item.bank_accounts) ? JSON.parse(JSON.stringify(item.bank_accounts)) : [];
         form.tipe_bagi_hasil  = item.tipe_bagi_hasil;
         form.nilai_bagi_hasil = item.nilai_bagi_hasil;
         form.penanggung_jawab = item.penanggung_jawab ?? '';
@@ -47,6 +59,13 @@ const openModal = (mode, item = null) => {
         form.keterangan       = item.keterangan ?? '';
     } else if (mode === 'add') {
         form.reset();
+        form.nama_provider    = '';
+        form.header_wa        = 'PT. MEDIA CEPAT INDONESIA';
+        form.bank_accounts    = [
+            { bank: 'BRI', no_rek: '3117-01-022918-53-6', atas_nama: 'Rasmini' },
+            { bank: 'Mandiri', no_rek: '180-00-1106813-9', atas_nama: 'Rasmini' },
+            { bank: 'BCA', no_rek: '4220318198', atas_nama: 'Rasmini' }
+        ];
         form.tipe_bagi_hasil  = 'PERSENTASE';
         form.nilai_bagi_hasil = 9;
     }
@@ -282,6 +301,21 @@ const rupiah = (val) => {
                                 </p>
                             </div>
 
+                            <!-- Header WA & Rekening Bank Info -->
+                            <div v-if="prov.header_wa || (prov.bank_accounts && prov.bank_accounts.length)" class="space-y-1.5 pt-1 border-t border-slate-100 text-xs">
+                                <p v-if="prov.header_wa" class="font-bold text-slate-800 flex items-center gap-1 text-[11px]">
+                                    <span class="material-symbols-outlined text-blue-600 text-sm">domain</span>
+                                    {{ prov.header_wa }}
+                                </p>
+                                <div v-if="prov.bank_accounts && prov.bank_accounts.length" class="bg-blue-50/50 border border-blue-100 rounded-lg p-2 space-y-1">
+                                    <span class="text-[9px] font-bold uppercase text-blue-700 tracking-wider block">Rekening Transfer ({{ prov.bank_accounts.length }} Bank)</span>
+                                    <div v-for="(acc, i) in prov.bank_accounts" :key="i" class="text-[11px] font-mono text-slate-700 flex justify-between">
+                                        <span class="font-bold text-slate-900">{{ acc.bank }}:</span>
+                                        <span>{{ acc.no_rek }} <span class="text-slate-500 text-[10px]">a/n {{ acc.atas_nama }}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Contact info -->
                             <div class="space-y-1 text-xs text-slate-600">
                                 <p v-if="prov.penanggung_jawab" class="flex items-center gap-1.5">
@@ -303,7 +337,7 @@ const rupiah = (val) => {
                             <button @click="openModal('edit', prov)"
                                     class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">
                                 <span class="material-symbols-outlined text-sm">edit</span>
-                                Edit Skema
+                                Edit Provider
                             </button>
                             <button @click="openModal('delete', prov)"
                                     class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
@@ -335,24 +369,24 @@ const rupiah = (val) => {
     <div v-if="modalMode === 'add' || modalMode === 'edit'"
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
          @click.self="closeModal">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 space-y-4">
+        <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-extrabold text-slate-900 uppercase">
-                    {{ modalMode === 'add' ? 'Tambah Provider ISP Baru' : 'Edit Skema Provider' }}
+                    {{ modalMode === 'add' ? 'Tambah Provider ISP Baru' : 'Edit Skema & Data Provider' }}
                 </h3>
                 <button @click="closeModal" class="text-slate-400 hover:text-slate-700">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
-            <form @submit.prevent="submitForm" class="space-y-3">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Provider / Mitra ISP <span class="text-red-500">*</span></label>
-                    <input v-model="form.nama_provider" type="text" placeholder="Misal: PT Fiber Desa, Indihome..." required
-                           class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none" />
-                </div>
+            <form @submit.prevent="submitForm" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Provider / Mitra ISP <span class="text-red-500">*</span></label>
+                        <input v-model="form.nama_provider" type="text" placeholder="Misal: PT Fiber Desa, Indihome..." required
+                               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none" />
+                    </div>
 
-                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tipe Bagi Hasil</label>
                         <select v-model="form.tipe_bagi_hasil"
@@ -371,16 +405,64 @@ const rupiah = (val) => {
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Penanggung Jawab (Opsional)</label>
-                    <input v-model="form.penanggung_jawab" type="text" placeholder="Nama kontak PIC provider"
-                           class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none" />
+                <!-- Judul Header WA & Rekening Bank Payment Transfer -->
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-base text-blue-600">account_balance</span>
+                            Daftar Rekening Bank &amp; Header WA Tagihan
+                        </h4>
+                        <button type="button" @click="addBankAccount" class="px-2.5 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-[11px] rounded-lg border border-blue-200 flex items-center gap-1 transition">
+                            <span class="material-symbols-outlined text-xs">add</span>
+                            Tambah Rekening Bank
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Perusahaan / Judul Header WA Tagihan</label>
+                        <input v-model="form.header_wa" type="text" placeholder="PT. MEDIA CEPAT INDONESIA" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none" />
+                        <p class="text-[10px] text-slate-400 mt-1">Nama perusahaan ini akan tampil pada header nota &amp; pesan WhatsApp pengingat tagihan warga.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Daftar Rekening Pembayaran Transfer</label>
+                        <div v-for="(acc, index) in form.bank_accounts" :key="index" class="p-2.5 bg-white border border-slate-200 rounded-xl grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                            <div class="sm:col-span-3">
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Nama Bank</label>
+                                <input v-model="acc.bank" type="text" placeholder="BRI / BCA / Mandiri" class="w-full rounded-lg border-slate-200 text-xs font-bold px-2.5 py-1.5" />
+                            </div>
+                            <div class="sm:col-span-5">
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Nomor Rekening</label>
+                                <input v-model="acc.no_rek" type="text" placeholder="3117-01-022918-53-6" class="w-full rounded-lg border-slate-200 text-xs font-mono font-bold px-2.5 py-1.5" />
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Atas Nama (a/n)</label>
+                                <input v-model="acc.atas_nama" type="text" placeholder="Nama Pemilik" class="w-full rounded-lg border-slate-200 text-xs font-bold px-2.5 py-1.5" />
+                            </div>
+                            <div class="sm:col-span-1 text-right">
+                                <button type="button" @click="removeBankAccount(index)" class="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition" title="Hapus Rekening">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div v-if="!form.bank_accounts || form.bank_accounts.length === 0" class="p-3 border border-dashed border-slate-300 rounded-xl text-center text-slate-400 text-xs">
+                            Belum ada rekening bank. Klik "Tambah Rekening Bank" di atas.
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">No. Telepon / WA PIC</label>
-                    <input v-model="form.no_telepon" type="text" placeholder="08..."
-                           class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none" />
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Penanggung Jawab (Opsional)</label>
+                        <input v-model="form.penanggung_jawab" type="text" placeholder="Nama kontak PIC provider"
+                               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none" />
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">No. Telepon / WA PIC</label>
+                        <input v-model="form.no_telepon" type="text" placeholder="08..."
+                               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none" />
+                    </div>
                 </div>
 
                 <div>
@@ -389,7 +471,7 @@ const rupiah = (val) => {
                               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none resize-none"></textarea>
                 </div>
 
-                <div class="flex justify-end gap-2 pt-3">
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
                     <button type="button" @click="closeModal" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl">Batal</button>
                     <button type="submit" :disabled="form.processing"
                             class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow transition">

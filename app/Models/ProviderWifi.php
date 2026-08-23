@@ -13,6 +13,8 @@ class ProviderWifi extends Model
 
     protected $fillable = [
         'nama_provider',
+        'header_wa',
+        'bank_accounts',
         'tipe_bagi_hasil',
         'nilai_bagi_hasil',
         'penanggung_jawab',
@@ -22,6 +24,7 @@ class ProviderWifi extends Model
 
     protected $casts = [
         'nilai_bagi_hasil' => 'float',
+        'bank_accounts'    => 'array',
     ];
 
     public function pelanggan()

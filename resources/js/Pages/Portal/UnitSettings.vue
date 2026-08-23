@@ -351,53 +351,20 @@ const deleteGaleri = (id) => {
 
             <form @submit.prevent="submit" class="space-y-6">
 
-                <!-- REKENING BANK & TEMPLATE WA (KHUSUS UNIT WIFI) -->
-                <div v-if="unit.slug === 'wifi'" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px] text-blue-600">account_balance</span>
-                            Daftar Rekening Bank &amp; Template Pesan WA Tagihan
-                        </h3>
-                        <button type="button" @click="addBankAccount" class="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs rounded-lg border border-blue-200 flex items-center gap-1 transition shadow-sm">
-                            <span class="material-symbols-outlined text-sm">add</span>
-                            Tambah Rekening Bank
-                        </button>
-                    </div>
-
-                    <div class="space-y-4">
+                <!-- INFO REKENING BANK & HEADER WA (KHUSUS UNIT WIFI) -->
+                <div v-if="unit.slug === 'wifi'" class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined">account_balance</span>
+                        </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Nama Perusahaan / Judul Header WA Tagihan</label>
-                            <input v-model="form.wa_company_name" type="text" placeholder="PT. MEDIA CEPAT INDONESIA" class="w-full rounded-lg border-slate-200 text-xs font-bold focus:ring-blue-500 focus:border-blue-500" />
-                            <p class="text-[10px] text-slate-400 mt-1">Nama ini akan menjadi header utama pada pesan WhatsApp pengingat tagihan warga.</p>
-                        </div>
-
-                        <div class="space-y-3">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Daftar Rekening Pembayaran Transfer</label>
-                            <div v-for="(acc, index) in form.bank_accounts" :key="index" class="p-3 bg-slate-50 border border-slate-200 rounded-xl grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                                <div class="sm:col-span-3">
-                                    <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Nama Bank</label>
-                                    <input v-model="acc.bank" type="text" placeholder="BRI / BCA / Mandiri" class="w-full rounded-lg border-slate-200 text-xs font-bold" />
-                                </div>
-                                <div class="sm:col-span-5">
-                                    <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Nomor Rekening</label>
-                                    <input v-model="acc.no_rek" type="text" placeholder="3117-01-022918-53-6" class="w-full rounded-lg border-slate-200 text-xs font-mono font-bold" />
-                                </div>
-                                <div class="sm:col-span-3">
-                                    <label class="block text-[9px] font-bold text-slate-400 uppercase mb-0.5">Atas Nama (a/n)</label>
-                                    <input v-model="acc.atas_nama" type="text" placeholder="Nama Pemilik Rekening" class="w-full rounded-lg border-slate-200 text-xs font-bold" />
-                                </div>
-                                <div class="sm:col-span-1 text-right">
-                                    <button type="button" @click="removeBankAccount(index)" class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition" title="Hapus Rekening">
-                                        <span class="material-symbols-outlined text-sm">delete</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div v-if="form.bank_accounts.length === 0" class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-slate-400 text-xs">
-                                Belum ada rekening bank yang ditambahkan. Klik "Tambah Rekening Bank" di atas.
-                            </div>
+                            <h4 class="text-xs font-bold text-blue-900">Daftar Rekening Bank &amp; Header WA Tagihan</h4>
+                            <p class="text-[11px] text-blue-700">Rekening bank dan header WA tagihan kini dikelola per-Provider mitra pada menu Master Provider WiFi.</p>
                         </div>
                     </div>
+                    <Link :href="route('wifi.provider.index')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition shrink-0 shadow-sm">
+                        Kelola Provider WiFi →
+                    </Link>
                 </div>
 
                 <!-- HERO SECTION -->

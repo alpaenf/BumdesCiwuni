@@ -58,6 +58,11 @@ class WifiProviderController extends Controller
 
         $data = $request->validate([
             'nama_provider'    => 'required|string|max:255',
+            'header_wa'        => 'nullable|string|max:255',
+            'bank_accounts'    => 'nullable|array',
+            'bank_accounts.*.bank'      => 'nullable|string|max:100',
+            'bank_accounts.*.no_rek'    => 'nullable|string|max:100',
+            'bank_accounts.*.atas_nama' => 'nullable|string|max:255',
             'tipe_bagi_hasil'  => 'required|in:PERSENTASE,FLAT_ADMIN',
             'nilai_bagi_hasil' => 'required|numeric|min:0',
             'penanggung_jawab' => 'nullable|string|max:255',
@@ -79,6 +84,11 @@ class WifiProviderController extends Controller
 
         $data = $request->validate([
             'nama_provider'    => 'required|string|max:255',
+            'header_wa'        => 'nullable|string|max:255',
+            'bank_accounts'    => 'nullable|array',
+            'bank_accounts.*.bank'      => 'nullable|string|max:100',
+            'bank_accounts.*.no_rek'    => 'nullable|string|max:100',
+            'bank_accounts.*.atas_nama' => 'nullable|string|max:255',
             'tipe_bagi_hasil'  => 'required|in:PERSENTASE,FLAT_ADMIN',
             'nilai_bagi_hasil' => 'required|numeric|min:0',
             'penanggung_jawab' => 'nullable|string|max:255',
