@@ -50,13 +50,11 @@ const filtered = computed(() => {
 });
 
 const legendStats = computed(() => {
-    const counts = { LUNAS: 0, TUNGGAKAN: 0, ISOLIR: 0, KOSONG: 0 };
+    const counts = { AKTIF: 0, ISOLIR: 0 };
     props.pelanggan.forEach(p => {
         const st = p.current_status || p.status_1_15;
-        if (st === 'LUNAS')          counts.LUNAS++;
-        else if (st === 'TUNGGAKAN') counts.TUNGGAKAN++;
-        else if (st === 'ISOLIR')    counts.ISOLIR++;
-        else                         counts.KOSONG++;
+        if (st === 'ISOLIR') counts.ISOLIR++;
+        else                 counts.AKTIF++;
     });
     return counts;
 });
@@ -68,13 +66,10 @@ const mapRef  = ref(null);
 
 // Custom icon factory keyed by status_1_15
 const markerIcon = (status) => {
-    const colors = {
-        'LUNAS':     { bg: '#10b981', border: '#059669' },
-        'TUNGGAKAN': { bg: '#f59e0b', border: '#d97706' },
-        'ISOLIR':    { bg: '#ef4444', border: '#dc2626' },
-        'default':   { bg: '#3b82f6', border: '#2563eb' },
-    };
-    const c = colors[status] ?? colors.default;
+    const isIsolir = status === 'ISOLIR';
+    const c = isIsolir
+        ? { bg: '#ef4444', border: '#dc2626' }
+        : { bg: '#10b981', border: '#059669' };
     const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
           <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22S28 24.5 28 14C28 6.27 21.73 0 14 0z"
@@ -102,10 +97,8 @@ const formatDate = (val) => {
 };
 
 const statusClass = (s) => {
-    if (s === 'LUNAS')     return 'bg-emerald-100 text-emerald-700 border-emerald-300';
-    if (s === 'TUNGGAKAN') return 'bg-amber-100 text-amber-700 border-amber-300';
-    if (s === 'ISOLIR')    return 'bg-red-100 text-red-700 border-red-300';
-    return 'bg-slate-100 text-slate-400 border-slate-200';
+    if (s === 'ISOLIR') return 'bg-red-100 text-red-700 border-red-300';
+    return 'bg-emerald-100 text-emerald-700 border-emerald-300';
 };
 
 const buildPopup = (p) => {
@@ -380,9 +373,8 @@ const resetFilters = () => {
                         <select v-model="filterStatus"
                                 class="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-md focus:border-blue-500 focus:outline-none">
                             <option value="">Semua Status</option>
-                            <option value="LUNAS">Lunas</option>
-                            <option value="TUNGGAKAN">Tunggakan</option>
-                            <option value="ISOLIR">Isolir</option>
+                            <option value="AKTIF">🟢 Aktif</option>
+                            <option value="ISOLIR">🔴 Isolir</option>
                         </select>
 
                         <!-- Filter RT -->
@@ -423,16 +415,9 @@ const resetFilters = () => {
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
                             <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shrink-0"></span>
-                            <span class="text-[11px] font-semibold text-slate-700">Lunas</span>
+                            <span class="text-[11px] font-semibold text-slate-700">Aktif</span>
                         </div>
-                        <span class="text-[10px] text-slate-700 font-bold font-mono">{{ legendStats.LUNAS }}</span>
-                    </div>
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3.5 h-3.5 rounded-full bg-amber-400 shrink-0"></span>
-                            <span class="text-[11px] font-semibold text-slate-700">Tunggakan</span>
-                        </div>
-                        <span class="text-[10px] text-slate-700 font-bold font-mono">{{ legendStats.TUNGGAKAN }}</span>
+                        <span class="text-[10px] text-slate-700 font-bold font-mono">{{ legendStats.AKTIF }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
@@ -440,13 +425,6 @@ const resetFilters = () => {
                             <span class="text-[11px] font-semibold text-slate-700">Isolir</span>
                         </div>
                         <span class="text-[10px] text-slate-700 font-bold font-mono">{{ legendStats.ISOLIR }}</span>
-                    </div>
-                    <div v-if="legendStats.KOSONG > 0" class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3.5 h-3.5 rounded-full bg-blue-500 shrink-0"></span>
-                            <span class="text-[11px] font-semibold text-slate-700">Belum diisi</span>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-mono">{{ legendStats.KOSONG }}</span>
                     </div>
                     <div class="border-t border-slate-100 pt-1.5 mt-1">
                         <p class="text-[10px] text-slate-400">
@@ -576,12 +554,7 @@ const resetFilters = () => {
                             <button v-for="p in filtered" :key="p.id" @click="flyToMarker(p)"
                                     class="w-full text-left px-4 py-3 hover:bg-blue-50 transition flex items-start gap-3">
                                 <!-- Status dot -->
-                                <span :class="{
-                                    'bg-emerald-500': p.status_1_15 === 'LUNAS',
-                                    'bg-amber-400':   p.status_1_15 === 'TUNGGAKAN',
-                                    'bg-red-500':     p.status_1_15 === 'ISOLIR',
-                                    'bg-blue-400':    !p.status_1_15,
-                                }" class="w-2.5 h-2.5 rounded-full mt-0.5 shrink-0"></span>
+                                <span :class="(p.current_status || p.status_1_15) === 'ISOLIR' ? 'bg-red-500' : 'bg-emerald-500'" class="w-2.5 h-2.5 rounded-full mt-0.5 shrink-0"></span>
 
                                 <div class="flex-1 min-w-0">
                                     <p class="font-bold text-slate-900 text-xs truncate">{{ p.nama }}</p>

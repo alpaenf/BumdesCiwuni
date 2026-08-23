@@ -696,8 +696,7 @@ const activeFilterCount = computed(() =>
                         <select v-model="filterStatus" @change="applyFilters"
                                 class="w-full text-xs border border-slate-200 bg-slate-50 rounded-xl px-2 py-1.5 focus:border-blue-500 focus:outline-none">
                             <option value="">Semua Status</option>
-                            <option value="LUNAS">🟢 LUNAS</option>
-                            <option value="TUNGGAKAN">🟡 TUNGGAKAN</option>
+                            <option value="AKTIF">🟢 AKTIF</option>
                             <option value="ISOLIR">🔴 ISOLIR</option>
                         </select>
                     </div>
@@ -961,21 +960,16 @@ const activeFilterCount = computed(() =>
                                         <span v-else class="text-slate-400 text-[10px]">-</span>
                                     </td>
 
-                                    <!-- Status Tagihan (dari pembayaran terkini) -->
+                                    <!-- Status Tagihan (AKTIF vs ISOLIR) -->
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:120px">
-                                        <span v-if="row.current_status === 'LUNAS'"
-                                              class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
-                                            LUNAS
+                                        <span v-if="row.current_status === 'ISOLIR'"
+                                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
+                                            🔴 ISOLIR
                                         </span>
-                                        <span v-else-if="row.current_status === 'TUNGGAKAN'"
-                                              class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-700 border border-amber-300">
-                                            TUNGGAKAN
+                                        <span v-else
+                                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            🟢 AKTIF
                                         </span>
-                                        <span v-else-if="row.current_status === 'ISOLIR'"
-                                              class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
-                                            ISOLIR
-                                        </span>
-                                        <span v-else class="text-[10px] text-slate-400 italic">Belum bayar</span>
                                     </td>
 
                                     <!-- GPS Long -->
@@ -1291,8 +1285,8 @@ const activeFilterCount = computed(() =>
                                 <span class="material-symbols-outlined text-sm">event_available</span>
                             </div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-900">Gelombang 1 (Tgl 1 – 15)</h4>
-                                <p class="text-[10px] text-slate-500 mt-0.5">Batas pembayaran tgl 15. Tgl 16+ otomatis ISOLIR jika belum bayar.</p>
+                                <h4 class="text-xs font-bold text-slate-900">Masa Pembayaran (Tgl 1 – 10)</h4>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Tenggat pembayaran tgl 10. Mulai tgl 11+ otomatis ISOLIR jika belum bayar.</p>
                             </div>
                         </div>
                         <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-lg border border-indigo-200 shrink-0">Otomatis</span>
@@ -1409,12 +1403,9 @@ const activeFilterCount = computed(() =>
                     </div>
                     <div>
                         <span class="font-bold text-slate-500 block text-[10px] uppercase">Status Tagihan Terkini</span>
-                        <span :class="selectedRow.current_status === 'LUNAS' ? 'bg-emerald-100 text-emerald-700 border-emerald-300'
-                                     : selectedRow.current_status === 'TUNGGAKAN' ? 'bg-amber-100 text-amber-700 border-amber-300'
-                                     : selectedRow.current_status === 'ISOLIR' ? 'bg-red-100 text-red-700 border-red-300'
-                                     : 'bg-slate-100 text-slate-500 border-slate-300'"
-                               class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold border uppercase mt-0.5">
-                            {{ selectedRow.current_status || 'Belum Ada Pembayaran' }}
+                        <span :class="selectedRow.current_status === 'ISOLIR' ? 'bg-red-100 text-red-700 border-red-300' : 'bg-emerald-100 text-emerald-700 border-emerald-300'"
+                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase mt-0.5">
+                            {{ selectedRow.current_status === 'ISOLIR' ? '🔴 ISOLIR' : '🟢 AKTIF' }}
                         </span>
                     </div>
 

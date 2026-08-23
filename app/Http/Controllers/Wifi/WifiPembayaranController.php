@@ -169,7 +169,7 @@ class WifiPembayaranController extends Controller
             'tanggal_bayar'     => 'required|date',
             'jumlah_bayar'      => 'required|numeric|min:0',
             'metode_pembayaran' => 'required|in:TUNAI,TRANSFER',
-            'status'            => 'required|in:LUNAS,TUNGGAKAN,ISOLIR',
+            'status'            => 'required|in:AKTIF,LUNAS,ISOLIR',
             'catatan'           => 'nullable|string|max:500',
         ]);
 
@@ -228,7 +228,7 @@ class WifiPembayaranController extends Controller
             'gelombang'         => 'required|in:1_15,16_30',
             'tanggal_bayar'     => 'required|date',
             'metode_pembayaran' => 'required|in:TUNAI,TRANSFER',
-            'status'            => 'required|in:LUNAS,TUNGGAKAN,ISOLIR',
+            'status'            => 'required|in:AKTIF,LUNAS,ISOLIR',
         ]);
 
         DB::transaction(function () use ($request) {

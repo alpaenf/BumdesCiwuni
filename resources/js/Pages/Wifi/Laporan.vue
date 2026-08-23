@@ -402,10 +402,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.hasil_bumdes) }}</td>
                                     <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.total_provider) }}</td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="(item.current_status || item.status_1_15) === 'LUNAS'" class="px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase">LUNAS</span>
-                                        <span v-else-if="(item.current_status || item.status_1_15) === 'TUNGGAKAN'" class="px-2 py-0.5 bg-amber-100 text-amber-700 border border-amber-200 rounded-full text-[10px] font-black uppercase">TUNGGAKAN</span>
-                                        <span v-else-if="(item.current_status || item.status_1_15) === 'ISOLIR'" class="px-2 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase">ISOLIR</span>
-                                        <span v-else class="px-2 py-0.5 bg-slate-100 text-slate-400 border border-slate-200 rounded-full text-[10px] font-bold">Belum bayar</span>
+                                        <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'" class="px-2.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase">🔴 ISOLIR</span>
+                                        <span v-else class="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase">🟢 AKTIF</span>
                                     </td>
                                 </tr>
 

@@ -39,13 +39,13 @@ const perPaket   = computed(() => props.stats.per_paket         ?? []);
 const s115       = computed(() => props.stats.status_115        ?? { LUNAS: 0, TUNGGAKAN: 0, ISOLIR: 0, kosong: 0 });
 const s1630      = computed(() => props.stats.status_1630       ?? { LUNAS: 0, TUNGGAKAN: 0, ISOLIR: 0, kosong: 0 });
 
-const statusSummary = computed(() => props.stats.status_summary ?? {
-    LUNAS: (s115.value.LUNAS || 0) + (s1630.value.LUNAS || 0),
-    TUNGGAKAN: (s115.value.TUNGGAKAN || 0) + (s1630.value.TUNGGAKAN || 0),
-    ISOLIR: (s115.value.ISOLIR || 0) + (s1630.value.ISOLIR || 0),
-    kosong: (s115.value.kosong || 0) + (s1630.value.kosong || 0),
+const statusSummary = computed(() => {
+    const summary = props.stats.status_summary ?? {};
+    const aktif  = (summary.AKTIF  ?? summary.LUNAS  ?? 0) + (s115.value.LUNAS ?? 0) + (s115.value.AKTIF ?? 0) + (s1630.value.LUNAS ?? 0);
+    const isolir = (summary.ISOLIR ?? 0) + (s115.value.ISOLIR ?? 0) + (s1630.value.ISOLIR ?? 0);
+    return { AKTIF: aktif, ISOLIR: isolir };
 });
-const statusTotal = computed(() => (statusSummary.value.LUNAS + statusSummary.value.TUNGGAKAN + statusSummary.value.ISOLIR + statusSummary.value.kosong) || 1);
+const statusTotal = computed(() => (statusSummary.value.AKTIF + statusSummary.value.ISOLIR) || 1);
 
 const gel1Count = computed(() => props.stats.gel1 ?? 0);
 const gel2Count = computed(() => props.stats.gel2 ?? 0);
@@ -264,36 +264,25 @@ const pct = (count, total) => Math.round((count / total) * 100);
                     <!-- Status Tagihan -->
                     <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Status Tagihan Pelanggan</h2>
+                            <h2 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Status Pelanggan</h2>
                             <span class="material-symbols-outlined text-slate-400 text-base">receipt_long</span>
                         </div>
                         <div class="space-y-2.5">
-                            <!-- LUNAS -->
+                            <!-- AKTIF -->
                             <div class="space-y-1">
                                 <div class="flex justify-between text-[11px]">
-                                    <span class="font-bold text-emerald-600">Lunas</span>
-                                    <span class="text-slate-500">{{ statusSummary.LUNAS }} <span class="text-slate-400">({{ pct(statusSummary.LUNAS, statusTotal) }}%)</span></span>
+                                    <span class="font-bold text-emerald-600">Pelanggan Aktif</span>
+                                    <span class="text-slate-500">{{ statusSummary.AKTIF }} <span class="text-slate-400">({{ pct(statusSummary.AKTIF, statusTotal) }}%)</span></span>
                                 </div>
                                 <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                     <div class="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                                         :style="{ width: pct(statusSummary.LUNAS, statusTotal) + '%' }"></div>
-                                </div>
-                            </div>
-                            <!-- TUNGGAKAN -->
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="font-bold text-amber-600">Tunggakan</span>
-                                    <span class="text-slate-500">{{ statusSummary.TUNGGAKAN }} <span class="text-slate-400">({{ pct(statusSummary.TUNGGAKAN, statusTotal) }}%)</span></span>
-                                </div>
-                                <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-amber-400 rounded-full transition-all duration-500"
-                                         :style="{ width: pct(statusSummary.TUNGGAKAN, statusTotal) + '%' }"></div>
+                                         :style="{ width: pct(statusSummary.AKTIF, statusTotal) + '%' }"></div>
                                 </div>
                             </div>
                             <!-- ISOLIR -->
                             <div class="space-y-1">
                                 <div class="flex justify-between text-[11px]">
-                                    <span class="font-bold text-red-600">Isolir</span>
+                                    <span class="font-bold text-red-600">Pelanggan Isolir</span>
                                     <span class="text-slate-500">{{ statusSummary.ISOLIR }} <span class="text-slate-400">({{ pct(statusSummary.ISOLIR, statusTotal) }}%)</span></span>
                                 </div>
                                 <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -450,14 +439,13 @@ const pct = (count, total) => Math.round((count / total) * 100);
                                     </td>
                                     <!-- Status Tagihan -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                                        <span :class="{
-                                                'bg-emerald-100 text-emerald-700 border-emerald-300': (row.current_status || row.status_1_15) === 'LUNAS',
-                                                'bg-amber-100 text-amber-700 border-amber-300':    (row.current_status || row.status_1_15) === 'TUNGGAKAN',
-                                                'bg-red-100 text-red-700 border-red-300':           (row.current_status || row.status_1_15) === 'ISOLIR',
-                                                'bg-slate-100 text-slate-400 border-slate-200':     !(row.current_status || row.status_1_15),
-                                              }"
-                                              class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-extrabold border uppercase">
-                                            {{ row.current_status || row.status_1_15 || 'Belum bayar' }}
+                                        <span v-if="(row.current_status || row.status_1_15) === 'ISOLIR'"
+                                              class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
+                                            🔴 ISOLIR
+                                        </span>
+                                        <span v-else
+                                              class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            🟢 AKTIF
                                         </span>
                                     </td>
                                 </tr>

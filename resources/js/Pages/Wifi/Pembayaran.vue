@@ -409,10 +409,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         <select v-model="filterStatus" @change="applyFilters"
                                 class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-slate-700 focus:border-blue-500 focus:outline-none">
                             <option value="">Semua Status</option>
-                            <option value="LUNAS">Lunas</option>
-                            <option value="TUNGGAKAN">Tunggakan</option>
-                            <option value="ISOLIR">Isolir</option>
-                            <option value="KOSONG">Belum Ada Status</option>
+                            <option value="AKTIF">🟢 Aktif</option>
+                            <option value="ISOLIR">🔴 Isolir</option>
                         </select>
 
                         <!-- Filter Paket -->
@@ -489,22 +487,14 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                         {{ rupiah(item.total_tarikan) }}
                                     </td>
 
-                                    <!-- Status -->
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="item.current_status === 'LUNAS'"
-                                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
-                                            LUNAS
-                                        </span>
-                                        <span v-else-if="item.current_status === 'TUNGGAKAN'"
-                                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-700 border border-amber-300">
-                                            TUNGGAKAN
-                                        </span>
-                                        <span v-else-if="item.current_status === 'ISOLIR'"
+                                        <span v-if="item.current_status === 'ISOLIR'"
                                               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
-                                            ISOLIR
+                                            🔴 ISOLIR
                                         </span>
-                                        <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-slate-100 text-slate-400 border border-slate-200">
-                                            BELUM BAYAR
+                                        <span v-else
+                                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            🟢 AKTIF
                                         </span>
                                     </td>
 
@@ -605,8 +595,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status Pembayaran</label>
                     <select v-model="payForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 focus:border-blue-500 focus:outline-none font-bold">
-                        <option value="LUNAS">LUNAS</option>
-                        <option value="TUNGGAKAN">TUNGGAKAN</option>
+                        <option value="AKTIF">AKTIF (LUNAS)</option>
                         <option value="ISOLIR">ISOLIR</option>
                     </select>
                 </div>
@@ -673,8 +662,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
                         <select v-model="massForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option value="LUNAS">LUNAS</option>
-                            <option value="TUNGGAKAN">TUNGGAKAN</option>
+                            <option value="AKTIF">AKTIF (LUNAS)</option>
                             <option value="ISOLIR">ISOLIR</option>
                         </select>
                     </div>
