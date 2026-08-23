@@ -37,9 +37,30 @@ const selectedCustomer  = ref(null);
 const customerHistory   = ref([]);
 const historyLoading    = ref(false);
 
-const getWaReminderUrl = (item) => {
-    if (!item.no_wa) return '#';
-    let phone = item.no_wa.replace(/\D/g, '');
+// ── Formatting Helpers ──────────────────────────────────────────────────────
+const rupiah = (val) => {
+    if (!val && val !== 0) return 'Rp 0';
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+};
+
+const formatDate = (val) => {
+    if (!val) return '-';
+    try { return new Date(val).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); }
+    catch { return val; }
+};
+
+const namaBulanMap = [
+    { id: 1, name: 'Januari' }, { id: 2, name: 'Februari' }, { id: 3, name: 'Maret' },
+    { id: 4, name: 'April' },   { id: 5, name: 'Mei' },      { id: 6, name: 'Juni' },
+    { id: 7, name: 'Juli' },     { id: 8, name: 'Agustus' },  { id: 9, name: 'September' },
+    { id: 10, name: 'Oktober' },{ id: 11, name: 'November' },{ id: 12, name: 'Desember' },
+];
+
+const getBulanName = (id) => namaBulanMap.find(b => Number(b.id) === Number(id))?.name ?? id;
+
+function getWaReminderUrl(item) {
+    if (!item || !item.no_wa) return '#';
+    let phone = String(item.no_wa).replace(/\D/g, '');
     if (phone.startsWith('0')) phone = '62' + phone.slice(1);
 
     const bulan = getBulanName(selectedBulan.value);
@@ -63,7 +84,7 @@ const getWaReminderUrl = (item) => {
     const message = `*PENGINGAT TAGIHAN INTERNET BUMDES CIWUNI*\n----------------------------------------\nKepada Yth. Bpk/Ibu *${item.nama}*\nID Pelanggan : *${item.no_id_pel || '-'}*\nPaket        : *${item.paket || '-'}*\nTagihan      : *${bulan} ${tahun}*\nTotal        : *${nominal}*\n\n*Masa Pembayaran: Tanggal 1 s.d. 10*\nMohon melakukan pembayaran sebelum tanggal 10 agar jaringan internet tetap AKTIF dan tidak ter-ISOLIR.\n\n*PILIHAN REKENING TRANSFER:*\n${bankText}\n\n(Setelah transfer, mohon kirimkan bukti transfer ke nomor ini. Abaikan pesan ini jika sudah bayar.)\n\nTerima kasih atas perhatian & kerja samanya.\n\n_${companyName} / BUMDes Ciwuni_`;
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-};
+}
 
 const openWaBroadcastModal = () => {
     modalMode.value = 'broadcast_wa';
@@ -204,26 +225,7 @@ const closeModal = () => {
     selectedCustomer.value = null;
 };
 
-// ── Formatting ─────────────────────────────────────────────────────────────
-const rupiah = (val) => {
-    if (!val && val !== 0) return 'Rp 0';
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-};
 
-const formatDate = (val) => {
-    if (!val) return '-';
-    try { return new Date(val).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); }
-    catch { return val; }
-};
-
-const namaBulanMap = [
-    { id: 1, name: 'Januari' }, { id: 2, name: 'Februari' }, { id: 3, name: 'Maret' },
-    { id: 4, name: 'April' },   { id: 5, name: 'Mei' },      { id: 6, name: 'Juni' },
-    { id: 7, name: 'Juli' },     { id: 8, name: 'Agustus' },  { id: 9, name: 'September' },
-    { id: 10, name: 'Oktober' },{ id: 11, name: 'November' },{ id: 12, name: 'Desember' },
-];
-
-const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
 </script>
 
 <template>
