@@ -146,12 +146,9 @@ else
     php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs
 fi
 
-# 6. Jalankan Database Migration + Seed
+# 6. Jalankan Database Migration
 echo "🗃️  6. Menjalankan Database Migration..."
 php artisan migrate --force
-
-echo "🌱 6.1. Menjalankan Database Seed (aman - pakai updateOrCreate)..."
-php artisan db:seed --force
 
 # 7. Clear & Cache Laravel
 echo "🧹 7. Membersihkan dan re-cache Laravel..."
