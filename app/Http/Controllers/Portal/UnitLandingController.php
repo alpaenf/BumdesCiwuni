@@ -169,18 +169,17 @@ class UnitLandingController extends Controller
                 ->get()
                 ->keyBy('pelanggan_wifi_id');
 
-            $lunasCount     = 0;
-            $tunggakanCount = 0;
-            $isolirCount    = 0;
-            $kosongCount    = 0;
+            $aktifCount  = 0;
+            $isolirCount = 0;
 
             foreach ($allPelanggan as $p) {
                 $pay = $latestPembayaran->get($p->id);
                 $st = $this->computeCurrentStatus($p, $pay);
-                if ($st === 'LUNAS') $lunasCount++;
-                elseif ($st === 'TUNGGAKAN') $tunggakanCount++;
-                elseif ($st === 'ISOLIR') $isolirCount++;
-                else $kosongCount++;
+                if ($st === 'ISOLIR') {
+                    $isolirCount++;
+                } else {
+                    $aktifCount++;
+                }
             }
 
             $recentList = \App\Models\PelangganWifi::orderByDesc('tanggal_daftar')
@@ -205,14 +204,9 @@ class UnitLandingController extends Controller
                 'total_provider'   => $allPelanggan->sum('total_provider'),
                 'total_dasar'      => $allPelanggan->sum('total_dasar_tarikan_non_ppn'),
 
-                'gel1' => \App\Models\PelangganWifi::where('gelombang', '1_15')->count(),
-                'gel2' => \App\Models\PelangganWifi::where('gelombang', '16_30')->count(),
-
                 'status_summary' => [
-                    'LUNAS'     => $lunasCount,
-                    'TUNGGAKAN' => $tunggakanCount,
-                    'ISOLIR'    => $isolirCount,
-                    'kosong'    => $kosongCount,
+                    'AKTIF'  => $aktifCount,
+                    'ISOLIR' => $isolirCount,
                 ],
 
                 'per_paket' => \App\Models\PelangganWifi::select(

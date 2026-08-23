@@ -36,20 +36,13 @@ const hasilBumdes  = computed(() => props.stats.hasil_bumdes    ?? 0);
 const totalProvider = computed(() => props.stats.total_provider ?? 0);
 const recent     = computed(() => props.stats.recent            ?? []);
 const perPaket   = computed(() => props.stats.per_paket         ?? []);
-const s115       = computed(() => props.stats.status_115        ?? { LUNAS: 0, TUNGGAKAN: 0, ISOLIR: 0, kosong: 0 });
-const s1630      = computed(() => props.stats.status_1630       ?? { LUNAS: 0, TUNGGAKAN: 0, ISOLIR: 0, kosong: 0 });
-
 const statusSummary = computed(() => {
     const summary = props.stats.status_summary ?? {};
-    const aktif  = (summary.AKTIF  ?? summary.LUNAS  ?? 0) + (s115.value.LUNAS ?? 0) + (s115.value.AKTIF ?? 0) + (s1630.value.LUNAS ?? 0);
-    const isolir = (summary.ISOLIR ?? 0) + (s115.value.ISOLIR ?? 0) + (s1630.value.ISOLIR ?? 0);
+    const aktif  = summary.AKTIF ?? 0;
+    const isolir = summary.ISOLIR ?? 0;
     return { AKTIF: aktif, ISOLIR: isolir };
 });
 const statusTotal = computed(() => (statusSummary.value.AKTIF + statusSummary.value.ISOLIR) || 1);
-
-const gel1Count = computed(() => props.stats.gel1 ?? 0);
-const gel2Count = computed(() => props.stats.gel2 ?? 0);
-const gelTotal = computed(() => (gel1Count.value + gel2Count.value) || 1);
 
 const pct = (count, total) => Math.round((count / total) * 100);
 </script>
