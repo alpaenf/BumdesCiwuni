@@ -15,6 +15,8 @@ const props = defineProps({
 const isSidebarOpen = ref(false);
 const logout = () => router.post(route('logout'));
 
+const todayDay = ref(new Date().getDate());
+
 const defaultGelombang = new Date().getDate() <= 15 ? '1_15' : '16_30';
 
 const selectedBulan     = ref(props.filters.bulan     ?? new Date().getMonth() + 1);
@@ -29,10 +31,29 @@ const perPage           = ref(props.filters.per_page ?? '25');
 const selectedIds       = ref([]);
 const selectAll         = ref(false);
 
-const modalMode         = ref(''); // 'pay' | 'bayar_masal' | 'history'
+const modalMode         = ref(''); // 'pay' | 'bayar_masal' | 'history' | 'broadcast_wa'
 const selectedCustomer  = ref(null);
 const customerHistory   = ref([]);
 const historyLoading    = ref(false);
+
+const getWaReminderUrl = (item) => {
+    if (!item || !item.no_wa) return '#';
+    let phone = item.no_wa.replace(/\D/g, '');
+    if (phone.startsWith('0')) {
+        phone = '62' + phone.substring(1);
+    }
+    const nama = item.nama || 'Pelanggan';
+    const nominal = rupiah(item.total_tarikan || 0);
+    const bulan = getBulanName(selectedBulan.value);
+    const tahun = selectedTahun.value;
+
+    const message = `Halo Bpk/Ibu ${nama}, mengingatkan tagihan WiFi BUMDes Ciwuni sebesar ${nominal} untuk bulan ${bulan} ${tahun} jatuh tempo hari ini (Tanggal 10). Silakan melakukan pembayaran sebelum pukul 23:59 WIB agar layanan tetap aktif. Terima kasih!`;
+    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+};
+
+const openWaBroadcastModal = () => {
+    modalMode.value = 'broadcast_wa';
+};
 
 // Helper auto-gelombang dari tanggal_bayar (Tgl 1-15 -> 1_15, Tgl >15 -> 16_30)
 const detectGelombang = (tglString) => {
@@ -362,6 +383,36 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     </div>
                 </div>
 
+                <!-- ── DYNAMIC DEADLINE & WA REMINDER BANNER (TANGGAL 8 - 10 ATAU JIKA ADA TUNGGAKAN) ── -->
+                <div v-if="todayDay >= 8 && todayDay <= 10"
+                     class="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 text-white rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 border border-amber-600">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-bold text-white shrink-0 shadow-inner">
+                            <span class="material-symbols-outlined text-2xl">notifications_active</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 bg-red-700 text-white text-[10px] font-black uppercase rounded-md tracking-wider shadow-sm">
+                                    {{ todayDay === 10 ? '🚨 HARI INI JATUH TEMPO (TGL 10)' : '⚠️ H-2 TENGGAT PEMBAYARAN (TGL 10)' }}
+                                </span>
+                            </div>
+                            <h3 class="text-sm font-black text-white mt-1">
+                                Batas Pembayaran Tagihan WiFi Bulan Ini
+                            </h3>
+                            <p class="text-xs text-amber-100 mt-0.5">
+                                Batas pembayaran warga adalah tanggal 10. Mulai tanggal 11 besok, pelanggan yang belum bayar akan di-ISOLIR otomatis oleh sistem.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 w-full md:w-auto">
+                        <button @click="openWaBroadcastModal"
+                                class="w-full md:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition border border-emerald-500">
+                            <span class="material-symbols-outlined text-sm">send</span>
+                            Broadcast WA Pengingat Masal
+                        </button>
+                    </div>
+                </div>
+
                 <!-- STATS SUMMARY CARDS -->
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
@@ -508,6 +559,15 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                                 <span class="material-symbols-outlined text-xs">payments</span>
                                                 Bayar
                                             </button>
+
+                                            <!-- Tombol Pengingat WA (Jika belum bayar & ada WA) -->
+                                            <a v-if="!item.pembayaran_periode && item.no_wa"
+                                               :href="getWaReminderUrl(item)" target="_blank"
+                                               title="Kirim WA Pengingat Jatuh Tempo (Tgl 10)"
+                                               class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
+                                                <span class="material-symbols-outlined text-xs">chat</span>
+                                                <span>Pengingat WA</span>
+                                            </a>
 
                                             <!-- WhatsApp Struk -->
                                             <a v-if="item.pembayaran_periode?.wa_struk_link"
