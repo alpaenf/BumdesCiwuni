@@ -21,7 +21,7 @@ const togglePassword = () => {
 };
 
 const submit = () => {
-    form.post(`/unit/wifi/login`, {
+    form.post(route('unit.login', { slug: props.unit?.slug || 'wifi' }), {
         onFinish: () => form.reset('password'),
     });
 };

@@ -575,19 +575,20 @@ const activeFilterCount = computed(() =>
             <div class="p-4 sm:p-6 space-y-4 flex-1">
 
                 <!-- Page Title + Action Buttons -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="min-w-0">
                         <h1 class="text-base font-extrabold text-slate-900 uppercase tracking-wider">Database Pelanggan WiFi</h1>
                         <p class="text-[11px] text-slate-500 mt-0.5">
                             Menampilkan {{ pelanggan.total }} pelanggan terdaftar — Unit Internet BUMDes Damar Wulan
                         </p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
                         <!-- Cetak PDF -->
                         <button @click="doPrintPDF" aria-label="Cetak PDF Laporan Pelanggan"
                                 class="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition">
                             <span class="material-symbols-outlined text-base">print</span>
-                            Cetak PDF
+                            <span class="hidden sm:inline">Cetak PDF</span>
+                            <span class="sm:hidden">PDF</span>
                         </button>
                         <!-- Export -->
                         <button @click="doExport" aria-label="Export ke Excel"
@@ -729,8 +730,92 @@ const activeFilterCount = computed(() =>
                         </button>
                     </div>
 
+                    <!-- Mobile: Card List (hidden md+) -->
+                    <div v-else class="md:hidden divide-y divide-slate-100">
+                        <div v-for="row in pelanggan.data" :key="row.id"
+                             class="p-4 hover:bg-slate-50 transition">
+                            <!-- Header row: Nama + Status -->
+                            <div class="flex items-start justify-between gap-3 mb-2">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <p class="font-bold text-slate-900 text-xs">{{ row.nama }}</p>
+                                        <span v-if="row.paket"
+                                              class="px-2 py-0.5 bg-blue-950 text-blue-300 border border-blue-900 rounded text-[10px] font-bold font-mono shrink-0">
+                                            {{ row.paket }}
+                                        </span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">
+                                        ID: {{ row.no_id_pel || '-' }}
+                                        <template v-if="row.provider"> &bull; <span class="font-semibold">{{ row.provider.nama_provider }}</span></template>
+                                    </p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">
+                                        {{ row.alamat || '-' }}<template v-if="row.rt || row.rw"> RT {{ row.rt || '-' }}/RW {{ row.rw || '-' }}</template>
+                                    </p>
+                                </div>
+                                <span v-if="row.current_status === 'ISOLIR'"
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300 shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
+                                </span>
+                                <span v-else
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300 shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                </span>
+                            </div>
+
+                            <!-- Stats row -->
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">Total Tarikan</p>
+                                        <p class="text-xs font-mono font-bold text-slate-800">{{ rupiah(row.total_tarikan) }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">BUMDes</p>
+                                        <p class="text-xs font-mono font-bold text-emerald-600">{{ rupiah(row.hasil_bumdes) }}</p>
+                                    </div>
+                                </div>
+                                <div v-if="row.no_wa">
+                                    <a :href="`https://wa.me/${row.no_wa.replace(/\D/g,'')}`" target="_blank"
+                                       class="text-blue-500 hover:underline text-[10px] flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">call</span>{{ row.no_wa }}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button @click="openModal('quick_pay', row)" title="Bayar"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 text-white font-bold text-[11px] rounded-lg">
+                                    <span class="material-symbols-outlined text-xs">payments</span>Bayar
+                                </button>
+                                <button @click="openHistoryModal(row)" title="Riwayat"
+                                        class="p-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 transition">
+                                    <span class="material-symbols-outlined text-sm">history</span>
+                                </button>
+                                <button @click="openModal('detail', row)" title="Detail"
+                                        class="p-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 transition">
+                                    <span class="material-symbols-outlined text-sm">visibility</span>
+                                </button>
+                                <button @click="openModal('edit', row)" title="Edit"
+                                        class="p-1.5 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100 transition">
+                                    <span class="material-symbols-outlined text-sm">edit</span>
+                                </button>
+                                <button @click="openModal('delete', row)" title="Hapus"
+                                        class="p-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                                <a v-if="row.gps_lat && row.gps_long" :href="gpsUrl(row.gps_lat, row.gps_long)" target="_blank"
+                                   class="p-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200 hover:bg-blue-50 hover:text-blue-600 transition" title="Lihat di Maps">
+                                    <span class="material-symbols-outlined text-sm">map</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: Full Scroll Table (hidden on mobile) -->
                     <!-- Table Scroll Wrapper — Full Horizontal Scroll -->
-                    <div v-else class="overflow-x-auto" style="overflow-x: auto;">
+                    <div v-if="pelanggan.data.length > 0" class="hidden md:block overflow-x-auto" style="overflow-x: auto;">
+
                         <table class="border-collapse text-xs" style="min-width: 2800px; width: max-content;">
 
                             <!-- ── THEAD ──────────────────────────────────────── -->

@@ -37,7 +37,7 @@ const selectedCustomer  = ref(null);
 const customerHistory   = ref([]);
 const historyLoading    = ref(false);
 
-const createWaReminderUrl = (item) => {
+const getWaReminderUrl = (item) => {
     if (!item.no_wa) return '#';
     let phone = item.no_wa.replace(/\D/g, '');
     if (phone.startsWith('0')) phone = '62' + phone.slice(1);
@@ -60,7 +60,7 @@ const createWaReminderUrl = (item) => {
 
     const bankText = bankAccounts.map(b => `• *${b.bank}*: ${b.no_rek} a/n ${b.atas_nama}`).join('\n');
 
-    const message = `*PENGINGAT TAGIHAN INTERNET BUMDES CIWUNI*\n----------------------------------------\nKepada Yth. Bpk/Ibu *${item.nama}*\nID Pelanggan : *${item.no_id_pel || '-'}*\nPaket        : *${item.paket || '-'}*\nTagihan      : *${bulan} ${tahun}*\nTotal        : *${nominal}*\n\n📌 *Masa Pembayaran: Tanggal 1 s.d. 10*\n_Mohon melakukan pembayaran sebelum tanggal 10 agar jaringan internet tetap AKTIF dan tidak ter-ISOLIR._\n\n💳 *PILIHAN REKENING TRANSFER:*\n${bankText}\n\n_(Setelah transfer, mohon kirimkan bukti transfer ke nomor ini. Abaikan pesan ini jika sudah bayar.)_\n\nTerima kasih atas perhatian & kerja samanya. 🙏😊\n\n_${companyName} / BUMDes Ciwuni_`;
+    const message = `*PENGINGAT TAGIHAN INTERNET BUMDES CIWUNI*\n----------------------------------------\nKepada Yth. Bpk/Ibu *${item.nama}*\nID Pelanggan : *${item.no_id_pel || '-'}*\nPaket        : *${item.paket || '-'}*\nTagihan      : *${bulan} ${tahun}*\nTotal        : *${nominal}*\n\n*Masa Pembayaran: Tanggal 1 s.d. 10*\nMohon melakukan pembayaran sebelum tanggal 10 agar jaringan internet tetap AKTIF dan tidak ter-ISOLIR.\n\n*PILIHAN REKENING TRANSFER:*\n${bankText}\n\n(Setelah transfer, mohon kirimkan bukti transfer ke nomor ini. Abaikan pesan ini jika sudah bayar.)\n\nTerima kasih atas perhatian & kerja samanya.\n\n_${companyName} / BUMDes Ciwuni_`;
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 };
@@ -492,7 +492,70 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
 
                 <!-- TABLE KASIR PEMBAYARAN -->
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
+
+                    <!-- Mobile: Card List -->
+                    <div class="md:hidden divide-y divide-slate-100">
+                        <div v-if="pelanggan.data.length === 0" class="p-8 text-center text-slate-400">
+                            Tidak menemukan data tagihan pelanggan.
+                        </div>
+                        <div v-for="item in pelanggan.data" :key="item.id"
+                             class="p-4 hover:bg-slate-50 transition">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="flex items-start gap-2 min-w-0">
+                                    <input type="checkbox" :value="item.id" v-model="selectedIds"
+                                           class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer shrink-0" />
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-slate-900 text-xs truncate">{{ item.nama }}</p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5">ID: {{ item.no_id_pel || '-' }} &bull; {{ item.no_wa || 'No WA -' }}</p>
+                                        <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                            <span v-if="item.paket" class="px-1.5 py-0.5 bg-blue-100 text-blue-700 border border-blue-200 rounded text-[10px] font-semibold">{{ item.paket }}</span>
+                                            <span class="text-[10px] text-slate-500">{{ item.alamat || '-' }} RT {{ item.rt || '-' }}/RW {{ item.rw || '-' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="shrink-0 text-right">
+                                    <p class="font-mono font-bold text-slate-800 text-xs">{{ rupiah(item.total_tarikan) }}</p>
+                                    <span v-if="item.current_status === 'ISOLIR'"
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300 mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
+                                    </span>
+                                    <span v-else
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300 mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button @click="openPayModal(item)"
+                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
+                                    <span class="material-symbols-outlined text-xs">payments</span>Bayar
+                                </button>
+                                <a v-if="!item.pembayaran_periode && item.no_wa"
+                                   :href="getWaReminderUrl(item)" target="_blank"
+                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
+                                    <span class="material-symbols-outlined text-xs">chat</span>WA
+                                </a>
+                                <a v-if="item.pembayaran_periode?.wa_struk_link"
+                                   :href="item.pembayaran_periode.wa_struk_link" target="_blank"
+                                   class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100 transition" title="Kirim Struk WA">
+                                    <span class="material-symbols-outlined text-sm">send</span>
+                                </a>
+                                <a v-if="item.pembayaran_periode"
+                                   :href="route('wifi.pembayaran.struk', item.pembayaran_periode.id)" target="_blank"
+                                   class="p-1.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition" title="Cetak Struk">
+                                    <span class="material-symbols-outlined text-sm">print</span>
+                                </a>
+                                <button @click="openHistoryModal(item)"
+                                        class="p-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 transition" title="Histori">
+                                    <span class="material-symbols-outlined text-sm">history</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: Table -->
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
@@ -511,41 +574,29 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <tr v-for="item in pelanggan.data" :key="item.id" class="hover:bg-blue-50/20 transition-colors">
-                                    <!-- Checkbox -->
                                     <td class="p-3.5 text-center">
                                         <input type="checkbox" :value="item.id" v-model="selectedIds"
                                                class="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer" />
                                     </td>
-
-                                    <!-- No -->
                                     <td class="p-3.5 text-center font-mono text-slate-500">{{ item.no ?? '-' }}</td>
-
-                                    <!-- Pelanggan -->
                                     <td class="p-3.5">
                                         <p class="font-bold text-slate-900">{{ item.nama }}</p>
                                         <p class="text-[10px] text-slate-400 font-mono mt-0.5">
                                             ID: {{ item.no_id_pel || '-' }} &bull; WA: {{ item.no_wa || '-' }}
                                         </p>
                                     </td>
-
-                                    <!-- Paket -->
                                     <td class="p-3.5 whitespace-nowrap">
                                         <span v-if="item.paket" class="px-2 py-0.5 bg-blue-100 text-blue-700 border border-blue-200 rounded text-[10px] font-semibold">
                                             {{ item.paket }}
                                         </span>
                                         <span v-else class="text-slate-400">-</span>
                                     </td>
-
-                                    <!-- Alamat -->
                                     <td class="p-3.5 text-slate-600 max-w-xs truncate">
                                         {{ item.alamat || '-' }} RT {{ item.rt || '-' }}/RW {{ item.rw || '-' }}
                                     </td>
-
-                                    <!-- Nominal -->
                                     <td class="p-3.5 text-right font-mono font-bold text-slate-800 whitespace-nowrap">
                                         {{ rupiah(item.total_tarikan) }}
                                     </td>
-
                                     <td class="p-3.5 text-center whitespace-nowrap">
                                         <span v-if="item.current_status === 'ISOLIR'"
                                               class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
@@ -558,53 +609,38 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                             AKTIF
                                         </span>
                                     </td>
-
-                                    <!-- Aksi Kasir -->
                                     <td class="p-3.5 text-center whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <!-- Tombol Bayar Single -->
-                                            <button @click="openPayModal(item)"
-                                                    title="Input / Update Pembayaran"
+                                            <button @click="openPayModal(item)" title="Input / Update Pembayaran"
                                                     class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
-                                                <span class="material-symbols-outlined text-xs">payments</span>
-                                                Bayar
+                                                <span class="material-symbols-outlined text-xs">payments</span>Bayar
                                             </button>
-
-                                            <!-- Tombol Pengingat WA (Jika belum bayar & ada WA) -->
                                             <a v-if="!item.pembayaran_periode && item.no_wa"
                                                :href="getWaReminderUrl(item)" target="_blank"
-                                               title="Kirim WA Pengingat Jatuh Tempo (Tgl 10)"
+                                               title="Kirim WA Pengingat"
                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
                                                 <span class="material-symbols-outlined text-xs">chat</span>
                                                 <span>Pengingat WA</span>
                                             </a>
-
-                                            <!-- WhatsApp Struk -->
                                             <a v-if="item.pembayaran_periode?.wa_struk_link"
                                                :href="item.pembayaran_periode.wa_struk_link" target="_blank"
                                                title="Kirim Struk WA"
                                                class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100 transition">
                                                 <span class="material-symbols-outlined text-sm">send</span>
                                             </a>
-
-                                            <!-- Cetak Struk Thermal PDF/Print -->
                                             <a v-if="item.pembayaran_periode"
                                                :href="route('wifi.pembayaran.struk', item.pembayaran_periode.id)" target="_blank"
                                                title="Cetak Struk Thermal 80mm"
                                                class="p-1.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
                                                 <span class="material-symbols-outlined text-sm">print</span>
                                             </a>
-
-                                            <!-- Histori Bayar -->
-                                            <button @click="openHistoryModal(item)"
-                                                    title="Lihat Histori Pembayaran"
+                                            <button @click="openHistoryModal(item)" title="Lihat Histori Pembayaran"
                                                     class="p-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 transition">
                                                 <span class="material-symbols-outlined text-sm">history</span>
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
-
                                 <tr v-if="pelanggan.data.length === 0">
                                     <td colspan="8" class="p-8 text-center text-slate-400">
                                         Tidak menemukan data tagihan pelanggan.

@@ -366,8 +366,40 @@ const pct = (count, total) => Math.round((count / total) * 100);
                         </Link>
                     </div>
 
-                    <!-- Table -->
-                    <div v-else class="overflow-x-auto">
+                    <!-- Mobile: Card List (hidden on md+) -->
+                    <div v-if="recent.length > 0" class="md:hidden divide-y divide-slate-100">
+                        <div v-for="row in recent" :key="row.id"
+                             class="p-4 flex items-start justify-between gap-3 hover:bg-slate-50 transition">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="font-bold text-slate-900 text-xs">{{ row.nama }}</p>
+                                    <span v-if="row.paket"
+                                          class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-semibold shrink-0">
+                                        {{ row.paket }}
+                                    </span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-0.5">
+                                    {{ [row.alamat, row.rt ? 'RT '+row.rt : '', row.rw ? 'RW '+row.rw : ''].filter(Boolean).join(' ') || '-' }}
+                                </p>
+                                <p class="text-[11px] font-mono font-semibold text-slate-700 mt-1">
+                                    {{ row.total_tarikan ? new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(row.total_tarikan) : '-' }}
+                                </p>
+                            </div>
+                            <div class="shrink-0">
+                                <span v-if="(row.current_status || row.status_1_15) === 'ISOLIR'"
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
+                                </span>
+                                <span v-else
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: Table (hidden on mobile) -->
+                    <div v-if="recent.length > 0" class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -403,14 +435,12 @@ const pct = (count, total) => Math.round((count / total) * 100);
                                     <td class="px-4 py-3 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">
                                         {{ row.total_tarikan ? new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(row.total_tarikan) : '-' }}
                                     </td>
-                                    <!-- Tenggat Bayar -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700 border border-slate-200">
                                             <span class="material-symbols-outlined text-[12px]">calendar_today</span>
                                             Tgl 10
                                         </span>
                                     </td>
-                                    <!-- Status Tagihan -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
                                         <span v-if="(row.current_status || row.status_1_15) === 'ISOLIR'"
                                               class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
@@ -427,9 +457,11 @@ const pct = (count, total) => Math.round((count / total) * 100);
                             </tbody>
                         </table>
                     </div>
+
                 </div>
 
             </div><!-- /content -->
         </main>
     </div>
 </template>
+

@@ -92,6 +92,7 @@ class WifiPembayaranController extends Controller
             ->where('periode_bulan', $bulan)
             ->where('periode_tahun', $tahun)
             ->where('gelombang', $gelombang)
+            ->with('pelanggan')
             ->get()
             ->keyBy('pelanggan_wifi_id');
 

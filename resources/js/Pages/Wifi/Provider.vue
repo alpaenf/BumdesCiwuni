@@ -367,9 +367,9 @@ const rupiah = (val) => {
     ══════════════════════════════════════════════════════════════════════════════ -->
     <Teleport to="body">
     <div v-if="modalMode === 'add' || modalMode === 'edit'"
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         class="fixed inset-0 z-50 flex items-start justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
          @click.self="closeModal">
-        <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 space-y-4 my-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-extrabold text-slate-900 uppercase">
                     {{ modalMode === 'add' ? 'Tambah Provider ISP Baru' : 'Edit Skema & Data Provider' }}

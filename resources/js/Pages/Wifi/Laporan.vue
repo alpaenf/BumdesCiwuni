@@ -242,12 +242,12 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     </div>
 
                     <!-- Filter Controls Bar -->
-                    <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-3">
+                    <div class="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-start lg:items-center gap-3">
                         <!-- Provider Filter -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase">Provider:</span>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Provider</span>
                             <select v-model="selectedProvider" @change="applyFilters"
-                                    class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-1.5 font-bold text-slate-700 focus:border-blue-500 focus:outline-none">
+                                    class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 font-bold text-slate-700 focus:border-blue-500 focus:outline-none w-full">
                                 <option value="">Semua Provider</option>
                                 <option v-for="prov in providersList" :key="prov.id" :value="prov.id">
                                     {{ prov.nama_provider }} ({{ prov.tipe_bagi_hasil === 'PERSENTASE' ? prov.nilai_bagi_hasil + '%' : 'Flat' }})
@@ -257,31 +257,34 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         </div>
 
                         <!-- Periode Bulan & Tahun -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase">Bulan/Tahun:</span>
-                            <select v-model="selectedBulan" @change="applyFilters"
-                                    class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-1.5 font-bold text-slate-700 focus:border-blue-500 focus:outline-none">
-                                <option v-for="b in namaBulanMap" :key="b.id" :value="b.id">{{ b.name }}</option>
-                            </select>
-
-                            <select v-model="selectedTahun" @change="applyFilters"
-                                    class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-1.5 font-bold text-slate-700 focus:border-blue-500 focus:outline-none">
-                                <option v-for="y in [2025, 2026, 2027, 2028]" :key="y" :value="y">{{ y }}</option>
-                            </select>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Bulan / Tahun</span>
+                            <div class="flex gap-1.5">
+                                <select v-model="selectedBulan" @change="applyFilters"
+                                        class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-2 py-2 font-bold text-slate-700 focus:border-blue-500 focus:outline-none flex-1">
+                                    <option v-for="b in namaBulanMap" :key="b.id" :value="b.id">{{ b.name }}</option>
+                                </select>
+                                <select v-model="selectedTahun" @change="applyFilters"
+                                        class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-2 py-2 font-bold text-slate-700 focus:border-blue-500 focus:outline-none">
+                                    <option v-for="y in [2025, 2026, 2027, 2028]" :key="y" :value="y">{{ y }}</option>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Rentang Tanggal -->
-                        <div class="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase px-1">Rentang Tanggal:</span>
-                            <input type="date" v-model="selectedTglDari" @change="applyFilters"
-                                   class="text-xs border border-slate-200 bg-white rounded-lg px-2 py-1 font-semibold text-slate-700 focus:outline-none focus:border-blue-500" />
-                            <span class="text-xs text-slate-400 font-bold">s/d</span>
-                            <input type="date" v-model="selectedTglSampai" @change="applyFilters"
-                                   class="text-xs border border-slate-200 bg-white rounded-lg px-2 py-1 font-semibold text-slate-700 focus:outline-none focus:border-blue-500" />
-                            <button v-if="selectedTglDari || selectedTglSampai" @click="resetDateRange" title="Reset Rentang Tanggal"
-                                    class="p-1 text-slate-400 hover:text-red-500 transition">
-                                <span class="material-symbols-outlined text-sm">close</span>
-                            </button>
+                        <div class="flex flex-col gap-1 sm:col-span-2 lg:col-span-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Rentang Tanggal</span>
+                            <div class="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200">
+                                <input type="date" v-model="selectedTglDari" @change="applyFilters"
+                                       class="text-xs border border-slate-200 bg-white rounded-lg px-2 py-1 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 flex-1 min-w-0" />
+                                <span class="text-xs text-slate-400 font-bold shrink-0">s/d</span>
+                                <input type="date" v-model="selectedTglSampai" @change="applyFilters"
+                                       class="text-xs border border-slate-200 bg-white rounded-lg px-2 py-1 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 flex-1 min-w-0" />
+                                <button v-if="selectedTglDari || selectedTglSampai" @click="resetDateRange" title="Reset"
+                                        class="p-1 text-slate-400 hover:text-red-500 transition shrink-0">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -317,9 +320,45 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
                         <h2 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Rekapitulasi Per Provider / Mitra ISP</h2>
-                        <span class="text-[10px] text-slate-400 font-mono">{{ rekapPerProvider.length }} provider terdaftar</span>
+                        <span class="text-[10px] text-slate-400 font-mono">{{ rekapPerProvider.length }} provider</span>
                     </div>
-                    <div class="overflow-x-auto">
+
+                    <!-- Mobile: Card per provider -->
+                    <div class="md:hidden divide-y divide-slate-100">
+                        <div v-if="rekapPerProvider.length === 0" class="p-6 text-center text-slate-400 text-xs">Tidak ada data.</div>
+                        <div v-for="r in rekapPerProvider" :key="r.id" class="p-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <p class="font-bold text-slate-900 text-xs">{{ r.nama_provider }}</p>
+                                <span :class="r.tipe_bagi_hasil === 'PERSENTASE' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'"
+                                      class="px-2 py-0.5 rounded text-[10px] font-black uppercase">
+                                    {{ r.tipe_bagi_hasil === 'PERSENTASE' ? r.nilai_bagi_hasil + '%' : rupiah(r.nilai_bagi_hasil) }}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                                <div>
+                                    <span class="text-slate-400">Pelanggan:</span>
+                                    <span class="font-bold text-slate-800 ml-1">{{ r.total_pelanggan }}</span>
+                                    <span class="text-emerald-600 ml-1">{{ r.aktif_count ?? 0 }} Aktif</span>
+                                    <span v-if="r.isolir_count > 0" class="text-red-600 ml-1">{{ r.isolir_count }} Isolir</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-400">Bruto:</span>
+                                    <span class="font-mono font-bold text-slate-900 ml-1">{{ rupiah(r.total_tarikan) }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400">BUMDes:</span>
+                                    <span class="font-mono font-bold text-emerald-600 ml-1">{{ rupiah(r.total_hasil_bumdes) }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-400">Provider:</span>
+                                    <span class="font-mono font-bold text-blue-600 ml-1">{{ rupiah(r.total_hak_provider) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: Table -->
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -360,11 +399,71 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
                         <div>
                             <h2 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Rincian Tagihan Pelanggan Per Provider</h2>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Daftar pelanggan lengkap dengan pembagian porsi BUMDes &amp; Provider</p>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Daftar pelanggan dengan pembagian porsi BUMDes &amp; Provider</p>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <!-- Mobile: Card List -->
+                    <div class="md:hidden divide-y divide-slate-100">
+                        <div v-if="pelangganList.length === 0" class="p-6 text-center text-slate-400 text-xs">Tidak ada data pelanggan.</div>
+                        <div v-for="item in pelangganList" :key="item.id" class="p-4 space-y-2 hover:bg-slate-50 transition">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <p class="font-bold text-slate-900 text-xs">{{ item.nama }}</p>
+                                    <p class="text-[10px] text-slate-400">ID: {{ item.no_id_pel || '-' }}</p>
+                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                        <span v-if="item.provider" class="px-1.5 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">{{ item.provider.nama_provider }}</span>
+                                        <span v-else class="text-[10px] text-slate-400">Umum</span>
+                                        <span v-if="item.paket" class="text-[10px] font-medium text-slate-600">{{ item.paket }}</span>
+                                    </div>
+                                </div>
+                                <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'"
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
+                                </span>
+                                <span v-else
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-[11px]">
+                                <div class="bg-slate-50 rounded-lg p-2">
+                                    <p class="text-slate-400 text-[10px]">Tarikan</p>
+                                    <p class="font-mono font-bold text-slate-900">{{ rupiah(item.total_tarikan) }}</p>
+                                </div>
+                                <div class="bg-emerald-50 rounded-lg p-2">
+                                    <p class="text-slate-400 text-[10px]">BUMDes</p>
+                                    <p class="font-mono font-bold text-emerald-600">{{ rupiah(item.hasil_bumdes) }}</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-2">
+                                    <p class="text-slate-400 text-[10px]">Provider</p>
+                                    <p class="font-mono font-bold text-blue-600">{{ rupiah(item.total_provider) }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Total Footer -->
+                        <div v-if="pelangganList.length > 0" class="p-4 bg-slate-100 border-t-2 border-slate-300">
+                            <p class="text-[10px] font-black text-slate-600 uppercase mb-2">Total Keseluruhan</p>
+                            <div class="grid grid-cols-3 gap-2 text-[11px]">
+                                <div>
+                                    <p class="text-slate-400 text-[10px]">Bruto</p>
+                                    <p class="font-mono font-bold text-slate-900">{{ rupiah(stats.total_tarikan_bruto) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-400 text-[10px]">BUMDes</p>
+                                    <p class="font-mono font-bold text-emerald-700">{{ rupiah(stats.total_hasil_bumdes) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-slate-400 text-[10px]">Provider</p>
+                                    <p class="font-mono font-bold text-blue-700">{{ rupiah(stats.total_hak_provider) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop: Table -->
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -401,20 +500,15 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.total_provider) }}</td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
                                         <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                                            ISOLIR
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
                                         </span>
                                         <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                            AKTIF
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
                                         </span>
                                     </td>
                                 </tr>
-
                                 <tr v-if="pelangganList.length === 0">
-                                    <td colspan="9" class="p-8 text-center text-slate-400">
-                                        Tidak ada data pelanggan untuk filter provider ini.
-                                    </td>
+                                    <td colspan="9" class="p-8 text-center text-slate-400">Tidak ada data pelanggan untuk filter provider ini.</td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="pelangganList.length > 0" class="bg-slate-100 font-bold border-t-2 border-slate-300">
@@ -423,7 +517,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <td class="p-3.5 text-right font-mono text-slate-900">{{ rupiah(stats.total_tarikan_bruto) }}</td>
                                     <td class="p-3.5 text-right font-mono text-emerald-700">{{ rupiah(stats.total_hasil_bumdes) }}</td>
                                     <td class="p-3.5 text-right font-mono text-blue-700">{{ rupiah(stats.total_hak_provider) }}</td>
-                                    <td class="p-3.5 text-center text-[10px] text-slate-600">{{ stats.lunas_115 }} Lunas</td>
+                                    <td class="p-3.5 text-center text-[10px] text-slate-600">{{ stats.aktif_count }} Aktif</td>
                                 </tr>
                             </tfoot>
                         </table>

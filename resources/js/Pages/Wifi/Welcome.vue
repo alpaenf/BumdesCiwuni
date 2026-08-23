@@ -106,7 +106,7 @@ onMounted(() => {
                             Portal BUMDes
                         </Link>
                         
-                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-lg hover:bg-blue-700 transition shadow-sm">
+                        <Link v-if="$page.props.auth.user" :href="route('unit.dashboard', { slug: 'wifi' })" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-lg hover:bg-blue-700 transition shadow-sm">
                             Dashboard
                         </Link>
                         <template v-else>
@@ -147,7 +147,7 @@ onMounted(() => {
                             <span class="material-symbols-outlined text-sm mr-1">home</span>
                             Kembali ke Portal BUMDes
                         </Link>
-                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow-sm">
+                        <Link v-if="$page.props.auth.user" :href="route('unit.dashboard', { slug: 'wifi' })" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow-sm">
                             Dashboard
                         </Link>
                         <template v-else>
