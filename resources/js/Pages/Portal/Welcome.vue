@@ -209,24 +209,13 @@ onUnmounted(() => {
                     </a>
                     
                     <!-- Animated Rotating Unit Button -->
-                    <div class="relative w-full sm:w-auto flex flex-col items-center gap-2">
-                        <Transition name="fade-unit" mode="out-in">
-                            <Link :key="rotatingUnits[currentUnitIndex].href"
-                                  :href="rotatingUnits[currentUnitIndex].href"
-                                  class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border border-white/40 bg-white/15 backdrop-blur-md hover:bg-white/30 text-white font-extrabold text-sm rounded-xl shadow-xl hover:-translate-y-0.5 transition-all">
-                                {{ rotatingUnits[currentUnitIndex].name }}
-                            </Link>
-                        </Transition>
-                        <!-- Indicator Dots -->
-                        <div class="flex items-center gap-1.5">
-                            <button v-for="(u, idx) in rotatingUnits" :key="idx"
-                                    @click="currentUnitIndex = idx"
-                                    :title="u.name"
-                                    :aria-label="u.name"
-                                    :class="['h-1.5 rounded-full transition-all duration-300', currentUnitIndex === idx ? 'w-5 bg-white' : 'w-1.5 bg-white/40 hover:bg-white/70']">
-                            </button>
-                        </div>
-                    </div>
+                    <Transition name="fade-unit" mode="out-in">
+                        <Link :key="rotatingUnits[currentUnitIndex].href"
+                              :href="rotatingUnits[currentUnitIndex].href"
+                              class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border border-white/40 bg-white/15 backdrop-blur-md hover:bg-white/30 text-white font-extrabold text-sm rounded-xl shadow-xl hover:-translate-y-0.5 transition-all">
+                            {{ rotatingUnits[currentUnitIndex].name }}
+                        </Link>
+                    </Transition>
                 </div>
             </div>
         </section>
