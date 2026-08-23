@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     settings: { type: Object, required: true },
@@ -9,6 +9,16 @@ const props = defineProps({
     posts: { type: Array, default: () => [] },
     stats: { type: Object, default: () => ({}) },
 });
+
+const rotatingUnits = [
+    { name: 'Portal Simpan Pinjam', href: route('welcome'), icon: 'account_balance' },
+    { name: 'Portal Unit WiFi', href: route('unit.welcome', { slug: 'wifi' }), icon: 'wifi' },
+    { name: 'Portal Ketahanan Pangan', href: route('unit.welcome', { slug: 'ketahanan-pangan' }), icon: 'agriculture' },
+    { name: 'Portal Perdagangan Besar', href: route('unit.welcome', { slug: 'perdagangan-besar' }), icon: 'local_shipping' }
+];
+
+const currentUnitIndex = ref(0);
+let unitRotateTimer = null;
 
 const fullText = "Portal Terpadu untuk Transparansi dan Kemajuan Ekonomi Desa Dammar Wulan.";
 const displayText = ref("");
@@ -89,6 +99,14 @@ onMounted(() => {
     };
 
     setTimeout(startTypewriter, 1000); // Mulai efek setelah halaman dimuat 1 detik
+
+    unitRotateTimer = setInterval(() => {
+        currentUnitIndex.value = (currentUnitIndex.value + 1) % rotatingUnits.length;
+    }, 5000);
+});
+
+onUnmounted(() => {
+    if (unitRotateTimer) clearInterval(unitRotateTimer);
 });
 </script>
 
@@ -189,9 +207,28 @@ onMounted(() => {
                         {{ settings.hero_cta_text || 'Lihat Unit Usaha' }}
                         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                     </a>
-                    <Link :href="route('welcome')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/30 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white font-bold text-sm rounded-xl shadow-lg hover:-translate-y-0.5 transition-all">
-                        Portal Simpan Pinjam
-                    </Link>
+                    
+                    <!-- Animated Rotating Unit Button -->
+                    <div class="relative w-full sm:w-auto flex flex-col items-center gap-2">
+                        <Transition name="fade-unit" mode="out-in">
+                            <Link :key="rotatingUnits[currentUnitIndex].href"
+                                  :href="rotatingUnits[currentUnitIndex].href"
+                                  class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 border border-white/40 bg-white/15 backdrop-blur-md hover:bg-white/30 text-white font-bold text-sm rounded-xl shadow-xl hover:-translate-y-0.5 transition-all group">
+                                <span class="material-symbols-outlined text-[20px] text-blue-200 group-hover:scale-110 transition-transform">{{ rotatingUnits[currentUnitIndex].icon }}</span>
+                                <span>{{ rotatingUnits[currentUnitIndex].name }}</span>
+                                <span class="material-symbols-outlined text-[16px] opacity-70 group-hover:translate-x-1 transition-transform">open_in_new</span>
+                            </Link>
+                        </Transition>
+                        <!-- Indicator Dots -->
+                        <div class="flex items-center gap-1.5">
+                            <button v-for="(u, idx) in rotatingUnits" :key="idx"
+                                    @click="currentUnitIndex = idx"
+                                    :title="u.name"
+                                    :aria-label="u.name"
+                                    :class="['h-1.5 rounded-full transition-all duration-300', currentUnitIndex === idx ? 'w-5 bg-white' : 'w-1.5 bg-white/40 hover:bg-white/70']">
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -649,5 +686,18 @@ onMounted(() => {
 }
 .nav-animate {
     animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-unit-enter-active,
+.fade-unit-leave-active {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-unit-enter-from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+}
+.fade-unit-leave-to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
 }
 </style>
