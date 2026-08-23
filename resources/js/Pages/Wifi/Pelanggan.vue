@@ -1284,27 +1284,17 @@ const activeFilterCount = computed(() =>
                         <span class="material-symbols-outlined text-sm">schedule</span>
                         Jadwal Tagihan
                     </h3>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Jadwal Gelombang Tagihan</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button type="button" @click="form.gelombang = '1_15'"
-                                    :class="form.gelombang === '1_15'
-                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                                        : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50'"
-                                    class="flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-bold transition">
-                                <span class="material-symbols-outlined text-sm">schedule</span>
-                                <span>Gelombang 1<br><span class="font-normal text-[10px] opacity-70">Tgl 1 – 15</span></span>
-                            </button>
-                            <button type="button" @click="form.gelombang = '16_30'"
-                                    :class="form.gelombang === '16_30'
-                                        ? 'bg-violet-600 text-white border-violet-600 shadow-sm'
-                                        : 'bg-white text-slate-700 border-slate-200 hover:border-violet-400 hover:bg-violet-50'"
-                                    class="flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-bold transition">
-                                <span class="material-symbols-outlined text-sm">schedule</span>
-                                <span>Gelombang 2<br><span class="font-normal text-[10px] opacity-70">Tgl 16 – Akhir Bulan</span></span>
-                            </button>
+                    <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3.5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold shrink-0">
+                                <span class="material-symbols-outlined text-sm">event_available</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Gelombang 1 (Tgl 1 – 15)</h4>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Batas pembayaran tgl 15. Tgl 16+ otomatis ISOLIR jika belum bayar.</p>
+                            </div>
                         </div>
-                        <p class="mt-2 text-[10px] text-slate-400">Status pembayaran (LUNAS/TUNGGAKAN/ISOLIR) dikelola melalui Halaman Kasir Pembayaran.</p>
+                        <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-lg border border-indigo-200 shrink-0">Otomatis</span>
                     </div>
                 </div>
 
