@@ -1447,7 +1447,7 @@ const activeFilterCount = computed(() =>
                     <ul class="list-disc list-inside space-y-0.5 ml-5 text-blue-600">
                         <li>Gunakan template CSV dari tombol <strong>Export</strong> sebagai panduan kolom.</li>
                         <li>Kolom wajib: <strong>Nama</strong></li>
-                        <li>Status harus: LUNAS, TUNGGAKAN, atau ISOLIR</li>
+                        <li>Status harus: AKTIF atau ISOLIR</li>
                         <li>No ID Pelanggan harus unik (tidak boleh duplikat)</li>
                     </ul>
                 </div>
@@ -1705,14 +1705,11 @@ const activeFilterCount = computed(() =>
                             <td class="py-3 px-3 text-right font-mono font-extrabold text-blue-700 whitespace-nowrap">{{ rupiah(calcProvider(h)) }}</td>
                             <td class="py-3 px-3 text-center font-bold text-slate-700 whitespace-nowrap">{{ h.metode_pembayaran }}</td>
                             <td class="py-3 px-3 text-center whitespace-nowrap">
-                                <span v-if="h.status === 'LUNAS'" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-md font-bold text-[10px]">
-                                    LUNAS
-                                </span>
-                                <span v-else-if="h.status === 'TUNGGAKAN'" class="px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-md font-bold text-[10px]">
-                                    TUNGGAKAN
-                                </span>
-                                <span v-else class="px-2 py-0.5 bg-red-100 text-red-800 border border-red-300 rounded-md font-bold text-[10px]">
+                                <span v-if="h.status === 'ISOLIR'" class="px-2 py-0.5 bg-red-100 text-red-800 border border-red-300 rounded-md font-bold text-[10px]">
                                     ISOLIR
+                                </span>
+                                <span v-else class="px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-md font-bold text-[10px]">
+                                    AKTIF
                                 </span>
                             </td>
                             <td class="py-3 px-3 text-center text-slate-600 whitespace-nowrap">{{ h.kasir ? h.kasir.nama : 'Admin' }}</td>

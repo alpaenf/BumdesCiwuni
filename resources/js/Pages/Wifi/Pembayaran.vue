@@ -426,7 +426,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                 </div>
 
                 <!-- STATS SUMMARY CARDS -->
-                <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Terkumpul</span>
                         <p class="text-base font-black text-slate-900">{{ rupiah(stats.total_nominal_terkumpul) }}</p>
@@ -434,19 +434,13 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     </div>
 
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
-                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Lunas</span>
-                        <p class="text-xl font-black text-emerald-600">{{ stats.total_lunas }}</p>
+                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Pelanggan Aktif</span>
+                        <p class="text-xl font-black text-emerald-600">{{ stats.total_aktif }}</p>
                         <span class="text-[10px] text-slate-400">pelanggan</span>
                     </div>
 
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
-                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Tunggakan</span>
-                        <p class="text-xl font-black text-amber-600">{{ stats.total_tunggakan }}</p>
-                        <span class="text-[10px] text-slate-400">pelanggan</span>
-                    </div>
-
-                    <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
-                        <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block">Isolir</span>
+                        <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block">Pelanggan Isolir</span>
                         <p class="text-xl font-black text-red-600">{{ stats.total_isolir }}</p>
                         <span class="text-[10px] text-slate-400">pelanggan</span>
                     </div>
@@ -669,7 +663,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status Pembayaran</label>
                     <select v-model="payForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 focus:border-blue-500 focus:outline-none font-bold">
-                        <option value="AKTIF">AKTIF (LUNAS)</option>
+                        <option value="AKTIF">AKTIF</option>
                         <option value="ISOLIR">ISOLIR</option>
                     </select>
                 </div>
@@ -736,7 +730,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
                         <select v-model="massForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option value="AKTIF">AKTIF (LUNAS)</option>
+                            <option value="AKTIF">AKTIF</option>
                             <option value="ISOLIR">ISOLIR</option>
                         </select>
                     </div>
@@ -797,9 +791,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-mono text-xs font-bold text-slate-900">{{ h.no_transaksi }}</span>
-                            <span :class="h.status === 'LUNAS' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
-                                  class="px-2 py-0.5 rounded text-[10px] font-black">
-                                {{ h.status }}
+                            <span :class="h.status === 'ISOLIR' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'"
+                                  class="px-2 py-0.5 border rounded text-[10px] font-extrabold uppercase">
+                                {{ h.status === 'ISOLIR' ? 'ISOLIR' : 'AKTIF' }}
                             </span>
                         </div>
                         <p class="text-[11px] text-slate-500 mt-0.5">

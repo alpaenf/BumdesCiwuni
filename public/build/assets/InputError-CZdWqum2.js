@@ -1,1 +1,0 @@
-import{D as e,N as t,g as n,u as r,y as i,z as a}from"./app-DTdLCnLB.js";var o={class:`text-sm text-red-600`},s={__name:`InputError`,props:{message:{type:String}},setup(s){return(c,l)=>t((e(),i(`div`,null,[n(`p`,o,a(s.message),1)],512)),[[r,s.message]])}};export{s as t};

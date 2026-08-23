@@ -460,33 +460,24 @@ class WifiPelangganController extends Controller
         $unit = $this->authorizeUnit();
         $user = Auth::user();
 
-        $query = PelangganWifi::with('provider');
+        $query = PelangganWifi::with(['provider']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
                   ->orWhere('no_id_pel', 'like', "%{$search}%")
-                  ->orWhere('nik', 'like', "%{$search}%")
-                  ->orWhere('no_wa', 'like', "%{$search}%")
-                  ->orWhere('alamat', 'like', "%{$search}%")
-                  ->orWhere('paket', 'like', "%{$search}%")
-                  ->orWhere('rt', 'like', "%{$search}%")
-                  ->orWhere('rw', 'like', "%{$search}%");
+                  ->orWhere('no_wa', 'like', "%{$search}%");
             });
         }
 
         if ($paket = $request->input('paket')) {
             $query->where('paket', $paket);
         }
-        if ($status115 = $request->input('status_1_15')) {
-            $query->where('status_1_15', $status115);
-        }
-        if ($status1630 = $request->input('status_16_30')) {
-            $query->where('status_16_30', $status1630);
-        }
+
         if ($rt = $request->input('rt')) {
             $query->where('rt', $rt);
         }
+
         if ($rw = $request->input('rw')) {
             $query->where('rw', $rw);
         }
@@ -498,9 +489,8 @@ class WifiPelangganController extends Controller
             'total_tarikan'      => $pelangganList->sum('total_tarikan'),
             'total_hasil_bumdes' => $pelangganList->sum('hasil_bumdes'),
             'total_provider'     => $pelangganList->sum('total_provider'),
-            'lunas_115'          => $pelangganList->where('status_1_15', 'LUNAS')->count(),
-            'tunggakan_115'      => $pelangganList->where('status_1_15', 'TUNGGAKAN')->count(),
-            'isolir_115'        => $pelangganList->where('status_1_15', 'ISOLIR')->count(),
+            'aktif_count'        => $pelangganList->where('status_1_15', '!=', 'ISOLIR')->count(),
+            'isolir_count'       => $pelangganList->where('status_1_15', 'ISOLIR')->count(),
         ];
 
         return view('wifi.cetak_pelanggan_pdf', compact('unit', 'user', 'pelangganList', 'stats'));

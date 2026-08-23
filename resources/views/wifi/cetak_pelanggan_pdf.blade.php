@@ -261,8 +261,7 @@
                 <th class="text-center" style="width:75px;">Skema Bagi</th>
                 <th class="text-right" style="width:75px;">Hak BUMDes</th>
                 <th class="text-right" style="width:75px;">Hak Provider</th>
-                <th class="text-center" style="width:60px;">Sts 1-15</th>
-                <th class="text-center" style="width:75px;">Sts 16-Akhir</th>
+                <th class="text-center" style="width:80px;">Status Tagihan</th>
                 <th style="width:85px;">GPS Lat/Long</th>
             </tr>
         </thead>
@@ -301,25 +300,10 @@
                 <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->hasil_bumdes, 0, ',', '.') }}</td>
                 <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->total_provider, 0, ',', '.') }}</td>
                 <td class="text-center">
-                    @if($p->status_1_15 === 'LUNAS')
-                        <span class="badge badge-lunas">LUNAS</span>
-                    @elseif($p->status_1_15 === 'TUNGGAKAN')
-                        <span class="badge badge-tunggakan">TGK</span>
-                    @elseif($p->status_1_15 === 'ISOLIR')
+                    @if(($p->current_status ?? $p->status_1_15) === 'ISOLIR')
                         <span class="badge badge-isolir">ISOLIR</span>
                     @else
-                        -
-                    @endif
-                </td>
-                <td class="text-center">
-                    @if($p->status_16_30 === 'LUNAS')
-                        <span class="badge badge-lunas">LUNAS</span>
-                    @elseif($p->status_16_30 === 'TUNGGAKAN')
-                        <span class="badge badge-tunggakan">TGK</span>
-                    @elseif($p->status_16_30 === 'ISOLIR')
-                        <span class="badge badge-isolir">ISOLIR</span>
-                    @else
-                        -
+                        <span class="badge badge-lunas">AKTIF</span>
                     @endif
                 </td>
                 <td class="font-mono" style="font-size:7pt;">

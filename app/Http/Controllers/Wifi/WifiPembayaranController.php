@@ -105,23 +105,28 @@ class WifiPembayaranController extends Controller
         });
 
         // ── Stat Summary ─────────────────────────────────────────
-        $totalPelanggan = PelangganWifi::count();
-        $totalLunas     = PembayaranWifi::where('periode_bulan', $bulan)->where('periode_tahun', $tahun)->where('gelombang', $gelombang)->where('status', 'LUNAS')->count();
-        if ($totalLunas === 0) {
-            $totalLunas = PelangganWifi::where($statusCol, 'LUNAS')->count();
+        $allPelanggan = PelangganWifi::all();
+        $totalPelanggan = $allPelanggan->count();
+
+        $totalAktif  = 0;
+        $totalIsolir = 0;
+        foreach ($allPelanggan as $pItem) {
+            $pPay = $pembayaranRecords->get($pItem->id);
+            $st = $this->computeCurrentStatus($pItem, $pPay);
+            if ($st === 'ISOLIR') {
+                $totalIsolir++;
+            } else {
+                $totalAktif++;
+            }
         }
-        $totalTunggakan = PembayaranWifi::where('periode_bulan', $bulan)->where('periode_tahun', $tahun)->where('gelombang', $gelombang)->where('status', 'TUNGGAKAN')->count();
-        $totalIsolir    = PembayaranWifi::where('periode_bulan', $bulan)->where('periode_tahun', $tahun)->where('gelombang', $gelombang)->where('status', 'ISOLIR')->count();
-        $totalBelum     = max(0, $totalPelanggan - ($totalLunas + $totalTunggakan + $totalIsolir));
 
         $totalNominalBulanIni = PembayaranWifi::where('periode_bulan', $bulan)
             ->where('periode_tahun', $tahun)
-            ->where('gelombang', $gelombang)
-            ->where('status', 'LUNAS')
+            ->whereIn('status', ['LUNAS', 'AKTIF'])
             ->sum('jumlah_bayar');
 
         $kasHariIni = PembayaranWifi::whereDate('tanggal_bayar', now()->toDateString())
-            ->where('status', 'LUNAS')
+            ->whereIn('status', ['LUNAS', 'AKTIF'])
             ->sum('jumlah_bayar');
 
         $paketOptions = PelangganWifi::select('paket')->whereNotNull('paket')->distinct()->orderBy('paket')->pluck('paket');
@@ -154,10 +159,8 @@ class WifiPembayaranController extends Controller
             ],
             'stats' => [
                 'total_pelanggan'          => $totalPelanggan,
-                'total_lunas'              => $totalLunas,
-                'total_tunggakan'          => $totalTunggakan,
+                'total_aktif'              => $totalAktif,
                 'total_isolir'             => $totalIsolir,
-                'total_belum'              => $totalBelum,
                 'total_nominal_terkumpul'  => $totalNominalBulanIni,
                 'kas_hari_ini'             => $kasHariIni,
             ],
