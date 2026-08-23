@@ -78,25 +78,25 @@ const submitUpdate = () => {
         <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"></div>
 
         <!-- Sidebar -->
-        <aside :class="['fixed md:static inset-y-0 left-0 z-50 w-64 bg-blue-800 border-r border-blue-900 shrink-0 flex flex-col justify-between p-6 text-white transition-transform duration-300', isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
-            <div class="space-y-8">
-                <!-- Branding -->
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-700 rounded-xl border border-blue-600 text-blue-100">
-                            <span class="material-symbols-outlined font-bold">agriculture</span>
-                        </div>
-                        <div>
-                            <h2 class="text-xs font-black text-white leading-tight">Admin Pangan</h2>
-                            <p class="text-[9px] text-blue-200 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
-                        </div>
+        <aside :class="['fixed md:sticky top-0 h-screen z-50 w-64 bg-blue-800 border-r border-blue-900 shrink-0 flex flex-col text-white transition-transform duration-300', isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
+            <!-- Branding (Fixed top) -->
+            <div class="p-6 pb-4 shrink-0 flex items-center justify-between gap-3 border-b border-blue-700/50">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-700 rounded-xl border border-blue-600 text-blue-100">
+                        <span class="material-symbols-outlined font-bold">agriculture</span>
                     </div>
-                    <button @click="isSidebarOpen = false" class="md:hidden text-blue-200 hover:text-white">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+                    <div>
+                        <h2 class="text-xs font-black text-white leading-tight">Admin Pangan</h2>
+                        <p class="text-[9px] text-blue-200 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
+                    </div>
                 </div>
+                <button @click="isSidebarOpen = false" class="md:hidden text-blue-200 hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
 
-                <!-- Nav -->
+            <!-- Nav (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-4">
                 <nav class="space-y-1">
                     <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-700 text-white font-bold text-xs rounded-xl shadow">
                         <span class="material-symbols-outlined text-lg">dashboard</span>
@@ -139,8 +139,8 @@ const submitUpdate = () => {
                 </nav>
             </div>
 
-            <!-- User Info & Logout -->
-            <div class="border-t border-emerald-850 pt-5 space-y-4">
+            <!-- User Info & Logout (Fixed bottom) -->
+            <div class="p-6 border-t border-blue-700/50 shrink-0 space-y-4 bg-blue-800">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-blue-700 text-white flex items-center justify-center font-bold text-sm shrink-0">
                         {{ user.nama.charAt(0) }}

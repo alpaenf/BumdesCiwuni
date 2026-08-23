@@ -102,25 +102,25 @@ const createOrder = () => {
         <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"></div>
 
         <!-- Sidebar -->
-        <aside :class="['fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-300 shrink-0 flex flex-col justify-between p-6 transition-transform duration-300', isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
-            <div class="space-y-8">
-                <!-- Branding -->
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-500/10 border border-blue-500/30 rounded-xl text-amber-500">
-                            <span class="material-symbols-outlined font-bold">local_shipping</span>
-                        </div>
-                        <div>
-                            <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Dagang</h2>
-                            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
-                        </div>
+        <aside :class="['fixed md:sticky top-0 h-screen z-50 w-64 bg-white border-r border-slate-300 shrink-0 flex flex-col transition-transform duration-300', isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
+            <!-- Branding (Fixed top) -->
+            <div class="p-6 pb-4 shrink-0 flex items-center justify-between gap-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-500/10 border border-blue-500/30 rounded-xl text-amber-500">
+                        <span class="material-symbols-outlined font-bold">local_shipping</span>
                     </div>
-                    <button @click="isSidebarOpen = false" class="md:hidden text-slate-400 hover:text-slate-600">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+                    <div>
+                        <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Dagang</h2>
+                        <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
+                    </div>
                 </div>
+                <button @click="isSidebarOpen = false" class="md:hidden text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
 
-                <!-- Nav -->
+            <!-- Nav (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-4">
                 <nav class="space-y-1">
                     <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-500/10 text-blue-600 font-bold text-xs rounded-xl border border-blue-500/20">
                         <span class="material-symbols-outlined text-lg">dashboard</span>
@@ -163,8 +163,8 @@ const createOrder = () => {
                 </nav>
             </div>
 
-            <!-- User Info & Logout -->
-            <div class="border-t border-slate-300 pt-5 space-y-4">
+            <!-- User Info & Logout (Fixed bottom) -->
+            <div class="p-6 border-t border-slate-300 shrink-0 space-y-4 bg-white">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-blue-500 text-slate-50 flex items-center justify-center font-bold text-sm shrink-0">
                         {{ user.nama.charAt(0) }}

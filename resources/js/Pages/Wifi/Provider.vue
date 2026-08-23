@@ -96,25 +96,26 @@ const rupiah = (val) => {
              class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"></div>
 
         <!-- ══ SIDEBAR ════════════════════════════════════════════════════════ -->
-        <aside :class="['fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-300 shrink-0 flex flex-col justify-between p-6 transition-transform duration-300',
+        <!-- ══ SIDEBAR ════════════════════════════════════════════════════════ -->
+        <aside :class="['fixed md:sticky top-0 h-screen z-50 w-64 bg-white border-r border-slate-300 shrink-0 flex flex-col transition-transform duration-300',
                         isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
-            <div class="space-y-8">
-                <!-- Branding -->
-                <div class="flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <img src="/logowifi.png" alt="Logo WiFi" class="w-10 h-10 object-contain drop-shadow-sm" />
-                        <div>
-                            <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Unit WiFi</h2>
-                            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
-                        </div>
+            <!-- Branding (Fixed top) -->
+            <div class="p-6 pb-4 shrink-0 flex items-center justify-between gap-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <img src="/logowifi.png" alt="Logo WiFi" class="w-10 h-10 object-contain drop-shadow-sm" />
+                    <div>
+                        <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Unit WiFi</h2>
+                        <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
                     </div>
-                    <button @click="isSidebarOpen = false" aria-label="Tutup sidebar"
-                            class="md:hidden text-slate-400 hover:text-slate-600">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
                 </div>
+                <button @click="isSidebarOpen = false" aria-label="Tutup sidebar"
+                        class="md:hidden text-slate-400 hover:text-slate-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
 
-                <!-- Nav -->
+            <!-- Nav (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-4">
                 <nav class="space-y-1">
                     <Link :href="route('unit.dashboard', { slug: unit.slug })"
                           class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
@@ -184,8 +185,8 @@ const rupiah = (val) => {
                 </nav>
             </div>
 
-            <!-- User Info & Logout -->
-            <div class="border-t border-slate-300 pt-5 space-y-4">
+            <!-- User Info & Logout (Fixed bottom) -->
+            <div class="p-6 border-t border-slate-300 shrink-0 space-y-4 bg-white">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
                         {{ user.nama.charAt(0) }}
