@@ -1171,7 +1171,8 @@ const activeFilterCount = computed(() =>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">NIK</label>
-                            <input v-model="form.nik" type="text" placeholder="16 digit NIK" id="form-nik"
+                            <input v-model="form.nik" type="text" maxlength="16" placeholder="16 digit NIK" id="form-nik"
+                                   @input="form.nik = form.nik.replace(/\D/g, '').slice(0, 16)"
                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none" />
                         </div>
                         <div>
