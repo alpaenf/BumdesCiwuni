@@ -234,6 +234,36 @@ const deleteGaleri = (id) => {
                         <span class="material-symbols-outlined text-lg">web</span>
                         Pengaturan Landing Page
                     </a>
+
+                    <!-- Section Portal BUMDes (Hanya tampil untuk Super Admin / Manager Pusat) -->
+                    <div v-if="($page?.props?.auth?.user?.role || user?.role) === 'admin' || ($page?.props?.auth?.user?.role || user?.role) === 'manager_pusat'" class="pt-4 mt-4 border-t border-slate-200 space-y-1">
+                        <p class="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Portal BUMDes</p>
+                        <Link :href="route('portal.exec.dashboard')"
+                              class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                            <span class="material-symbols-outlined text-lg">hub</span>
+                            Dashboard Portal
+                        </Link>
+                        <Link v-if="($page?.props?.auth?.user?.role || user?.role) === 'admin'" :href="route('portal.cms.dashboard')"
+                              class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                            <span class="material-symbols-outlined text-lg">edit_note</span>
+                            Kelola Website
+                        </Link>
+                        <a :href="route('unit.welcome', { slug: 'wifi' })" target="_blank"
+                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                            <span class="material-symbols-outlined text-lg">wifi</span>
+                            Unit Wifi
+                        </a>
+                        <a :href="route('unit.welcome', { slug: 'ketahanan-pangan' })" target="_blank"
+                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                            <span class="material-symbols-outlined text-lg">agriculture</span>
+                            Unit Ketahanan Pangan
+                        </a>
+                        <a :href="route('unit.welcome', { slug: 'perdagangan-besar' })" target="_blank"
+                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                            <span class="material-symbols-outlined text-lg">local_shipping</span>
+                            Unit Perdagangan Besar
+                        </a>
+                    </div>
                 </nav>
             </div>
 
