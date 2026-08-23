@@ -19,6 +19,7 @@ class UpdatePelangganWifiRequest extends FormRequest
             : $this->route('pelanggan');
 
         return [
+            'provider_wifi_id'            => 'nullable|exists:provider_wifi,id',
             'no'                          => 'nullable|integer',
             'nama'                        => 'required|string|max:255',
             'tanggal_daftar'              => 'nullable|date',
