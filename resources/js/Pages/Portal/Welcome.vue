@@ -213,10 +213,8 @@ onUnmounted(() => {
                         <Transition name="fade-unit" mode="out-in">
                             <Link :key="rotatingUnits[currentUnitIndex].href"
                                   :href="rotatingUnits[currentUnitIndex].href"
-                                  class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 border border-white/40 bg-white/15 backdrop-blur-md hover:bg-white/30 text-white font-bold text-sm rounded-xl shadow-xl hover:-translate-y-0.5 transition-all group">
-                                <span class="material-symbols-outlined text-[20px] text-blue-200 group-hover:scale-110 transition-transform">{{ rotatingUnits[currentUnitIndex].icon }}</span>
-                                <span>{{ rotatingUnits[currentUnitIndex].name }}</span>
-                                <span class="material-symbols-outlined text-[16px] opacity-70 group-hover:translate-x-1 transition-transform">open_in_new</span>
+                                  class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border border-white/40 bg-white/15 backdrop-blur-md hover:bg-white/30 text-white font-extrabold text-sm rounded-xl shadow-xl hover:-translate-y-0.5 transition-all">
+                                {{ rotatingUnits[currentUnitIndex].name }}
                             </Link>
                         </Transition>
                         <!-- Indicator Dots -->
