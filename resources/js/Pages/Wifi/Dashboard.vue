@@ -413,18 +413,21 @@ const pct = (count, total) => Math.round((count / total) * 100);
                                     <!-- Tenggat Bayar -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700 border border-slate-200">
-                                            🗓️ Tgl 10
+                                            <span class="material-symbols-outlined text-[12px]">calendar_today</span>
+                                            Tgl 10
                                         </span>
                                     </td>
                                     <!-- Status Tagihan -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
                                         <span v-if="(row.current_status || row.status_1_15) === 'ISOLIR'"
-                                              class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
-                                            🔴 ISOLIR
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                            ISOLIR
                                         </span>
                                         <span v-else
-                                              class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
-                                            🟢 AKTIF
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                            AKTIF
                                         </span>
                                     </td>
                                 </tr>

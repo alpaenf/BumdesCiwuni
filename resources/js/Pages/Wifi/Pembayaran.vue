@@ -387,8 +387,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         </select>
 
                         <!-- Masa Pembayaran Info -->
-                        <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl font-black border border-emerald-200 shadow-sm">
-                            🗓️ Tenggat Tgl 10
+                        <span class="inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl font-black border border-emerald-200 shadow-sm">
+                            <span class="material-symbols-outlined text-sm">calendar_month</span>
+                            Tenggat Tgl 10
                         </span>
                     </div>
                 </div>
@@ -402,8 +403,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-0.5 bg-red-700 text-white text-[10px] font-black uppercase rounded-md tracking-wider shadow-sm">
-                                    {{ todayDay === 10 ? '🚨 HARI INI JATUH TEMPO (TGL 10)' : '⚠️ H-2 TENGGAT PEMBAYARAN (TGL 10)' }}
+                                <span class="px-2.5 py-0.5 bg-red-700 text-white text-[10px] font-black uppercase rounded-md tracking-wider shadow-sm flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">warning</span>
+                                    {{ todayDay === 10 ? 'HARI INI JATUH TEMPO (TGL 10)' : 'H-2 TENGGAT PEMBAYARAN (TGL 10)' }}
                                 </span>
                             </div>
                             <h3 class="text-sm font-black text-white mt-1">
@@ -470,8 +472,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         <select v-model="filterStatus" @change="applyFilters"
                                 class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-slate-700 focus:border-blue-500 focus:outline-none">
                             <option value="">Semua Status</option>
-                            <option value="AKTIF">🟢 Aktif</option>
-                            <option value="ISOLIR">🔴 Isolir</option>
+                            <option value="AKTIF">Aktif</option>
+                            <option value="ISOLIR">Isolir</option>
                         </select>
 
                         <!-- Filter Paket -->
@@ -550,12 +552,14 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
 
                                     <td class="p-3.5 text-center whitespace-nowrap">
                                         <span v-if="item.current_status === 'ISOLIR'"
-                                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
-                                            🔴 ISOLIR
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                            ISOLIR
                                         </span>
                                         <span v-else
-                                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
-                                            🟢 AKTIF
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                            AKTIF
                                         </span>
                                     </td>
 

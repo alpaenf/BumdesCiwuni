@@ -667,8 +667,8 @@ const activeFilterCount = computed(() =>
                         <select v-model="filterStatus" @change="applyFilters"
                                 class="w-full text-xs border border-slate-200 bg-slate-50 rounded-xl px-2 py-1.5 focus:border-blue-500 focus:outline-none">
                             <option value="">Semua Status</option>
-                            <option value="AKTIF">🟢 AKTIF</option>
-                            <option value="ISOLIR">🔴 ISOLIR</option>
+                            <option value="AKTIF">AKTIF</option>
+                            <option value="ISOLIR">ISOLIR</option>
                         </select>
                     </div>
                     <!-- RT -->
@@ -931,15 +931,16 @@ const activeFilterCount = computed(() =>
                                         <span v-else class="text-slate-400 text-[10px]">-</span>
                                     </td>
 
-                                    <!-- Status Tagihan (AKTIF vs ISOLIR) -->
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:120px">
                                         <span v-if="row.current_status === 'ISOLIR'"
-                                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
-                                            🔴 ISOLIR
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                            ISOLIR
                                         </span>
                                         <span v-else
-                                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
-                                            🟢 AKTIF
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                            AKTIF
                                         </span>
                                     </td>
 
@@ -1370,8 +1371,9 @@ const activeFilterCount = computed(() =>
                     <div>
                         <span class="font-bold text-slate-500 block text-[10px] uppercase">Status Tagihan Terkini</span>
                         <span :class="selectedRow.current_status === 'ISOLIR' ? 'bg-red-100 text-red-700 border-red-300' : 'bg-emerald-100 text-emerald-700 border-emerald-300'"
-                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase mt-0.5">
-                            {{ selectedRow.current_status === 'ISOLIR' ? '🔴 ISOLIR' : '🟢 AKTIF' }}
+                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full" :class="selectedRow.current_status === 'ISOLIR' ? 'bg-red-600' : 'bg-emerald-600'"></span>
+                            {{ selectedRow.current_status === 'ISOLIR' ? 'ISOLIR' : 'AKTIF' }}
                         </span>
                     </div>
 
@@ -1572,8 +1574,8 @@ const activeFilterCount = computed(() =>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
                         <select v-model="quickPayForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option value="AKTIF">🟢 AKTIF (LUNAS)</option>
-                            <option value="ISOLIR">🔴 ISOLIR</option>
+                            <option value="AKTIF">AKTIF (LUNAS)</option>
+                            <option value="ISOLIR">ISOLIR</option>
                         </select>
                     </div>
                 </div>

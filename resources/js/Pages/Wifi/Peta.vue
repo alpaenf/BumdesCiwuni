@@ -115,7 +115,7 @@ const buildPopup = (p) => {
             ${p.paket ? `<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${p.paket}</span><br/>` : ''}
             <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
                 <div><span style="color:#94a3b8;font-size:10px">Masa Bayar</span><br/><b style="color:#2563eb">Tgl 1 - 10</b></div>
-                <div><span style="color:#94a3b8;font-size:10px">Status Tagihan</span><br/><b style="color:${statusVal==='ISOLIR'?'#dc2626':'#059669'}">${statusVal === 'ISOLIR' ? '🔴 ISOLIR' : '🟢 AKTIF'}</b></div>
+                <div><span style="color:#94a3b8;font-size:10px">Status Tagihan</span><br/><b style="color:${statusVal==='ISOLIR'?'#dc2626':'#059669'}"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${statusVal==='ISOLIR'?'#ef4444':'#10b981'};margin-right:4px;vertical-align:middle"></span>${statusVal === 'ISOLIR' ? 'ISOLIR' : 'AKTIF'}</b></div>
                 <div style="margin-top:4px"><span style="color:#94a3b8;font-size:10px">RT/RW</span><br/><b>${p.rt ?? '-'}/${p.rw ?? '-'}</b></div>
                 <div style="margin-top:4px"><span style="color:#94a3b8;font-size:10px">No WA</span><br/><b>${p.no_wa ?? '-'}</b></div>
                 <div style="margin-top:4px;grid-column:1/-1"><span style="color:#94a3b8;font-size:10px">Total Tarikan</span><br/><b>${rupiah(p.total_tarikan)}</b></div>
@@ -373,8 +373,8 @@ const resetFilters = () => {
                         <select v-model="filterStatus"
                                 class="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-md focus:border-blue-500 focus:outline-none">
                             <option value="">Semua Status</option>
-                            <option value="AKTIF">🟢 Aktif</option>
-                            <option value="ISOLIR">🔴 Isolir</option>
+                            <option value="AKTIF">Aktif</option>
+                            <option value="ISOLIR">Isolir</option>
                         </select>
 
                         <!-- Filter RT -->

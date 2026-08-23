@@ -400,8 +400,14 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.hasil_bumdes) }}</td>
                                     <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.total_provider) }}</td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'" class="px-2.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase">🔴 ISOLIR</span>
-                                        <span v-else class="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase">🟢 AKTIF</span>
+                                        <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                            ISOLIR
+                                        </span>
+                                        <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                            AKTIF
+                                        </span>
                                     </td>
                                 </tr>
 
