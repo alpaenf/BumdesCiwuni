@@ -190,6 +190,9 @@ class WifiPembayaranController extends Controller
         DB::transaction(function () use ($request) {
             $pelanggan = PelangganWifi::findOrFail($request->pelanggan_wifi_id);
 
+            // Map status for MySQL enum ('LUNAS', 'TUNGGAKAN', 'ISOLIR')
+            $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
+
             // Generate nomor transaksi unik TRX-WF-202608-0001
             $prefix = sprintf('TRX-WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
             $lastCount = PembayaranWifi::where('no_transaksi', 'like', "{$prefix}%")->count();
@@ -208,7 +211,7 @@ class WifiPembayaranController extends Controller
                     'tanggal_bayar'     => $request->tanggal_bayar,
                     'jumlah_bayar'      => $request->jumlah_bayar,
                     'metode_pembayaran' => $request->metode_pembayaran,
-                    'status'            => $request->status,
+                    'status'            => $statusEnum,
                     'catatan'           => $request->catatan,
                     'kasir_user_id'     => Auth::id(),
                 ]
@@ -216,9 +219,9 @@ class WifiPembayaranController extends Controller
 
             // Update PelangganWifi main status and gelombang
             if ($request->gelombang === '1_15') {
-                $pelanggan->status_1_15 = $request->status;
+                $pelanggan->status_1_15 = $statusEnum;
             } else {
-                $pelanggan->status_16_30 = $request->status;
+                $pelanggan->status_16_30 = $statusEnum;
             }
             $pelanggan->gelombang = $request->gelombang;
             $pelanggan->save();
@@ -247,6 +250,7 @@ class WifiPembayaranController extends Controller
 
         DB::transaction(function () use ($request) {
             $pelangganList = PelangganWifi::whereIn('id', $request->pelanggan_ids)->get();
+            $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
 
             foreach ($pelangganList as $pelanggan) {
                 $prefix = sprintf('TRX-WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
@@ -267,16 +271,16 @@ class WifiPembayaranController extends Controller
                         'tanggal_bayar'     => $request->tanggal_bayar,
                         'jumlah_bayar'      => $nominal,
                         'metode_pembayaran' => $request->metode_pembayaran,
-                        'status'            => $request->status,
+                        'status'            => $statusEnum,
                         'catatan'           => 'Pembayaran Masal / Kolektor',
                         'kasir_user_id'     => Auth::id(),
                     ]
                 );
 
                 if ($request->gelombang === '1_15') {
-                    $pelanggan->status_1_15 = $request->status;
+                    $pelanggan->status_1_15 = $statusEnum;
                 } else {
-                    $pelanggan->status_16_30 = $request->status;
+                    $pelanggan->status_16_30 = $statusEnum;
                 }
                 $pelanggan->gelombang = $request->gelombang;
                 $pelanggan->save();

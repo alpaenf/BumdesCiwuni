@@ -722,7 +722,7 @@ const closeModal = () => {
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status Pembayaran</label>
                     <select v-model="payForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 focus:border-blue-500 focus:outline-none font-bold">
-                        <option value="AKTIF">AKTIF</option>
+                        <option value="LUNAS">LUNAS / AKTIF</option>
                         <option value="ISOLIR">ISOLIR</option>
                     </select>
                 </div>
@@ -789,7 +789,7 @@ const closeModal = () => {
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
                         <select v-model="massForm.status" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option value="AKTIF">AKTIF</option>
+                            <option value="LUNAS">LUNAS / AKTIF</option>
                             <option value="ISOLIR">ISOLIR</option>
                         </select>
                     </div>
