@@ -360,13 +360,7 @@
                 </td>
                 <td class="font-mono font-bold">{{ $p->paket ?? '-' }}</td>
                 <td class="text-center">
-                    @if($p->gelombang === '1_15')
-                        <span class="badge" style="background:#e0e7ff; color:#3730a3;">Gel 1</span>
-                    @elseif($p->gelombang === '16_30')
-                        <span class="badge" style="background:#ede9fe; color:#5b21b6;">Gel 2</span>
-                    @else
-                        -
-                    @endif
+                    <span class="badge" style="background:#e0e7ff; color:#3730a3;">Tgl 1 - 10</span>
                 </td>
                 <td class="text-right font-mono font-bold">Rp {{ number_format($p->total_tarikan, 0, ',', '.') }}</td>
                 <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->hasil_bumdes, 0, ',', '.') }}</td>

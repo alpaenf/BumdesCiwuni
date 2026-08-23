@@ -304,35 +304,20 @@ const pct = (count, total) => Math.round((count / total) * 100);
                         </div>
                     </div>
 
-                    <!-- Jadwal Gelombang -->
+                    <!-- Tenggat Pembayaran & Kepatuhan -->
                     <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Jadwal Gelombang Tagihan</h2>
-                            <span class="material-symbols-outlined text-slate-400 text-base">schedule</span>
+                            <h2 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Aturan Masa Pembayaran</h2>
+                            <span class="material-symbols-outlined text-blue-500 text-base">event_upcoming</span>
                         </div>
-                        <div class="space-y-3 pt-1">
-                            <!-- Gelombang 1 -->
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="font-bold text-indigo-600">Gelombang 1 (Tgl 1-15)</span>
-                                    <span class="text-slate-500 font-mono font-bold">{{ gel1Count }} <span class="text-slate-400 font-normal">({{ pct(gel1Count, gelTotal) }}%)</span></span>
-                                </div>
-                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-indigo-500 rounded-full transition-all duration-500"
-                                         :style="{ width: pct(gel1Count, gelTotal) + '%' }"></div>
-                                </div>
+                        <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-blue-600 text-white font-black text-[10px] uppercase rounded">Masa Bayar</span>
+                                <span class="text-xs font-extrabold text-blue-900">Tanggal 1 s.d 10</span>
                             </div>
-                            <!-- Gelombang 2 -->
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px]">
-                                    <span class="font-bold text-violet-600">Gelombang 2 (Tgl 16-Akhir)</span>
-                                    <span class="text-slate-500 font-mono font-bold">{{ gel2Count }} <span class="text-slate-400 font-normal">({{ pct(gel2Count, gelTotal) }}%)</span></span>
-                                </div>
-                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-violet-500 rounded-full transition-all duration-500"
-                                         :style="{ width: pct(gel2Count, gelTotal) + '%' }"></div>
-                                </div>
-                            </div>
+                            <p class="text-[11px] text-blue-800 leading-relaxed">
+                                Semua tagihan jatuh tempo tanggal 10. Pelanggan yang belum bayar hingga tgl 10 jam 23:59 WIB akan otomatis berstatus <b class="text-red-600">ISOLIR</b> pada tanggal 11.
+                            </p>
                         </div>
                     </div>
 
@@ -425,17 +410,11 @@ const pct = (count, total) => Math.round((count / total) * 100);
                                     <td class="px-4 py-3 text-right font-mono font-semibold text-slate-700 whitespace-nowrap">
                                         {{ row.total_tarikan ? new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(row.total_tarikan) : '-' }}
                                     </td>
-                                    <!-- Gelombang -->
+                                    <!-- Tenggat Bayar -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                                        <span v-if="row.gelombang === '1_15'"
-                                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-700 border border-indigo-200">
-                                            Gel. 1
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700 border border-slate-200">
+                                            🗓️ Tgl 10
                                         </span>
-                                        <span v-else-if="row.gelombang === '16_30'"
-                                              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-violet-100 text-violet-700 border border-violet-200">
-                                            Gel. 2
-                                        </span>
-                                        <span v-else class="text-slate-400 font-mono text-[10px]">-</span>
                                     </td>
                                     <!-- Status Tagihan -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">

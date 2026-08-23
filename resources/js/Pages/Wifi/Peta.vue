@@ -105,7 +105,7 @@ const buildPopup = (p) => {
     const fotoHtml = p.foto_rumah
         ? `<img src="/uploads/pelanggan_wifi/${p.foto_rumah}" class="w-full h-24 object-cover rounded-md mb-2" />`
         : '';
-    const gelLabel = p.gelombang === '16_30' ? 'Gel. 2 (16-Akhir)' : 'Gel. 1 (1-15)';
+    const gelLabel = 'Tgl 1 - 10';
     const statusVal = p.current_status || p.status_1_15 || '-';
     return `
         <div style="min-width:220px;font-family:system-ui,sans-serif;font-size:12px">
@@ -114,8 +114,8 @@ const buildPopup = (p) => {
             <p style="color:#64748b;margin:0 0 6px;font-size:11px">No. ${p.no ?? '-'} &bull; ID: ${p.no_id_pel ?? p.id}</p>
             ${p.paket ? `<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${p.paket}</span><br/>` : ''}
             <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
-                <div><span style="color:#94a3b8;font-size:10px">Gelombang</span><br/><b style="color:#4f46e5">${gelLabel}</b></div>
-                <div><span style="color:#94a3b8;font-size:10px">Status Tagihan</span><br/><b style="color:${statusVal==='LUNAS'?'#059669':statusVal==='TUNGGAKAN'?'#d97706':'#dc2626'}">${statusVal}</b></div>
+                <div><span style="color:#94a3b8;font-size:10px">Masa Bayar</span><br/><b style="color:#2563eb">Tgl 1 - 10</b></div>
+                <div><span style="color:#94a3b8;font-size:10px">Status Tagihan</span><br/><b style="color:${statusVal==='ISOLIR'?'#dc2626':'#059669'}">${statusVal === 'ISOLIR' ? '🔴 ISOLIR' : '🟢 AKTIF'}</b></div>
                 <div style="margin-top:4px"><span style="color:#94a3b8;font-size:10px">RT/RW</span><br/><b>${p.rt ?? '-'}/${p.rw ?? '-'}</b></div>
                 <div style="margin-top:4px"><span style="color:#94a3b8;font-size:10px">No WA</span><br/><b>${p.no_wa ?? '-'}</b></div>
                 <div style="margin-top:4px;grid-column:1/-1"><span style="color:#94a3b8;font-size:10px">Total Tarikan</span><br/><b>${rupiah(p.total_tarikan)}</b></div>
@@ -485,9 +485,9 @@ const resetFilters = () => {
                                     </span>
                                 </div>
                                 <div>
-                                    <span class="text-slate-400 text-[10px] block">Jadwal Gelombang</span>
-                                    <span class="font-bold text-indigo-700 text-[11px]">
-                                        {{ selectedPelanggan.gelombang === '16_30' ? 'Gel. 2 (16-Akhir)' : 'Gel. 1 (1-15)' }}
+                                    <span class="text-slate-400 text-[10px] block">Masa Bayar</span>
+                                    <span class="font-bold text-blue-700 text-[11px]">
+                                        Tanggal 1 - 10
                                     </span>
                                 </div>
                                 <div>

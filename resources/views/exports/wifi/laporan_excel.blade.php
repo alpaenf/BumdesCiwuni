@@ -114,7 +114,7 @@
                 <td style="font-weight:bold;">{{ $p->nama }}</td>
                 <td>{{ $p->provider ? $p->provider->nama_provider : 'Umum' }}</td>
                 <td style="text-align:center; font-weight:bold;">{{ $p->paket ?? '-' }}</td>
-                <td style="text-align:center;">{{ $p->gelombang === '1_15' ? 'Gel. 1' : ($p->gelombang === '16_30' ? 'Gel. 2' : '-') }}</td>
+                <td style="text-align:center;">Tgl 1 - 10</td>
                 <td style="mso-number-format:'\@'; text-align:center;">{{ $p->no_wa ?? '-' }}</td>
                 <td>{{ $p->alamat }} (RT {{ $p->rt }}/RW {{ $p->rw }})</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $p->total_tarikan }}</td>

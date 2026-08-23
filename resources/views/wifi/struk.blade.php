@@ -91,7 +91,7 @@
         ];
         $bln = $namaBulan[$pembayaran->periode_bulan] ?? $pembayaran->periode_bulan;
         $tglStr = $pembayaran->tanggal_bayar ? \Carbon\Carbon::parse($pembayaran->tanggal_bayar)->isoFormat('D MMMM Y') : date('d/m/Y');
-        $gel = $pembayaran->gelombang === '1_15' ? 'Gel. 1 (Tgl 1-15)' : 'Gel. 2 (Tgl 16-Akhir)';
+        $gel = 'Masa Bayar (Tgl 1 - 10)';
     @endphp
 
     <!-- BEGIN: MainContainer -->

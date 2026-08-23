@@ -372,7 +372,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <th class="p-3.5">Nama Pelanggan</th>
                                     <th class="p-3.5">Provider</th>
                                     <th class="p-3.5">Paket</th>
-                                    <th class="p-3.5 text-center">Gelombang</th>
+                                    <th class="p-3.5 text-center">Masa Bayar</th>
                                     <th class="p-3.5 text-right">Tarikan Warga</th>
                                     <th class="p-3.5 text-right">Hasil BUMDes</th>
                                     <th class="p-3.5 text-right">Hak Provider</th>
@@ -394,9 +394,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </td>
                                     <td class="p-3.5 whitespace-nowrap font-medium">{{ item.paket || '-' }}</td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="item.gelombang === '1_15'" class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-[10px] font-extrabold">Gel. 1</span>
-                                        <span v-else-if="item.gelombang === '16_30'" class="px-2 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-extrabold">Gel. 2</span>
-                                        <span v-else class="text-slate-400">-</span>
+                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-extrabold">Tgl 1 - 10</span>
                                     </td>
                                     <td class="p-3.5 text-right font-mono font-bold text-slate-900">{{ rupiah(item.total_tarikan) }}</td>
                                     <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.hasil_bumdes) }}</td>
