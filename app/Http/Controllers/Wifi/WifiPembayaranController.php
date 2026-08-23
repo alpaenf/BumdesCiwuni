@@ -84,7 +84,7 @@ class WifiPembayaranController extends Controller
         }
 
         // Get customers with latest payment status for selected period & gelombang
-        $pelanggan = $query->paginate($perPage)->withQueryString();
+        $pelanggan = $query->with('provider')->paginate($perPage)->withQueryString();
 
         // Attach last payment record for selected period to each customer in collection
         $pelangganIds = $pelanggan->pluck('id');

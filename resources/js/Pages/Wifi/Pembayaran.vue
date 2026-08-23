@@ -47,7 +47,7 @@ const getWaReminderUrl = (item) => {
     const bulan = getBulanName(selectedBulan.value);
     const tahun = selectedTahun.value;
 
-    const companyName = props.wifiSettings?.wa_company_name || 'PT. MEDIA CEPAT INDONESIA';
+    const companyName = item.provider?.nama_provider || props.wifiSettings?.wa_company_name || 'PT. MEDIA CEPAT INDONESIA';
     const bankAccounts = (props.wifiSettings?.bank_accounts && props.wifiSettings.bank_accounts.length)
         ? props.wifiSettings.bank_accounts
         : [
