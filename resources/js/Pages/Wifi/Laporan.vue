@@ -128,6 +128,11 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         <span class="material-symbols-outlined text-lg">cell_tower</span>
                         Master Provider
                     </Link>
+                    <Link :href="route('wifi.pendapatan.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                        Pendapatan Kotor
+                    </Link>
                     <a href="#"
                        class="flex items-center gap-3 px-4 py-3 bg-blue-600/10 text-blue-600 font-bold text-xs rounded-xl border border-blue-600/20">
                         <span class="material-symbols-outlined text-lg">summarize</span>

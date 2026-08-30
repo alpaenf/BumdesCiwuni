@@ -92,6 +92,7 @@
         $bln = $namaBulan[$pembayaran->periode_bulan] ?? $pembayaran->periode_bulan;
         $tglStr = $pembayaran->tanggal_bayar ? \Carbon\Carbon::parse($pembayaran->tanggal_bayar)->isoFormat('D MMMM Y') : date('d/m/Y');
         $gel = 'Masa Bayar (Tgl 1 - 10)';
+        $noStruk = preg_replace('/^TRX-?/i', '', $pembayaran->no_transaksi);
     @endphp
 
     <!-- BEGIN: MainContainer -->
@@ -100,7 +101,7 @@
         <header class="relative mb-4">
             <div class="flex flex-col items-center text-center">
                 <!-- Logo -->
-                <img alt="Logo BUMDes WiFi" class="h-10 w-auto mb-2" src="{{ asset('logowifi.png') }}" onerror="this.src='/logo.png'">
+                <img alt="Logo BUMDes WiFi" class="h-10 w-auto mb-2" src="{{ asset('logo2.png') }}" onerror="this.src='/logo2.png'">
                 <!-- Entity Info -->
                 <div class="w-full">
                     <div class="uppercase font-bold text-xs leading-tight">
@@ -119,7 +120,7 @@
                         Alamat : Kantor Desa Ciwuni, Kesugihan, Cilacap
                     </div>
                     <div class="text-[9px]">
-                        WA : <span class="font-bold">0812-3456-7890</span>
+                        WA : <span class="font-bold">085228357400</span>
                     </div>
                 </div>
             </div>
@@ -143,7 +144,7 @@
             
             <!-- Transaction Meta -->
             <div class="space-y-1 mb-2">
-                <div><span class="field-label">NO. STRUK</span>: <span class="font-mono font-bold">#{{ $pembayaran->no_transaksi }}</span></div>
+                <div><span class="field-label">NO. STRUK</span>: <span class="font-mono font-bold">#{{ $noStruk }}</span></div>
                 <div><span class="field-label">TANGGAL BAYAR</span>: {{ $tglStr }}</div>
                 <div><span class="field-label">KASIR / OPERATOR</span>: {{ $pembayaran->kasir ? $pembayaran->kasir->nama : 'Admin' }}</div>
             </div>
@@ -199,7 +200,7 @@
         ['t'=>'title',     'text'=>'STRUK PEMBAYARAN WIFI'],
         ['t'=>'center_sm', 'text'=>'[ '.$bln.' '.$pembayaran->periode_tahun.' ]'],
         ['t'=>'sep'],
-        ['t'=>'kv','label'=>'NO. STRUK',  'value'=>'#'.$pembayaran->no_transaksi],
+        ['t'=>'kv','label'=>'NO. STRUK',  'value'=>'#'.$noStruk],
         ['t'=>'kv','label'=>'TGL BAYAR',  'value'=>$tglStr],
         ['t'=>'kv','label'=>'KASIR',      'value'=>strtoupper($pembayaran->kasir ? $pembayaran->kasir->nama : 'ADMIN')],
         ['t'=>'sep'],

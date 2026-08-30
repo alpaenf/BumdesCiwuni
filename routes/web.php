@@ -282,6 +282,11 @@ Route::middleware(['auth'])->prefix('unit/wifi')->group(function () {
     Route::get('/laporan', [\App\Http\Controllers\Wifi\WifiLaporanController::class, 'index'])->name('wifi.laporan.index');
     Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\Wifi\WifiLaporanController::class, 'cetakPdf'])->name('wifi.laporan.cetak-pdf');
     Route::get('/laporan/export', [\App\Http\Controllers\Wifi\WifiLaporanController::class, 'export'])->name('wifi.laporan.export');
+
+    // Pendapatan Kotor WiFi
+    Route::get('/pendapatan', [\App\Http\Controllers\Wifi\WifiPendapatanController::class, 'index'])->name('wifi.pendapatan.index');
+    Route::get('/pendapatan/pdf', [\App\Http\Controllers\Wifi\WifiPendapatanController::class, 'pdf'])->name('wifi.pendapatan.pdf');
+    Route::get('/pendapatan/excel', [\App\Http\Controllers\Wifi\WifiPendapatanController::class, 'excel'])->name('wifi.pendapatan.excel');
 });
 
 require __DIR__.'/auth.php';

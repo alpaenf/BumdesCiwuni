@@ -213,10 +213,10 @@
     <!-- KOP SURAT BUMDES -->
     <div class="kop-surat">
         <div class="kop-brand">
-            <img src="/logowifi.png" alt="Logo WiFi" class="kop-logo" onerror="this.style.display='none'">
+            <img src="/logo2.png" alt="Logo WiFi" class="kop-logo" onerror="this.style.display='none'">
             <div class="kop-title">
                 <h1>BUMDes Ciwuni — Unit Usaha WiFi &amp; Internet Desa</h1>
-                <p>Alamat: Kantor Desa Ciwuni, Kec. Kesugihan, Kab. Cilacap | WA: 0812-3456-7890</p>
+                <p>Alamat: Kantor Desa Ciwuni, Kec. Kesugihan, Kab. Cilacap | WA: 085228357400</p>
             </div>
         </div>
         <div class="kop-meta">

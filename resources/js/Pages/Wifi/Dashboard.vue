@@ -103,6 +103,11 @@ const pct = (count, total) => Math.round((count / total) * 100);
                         <span class="material-symbols-outlined text-lg">cell_tower</span>
                         Master Provider
                     </Link>
+                    <Link :href="route('wifi.pendapatan.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                        Pendapatan Kotor
+                    </Link>
                     <Link :href="route('wifi.laporan.index')"
                           class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">summarize</span>

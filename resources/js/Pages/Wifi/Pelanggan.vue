@@ -488,6 +488,11 @@ const activeFilterCount = computed(() =>
                         <span class="material-symbols-outlined text-lg">cell_tower</span>
                         Master Provider
                     </Link>
+                    <Link :href="route('wifi.pendapatan.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                        Pendapatan Kotor
+                    </Link>
                     <Link :href="route('wifi.laporan.index')"
                           class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">summarize</span>
@@ -1809,7 +1814,7 @@ const activeFilterCount = computed(() =>
                     <tbody class="divide-y divide-slate-100">
                         <tr v-for="(h, idx) in customerHistory" :key="h.id" class="hover:bg-slate-50/80 transition-colors">
                             <td class="py-3 px-3 text-center font-mono text-slate-400">{{ idx + 1 }}</td>
-                            <td class="py-3 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">{{ h.no_transaksi }}</td>
+                            <td class="py-3 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">{{ h.no_transaksi?.replace(/^TRX-?/i, '') }}</td>
                             <td class="py-3 px-3 whitespace-nowrap">
                                 <div class="font-bold text-slate-900">Bulan {{ getBulanName(h.periode_bulan) }} {{ h.periode_tahun }}</div>
                                 <span class="inline-block mt-0.5 text-[9px] font-bold px-1.5 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded">

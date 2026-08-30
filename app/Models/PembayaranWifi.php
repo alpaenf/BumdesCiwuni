@@ -71,7 +71,8 @@ class PembayaranWifi extends Model
 
         $pesan = "*BUKTI PEMBAYARAN WIFI BUMDES CIWUNI*\n";
         $pesan .= "----------------------------------------\n";
-        $pesan .= "No. Struk      : *{$this->no_transaksi}*\n";
+        $noStruk = preg_replace('/^TRX-?/i', '', $this->no_transaksi);
+        $pesan .= "No. Struk      : *#{$noStruk}*\n";
         $pesan .= "Tanggal        : {$tglBayarStr}\n\n";
         $pesan .= "*DATA PELANGGAN*\n";
         $pesan .= "• Nama         : *{$this->pelanggan->nama}*\n";

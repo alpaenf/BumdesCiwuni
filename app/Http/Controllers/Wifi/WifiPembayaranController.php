@@ -193,9 +193,12 @@ class WifiPembayaranController extends Controller
             // Map status for MySQL enum ('LUNAS', 'TUNGGAKAN', 'ISOLIR')
             $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
 
-            // Generate nomor transaksi unik TRX-WF-202608-0001
-            $prefix = sprintf('TRX-WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
-            $lastCount = PembayaranWifi::where('no_transaksi', 'like', "{$prefix}%")->count();
+            // Generate nomor transaksi unik WF-202608-0001
+            $prefix = sprintf('WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
+            $lastCount = PembayaranWifi::where(function ($q) use ($prefix) {
+                $q->where('no_transaksi', 'like', "{$prefix}%")
+                  ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
+            })->count();
             $noTransaksi = $prefix . sprintf('%04d', $lastCount + 1);
 
             // Create or update payment record for this customer + period + gelombang
@@ -253,8 +256,11 @@ class WifiPembayaranController extends Controller
             $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
 
             foreach ($pelangganList as $pelanggan) {
-                $prefix = sprintf('TRX-WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
-                $lastCount = PembayaranWifi::where('no_transaksi', 'like', "{$prefix}%")->count();
+                $prefix = sprintf('WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
+                $lastCount = PembayaranWifi::where(function ($q) use ($prefix) {
+                    $q->where('no_transaksi', 'like', "{$prefix}%")
+                      ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
+                })->count();
                 $noTransaksi = $prefix . sprintf('%04d', $lastCount + 1);
 
                 $nominal = $pelanggan->total_tarikan ?? 0;

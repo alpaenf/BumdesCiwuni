@@ -302,6 +302,11 @@ const closeModal = () => {
                         <span class="material-symbols-outlined text-lg">cell_tower</span>
                         Master Provider
                     </Link>
+                    <Link :href="route('wifi.pendapatan.index')"
+                          class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                        Pendapatan Kotor
+                    </Link>
                     <Link :href="route('wifi.laporan.index')"
                           class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">summarize</span>
@@ -849,7 +854,7 @@ const closeModal = () => {
                      class="border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-50 transition">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="font-mono text-xs font-bold text-slate-900">{{ h.no_transaksi }}</span>
+                            <span class="font-mono text-xs font-bold text-slate-900">{{ h.no_transaksi?.replace(/^TRX-?/i, '') }}</span>
                             <span :class="h.status === 'ISOLIR' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'"
                                   class="px-2 py-0.5 border rounded text-[10px] font-extrabold uppercase">
                                 {{ h.status === 'ISOLIR' ? 'ISOLIR' : 'AKTIF' }}
