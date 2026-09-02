@@ -56,13 +56,36 @@ class WifiPembayaranController extends Controller
             });
         }
 
-        // Filter status gelombang aktif
+        // Filter status tagihan pada periode aktif (LUNAS / SUDAH BAYAR, BELUM BAYAR, ISOLIR)
         $statusCol = $gelombang === '1_15' ? 'status_1_15' : 'status_16_30';
         if ($statusFilter = $request->input('status')) {
-            if ($statusFilter === 'KOSONG') {
+            if (in_array($statusFilter, ['LUNAS', 'SUDAH_BAYAR', 'AKTIF'])) {
+                $query->whereHas('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
+                    $q->where('periode_bulan', $bulan)
+                      ->where('periode_tahun', $tahun)
+                      ->where('gelombang', $gelombang)
+                      ->whereIn('status', ['LUNAS', 'AKTIF']);
+                });
+            } elseif (in_array($statusFilter, ['BELUM_BAYAR', 'BELUM'])) {
+                $query->whereDoesntHave('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
+                    $q->where('periode_bulan', $bulan)
+                      ->where('periode_tahun', $tahun)
+                      ->where('gelombang', $gelombang)
+                      ->whereIn('status', ['LUNAS', 'AKTIF']);
+                });
+            } elseif ($statusFilter === 'ISOLIR') {
+                if (now()->day >= 11) {
+                    $query->whereDoesntHave('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
+                        $q->where('periode_bulan', $bulan)
+                          ->where('periode_tahun', $tahun)
+                          ->where('gelombang', $gelombang)
+                          ->whereIn('status', ['LUNAS', 'AKTIF']);
+                    });
+                } else {
+                    $query->where($statusCol, 'ISOLIR');
+                }
+            } elseif ($statusFilter === 'KOSONG') {
                 $query->whereNull($statusCol);
-            } else {
-                $query->where($statusCol, $statusFilter);
             }
         }
 
@@ -96,12 +119,16 @@ class WifiPembayaranController extends Controller
             ->get()
             ->keyBy('pelanggan_wifi_id');
 
-        $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords, $gelombang) {
+        $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords) {
             $item->pembayaran_periode = $pembayaranRecords->get($item->id);
-            // If paid this period, use that status; otherwise apply auto-isolir logic
-            $item->current_status = $item->pembayaran_periode
-                ? $item->pembayaran_periode->status
-                : $this->computeCurrentStatus($item, null);
+            // Jika sudah ada pembayaran di periode ini -> LUNAS
+            if ($item->pembayaran_periode && in_array(strtoupper($item->pembayaran_periode->status ?? ''), ['LUNAS', 'AKTIF'])) {
+                $item->current_status = 'LUNAS';
+            } elseif (now()->day >= 11) {
+                $item->current_status = 'ISOLIR';
+            } else {
+                $item->current_status = 'BELUM_BAYAR';
+            }
             return $item;
         });
 
@@ -109,17 +136,17 @@ class WifiPembayaranController extends Controller
         $allPelanggan = PelangganWifi::all();
         $totalPelanggan = $allPelanggan->count();
 
-        $totalAktif  = 0;
-        $totalIsolir = 0;
-        foreach ($allPelanggan as $pItem) {
-            $pPay = $pembayaranRecords->get($pItem->id);
-            $st = $this->computeCurrentStatus($pItem, $pPay);
-            if ($st === 'ISOLIR') {
-                $totalIsolir++;
-            } else {
-                $totalAktif++;
-            }
-        }
+        // Ambil semua ID pelanggan yang sudah bayar pada periode aktif ini
+        $paidPelangganIds = PembayaranWifi::where('periode_bulan', $bulan)
+            ->where('periode_tahun', $tahun)
+            ->where('gelombang', $gelombang)
+            ->whereIn('status', ['LUNAS', 'AKTIF'])
+            ->pluck('pelanggan_wifi_id')
+            ->toArray();
+
+        $totalLunas = count($paidPelangganIds);
+        $totalBelumBayar = max(0, $totalPelanggan - $totalLunas);
+        $totalIsolir = now()->day >= 11 ? $totalBelumBayar : PelangganWifi::where($statusCol, 'ISOLIR')->count();
 
         $totalNominalBulanIni = PembayaranWifi::where('periode_bulan', $bulan)
             ->where('periode_tahun', $tahun)
@@ -160,7 +187,9 @@ class WifiPembayaranController extends Controller
             ],
             'stats' => [
                 'total_pelanggan'          => $totalPelanggan,
-                'total_aktif'              => $totalAktif,
+                'total_lunas'              => $totalLunas,
+                'total_belum_bayar'        => $totalBelumBayar,
+                'total_aktif'              => $totalLunas,
                 'total_isolir'             => $totalIsolir,
                 'total_nominal_terkumpul'  => $totalNominalBulanIni,
                 'kas_hari_ini'             => $kasHariIni,

@@ -505,15 +505,15 @@ const cancelDeleteModal = () => {
                     </div>
 
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
-                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Pelanggan Aktif</span>
-                        <p class="text-xl font-black text-emerald-600">{{ stats.total_aktif }}</p>
+                        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Sudah Lunas</span>
+                        <p class="text-xl font-black text-emerald-600">{{ stats.total_lunas ?? stats.total_aktif }}</p>
                         <span class="text-[10px] text-slate-400">pelanggan</span>
                     </div>
 
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1">
-                        <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block">Pelanggan Isolir</span>
-                        <p class="text-xl font-black text-red-600">{{ stats.total_isolir }}</p>
-                        <span class="text-[10px] text-slate-400">pelanggan</span>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">Belum Bayar</span>
+                        <p class="text-xl font-black text-amber-600">{{ stats.total_belum_bayar }}</p>
+                        <span class="text-[10px] text-slate-400">pelanggan ({{ stats.total_isolir }} isolir)</span>
                     </div>
 
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-1 col-span-2 lg:col-span-1">
@@ -535,9 +535,10 @@ const cancelDeleteModal = () => {
 
                         <!-- Filter Status -->
                         <select v-model="filterStatus" @change="applyFilters"
-                                class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-slate-700 focus:border-blue-500 focus:outline-none">
+                                class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-slate-700 focus:border-blue-500 focus:outline-none font-semibold">
                             <option value="">Semua Status</option>
-                            <option value="AKTIF">Aktif</option>
+                            <option value="LUNAS">Sudah Bayar / Lunas</option>
+                            <option value="BELUM_BAYAR">Belum Bayar</option>
                             <option value="ISOLIR">Isolir</option>
                         </select>
 
@@ -584,13 +585,17 @@ const cancelDeleteModal = () => {
                                 </div>
                                 <div class="shrink-0 text-right">
                                     <p class="font-mono font-bold text-slate-800 text-xs">{{ rupiah(item.total_tarikan) }}</p>
-                                    <span v-if="item.current_status === 'ISOLIR'"
+                                    <span v-if="item.current_status === 'LUNAS'"
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300 mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                    </span>
+                                    <span v-else-if="item.current_status === 'ISOLIR'"
                                           class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300 mt-1">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
                                     </span>
                                     <span v-else
-                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300 mt-1">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 border border-amber-300 mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
                                     </span>
                                 </div>
                             </div>
@@ -674,15 +679,20 @@ const cancelDeleteModal = () => {
                                         {{ rupiah(item.total_tarikan) }}
                                     </td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="item.current_status === 'ISOLIR'"
+                                        <span v-if="item.current_status === 'LUNAS'"
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                            LUNAS
+                                        </span>
+                                        <span v-else-if="item.current_status === 'ISOLIR'"
                                               class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
                                             <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
                                             ISOLIR
                                         </span>
                                         <span v-else
-                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                            AKTIF
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 border border-amber-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                            BELUM BAYAR
                                         </span>
                                     </td>
                                     <td class="p-3.5 text-center whitespace-nowrap">

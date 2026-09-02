@@ -126,6 +126,8 @@ class WifiPendapatanController extends Controller
                 $rowItem = [
                     'id'               => $p->id,
                     'no_transaksi'     => preg_replace('/^TRX-?/i', '', $p->no_transaksi),
+                    'periode_bulan'    => $p->periode_bulan,
+                    'periode_tahun'    => $p->periode_tahun,
                     'tanggal'          => $p->tanggal_bayar ? $p->tanggal_bayar->format('Y-m-d') : ($p->created_at ? $p->created_at->format('Y-m-d') : '-'),
                     'no_id_pel'        => $pelanggan->no_id_pel ?? '-',
                     'pelanggan'        => $pelanggan->nama ?? '-',
@@ -158,6 +160,8 @@ class WifiPendapatanController extends Controller
                 $rowItem = [
                     'id'               => $p->id,
                     'no_transaksi'     => preg_replace('/^TRX-?/i', '', $p->no_transaksi),
+                    'periode_bulan'    => $p->periode_bulan,
+                    'periode_tahun'    => $p->periode_tahun,
                     'tanggal'          => $p->tanggal_bayar ? $p->tanggal_bayar->format('Y-m-d') : ($p->created_at ? $p->created_at->format('Y-m-d') : '-'),
                     'no_id_pel'        => $pelanggan->no_id_pel ?? '-',
                     'pelanggan'        => $pelanggan->nama ?? '-',
