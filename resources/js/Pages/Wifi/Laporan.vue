@@ -347,15 +347,19 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <span v-if="r.isolir_count > 0" class="text-red-600 ml-1">{{ r.isolir_count }} Isolir</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-slate-400">Bruto:</span>
+                                    <span class="text-slate-400">Tarif Warga:</span>
                                     <span class="font-mono font-bold text-slate-900 ml-1">{{ rupiah(r.total_tarikan) }}</span>
                                 </div>
                                 <div>
-                                    <span class="text-slate-400">BUMDes:</span>
-                                    <span class="font-mono font-bold text-emerald-600 ml-1">{{ rupiah(r.total_hasil_bumdes) }}</span>
+                                    <span class="text-slate-400">Dasar Non PPN:</span>
+                                    <span class="font-mono font-bold text-slate-700 ml-1">{{ rupiah(r.total_dasar_non_ppn || r.total_tarikan) }}</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-slate-400">Provider:</span>
+                                    <span class="text-slate-400">Hak BUMDes:</span>
+                                    <span class="font-mono font-bold text-emerald-600 ml-1">{{ rupiah(r.total_hasil_bumdes) }}</span>
+                                </div>
+                                <div class="col-span-2 text-right pt-1 border-t border-slate-100">
+                                    <span class="text-slate-400">Setoran Provider:</span>
                                     <span class="font-mono font-bold text-blue-600 ml-1">{{ rupiah(r.total_hak_provider) }}</span>
                                 </div>
                             </div>
@@ -369,8 +373,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                 <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                                     <th class="p-3.5">Provider / Mitra ISP</th>
                                     <th class="p-3.5 text-center">Skema Bagi Hasil</th>
-                                    <th class="p-3.5 text-center">Jumlah Pelanggan</th>
-                                    <th class="p-3.5 text-right">Total Tarikan Bruto</th>
+                                    <th class="p-3.5 text-center">Pelanggan</th>
+                                    <th class="p-3.5 text-right">Tarif Warga (Omset)</th>
+                                    <th class="p-3.5 text-right">Dasar Non PPN</th>
                                     <th class="p-3.5 text-right">Hasil BUMDes</th>
                                     <th class="p-3.5 text-right">Setoran Provider</th>
                                     <th class="p-3.5 text-center">Status Pembayaran</th>
@@ -387,8 +392,15 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </td>
                                     <td class="p-3.5 text-center font-bold text-slate-800">{{ r.total_pelanggan }}</td>
                                     <td class="p-3.5 text-right font-mono font-bold text-slate-900">{{ rupiah(r.total_tarikan) }}</td>
-                                    <td class="p-3.5 text-right font-mono font-extrabold text-emerald-600">{{ rupiah(r.total_hasil_bumdes) }}</td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(r.total_hak_provider) }}</td>
+                                    <td class="p-3.5 text-right font-mono font-bold text-slate-700">{{ rupiah(r.total_dasar_non_ppn || r.total_tarikan) }}</td>
+                                    <td class="p-3.5 text-right font-mono font-extrabold text-emerald-600">
+                                        <div>{{ rupiah(r.total_hasil_bumdes) }}</div>
+                                        <span v-if="r.tipe_bagi_hasil === 'PERSENTASE'" class="text-[9px] text-slate-400 font-sans block">9% dari Dasar</span>
+                                    </td>
+                                    <td class="p-3.5 text-right font-mono font-bold text-blue-600">
+                                        <div>{{ rupiah(r.total_hak_provider) }}</div>
+                                        <span v-if="r.tipe_bagi_hasil === 'PERSENTASE'" class="text-[9px] text-slate-400 font-sans block">Dasar - BUMDes</span>
+                                    </td>
                                     <td class="p-3.5 text-center">
                                         <span class="text-[11px] font-bold text-emerald-600">{{ r.lunas_count ?? 0 }} Lunas</span>
                                         <span v-if="(r.belum_bayar_count ?? 0) > 0" class="ml-2 text-[11px] font-bold text-rose-600">{{ r.belum_bayar_count }} Belum Bayar</span>

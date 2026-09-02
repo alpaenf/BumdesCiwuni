@@ -637,16 +637,50 @@ const executeDeletePayment = () => {
                                 </tbody>
                                 <tfoot v-if="detailPersentase.length > 0">
                                     <tr class="border-t-2 border-slate-200 font-bold bg-slate-50/80">
-                                        <td colspan="5" class="py-3 px-3 text-slate-900 uppercase">Total Skema Persentase</td>
+                                        <td colspan="5" class="py-3 px-3 text-slate-900 uppercase">Total Skema Persentase:</td>
                                         <td class="py-3 px-3 text-right font-mono text-slate-900">{{ rupiah(detailPersentase.reduce((acc, c) => acc + c.total_tarikan, 0)) }}</td>
-                                        <td class="py-3 px-3 text-right font-mono text-slate-700">{{ rupiah(detailPersentase.reduce((acc, c) => acc + (c.dasar_provider || 0), 0)) }}</td>
-                                        <td></td>
+                                        <td class="py-3 px-3 text-right font-mono text-slate-900 font-extrabold">{{ rupiah(detailPersentase.reduce((acc, c) => acc + (c.dasar_provider || 0), 0)) }}</td>
+                                        <td class="py-3 px-3 text-center text-[10px] text-blue-700 font-bold">9%</td>
                                         <td class="py-3 px-3 text-right font-mono text-emerald-700 font-black">{{ rupiah(pendapatanPersentase) }}</td>
-                                        <td class="py-3 px-3 text-right font-mono text-indigo-600">{{ rupiah(detailPersentase.reduce((acc, c) => acc + c.hak_provider, 0)) }}</td>
+                                        <td class="py-3 px-3 text-right font-mono text-indigo-600 font-extrabold">{{ rupiah(detailPersentase.reduce((acc, c) => acc + c.hak_provider, 0)) }}</td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+
+                        <!-- Card Alur Transparan: Jumlahkan Seluruh Dasar Tarikan -> Hitung 9% Hak BUMDes -->
+                        <div class="mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="material-symbols-outlined text-blue-600 text-base">calculate</span>
+                                <h5 class="text-xs font-black text-slate-900 uppercase tracking-wider">Alur Perhitungan Bagi Hasil (Dasar Non-PPN)</h5>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                                    <div class="flex items-center justify-between text-slate-500 mb-1">
+                                        <span class="text-[10px] uppercase font-bold">1. Total Dasar Non PPN</span>
+                                        <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded font-mono">{{ detailPersentase.length }} TRX</span>
+                                    </div>
+                                    <div class="text-base font-black text-slate-900 font-mono">{{ rupiah(totalDasarProvider) }}</div>
+                                    <p class="text-[10px] text-slate-400 mt-1">Total seluruh nilai dasar tarikan non-PPN yang dikumpulkan</p>
+                                </div>
+                                <div class="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200 shadow-2xs">
+                                    <div class="flex items-center justify-between text-emerald-700 mb-1">
+                                        <span class="text-[10px] uppercase font-bold">2. Hak BUMDes (9%)</span>
+                                        <span class="text-[10px] bg-emerald-100 px-1.5 py-0.5 rounded font-bold text-emerald-800">KOMISI BUMDES</span>
+                                    </div>
+                                    <div class="text-base font-black text-emerald-700 font-mono">{{ rupiah(pendapatanPersentase) }}</div>
+                                    <p class="text-[10px] text-emerald-600 mt-1 font-medium">{{ rupiah(totalDasarProvider) }} × 9%</p>
+                                </div>
+                                <div class="bg-blue-50/80 p-3.5 rounded-xl border border-blue-200 shadow-2xs">
+                                    <div class="flex items-center justify-between text-blue-700 mb-1">
+                                        <span class="text-[10px] uppercase font-bold">3. Setor Bersih Provider</span>
+                                        <span class="text-[10px] bg-blue-100 px-1.5 py-0.5 rounded font-bold text-blue-800">KE ISP</span>
+                                    </div>
+                                    <div class="text-base font-black text-blue-700 font-mono">{{ rupiah(totalHakProvider) }}</div>
+                                    <p class="text-[10px] text-blue-600 mt-1 font-medium">{{ rupiah(totalDasarProvider) }} - {{ rupiah(pendapatanPersentase) }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

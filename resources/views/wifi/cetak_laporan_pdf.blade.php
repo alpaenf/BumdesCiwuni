@@ -262,13 +262,14 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width:200px;">Provider / Mitra ISP</th>
-                <th class="text-center" style="width:100px;">Skema Bagi Hasil</th>
-                <th class="text-center" style="width:90px;">Pelanggan</th>
-                <th class="text-right" style="width:110px;">Total Tarikan</th>
-                <th class="text-right" style="width:110px;">Hasil BUMDes</th>
-                <th class="text-right" style="width:110px;">Hak Provider</th>
-                <th class="text-center" style="width:120px;">Status Pembayaran</th>
+                <th style="width:160px;">Provider / Mitra ISP</th>
+                <th class="text-center" style="width:85px;">Skema</th>
+                <th class="text-center" style="width:65px;">Pelanggan</th>
+                <th class="text-right" style="width:95px;">Tarif Warga</th>
+                <th class="text-right" style="width:95px;">Dasar Non PPN</th>
+                <th class="text-right" style="width:95px;">Hasil BUMDes</th>
+                <th class="text-right" style="width:95px;">Setor Provider</th>
+                <th class="text-center" style="width:90px;">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -284,12 +285,13 @@
                 </td>
                 <td class="text-center font-bold">{{ $r['total_pelanggan'] }}</td>
                 <td class="text-right font-mono font-bold">Rp {{ number_format($r['total_tarikan'], 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold">Rp {{ number_format($r['total_dasar_non_ppn'] ?? $r['total_tarikan'], 0, ',', '.') }}</td>
                 <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($r['total_hasil_bumdes'], 0, ',', '.') }}</td>
                 <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($r['total_hak_provider'], 0, ',', '.') }}</td>
                 <td class="text-center">
                     <span class="badge badge-lunas">{{ $r['lunas_count'] }} Lunas</span>
-                    @if($r['tunggakan_count'] > 0)
-                        <span class="badge badge-tunggakan" style="margin-left:3px;">{{ $r['tunggakan_count'] }} Tgk</span>
+                    @if(($r['belum_bayar_count'] ?? 0) > 0)
+                        <span class="badge badge-tunggakan" style="margin-left:3px;">{{ $r['belum_bayar_count'] }} Blm</span>
                     @endif
                 </td>
             </tr>
