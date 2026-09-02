@@ -294,13 +294,15 @@
             <div class="summary-card" style="background-color: #eff6ff; border-color: #bfdbfe;">
                 <div class="summary-card-title" style="color: #1e40af;">Total Pendapatan Kotor BUMDes</div>
                 <div class="summary-card-value" style="color: #1e3a8a;">Rp {{ number_format($pendapatanKotor, 0, ',', '.') }}</div>
-                <div class="summary-card-subtext">Total pendapatan kotor unit usaha WiFi sebelum potongan</div>
+                <div class="summary-card-subtext">Total pendapatan kotor unit usaha WiFi sebelum potongan operasional</div>
             </div>
             <div class="summary-card">
-                <div class="summary-card-title">Rincian Sumber Pendapatan</div>
-                <div style="font-size: 11px; margin-top: 4px; line-height: 1.6;">
+                <div class="summary-card-title">Rincian Sumber &amp; Kas Pembayaran</div>
+                <div style="font-size: 10px; margin-top: 4px; line-height: 1.6;">
                     <div>• Skema Persentase (9%): <strong>Rp {{ number_format($pendapatanPersentase, 0, ',', '.') }}</strong></div>
                     <div>• Skema Admin Flat: <strong>Rp {{ number_format($pendapatanAdminFlat, 0, ',', '.') }}</strong></div>
+                    <div>• Penerimaan Tunai (Cash): <strong style="color:#15803d;">Rp {{ number_format($totalTunai ?? 0, 0, ',', '.') }}</strong> | Transfer: <strong style="color:#1d4ed8;">Rp {{ number_format($totalTransfer ?? 0, 0, ',', '.') }}</strong></div>
+                    <div>• Dasar Tarikan Non PPN: <strong>Rp {{ number_format($totalDasarProvider ?? 0, 0, ',', '.') }}</strong></div>
                 </div>
             </div>
         </div>
@@ -322,17 +324,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($distribusi as $d)
+                    @foreach($distribusi as $item)
                         @php
-                            $isLaba = $d['nama'] === 'Laba Bersih BUMDes';
-                            $isTotal = $d['nama'] === 'Total Pengambilan';
+                            $isLaba = $item['nama'] === 'Laba Bersih BUMDes';
+                            $isTotal = $item['nama'] === 'Total Pengambilan';
+                            $rowStyle = $isLaba ? 'background-color: #f0fdf4; font-weight: bold;' : ($isTotal ? 'background-color: #fefce8; font-weight: bold;' : '');
+                            $textClass = $isLaba && $item['nominal'] < 0 ? 'text-danger' : ($isLaba ? 'text-success' : '');
                         @endphp
-                        <tr style="{{ ($isLaba || $isTotal) ? 'font-weight: 700; background-color: ' . ($isLaba ? '#f0fdf4' : '#fef9c3') . ';' : '' }}">
-                            <td>{{ $d['nama'] }}</td>
-                            <td class="angka" style="{{ $isLaba ? ($d['nominal'] < 0 ? 'color:#dc2626;' : 'color:#15803d;') : '' }}">
-                                Rp {{ number_format($d['nominal'], 0, ',', '.') }}
-                            </td>
-                            <td class="angka">{{ $d['persen'] }}%</td>
+                        <tr style="{{ $rowStyle }}">
+                            <td>{{ $item['nama'] }}</td>
+                            <td class="angka {{ $textClass }}">Rp {{ number_format($item['nominal'], 0, ',', '.') }}</td>
+                            <td class="angka">{{ $item['persen'] }}%</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -343,22 +345,16 @@
         <div class="summary-section-title">Detail Pendapatan Skema Persentase (9%)</div>
         <div class="table-responsive">
             <table>
-                <colgroup>
-                    <col style="width: 12%;" />
-                    <col style="width: 28%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 15%;" />
-                    <col style="width: 10%;" />
-                    <col style="width: 15%;" />
-                </colgroup>
                 <thead>
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Pelanggan</th>
-                        <th>Provider</th>
-                        <th class="angka">Total Tarikan</th>
-                        <th style="text-align: center;">Skema</th>
-                        <th class="angka">Hak BUMDes</th>
+                        <th style="width: 10%;">Tanggal</th>
+                        <th style="width: 22%;">Pelanggan</th>
+                        <th style="width: 15%;">Provider</th>
+                        <th class="angka" style="width: 14%;">Tarif Warga</th>
+                        <th class="angka" style="width: 14%;">Dasar Non PPN</th>
+                        <th style="text-align: center; width: 8%;">Skema</th>
+                        <th class="angka" style="width: 14%;">Hak BUMDes</th>
+                        <th style="text-align: center; width: 13%;">Metode</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -371,12 +367,21 @@
                             </td>
                             <td>{{ $p['provider'] }}</td>
                             <td class="angka">Rp {{ number_format($p['total_tarikan'], 0, ',', '.') }}</td>
+                            <td class="angka" style="color:#475569;">Rp {{ number_format($p['dasar_provider'] ?? $p['total_tarikan'], 0, ',', '.') }}</td>
                             <td style="text-align: center;">{{ $p['nilai_skema'] }}</td>
                             <td class="angka" style="font-weight: 600; color: #15803d;">Rp {{ number_format($p['hak_bumdes'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; font-weight: bold; font-size: 8px;">
+                                @php $met = strtoupper(trim($p['metode'] ?? 'TUNAI')); @endphp
+                                @if(in_array($met, ['TRANSFER', 'BANK', 'QRIS']))
+                                    <span style="color:#1d4ed8; background:#dbeafe; padding:2px 6px; border-radius:4px;">TRANSFER</span>
+                                @else
+                                    <span style="color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px;">TUNAI</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi skema persentase pada periode ini.</td>
+                            <td colspan="8" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi skema persentase pada periode ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -387,22 +392,16 @@
         <div class="summary-section-title">Detail Pendapatan Skema Admin Flat</div>
         <div class="table-responsive">
             <table>
-                <colgroup>
-                    <col style="width: 12%;" />
-                    <col style="width: 28%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 15%;" />
-                    <col style="width: 10%;" />
-                    <col style="width: 15%;" />
-                </colgroup>
                 <thead>
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Pelanggan</th>
-                        <th>Provider</th>
-                        <th class="angka">Total Tarikan</th>
-                        <th style="text-align: center;">Biaya Admin</th>
-                        <th class="angka">Hak BUMDes</th>
+                        <th style="width: 10%;">Tanggal</th>
+                        <th style="width: 22%;">Pelanggan</th>
+                        <th style="width: 15%;">Provider</th>
+                        <th class="angka" style="width: 14%;">Tarif Warga</th>
+                        <th class="angka" style="width: 14%;">Dasar Non PPN</th>
+                        <th style="text-align: center; width: 10%;">Biaya Admin</th>
+                        <th class="angka" style="width: 14%;">Hak BUMDes</th>
+                        <th style="text-align: center; width: 11%;">Metode</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -415,12 +414,21 @@
                             </td>
                             <td>{{ $f['provider'] }}</td>
                             <td class="angka">Rp {{ number_format($f['total_tarikan'], 0, ',', '.') }}</td>
+                            <td class="angka" style="color:#475569;">Rp {{ number_format($f['dasar_provider'] ?? $f['total_tarikan'], 0, ',', '.') }}</td>
                             <td style="text-align: center;">{{ $f['nilai_skema'] }}</td>
                             <td class="angka" style="font-weight: 600; color: #15803d;">Rp {{ number_format($f['hak_bumdes'], 0, ',', '.') }}</td>
+                            <td style="text-align: center; font-weight: bold; font-size: 8px;">
+                                @php $met = strtoupper(trim($f['metode'] ?? 'TUNAI')); @endphp
+                                @if(in_array($met, ['TRANSFER', 'BANK', 'QRIS']))
+                                    <span style="color:#1d4ed8; background:#dbeafe; padding:2px 6px; border-radius:4px;">TRANSFER</span>
+                                @else
+                                    <span style="color:#15803d; background:#dcfce7; padding:2px 6px; border-radius:4px;">TUNAI</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi skema admin flat pada periode ini.</td>
+                            <td colspan="8" style="text-align: center; color: #64748b; padding: 12px;">Tidak ada transaksi skema admin flat pada periode ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

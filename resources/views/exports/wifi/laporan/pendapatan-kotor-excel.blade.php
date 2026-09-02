@@ -1,6 +1,6 @@
 @php
     $headerColor = '#1e3a8a';
-    $cols = 8;
+    $cols = 11;
     $bulanNama = $bulanNama ?? 'Semua Bulan';
     $tahun     = $tahun ?? now()->year;
     $tanggal   = $tanggal ?? null;
@@ -58,6 +58,18 @@
         <td colspan="{{ $cols - 4 }}" style="border:1px solid #cbd5e1; padding:4px; text-align:right;">Rp{{ number_format($pendapatanAdminFlat, 0, ',', '.') }}</td>
     </tr>
     <tr>
+        <td colspan="4" style="border:1px solid #cbd5e1; padding:4px; color:#15803d; font-weight:bold;">Penerimaan Kas (Tunai / Cash)</td>
+        <td colspan="{{ $cols - 4 }}" style="border:1px solid #cbd5e1; padding:4px; text-align:right; color:#15803d; font-weight:bold;">Rp{{ number_format($totalTunai ?? 0, 0, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <td colspan="4" style="border:1px solid #cbd5e1; padding:4px; color:#1d4ed8; font-weight:bold;">Penerimaan Transfer Bank</td>
+        <td colspan="{{ $cols - 4 }}" style="border:1px solid #cbd5e1; padding:4px; text-align:right; color:#1d4ed8; font-weight:bold;">Rp{{ number_format($totalTransfer ?? 0, 0, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <td colspan="4" style="border:1px solid #cbd5e1; padding:4px; color:#475569; font-weight:bold;">Total Dasar Tarikan Non PPN</td>
+        <td colspan="{{ $cols - 4 }}" style="border:1px solid #cbd5e1; padding:4px; text-align:right; color:#475569; font-weight:bold;">Rp{{ number_format($totalDasarProvider ?? 0, 0, ',', '.') }}</td>
+    </tr>
+    <tr>
         <td colspan="4" style="border:1px solid #cbd5e1; padding:4px; color:#64748b;">Total Tarikan Bruto Pelanggan (Omset)</td>
         <td colspan="{{ $cols - 4 }}" style="border:1px solid #cbd5e1; padding:4px; text-align:right; color:#64748b;">Rp{{ number_format($totalTarikanBruto, 0, ',', '.') }}</td>
     </tr>
@@ -106,9 +118,12 @@
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; padding:4px;">ID / Nama Pelanggan</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; padding:4px;">Provider ISP</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; padding:4px;">Paket</th>
-        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Total Bayar</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Tarif Warga (Rp)</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Dasar Non PPN (Rp)</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:center; padding:4px;">Skema</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Hak BUMDes</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Hak Provider</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:center; padding:4px;">Metode Bayar</th>
     </tr>
     @forelse($detailPersentase as $p)
     <tr>
@@ -118,8 +133,13 @@
         <td style="border:1px solid #e2e8f0; padding:4px;">{{ $p['provider'] }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px;">{{ $p['paket'] }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px; text-align:right;">{{ number_format($p['total_tarikan'], 0, ',', '.') }}</td>
+        <td style="border:1px solid #e2e8f0; padding:4px; text-align:right; color:#475569;">{{ number_format($p['dasar_provider'] ?? $p['total_tarikan'], 0, ',', '.') }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px; text-align:center;">{{ $p['nilai_skema'] }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px; text-align:right; font-weight:bold; color:#15803d;">{{ number_format($p['hak_bumdes'], 0, ',', '.') }}</td>
+        <td style="border:1px solid #e2e8f0; padding:4px; text-align:right; font-weight:bold; color:#1d4ed8;">{{ number_format($p['hak_provider'], 0, ',', '.') }}</td>
+        <td style="border:1px solid #e2e8f0; padding:4px; text-align:center; font-weight:bold;">
+            {{ in_array(strtoupper(trim($p['metode'] ?? 'TUNAI')), ['TRANSFER', 'BANK', 'QRIS']) ? 'TRANSFER' : 'TUNAI' }}
+        </td>
     </tr>
     @empty
     <tr>
@@ -140,9 +160,12 @@
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; padding:4px;">ID / Nama Pelanggan</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; padding:4px;">Provider ISP</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; padding:4px;">Paket</th>
-        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Total Bayar</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Tarif Warga (Rp)</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Dasar Non PPN (Rp)</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:center; padding:4px;">Admin Flat</th>
         <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Hak BUMDes</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:right; padding:4px;">Hak Provider</th>
+        <th style="background-color:#dbeafe; border:1px solid #93c5fd; font-weight:bold; text-align:center; padding:4px;">Metode Bayar</th>
     </tr>
     @forelse($detailAdminFlat as $f)
     <tr>
@@ -152,8 +175,13 @@
         <td style="border:1px solid #e2e8f0; padding:4px;">{{ $f['provider'] }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px;">{{ $f['paket'] }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px; text-align:right;">{{ number_format($f['total_tarikan'], 0, ',', '.') }}</td>
+        <td style="border:1px solid #e2e8f0; padding:4px; text-align:right; color:#475569;">{{ number_format($f['dasar_provider'] ?? $f['total_tarikan'], 0, ',', '.') }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px; text-align:center;">{{ $f['nilai_skema'] }}</td>
         <td style="border:1px solid #e2e8f0; padding:4px; text-align:right; font-weight:bold; color:#15803d;">{{ number_format($f['hak_bumdes'], 0, ',', '.') }}</td>
+        <td style="border:1px solid #e2e8f0; padding:4px; text-align:right; font-weight:bold; color:#1d4ed8;">{{ number_format($f['hak_provider'], 0, ',', '.') }}</td>
+        <td style="border:1px solid #e2e8f0; padding:4px; text-align:center; font-weight:bold;">
+            {{ in_array(strtoupper(trim($f['metode'] ?? 'TUNAI')), ['TRANSFER', 'BANK', 'QRIS']) ? 'TRANSFER' : 'TUNAI' }}
+        </td>
     </tr>
     @empty
     <tr>
@@ -161,3 +189,4 @@
     </tr>
     @endforelse
 </table>
+

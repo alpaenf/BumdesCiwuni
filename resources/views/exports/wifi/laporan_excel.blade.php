@@ -24,36 +24,49 @@
         <!-- Ringkasan Eksekutif -->
         <tr>
             <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Total Tarikan Bruto Warga:</td>
-            <td colspan="9" style="font-weight:bold; text-align:left; color:#0F172A;">Rp {{ number_format($stats['total_tarikan_bruto'], 0, ',', '.') }}</td>
+            <td colspan="11" style="font-weight:bold; text-align:left; color:#0F172A;">Rp {{ number_format($stats['total_tarikan_bruto'], 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Pendapatan Bersih BUMDes:</td>
-            <td colspan="9" style="font-weight:bold; text-align:left; color:#047857;">Rp {{ number_format($stats['total_hasil_bumdes'], 0, ',', '.') }}</td>
+            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Penerimaan Kas (Tunai):</td>
+            <td colspan="11" style="font-weight:bold; text-align:left; color:#047857;">Rp {{ number_format($stats['total_tunai'] ?? 0, 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Penerimaan Transfer Bank:</td>
+            <td colspan="11" style="font-weight:bold; text-align:left; color:#2563EB;">Rp {{ number_format($stats['total_transfer'] ?? 0, 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Total Dasar Tarikan Non PPN:</td>
+            <td colspan="11" style="font-weight:bold; text-align:left; color:#475569;">Rp {{ number_format($stats['total_dasar_non_ppn'] ?? 0, 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Pendapatan Bersih BUMDes (9%):</td>
+            <td colspan="11" style="font-weight:bold; text-align:left; color:#047857;">Rp {{ number_format($stats['total_hasil_bumdes'], 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Setoran Hak Provider ISP:</td>
-            <td colspan="9" style="font-weight:bold; text-align:left; color:#1D4ED8;">Rp {{ number_format($stats['total_hak_provider'], 0, ',', '.') }}</td>
+            <td colspan="11" style="font-weight:bold; text-align:left; color:#1D4ED8;">Rp {{ number_format($stats['total_hak_provider'], 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Total Pelanggan Terdaftar:</td>
-            <td colspan="9" style="font-weight:bold; text-align:left;">{{ $stats['total_pelanggan'] }} Warga</td>
+            <td colspan="11" style="font-weight:bold; text-align:left;">{{ $stats['total_pelanggan'] }} Warga ({{ $stats['lunas_count'] }} Lunas / {{ $stats['belum_bayar_count'] }} Belum Bayar)</td>
         </tr>
-        <tr><td colspan="12"></td></tr>
+        <tr><td colspan="14"></td></tr>
 
         <!-- TABEL 1: REKAPITULASI PER PROVIDER -->
         <tr>
-            <th colspan="12" style="font-size:10pt; font-weight:bold; text-align:left; color:#0F172A; background-color:#E2E8F0;">I. REKAPITULASI PEMBAGIAN HASIL PER PROVIDER / MITRA ISP</th>
+            <th colspan="14" style="font-size:10pt; font-weight:bold; text-align:left; color:#0F172A; background-color:#E2E8F0;">I. REKAPITULASI PEMBAGIAN HASIL PER PROVIDER / MITRA ISP</th>
         </tr>
         <thead>
             <tr style="background-color:#0F172A; color:#FFFFFF; font-weight:bold;">
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; width:220px;">Provider / Mitra ISP</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center; width:130px;">Skema Bagi Hasil</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">Jumlah Pelanggan</th>
-                <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Total Tarikan (Rp)</th>
+                <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Tarif Warga (Rp)</th>
+                <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Dasar Non PPN (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Hasil BUMDes (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Setoran Provider (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center; width:130px;">Status Pembayaran</th>
-                <th colspan="5" style="background-color:#0F172A;"></th>
+                <th colspan="6" style="background-color:#0F172A;"></th>
             </tr>
         </thead>
         <tbody>
@@ -69,25 +82,26 @@
                 </td>
                 <td style="text-align:center; font-weight:bold;">{{ $r['total_pelanggan'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $r['total_tarikan'] }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $r['total_dasar_non_ppn'] ?? $r['total_tarikan'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $r['total_hasil_bumdes'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $r['total_hak_provider'] }}</td>
-                <td style="text-align:center;">{{ $r['aktif_count'] ?? 0 }} Aktif / {{ $r['isolir_count'] ?? 0 }} Isolir</td>
-                <td colspan="5"></td>
+                <td style="text-align:center;">{{ $r['lunas_count'] ?? 0 }} Lunas / {{ $r['tunggakan_count'] ?? 0 }} Belum Bayar</td>
+                <td colspan="6"></td>
             </tr>
             @empty
             <tr>
-                <td colspan="7" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada rekap provider.</td>
-                <td colspan="5"></td>
+                <td colspan="8" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada rekap provider.</td>
+                <td colspan="6"></td>
             </tr>
             @endforelse
         </tbody>
 
-        <tr><td colspan="12"></td></tr>
-        <tr><td colspan="12"></td></tr>
+        <tr><td colspan="14"></td></tr>
+        <tr><td colspan="14"></td></tr>
 
         <!-- TABEL 2: RINCIAN TAGIHAN PELANGGAN -->
         <tr>
-            <th colspan="12" style="font-size:10pt; font-weight:bold; text-align:left; color:#0F172A; background-color:#E2E8F0;">II. RINCIAN TAGIHAN PELANGGAN PER PROVIDER</th>
+            <th colspan="14" style="font-size:10pt; font-weight:bold; text-align:left; color:#0F172A; background-color:#E2E8F0;">II. RINCIAN TAGIHAN PELANGGAN PER PROVIDER</th>
         </tr>
         <thead>
             <tr style="background-color:#1E293B; color:#FFFFFF; font-weight:bold;">
@@ -100,9 +114,11 @@
                 <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">No WhatsApp</th>
                 <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; width:200px;">Alamat (RT/RW)</th>
                 <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Tarikan Warga (Rp)</th>
+                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Dasar Non PPN (Rp)</th>
                 <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Hasil BUMDes (Rp)</th>
                 <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Hak Provider (Rp)</th>
                 <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:100px;">Status Tagihan</th>
+                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">Metode Bayar</th>
             </tr>
         </thead>
         <tbody>
@@ -118,13 +134,24 @@
                 <td style="mso-number-format:'\@'; text-align:center;">{{ $p->no_wa ?? '-' }}</td>
                 <td>{{ $p->alamat }} (RT {{ $p->rt }}/RW {{ $p->rw }})</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $p->total_tarikan }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $p->hasil_bumdes }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $p->total_provider }}</td>
-                <td style="text-align:center; font-weight:bold;">{{ $st === 'ISOLIR' ? 'ISOLIR' : 'AKTIF' }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $p->dasar_provider ?? $p->total_provider }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $p->calc_hasil_bumdes ?? $p->hasil_bumdes }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $p->calc_total_provider ?? $p->total_provider }}</td>
+                <td style="text-align:center; font-weight:bold;">{{ $p->status_bayar === 'LUNAS' ? 'LUNAS' : ($st === 'ISOLIR' ? 'ISOLIR' : 'BELUM BAYAR') }}</td>
+                <td style="text-align:center; font-weight:bold;">
+                    @php
+                        $metode = $p->pembayaran_periode ? strtoupper(trim($p->pembayaran_periode->metode_pembayaran ?? 'TUNAI')) : null;
+                    @endphp
+                    @if($p->status_bayar === 'LUNAS')
+                        {{ in_array($metode, ['TRANSFER', 'BANK', 'QRIS']) ? 'TRANSFER' : 'TUNAI' }}
+                    @else
+                        -
+                    @endif
+                </td>
             </tr>
             @empty
             <tr>
-                <td colspan="12" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada data rincian pelanggan.</td>
+                <td colspan="14" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada data rincian pelanggan.</td>
             </tr>
             @endforelse
         </tbody>
@@ -132,9 +159,12 @@
             <tr style="background-color:#E2E8F0; font-weight:bold;">
                 <td colspan="8" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN:</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $stats['total_tarikan_bruto'] }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $stats['total_dasar_non_ppn'] ?? 0 }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $stats['total_hasil_bumdes'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $stats['total_hak_provider'] }}</td>
-                <td></td>
+                <td colspan="2" style="text-align:center;">
+                    Tunai: Rp {{ number_format($stats['total_tunai'] ?? 0, 0, ',', '.') }} | Transfer: Rp {{ number_format($stats['total_transfer'] ?? 0, 0, ',', '.') }}
+                </td>
             </tr>
         </tfoot>
     </table>
