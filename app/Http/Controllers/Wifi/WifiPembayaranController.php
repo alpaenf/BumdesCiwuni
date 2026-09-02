@@ -56,36 +56,70 @@ class WifiPembayaranController extends Controller
             });
         }
 
-        // Filter status tagihan pada periode aktif (LUNAS / SUDAH BAYAR, BELUM BAYAR, ISOLIR)
+        // Filter status tagihan dan koneksi pada periode aktif
         $statusCol = $gelombang === '1_15' ? 'status_1_15' : 'status_16_30';
-        if ($statusFilter = $request->input('status')) {
-            if (in_array($statusFilter, ['LUNAS', 'SUDAH_BAYAR', 'AKTIF'])) {
+
+        $statusBayarFilter   = $request->input('status_bayar', '');
+        $statusKoneksiFilter = $request->input('status_koneksi', '');
+
+        // Dukungan kompatibilitas jika masih mengirim parameter 'status'
+        if ($legacyStatus = $request->input('status')) {
+            if (in_array($legacyStatus, ['LUNAS', 'SUDAH_BAYAR'])) {
+                $statusBayarFilter = 'LUNAS';
+            } elseif (in_array($legacyStatus, ['BELUM_BAYAR', 'BELUM'])) {
+                $statusBayarFilter = 'BELUM_BAYAR';
+            } elseif ($legacyStatus === 'AKTIF') {
+                $statusKoneksiFilter = 'AKTIF';
+            } elseif ($legacyStatus === 'ISOLIR') {
+                $statusKoneksiFilter = 'ISOLIR';
+            }
+        }
+
+        // 1. Filter Status Bayar (LUNAS vs BELUM_BAYAR)
+        if ($statusBayarFilter === 'LUNAS') {
+            $query->whereHas('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
+                $q->where('periode_bulan', $bulan)
+                  ->where('periode_tahun', $tahun)
+                  ->where('gelombang', $gelombang)
+                  ->whereIn('status', ['LUNAS', 'AKTIF']);
+            });
+        } elseif ($statusBayarFilter === 'BELUM_BAYAR') {
+            $query->whereDoesntHave('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
+                $q->where('periode_bulan', $bulan)
+                  ->where('periode_tahun', $tahun)
+                  ->where('gelombang', $gelombang)
+                  ->whereIn('status', ['LUNAS', 'AKTIF']);
+            });
+        }
+
+        // 2. Filter Status Koneksi (AKTIF vs ISOLIR)
+        if ($statusKoneksiFilter === 'ISOLIR') {
+            if (now()->day >= 11) {
+                $query->where(function ($q) use ($bulan, $tahun, $gelombang, $statusCol) {
+                    $q->whereDoesntHave('pembayaran', function ($sub) use ($bulan, $tahun, $gelombang) {
+                        $sub->where('periode_bulan', $bulan)
+                            ->where('periode_tahun', $tahun)
+                            ->where('gelombang', $gelombang)
+                            ->whereIn('status', ['LUNAS', 'AKTIF']);
+                    })->orWhere($statusCol, 'ISOLIR');
+                });
+            } else {
+                $query->where($statusCol, 'ISOLIR');
+            }
+        } elseif ($statusKoneksiFilter === 'AKTIF') {
+            if (now()->day >= 11) {
                 $query->whereHas('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
                     $q->where('periode_bulan', $bulan)
                       ->where('periode_tahun', $tahun)
                       ->where('gelombang', $gelombang)
                       ->whereIn('status', ['LUNAS', 'AKTIF']);
+                })->where(function ($q) use ($statusCol) {
+                    $q->whereNull($statusCol)->orWhere($statusCol, '!=', 'ISOLIR');
                 });
-            } elseif (in_array($statusFilter, ['BELUM_BAYAR', 'BELUM'])) {
-                $query->whereDoesntHave('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
-                    $q->where('periode_bulan', $bulan)
-                      ->where('periode_tahun', $tahun)
-                      ->where('gelombang', $gelombang)
-                      ->whereIn('status', ['LUNAS', 'AKTIF']);
+            } else {
+                $query->where(function ($q) use ($statusCol) {
+                    $q->whereNull($statusCol)->orWhere($statusCol, '!=', 'ISOLIR');
                 });
-            } elseif ($statusFilter === 'ISOLIR') {
-                if (now()->day >= 11) {
-                    $query->whereDoesntHave('pembayaran', function ($q) use ($bulan, $tahun, $gelombang) {
-                        $q->where('periode_bulan', $bulan)
-                          ->where('periode_tahun', $tahun)
-                          ->where('gelombang', $gelombang)
-                          ->whereIn('status', ['LUNAS', 'AKTIF']);
-                    });
-                } else {
-                    $query->where($statusCol, 'ISOLIR');
-                }
-            } elseif ($statusFilter === 'KOSONG') {
-                $query->whereNull($statusCol);
             }
         }
 
@@ -119,16 +153,29 @@ class WifiPembayaranController extends Controller
             ->get()
             ->keyBy('pelanggan_wifi_id');
 
-        $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords) {
+        $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords, $statusCol) {
             $item->pembayaran_periode = $pembayaranRecords->get($item->id);
-            // Jika sudah ada pembayaran di periode ini -> LUNAS
-            if ($item->pembayaran_periode && in_array(strtoupper($item->pembayaran_periode->status ?? ''), ['LUNAS', 'AKTIF'])) {
-                $item->current_status = 'LUNAS';
-            } elseif (now()->day >= 11) {
-                $item->current_status = 'ISOLIR';
+
+            // 1. Status Pembayaran Periode Ini
+            $item->status_bayar = ($item->pembayaran_periode && in_array(strtoupper($item->pembayaran_periode->status ?? ''), ['LUNAS', 'AKTIF']))
+                ? 'LUNAS'
+                : 'BELUM_BAYAR';
+
+            // 2. Status Koneksi WiFi (Aktif vs Isolir)
+            if ($item->status_bayar === 'LUNAS') {
+                $item->status_koneksi = 'AKTIF';
+                $item->koneksi_note   = 'Lancar';
+            } elseif ($item->$statusCol === 'ISOLIR' || now()->day >= 11) {
+                $item->status_koneksi = 'ISOLIR';
+                $item->koneksi_note   = 'Menunggak';
             } else {
-                $item->current_status = 'BELUM_BAYAR';
+                $item->status_koneksi = 'AKTIF';
+                $item->koneksi_note   = 'Masa Bayar (s/d Tgl 10)';
             }
+
+            // Fallback status
+            $item->current_status = $item->status_bayar;
+
             return $item;
         });
 
@@ -147,6 +194,7 @@ class WifiPembayaranController extends Controller
         $totalLunas = count($paidPelangganIds);
         $totalBelumBayar = max(0, $totalPelanggan - $totalLunas);
         $totalIsolir = now()->day >= 11 ? $totalBelumBayar : PelangganWifi::where($statusCol, 'ISOLIR')->count();
+        $totalKoneksiAktif = max(0, $totalPelanggan - $totalIsolir);
 
         $totalNominalBulanIni = PembayaranWifi::where('periode_bulan', $bulan)
             ->where('periode_tahun', $tahun)
@@ -163,8 +211,8 @@ class WifiPembayaranController extends Controller
         $wifiSettings = [];
         foreach ($settingsKeys as $key) {
             $unitSetting = \App\Models\LandingPageSetting::where('key', "wifi_{$key}")->first();
-            if ($unitSetting) {
-                $wifiSettings[$key] = $key === 'bank_accounts' ? (json_decode($unitSetting->value, true) ?: []) : $unitSetting->value;
+            if ($unitSetting && $unitSetting->value) {
+                $wifiSettings[$key] = $unitSetting->value;
             }
         }
 
@@ -175,21 +223,24 @@ class WifiPembayaranController extends Controller
             'paketOptions' => $paketOptions,
             'wifiSettings' => $wifiSettings,
             'filters'      => [
-                'bulan'     => $bulan,
-                'tahun'     => $tahun,
-                'gelombang' => $gelombang,
-                'search'    => $request->input('search', ''),
-                'status'    => $request->input('status', ''),
-                'paket'     => $request->input('paket', ''),
-                'sort'      => $sortField,
-                'dir'       => $sortDir,
-                'per_page'  => $perPage,
+                'bulan'          => $bulan,
+                'tahun'          => $tahun,
+                'gelombang'      => $gelombang,
+                'search'         => $request->input('search', ''),
+                'status_bayar'   => $statusBayarFilter,
+                'status_koneksi' => $statusKoneksiFilter,
+                'status'         => $request->input('status', ''),
+                'paket'          => $request->input('paket', ''),
+                'sort'           => $sortField,
+                'dir'            => $sortDir,
+                'per_page'       => $perPage,
             ],
             'stats' => [
                 'total_pelanggan'          => $totalPelanggan,
                 'total_lunas'              => $totalLunas,
                 'total_belum_bayar'        => $totalBelumBayar,
                 'total_aktif'              => $totalLunas,
+                'total_koneksi_aktif'      => $totalKoneksiAktif,
                 'total_isolir'             => $totalIsolir,
                 'total_nominal_terkumpul'  => $totalNominalBulanIni,
                 'kas_hari_ini'             => $kasHariIni,

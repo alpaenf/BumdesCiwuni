@@ -24,10 +24,11 @@ const selectedBulan     = ref(props.filters.bulan     ?? new Date().getMonth() +
 const selectedTahun     = ref(props.filters.tahun     ?? new Date().getFullYear());
 const selectedGelombang = ref(props.filters.gelombang ?? defaultGelombang);
 
-const search            = ref(props.filters.search  ?? '');
-const filterStatus      = ref(props.filters.status  ?? '');
-const filterPaket       = ref(props.filters.paket   ?? '');
-const perPage           = ref(props.filters.per_page ?? '25');
+const search              = ref(props.filters.search         ?? '');
+const filterStatusBayar   = ref(props.filters.status_bayar   ?? '');
+const filterStatusKoneksi = ref(props.filters.status_koneksi ?? '');
+const filterPaket         = ref(props.filters.paket          ?? '');
+const perPage             = ref(props.filters.per_page       ?? '25');
 
 const selectedIds       = ref([]);
 const selectAll         = ref(false);
@@ -125,13 +126,14 @@ watch(search, () => {
 
 const applyFilters = () => {
     router.get(route('wifi.pembayaran.index'), {
-        bulan:     selectedBulan.value,
-        tahun:     selectedTahun.value,
-        gelombang: selectedGelombang.value,
-        search:    search.value    || undefined,
-        status:    filterStatus.value || undefined,
-        paket:     filterPaket.value  || undefined,
-        per_page:  perPage.value   || undefined,
+        bulan:          selectedBulan.value,
+        tahun:          selectedTahun.value,
+        gelombang:      selectedGelombang.value,
+        search:         search.value              || undefined,
+        status_bayar:   filterStatusBayar.value   || undefined,
+        status_koneksi: filterStatusKoneksi.value || undefined,
+        paket:          filterPaket.value         || undefined,
+        per_page:       perPage.value             || undefined,
     }, { preserveScroll: true, replace: true });
 };
 
@@ -523,23 +525,70 @@ const cancelDeleteModal = () => {
                     </div>
                 </div>
 
+                <!-- PANDUAN EDUKASI STATUS RAMAH LANSIA (NO EMOJI - CLEAN SVG) -->
+                <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start gap-4 shadow-2xs">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 space-y-1.5 text-xs">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="font-black text-slate-900 text-sm">Panduan Kasir: Memahami Status Bayar vs Koneksi WiFi</h4>
+                            <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 font-bold text-[10px] rounded-full border border-blue-200">
+                                {{ todayDay <= 10 ? 'Periode Saat Ini: Masa Pembayaran (Tgl 1 - 10)' : 'Periode Saat Ini: Masa Penertiban / Isolir (Lewat Tgl 10)' }}
+                            </span>
+                        </div>
+                        <p class="text-slate-600 text-[11px] leading-relaxed">
+                            Sistem memisahkan antara <strong>Status Bayar</strong> (catatan kas) dan <strong>Koneksi WiFi</strong> (layanan internet warga) agar tidak membingungkan:
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                            <div class="bg-white/90 p-3 rounded-xl border border-blue-100 space-y-1">
+                                <div class="flex items-center gap-1.5 font-bold text-slate-900 text-xs">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                    <span>Masa Bayar (Tanggal 1 s.d. 10)</span>
+                                </div>
+                                <p class="text-slate-600 text-[11px] leading-relaxed">
+                                    Warga yang <strong>Belum Bayar</strong> internetnya tetap <strong>AKTIF</strong> agar warga ada masa tenggang untuk membayar. Kasir dapat menekan tombol <em>Pengingat WA</em>.
+                                </p>
+                            </div>
+                            <div class="bg-white/90 p-3 rounded-xl border border-blue-100 space-y-1">
+                                <div class="flex items-center gap-1.5 font-bold text-slate-900 text-xs">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
+                                    <span>Masa Isolir (Mulai Tanggal 11 ke Atas)</span>
+                                </div>
+                                <p class="text-slate-600 text-[11px] leading-relaxed">
+                                    Warga yang belum melunasi tagihan otomatis berubah koneksinya menjadi <strong>ISOLIR</strong> (menunggak) dan koneksi siap dinonaktifkan sementara oleh teknisi.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TOOLBAR & FILTERS -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-3 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
                     <div class="flex flex-wrap items-center gap-2 flex-1">
                         <!-- Search -->
-                        <div class="relative flex-1 min-w-[200px] max-w-sm">
+                        <div class="relative flex-1 min-w-[180px] max-w-xs">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">search</span>
-                            <input v-model="search" type="search" placeholder="Cari nama, ID pelanggan, WA..."
+                            <input v-model="search" type="search" placeholder="Cari nama, ID, WA..."
                                    class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 bg-slate-50 rounded-xl focus:border-blue-500 focus:outline-none" />
                         </div>
 
-                        <!-- Filter Status -->
-                        <select v-model="filterStatus" @change="applyFilters"
+                        <!-- Filter 1: Status Pembayaran -->
+                        <select v-model="filterStatusBayar" @change="applyFilters"
                                 class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-slate-700 focus:border-blue-500 focus:outline-none font-semibold">
-                            <option value="">Semua Status</option>
-                            <option value="LUNAS">Sudah Bayar / Lunas</option>
+                            <option value="">Semua Pembayaran</option>
+                            <option value="LUNAS">Sudah Bayar (Lunas)</option>
                             <option value="BELUM_BAYAR">Belum Bayar</option>
-                            <option value="ISOLIR">Isolir</option>
+                        </select>
+
+                        <!-- Filter 2: Status Koneksi WiFi -->
+                        <select v-model="filterStatusKoneksi" @change="applyFilters"
+                                class="text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-slate-700 focus:border-blue-500 focus:outline-none font-semibold">
+                            <option value="">Semua Koneksi</option>
+                            <option value="AKTIF">Koneksi Aktif</option>
+                            <option value="ISOLIR">Koneksi Isolir</option>
                         </select>
 
                         <!-- Filter Paket -->
@@ -583,20 +632,27 @@ const cancelDeleteModal = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="shrink-0 text-right">
+                                <div class="shrink-0 text-right space-y-1">
                                     <p class="font-mono font-bold text-slate-800 text-xs">{{ rupiah(item.total_tarikan) }}</p>
-                                    <span v-if="item.current_status === 'LUNAS'"
-                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300 mt-1">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
-                                    </span>
-                                    <span v-else-if="item.current_status === 'ISOLIR'"
-                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300 mt-1">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
-                                    </span>
-                                    <span v-else
-                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 border border-amber-300 mt-1">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
-                                    </span>
+                                    <div class="flex flex-col items-end gap-1">
+                                        <span v-if="item.status_bayar === 'LUNAS'"
+                                              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                        </span>
+                                        <span v-else
+                                              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
+                                        </span>
+
+                                        <span v-if="item.status_koneksi === 'ISOLIR'"
+                                              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-rose-100 text-rose-700 border border-rose-300">
+                                            Koneksi: ISOLIR
+                                        </span>
+                                        <span v-else
+                                              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-slate-100 text-slate-700 border border-slate-200">
+                                            Koneksi: AKTIF
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Action Buttons -->
@@ -648,9 +704,10 @@ const cancelDeleteModal = () => {
                                     <th class="p-3.5">Pelanggan</th>
                                     <th class="p-3.5">Paket</th>
                                     <th class="p-3.5">Alamat</th>
-                                    <th class="p-3.5 text-right">Tagihan / Bln</th>
-                                    <th class="p-3.5 text-center">Status Periode Ini</th>
-                                    <th class="p-3.5 text-center">Aksi Kasir</th>
+                                    <th class="p-3.5 text-right whitespace-nowrap">Tagihan / Bln</th>
+                                    <th class="p-3.5 text-center whitespace-nowrap">Status Bayar</th>
+                                    <th class="p-3.5 text-center whitespace-nowrap">Koneksi WiFi</th>
+                                    <th class="p-3.5 text-center whitespace-nowrap">Aksi Kasir</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -678,22 +735,34 @@ const cancelDeleteModal = () => {
                                     <td class="p-3.5 text-right font-mono font-bold text-slate-800 whitespace-nowrap">
                                         {{ rupiah(item.total_tarikan) }}
                                     </td>
+                                    <!-- Status Bayar -->
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="item.current_status === 'LUNAS'"
-                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700 border border-emerald-300">
+                                        <span v-if="item.status_bayar === 'LUNAS'"
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                                             LUNAS
                                         </span>
-                                        <span v-else-if="item.current_status === 'ISOLIR'"
-                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700 border border-red-300">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                                            ISOLIR
-                                        </span>
                                         <span v-else
-                                              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 border border-amber-300">
+                                              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">
                                             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                             BELUM BAYAR
                                         </span>
+                                    </td>
+                                    <!-- Koneksi WiFi -->
+                                    <td class="p-3.5 text-center whitespace-nowrap">
+                                        <div class="inline-flex flex-col items-center">
+                                            <span v-if="item.status_koneksi === 'ISOLIR'"
+                                                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-100 text-rose-700 border border-rose-300">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+                                                ISOLIR
+                                            </span>
+                                            <span v-else
+                                                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-50 text-emerald-700 border border-emerald-300">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                                AKTIF
+                                            </span>
+                                            <span class="text-[9px] text-slate-400 mt-0.5 font-medium">{{ item.koneksi_note }}</span>
+                                        </div>
                                     </td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1.5">
