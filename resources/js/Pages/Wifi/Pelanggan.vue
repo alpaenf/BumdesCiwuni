@@ -168,8 +168,8 @@ const openModal = (mode, row = null) => {
         if (row.tanggal_daftar) {
             form.tanggal_daftar = row.tanggal_daftar.substring(0, 10);
         }
-        if (row.total_tarikan > 0 && row.hasil_bumdes > 0) {
-            persentaseBumdes.value = Math.round((row.hasil_bumdes / row.total_tarikan) * 100 * 10) / 10;
+        if (row.bagi_hasil_bumdes > 0) {
+            persentaseBumdes.value = row.bagi_hasil_bumdes;
         } else {
             persentaseBumdes.value = 9;
         }
@@ -324,34 +324,49 @@ const selectedProviderObj = computed(() => {
 });
 
 const autoCalculateKeuangan = () => {
-    const total = parseFloat(form.total_tarikan) || 0;
-    const provider = selectedProviderObj.value;
+    const totalTarikan  = parseFloat(form.total_tarikan) || 0;
+    const provider      = selectedProviderObj.value;
 
     if (provider && provider.tipe_bagi_hasil === 'FLAT_ADMIN') {
         const adminFee = parseFloat(provider.nilai_bagi_hasil) || 0;
-        form.hasil_bumdes = adminFee;
-        form.total_provider = Math.max(0, total - adminFee);
+        form.hasil_bumdes = Math.min(adminFee, totalTarikan);
+        form.total_provider = Math.max(0, totalTarikan - form.hasil_bumdes);
         form.bagi_hasil_bumdes = adminFee;
     } else {
         const pct = parseFloat(persentaseBumdes.value) || 9;
-        if (total > 0) {
-            form.hasil_bumdes = Math.round(total * (pct / 100));
-            form.total_provider = total - form.hasil_bumdes;
-            form.bagi_hasil_bumdes = pct;
+        form.bagi_hasil_bumdes = pct;
+        const dasarProvider = parseFloat(form.total_provider) || 0;
+        if (dasarProvider > 0) {
+            form.hasil_bumdes = Math.round(dasarProvider * (pct / 100));
+        } else if (totalTarikan > 0) {
+            form.hasil_bumdes = Math.round(totalTarikan * (pct / 100));
+        } else {
+            form.hasil_bumdes = 0;
         }
     }
-    form.total_dasar_tarikan_non_ppn = total;
+    form.total_dasar_tarikan_non_ppn = form.total_provider || form.total_tarikan;
 };
 
 watch(() => form.provider_wifi_id, (newVal) => {
     const provider = selectedProviderObj.value;
     if (provider && provider.tipe_bagi_hasil === 'PERSENTASE') {
-        persentaseBumdes.value = provider.nilai_bagi_hasil;
+        persentaseBumdes.value = provider.nilai_bagi_hasil || 9;
     }
     autoCalculateKeuangan();
 });
 
-watch(() => form.total_tarikan, autoCalculateKeuangan);
+watch(() => form.total_tarikan, (newTarikan) => {
+    const val = parseFloat(newTarikan) || 0;
+    // Jika tarif 165.000 dan total_provider belum diisi, otomatis default ke 148.500
+    if (val === 165000 && (!form.total_provider || parseFloat(form.total_provider) === 0 || parseFloat(form.total_provider) === 165000)) {
+        if (selectedProviderObj.value?.tipe_bagi_hasil !== 'FLAT_ADMIN') {
+            form.total_provider = 148500;
+        }
+    }
+    autoCalculateKeuangan();
+});
+
+watch(() => form.total_provider, autoCalculateKeuangan);
 watch(persentaseBumdes, autoCalculateKeuangan);
 
 const fotoInput = ref(null);
@@ -1362,19 +1377,30 @@ const activeFilterCount = computed(() =>
                         Keuangan &amp; Bagi Hasil BUMDes
                     </h3>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 border border-slate-200 p-3.5 rounded-2xl">
-                        <!-- Total Tarikan / Harga -->
+                        <!-- Tarif Konsumen / Pelanggan -->
                         <div>
                             <label class="block text-[10px] font-bold text-slate-700 uppercase mb-1">
-                                Total Tarikan (Rp) <span class="text-red-500">*</span>
+                                Tarif Pelanggan (Rp) <span class="text-red-500">*</span>
                             </label>
                             <input v-model="form.total_tarikan" type="number" step="1000" min="0" placeholder="165000" id="form-total-tarikan"
                                    class="w-full rounded-xl border border-blue-300 bg-white px-3 py-2 text-xs font-black text-blue-900 focus:border-blue-500 focus:outline-none text-right" />
+                            <span class="text-[9px] text-slate-400">Bayar warga</span>
+                        </div>
+
+                        <!-- Dasar Tarikan Non PPN -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-700 uppercase mb-1">
+                                Dasar Non PPN (Rp) <span class="text-red-500">*</span>
+                            </label>
+                            <input v-model="form.total_provider" type="number" step="500" min="0" placeholder="148500" id="form-total-provider"
+                                   class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none text-right" />
+                            <span class="text-[9px] text-slate-400">Dasar bagi hasil</span>
                         </div>
 
                         <!-- Persentase BUMDes Flexible ATAU Badge Flat Admin -->
                         <div>
                             <label class="block text-[10px] font-bold text-slate-700 uppercase mb-1">
-                                {{ selectedProviderObj?.tipe_bagi_hasil === 'FLAT_ADMIN' ? 'Skema Bagi Hasil' : 'Persen BUMDes (%)' }}
+                                {{ selectedProviderObj?.tipe_bagi_hasil === 'FLAT_ADMIN' ? 'Skema' : 'Bagi Hasil (%)' }}
                             </label>
 
                             <div v-if="selectedProviderObj?.tipe_bagi_hasil === 'FLAT_ADMIN'"
@@ -1388,24 +1414,17 @@ const activeFilterCount = computed(() =>
                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800 focus:border-blue-500 focus:outline-none text-right pr-6" />
                                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">%</span>
                             </div>
+                            <span class="text-[9px] text-slate-400">Porsi komisi BUMDes</span>
                         </div>
 
                         <!-- Hasil BUMDes (Otomatis) -->
                         <div>
                             <label class="block text-[10px] font-bold text-emerald-700 uppercase mb-1">
-                                Hasil BUMDes (Otomatis)
+                                Hak BUMDes (Rp)
                             </label>
-                            <input v-model="form.hasil_bumdes" type="number" step="1" min="0" placeholder="Otomatis" id="form-hasil-bumdes"
-                                   class="w-full rounded-xl border border-emerald-300 bg-emerald-50/50 px-3 py-2 text-xs font-black text-emerald-800 focus:border-emerald-500 focus:outline-none text-right" />
-                        </div>
-
-                        <!-- Total Provider (Otomatis) -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">
-                                Total Provider (Sisa)
-                            </label>
-                            <input v-model="form.total_provider" type="number" step="1" min="0" placeholder="Otomatis" id="form-total-provider"
-                                   class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 focus:border-slate-400 focus:outline-none text-right" />
+                            <input v-model="form.hasil_bumdes" type="number" step="1" min="0" placeholder="Otomatis" id="form-hasil-bumdes" readonly
+                                   class="w-full rounded-xl border border-emerald-300 bg-emerald-50/80 px-3 py-2 text-xs font-black text-emerald-800 focus:outline-none text-right cursor-not-allowed" />
+                            <span class="text-[9px] text-emerald-600 font-semibold">{{ persentaseBumdes }}% dari dasar non-PPN</span>
                         </div>
                     </div>
                 </div>

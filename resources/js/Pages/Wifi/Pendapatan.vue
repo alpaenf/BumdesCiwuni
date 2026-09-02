@@ -13,6 +13,9 @@ const props = defineProps({
     pendapatanPersentase: { type: Number, default: 0 },
     pendapatanAdminFlat:  { type: Number, default: 0 },
     totalTarikanBruto:    { type: Number, default: 0 },
+    totalDasarProvider:   { type: Number, default: 0 },
+    totalTunai:           { type: Number, default: 0 },
+    totalTransfer:        { type: Number, default: 0 },
     totalHakProvider:     { type: Number, default: 0 },
     pendapatanKotor:      { type: Number, default: 0 },
     distribusi:           { type: Array,  default: () => [] },
@@ -390,6 +393,31 @@ const executeDeletePayment = () => {
                                 <p class="text-[10px] text-indigo-200/80 mt-2">Penyaluran ke ISP mitra BUMDes</p>
                             </div>
                         </div>
+
+                        <!-- Sub-strip Rincian Metode & Dasar Non PPN -->
+                        <div class="mt-4 pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl">
+                                <span class="material-symbols-outlined text-emerald-300 text-base">payments</span>
+                                <div>
+                                    <span class="text-[10px] text-blue-200 block uppercase font-bold">Penerimaan Tunai (Cash)</span>
+                                    <span class="font-mono font-extrabold text-white">{{ rupiah(totalTunai) }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl">
+                                <span class="material-symbols-outlined text-blue-300 text-base">account_balance</span>
+                                <div>
+                                    <span class="text-[10px] text-blue-200 block uppercase font-bold">Penerimaan Transfer Bank</span>
+                                    <span class="font-mono font-extrabold text-white">{{ rupiah(totalTransfer) }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl">
+                                <span class="material-symbols-outlined text-amber-300 text-base">price_change</span>
+                                <div>
+                                    <span class="text-[10px] text-blue-200 block uppercase font-bold">Dasar Tarikan Non PPN</span>
+                                    <span class="font-mono font-extrabold text-white">{{ rupiah(totalDasarProvider) }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -553,10 +581,12 @@ const executeDeletePayment = () => {
                                         <th class="py-2.5 px-3">Pelanggan</th>
                                         <th class="py-2.5 px-3">Provider</th>
                                         <th class="py-2.5 px-3">Paket</th>
-                                        <th class="py-2.5 px-3 text-right">Total Tarikan</th>
+                                        <th class="py-2.5 px-3 text-right">Tarif Warga</th>
+                                        <th class="py-2.5 px-3 text-right">Dasar Non PPN</th>
                                         <th class="py-2.5 px-3 text-center">Bagi Hasil</th>
                                         <th class="py-2.5 px-3 text-right">Hak BUMDes</th>
                                         <th class="py-2.5 px-3 text-right">Hak Provider</th>
+                                        <th class="py-2.5 px-3 text-center">Metode</th>
                                         <th class="py-2.5 px-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -571,6 +601,7 @@ const executeDeletePayment = () => {
                                         <td class="py-3 px-3 font-medium text-slate-700 whitespace-nowrap">{{ item.provider }}</td>
                                         <td class="py-3 px-3 font-mono text-slate-600 whitespace-nowrap">{{ item.paket }}</td>
                                         <td class="py-3 px-3 text-right font-mono font-bold text-slate-900 whitespace-nowrap">{{ rupiah(item.total_tarikan) }}</td>
+                                        <td class="py-3 px-3 text-right font-mono font-bold text-slate-700 whitespace-nowrap">{{ rupiah(item.dasar_provider) }}</td>
                                         <td class="py-3 px-3 text-center whitespace-nowrap">
                                             <span class="px-2 py-0.5 bg-blue-100 text-blue-700 border border-blue-200 rounded text-[10px] font-bold">
                                                 {{ item.nilai_skema }}
@@ -578,6 +609,16 @@ const executeDeletePayment = () => {
                                         </td>
                                         <td class="py-3 px-3 text-right font-mono font-black text-emerald-700 whitespace-nowrap">{{ rupiah(item.hak_bumdes) }}</td>
                                         <td class="py-3 px-3 text-right font-mono font-bold text-indigo-600 whitespace-nowrap">{{ rupiah(item.hak_provider) }}</td>
+                                        <td class="py-3 px-3 text-center whitespace-nowrap">
+                                            <span v-if="item.metode === 'TRANSFER' || item.metode === 'BANK' || item.metode === 'QRIS'"
+                                                  class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-extrabold">
+                                                TRANSFER
+                                            </span>
+                                            <span v-else
+                                                  class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-extrabold">
+                                                TUNAI
+                                            </span>
+                                        </td>
                                         <td class="py-3 px-3 text-center whitespace-nowrap">
                                             <button type="button"
                                                     @click="confirmDeletePayment(item)"
@@ -589,7 +630,7 @@ const executeDeletePayment = () => {
                                         </td>
                                     </tr>
                                     <tr v-if="detailPersentase.length === 0">
-                                        <td colspan="10" class="py-8 text-center text-slate-400">
+                                        <td colspan="12" class="py-8 text-center text-slate-400">
                                             Tidak ada transaksi dengan skema persentase pada periode yang dipilih.
                                         </td>
                                     </tr>
@@ -598,10 +639,11 @@ const executeDeletePayment = () => {
                                     <tr class="border-t-2 border-slate-200 font-bold bg-slate-50/80">
                                         <td colspan="5" class="py-3 px-3 text-slate-900 uppercase">Total Skema Persentase</td>
                                         <td class="py-3 px-3 text-right font-mono text-slate-900">{{ rupiah(detailPersentase.reduce((acc, c) => acc + c.total_tarikan, 0)) }}</td>
+                                        <td class="py-3 px-3 text-right font-mono text-slate-700">{{ rupiah(detailPersentase.reduce((acc, c) => acc + (c.dasar_provider || 0), 0)) }}</td>
                                         <td></td>
                                         <td class="py-3 px-3 text-right font-mono text-emerald-700 font-black">{{ rupiah(pendapatanPersentase) }}</td>
                                         <td class="py-3 px-3 text-right font-mono text-indigo-600">{{ rupiah(detailPersentase.reduce((acc, c) => acc + c.hak_provider, 0)) }}</td>
-                                        <td></td>
+                                        <td colspan="2"></td>
                                     </tr>
                                 </tfoot>
                             </table>

@@ -233,11 +233,20 @@ class WifiPelangganController extends Controller
             $data['foto_rumah'] = $filename;
         }
 
-        // Auto calculate BUMDes 9% & Provider 91% if total_tarikan is provided
-        if (!empty($data['total_tarikan']) && (empty($data['hasil_bumdes']) || $data['hasil_bumdes'] == 0)) {
-            $pct = !empty($data['bagi_hasil_bumdes']) && $data['bagi_hasil_bumdes'] <= 100 ? ($data['bagi_hasil_bumdes'] / 100) : 0.09;
-            $data['hasil_bumdes']  = round($data['total_tarikan'] * $pct);
-            $data['total_provider'] = $data['total_tarikan'] - $data['hasil_bumdes'];
+        // Calculate BUMDes and Provider share
+        $provider = !empty($data['provider_wifi_id']) ? \App\Models\ProviderWifi::find($data['provider_wifi_id']) : null;
+        $isFlatAdmin = $provider && $provider->tipe_bagi_hasil === 'FLAT_ADMIN';
+
+        if ($isFlatAdmin) {
+            $adminFee = (float) ($provider->nilai_bagi_hasil > 0 ? $provider->nilai_bagi_hasil : 5000);
+            $data['hasil_bumdes'] = $adminFee;
+            $data['total_provider'] = max(0, ((float)($data['total_tarikan'] ?? 0)) - $adminFee);
+        } else {
+            $dasarProvider = !empty($data['total_provider']) ? (float) $data['total_provider'] : ((float) ($data['total_tarikan'] ?? 0));
+            $pct = !empty($data['bagi_hasil_bumdes']) && $data['bagi_hasil_bumdes'] <= 100 ? ((float) $data['bagi_hasil_bumdes'] / 100) : 0.09;
+            $data['hasil_bumdes'] = round($dasarProvider * $pct);
+            $data['total_provider'] = $dasarProvider;
+            $data['total_dasar_tarikan_non_ppn'] = $dasarProvider;
         }
 
         PelangganWifi::create($data);
@@ -271,11 +280,21 @@ class WifiPelangganController extends Controller
             unset($data['foto_rumah']); // Don't overwrite existing if not uploading new
         }
 
-        // Auto calculate BUMDes 9% & Provider 91% if total_tarikan is updated
-        if (!empty($data['total_tarikan']) && (empty($data['hasil_bumdes']) || $data['hasil_bumdes'] == 0)) {
-            $pct = !empty($data['bagi_hasil_bumdes']) && $data['bagi_hasil_bumdes'] <= 100 ? ($data['bagi_hasil_bumdes'] / 100) : 0.09;
-            $data['hasil_bumdes']  = round($data['total_tarikan'] * $pct);
-            $data['total_provider'] = $data['total_tarikan'] - $data['hasil_bumdes'];
+        // Calculate BUMDes and Provider share
+        $provId = $data['provider_wifi_id'] ?? $pelanggan->provider_wifi_id;
+        $provider = $provId ? \App\Models\ProviderWifi::find($provId) : null;
+        $isFlatAdmin = $provider && $provider->tipe_bagi_hasil === 'FLAT_ADMIN';
+
+        if ($isFlatAdmin) {
+            $adminFee = (float) ($provider->nilai_bagi_hasil > 0 ? $provider->nilai_bagi_hasil : 5000);
+            $data['hasil_bumdes'] = $adminFee;
+            $data['total_provider'] = max(0, ((float)($data['total_tarikan'] ?? $pelanggan->total_tarikan)) - $adminFee);
+        } else {
+            $dasarProvider = !empty($data['total_provider']) ? (float) $data['total_provider'] : (!empty($data['total_tarikan']) ? (float) $data['total_tarikan'] : (float) $pelanggan->total_provider);
+            $pct = !empty($data['bagi_hasil_bumdes']) && $data['bagi_hasil_bumdes'] <= 100 ? ((float) $data['bagi_hasil_bumdes'] / 100) : 0.09;
+            $data['hasil_bumdes'] = round($dasarProvider * $pct);
+            $data['total_provider'] = $dasarProvider;
+            $data['total_dasar_tarikan_non_ppn'] = $dasarProvider;
         }
 
         $pelanggan->update($data);

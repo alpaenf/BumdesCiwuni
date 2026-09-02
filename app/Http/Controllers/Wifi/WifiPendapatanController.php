@@ -98,6 +98,9 @@ class WifiPendapatanController extends Controller
         $pendapatanAdminFlat  = 0;
         $totalTarikanBruto    = 0;
         $totalHakProvider     = 0;
+        $totalDasarProvider   = 0;
+        $totalTunai           = 0;
+        $totalTransfer        = 0;
 
         $detailPersentase = collect();
         $detailAdminFlat  = collect();
@@ -109,6 +112,13 @@ class WifiPendapatanController extends Controller
             $tarikan   = (float) $p->jumlah_bayar;
             $totalTarikanBruto += $tarikan;
 
+            $metode = strtoupper(trim($p->metode_pembayaran ?? 'TUNAI'));
+            if (in_array($metode, ['TRANSFER', 'BANK', 'QRIS'])) {
+                $totalTransfer += $tarikan;
+            } else {
+                $totalTunai += $tarikan;
+            }
+
             $isFlat = $provider && $provider->tipe_bagi_hasil === 'FLAT_ADMIN';
 
             if ($isFlat) {
@@ -117,11 +127,13 @@ class WifiPendapatanController extends Controller
                 if ($nilaiAdmin > $tarikan) {
                     $nilaiAdmin = $tarikan;
                 }
-                $hakBumdes   = $nilaiAdmin;
-                $hakProvider = max(0, $tarikan - $hakBumdes);
+                $hakBumdes     = $nilaiAdmin;
+                $hakProvider   = max(0, $tarikan - $hakBumdes);
+                $dasarProvider = $tarikan;
 
                 $pendapatanAdminFlat += $hakBumdes;
                 $totalHakProvider    += $hakProvider;
+                $totalDasarProvider  += $dasarProvider;
 
                 $rowItem = [
                     'id'               => $p->id,
@@ -135,6 +147,7 @@ class WifiPendapatanController extends Controller
                     'provider'         => $provider->nama_provider ?? 'Umum / Flat',
                     'paket'            => $pelanggan->paket ?? '-',
                     'total_tarikan'    => $tarikan,
+                    'dasar_provider'   => $dasarProvider,
                     'skema'            => 'FLAT_ADMIN',
                     'nilai_skema'      => 'Flat Rp ' . number_format($nilaiAdmin, 0, ',', '.'),
                     'hak_bumdes'       => $hakBumdes,
@@ -147,15 +160,17 @@ class WifiPendapatanController extends Controller
                 $detailAdminFlat->push($rowItem);
                 $detailSemua->push($rowItem);
             } else {
-                // Skema Persentase (Default 9% atau nilai provider)
+                // Skema Persentase (9% dari Dasar Tarikan Non PPN)
                 $pct = (float) ($pelanggan->bagi_hasil_bumdes ?? ($provider->nilai_bagi_hasil ?? 9.00));
                 if ($pct <= 0) $pct = 9.00;
 
-                $hakBumdes   = round($tarikan * ($pct / 100));
-                $hakProvider = max(0, $tarikan - $hakBumdes);
+                $dasarProvider = (float) ($pelanggan->total_provider > 0 ? $pelanggan->total_provider : $tarikan);
+                $hakBumdes     = round($dasarProvider * ($pct / 100));
+                $hakProvider   = max(0, $dasarProvider - $hakBumdes);
 
                 $pendapatanPersentase += $hakBumdes;
                 $totalHakProvider     += $hakProvider;
+                $totalDasarProvider   += $dasarProvider;
 
                 $rowItem = [
                     'id'               => $p->id,
@@ -169,6 +184,7 @@ class WifiPendapatanController extends Controller
                     'provider'         => $provider->nama_provider ?? 'Umum / Bagi Hasil',
                     'paket'            => $pelanggan->paket ?? '-',
                     'total_tarikan'    => $tarikan,
+                    'dasar_provider'   => $dasarProvider,
                     'skema'            => 'PERSENTASE',
                     'nilai_skema'      => $pct . '%',
                     'hak_bumdes'       => $hakBumdes,
@@ -264,6 +280,9 @@ class WifiPendapatanController extends Controller
             'pendapatanPersentase' => (float) $pendapatanPersentase,
             'pendapatanAdminFlat'  => (float) $pendapatanAdminFlat,
             'totalTarikanBruto'    => (float) $totalTarikanBruto,
+            'totalDasarProvider'   => (float) $totalDasarProvider,
+            'totalTunai'           => (float) $totalTunai,
+            'totalTransfer'        => (float) $totalTransfer,
             'totalHakProvider'     => (float) $totalHakProvider,
             'pendapatanKotor'      => (float) $pendapatanKotor,
             'distribusi'           => $distribusi,
