@@ -913,7 +913,7 @@ const activeFilterCount = computed(() =>
                     <!-- Full Scroll Table View -->
                     <div v-else-if="viewMode === 'table' && pelanggan.data.length > 0" class="overflow-x-auto" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
 
-                        <table class="border-collapse text-xs" style="min-width: 2800px; width: max-content;">
+                        <table class="border-collapse text-xs" style="min-width: 2200px; width: max-content;">
 
                             <!-- ── THEAD ──────────────────────────────────────── -->
                             <thead>
@@ -946,21 +946,18 @@ const activeFilterCount = computed(() =>
                                             { key:'rw',             label:'RW',             w:'60px'  },
                                             { key:'no_id_pel',      label:'No ID Pel',      w:'120px' },
                                             { key:'no_wa',          label:'No WA',          w:'130px' },
-                                            { key:'total_dasar_tarikan_non_ppn', label:'Total Dasar Tarikan Non PPN', w:'190px' },
-                                            { key:'ppn_dan_pph',    label:'PPN dan PPH',    w:'130px' },
-                                            { key:'ppn_pph',        label:'PPN/PPH',        w:'120px' },
-                                            { key:'total_tarikan',  label:'Total Tarikan',  w:'140px' },
-                                            { key:'bagi_hasil_bumdes', label:'Bagi Hasil BUMDes', w:'160px' },
+                                            { key:'total_tarikan',  label:'Tarif Pelanggan', w:'140px' },
+                                            { key:'total_dasar_tarikan_non_ppn', label:'Dasar Tarikan Non PPN', w:'170px' },
+                                            { key:'bagi_hasil_bumdes', label:'Bagi Hasil BUMDes', w:'150px' },
                                             { key:'hasil_bumdes',   label:'Hasil BUMDes',   w:'140px' },
-                                            { key:'nota_bayar_provider', label:'Nota Bayar Provider', w:'170px' },
-                                            { key:'total_provider', label:'Total Provider', w:'140px' },
+                                            { key:'total_provider', label:'Setor Provider', w:'140px' },
                                             { key:'status_tagihan', label:'Status Tagihan', w:'130px' },
                                             { key:'gps_long',       label:'GPS Long',       w:'110px' },
                                             { key:'gps_lat',        label:'GPS Lat',        w:'110px' },
                                         ]" :key="col.key"
                                        class="bg-slate-50 border-r border-slate-200 px-3 py-3 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap"
                                        :style="{ minWidth: col.w }">
-                                        <button v-if="['tanggal_daftar','paket','nik','no_id_pel','rt','rw','no_wa','total_dasar_tarikan_non_ppn','ppn_dan_pph','ppn_pph','total_tarikan','bagi_hasil_bumdes','hasil_bumdes','nota_bayar_provider','total_provider','gelombang'].includes(col.key)"
+                                        <button v-if="['tanggal_daftar','paket','nik','no_id_pel','rt','rw','no_wa','total_tarikan','total_dasar_tarikan_non_ppn','bagi_hasil_bumdes','hasil_bumdes','total_provider','gelombang'].includes(col.key)"
                                                 @click="setSort(col.key)" :aria-label="`Sort ${col.label}`"
                                                 class="inline-flex items-center gap-0.5 hover:text-blue-600 transition text-left">
                                             {{ col.label }}
@@ -1053,28 +1050,18 @@ const activeFilterCount = computed(() =>
                                         <span v-else class="text-slate-400">-</span>
                                     </td>
 
-                                    <!-- Total Dasar Tarikan Non PPN -->
-                                    <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-mono text-slate-700" style="min-width:190px">
-                                        {{ rupiah(row.total_dasar_tarikan_non_ppn) }}
-                                    </td>
-
-                                    <!-- PPN dan PPH -->
-                                    <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-mono text-slate-700" style="min-width:130px">
-                                        {{ rupiah(row.ppn_dan_pph) }}
-                                    </td>
-
-                                    <!-- PPN/PPH -->
-                                    <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-mono text-slate-700" style="min-width:120px">
-                                        {{ rupiah(row.ppn_pph) }}
-                                    </td>
-
-                                    <!-- Total Tarikan -->
+                                    <!-- Tarif Pelanggan (Total Tarikan) -->
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-bold font-mono text-slate-800" style="min-width:140px">
                                         {{ rupiah(row.total_tarikan) }}
                                     </td>
 
+                                    <!-- Dasar Tarikan Non PPN (di samping Bagi Hasil BUMDes) -->
+                                    <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-mono text-slate-700" style="min-width:170px">
+                                        {{ rupiah(row.total_provider > 0 ? row.total_provider : row.total_dasar_tarikan_non_ppn) }}
+                                    </td>
+
                                     <!-- Bagi Hasil BUMDes -->
-                                    <td class="border-r border-slate-100 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:160px">
+                                    <td class="border-r border-slate-100 px-3 py-2.5 text-center whitespace-nowrap" style="min-width:150px">
                                         <span v-if="row.provider && row.provider.tipe_bagi_hasil === 'FLAT_ADMIN'"
                                               class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-black inline-flex items-center gap-1">
                                             <span class="text-[9px] text-emerald-600 font-normal uppercase">FLAT</span> {{ rupiah(row.provider.nilai_bagi_hasil) }}
@@ -1089,12 +1076,7 @@ const activeFilterCount = computed(() =>
                                         {{ rupiah(row.hasil_bumdes) }}
                                     </td>
 
-                                    <!-- Nota Bayar Provider -->
-                                    <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-mono text-slate-700" style="min-width:170px">
-                                        {{ rupiah(row.nota_bayar_provider) }}
-                                    </td>
-
-                                    <!-- Total Provider -->
+                                    <!-- Setor Provider -->
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-bold font-mono text-slate-800" style="min-width:140px">
                                         {{ rupiah(row.total_provider) }}
                                     </td>
@@ -1539,14 +1521,11 @@ const activeFilterCount = computed(() =>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">No WA</span><span class="text-slate-700">{{ selectedRow.no_wa || '-' }}</span></div>
                     <div class="col-span-2"><span class="font-bold text-slate-500 block text-[10px] uppercase">Alamat</span><span class="text-slate-700">{{ selectedRow.alamat || '-' }} RT {{ selectedRow.rt || '-' }} / RW {{ selectedRow.rw || '-' }}</span></div>
 
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Total Dasar Non PPN</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.total_dasar_tarikan_non_ppn) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">PPN dan PPH</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.ppn_dan_pph) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">PPN/PPH</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.ppn_pph) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Total Tarikan</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_tarikan) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Bagi Hasil BUMDes</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.bagi_hasil_bumdes) }}</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Tarif Pelanggan</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_tarikan) }}</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Dasar Tarikan Non PPN</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.total_provider > 0 ? selectedRow.total_provider : selectedRow.total_dasar_tarikan_non_ppn) }}</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Bagi Hasil BUMDes</span><span class="font-mono text-slate-700">{{ selectedRow.bagi_hasil_bumdes ?? 9 }}%</span></div>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Hasil BUMDes</span><span class="font-mono font-semibold text-emerald-600">{{ rupiah(selectedRow.hasil_bumdes) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Nota Bayar Provider</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.nota_bayar_provider) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Total Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_provider) }}</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Setor Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_provider) }}</span></div>
 
                     <div>
                         <span class="font-bold text-slate-500 block text-[10px] uppercase">Masa Pembayaran</span>

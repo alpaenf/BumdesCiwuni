@@ -55,6 +55,7 @@
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center;">RT</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center;">RW</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right;">Total Tarikan (Rp)</th>
+                <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right;">Dasar Non PPN (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center;">Skema Bagi Hasil</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right;">Hak BUMDes (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right;">Hak Provider (Rp)</th>
@@ -79,9 +80,10 @@
                 <td style="text-align:center;">{{ $row->rt ?? '-' }}</td>
                 <td style="text-align:center;">{{ $row->rw ?? '-' }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $row->total_tarikan }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $row->total_provider ?: $row->total_tarikan }}</td>
                 <td style="text-align:center;">
                     @if($row->provider && $row->provider->tipe_bagi_hasil === 'FLAT_ADMIN')
-                        FLAT Rp {{ number_format($row.provider.nilai_bagi_hasil, 0, ',', '.') }}
+                        FLAT Rp {{ number_format($row->provider->nilai_bagi_hasil, 0, ',', '.') }}
                     @else
                         {{ $row->bagi_hasil_bumdes ?? 9 }}%
                     @endif
@@ -95,7 +97,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="19" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada data pelanggan.</td>
+                <td colspan="20" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada data pelanggan.</td>
             </tr>
             @endforelse
         </tbody>
@@ -103,6 +105,7 @@
             <tr style="background-color:#E2E8F0; font-weight:bold;">
                 <td colspan="11" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN:</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $summary['total_tarikan'] }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $summary['total_provider'] }}</td>
                 <td></td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $summary['total_hasil_bumdes'] }}</td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $summary['total_provider'] }}</td>
