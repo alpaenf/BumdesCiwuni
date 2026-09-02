@@ -297,27 +297,27 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                 <!-- SUMMARY METRICS -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-2">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Total Tarikan Bruto</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Total Realisasi Tarikan</span>
                         <p class="text-xl font-black text-slate-900">{{ rupiah(stats.total_tarikan_bruto) }}</p>
-                        <span class="text-[10px] text-slate-400">seluruh tagihan warga</span>
+                        <span class="text-[10px] text-slate-400">Dari potensi: {{ rupiah(stats.potensi_tarikan) }}</span>
                     </div>
 
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-2">
                         <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest block">Pendapatan Bersih BUMDes</span>
                         <p class="text-xl font-black text-emerald-600">{{ rupiah(stats.total_hasil_bumdes) }}</p>
-                        <span class="text-[10px] text-slate-400">hasil bagi BUMDes</span>
+                        <span class="text-[10px] text-slate-400">Porsi hak BUMDes periode ini</span>
                     </div>
 
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-2">
                         <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block">Setoran Hak Provider</span>
                         <p class="text-xl font-black text-blue-600">{{ rupiah(stats.total_hak_provider) }}</p>
-                        <span class="text-[10px] text-slate-400">porsi provider ISP</span>
+                        <span class="text-[10px] text-slate-400">Porsi provider ISP periode ini</span>
                     </div>
 
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-2">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Total Pelanggan</span>
-                        <p class="text-xl font-black text-slate-800">{{ stats.total_pelanggan }} <span class="text-xs font-normal text-slate-400">warga</span></p>
-                        <span class="text-[10px] text-emerald-600 font-bold">{{ stats.aktif_count ?? 0 }} Aktif &bull; {{ stats.isolir_count ?? 0 }} Isolir</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Status Pembayaran</span>
+                        <p class="text-xl font-black text-slate-800">{{ stats.lunas_count ?? 0 }} <span class="text-xs font-bold text-emerald-600">Lunas</span></p>
+                        <span class="text-[10px] text-rose-600 font-bold">{{ stats.belum_bayar_count ?? 0 }} Belum Bayar <span class="text-slate-400 font-normal">({{ stats.total_pelanggan }} total)</span></span>
                     </div>
                 </div>
 
@@ -390,8 +390,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <td class="p-3.5 text-right font-mono font-extrabold text-emerald-600">{{ rupiah(r.total_hasil_bumdes) }}</td>
                                     <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(r.total_hak_provider) }}</td>
                                     <td class="p-3.5 text-center">
-                                        <span class="text-[11px] font-semibold text-emerald-600">{{ r.aktif_count ?? 0 }} Aktif</span>
-                                        <span v-if="r.isolir_count > 0" class="ml-2 text-[11px] font-semibold text-red-600">{{ r.isolir_count }} Isolir</span>
+                                        <span class="text-[11px] font-bold text-emerald-600">{{ r.lunas_count ?? 0 }} Lunas</span>
+                                        <span v-if="(r.belum_bayar_count ?? 0) > 0" class="ml-2 text-[11px] font-bold text-rose-600">{{ r.belum_bayar_count }} Belum Bayar</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -422,13 +422,17 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                         <span v-if="item.paket" class="text-[10px] font-medium text-slate-600">{{ item.paket }}</span>
                                     </div>
                                 </div>
-                                <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'"
-                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase shrink-0">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
+                                <span v-if="item.status_bayar === 'LUNAS'"
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                </span>
+                                <span v-else-if="item.current_status === 'ISOLIR'"
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
                                 </span>
                                 <span v-else
-                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase shrink-0">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
                                 </span>
                             </div>
                             <div class="grid grid-cols-3 gap-2 text-[11px]">
@@ -501,14 +505,17 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                         <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-extrabold">Tgl 1 - 10</span>
                                     </td>
                                     <td class="p-3.5 text-right font-mono font-bold text-slate-900">{{ rupiah(item.total_tarikan) }}</td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.hasil_bumdes) }}</td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.total_provider) }}</td>
+                                    <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.calc_hasil_bumdes ?? item.hasil_bumdes) }}</td>
+                                    <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.calc_total_provider ?? item.total_provider) }}</td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="(item.current_status || item.status_1_15) === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[10px] font-black uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>ISOLIR
+                                        <span v-if="item.status_bayar === 'LUNAS'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
                                         </span>
-                                        <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-black uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>AKTIF
+                                        <span v-else-if="item.current_status === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
+                                        </span>
+                                        <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
                                         </span>
                                     </td>
                                 </tr>
@@ -518,11 +525,11 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                             </tbody>
                             <tfoot v-if="pelangganList.length > 0" class="bg-slate-100 font-bold border-t-2 border-slate-300">
                                 <tr>
-                                    <td colspan="5" class="p-3.5 text-right uppercase text-[10px] font-black text-slate-600">Total Keseluruhan:</td>
+                                    <td colspan="5" class="p-3.5 text-right uppercase text-[10px] font-black text-slate-600">Total Realisasi Periode Ini:</td>
                                     <td class="p-3.5 text-right font-mono text-slate-900">{{ rupiah(stats.total_tarikan_bruto) }}</td>
                                     <td class="p-3.5 text-right font-mono text-emerald-700">{{ rupiah(stats.total_hasil_bumdes) }}</td>
                                     <td class="p-3.5 text-right font-mono text-blue-700">{{ rupiah(stats.total_hak_provider) }}</td>
-                                    <td class="p-3.5 text-center text-[10px] text-slate-600">{{ stats.aktif_count }} Aktif</td>
+                                    <td class="p-3.5 text-center text-[10px] text-slate-600 font-bold">{{ stats.lunas_count ?? 0 }} Lunas &bull; {{ stats.belum_bayar_count ?? 0 }} Belum</td>
                                 </tr>
                             </tfoot>
                         </table>

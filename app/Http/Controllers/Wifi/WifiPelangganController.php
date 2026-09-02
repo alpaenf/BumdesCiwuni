@@ -118,6 +118,10 @@ class WifiPelangganController extends Controller
         }
 
         // Filters
+        if ($providerId = $request->input('provider_id')) {
+            $query->where('provider_wifi_id', $providerId);
+        }
+
         if ($paket = $request->input('paket')) {
             $query->where('paket', $paket);
         }
@@ -208,7 +212,7 @@ class WifiPelangganController extends Controller
             'rtOptions'     => $rtOptions,
             'rwOptions'     => $rwOptions,
             'providersList' => $providersList,
-            'filters'       => $request->only(['search', 'paket', 'gelombang', 'status', 'rt', 'rw', 'tanggal_dari', 'tanggal_sampai', 'sort', 'dir', 'per_page']),
+            'filters'       => $request->only(['search', 'provider_id', 'paket', 'gelombang', 'status', 'rt', 'rw', 'tanggal_dari', 'tanggal_sampai', 'sort', 'dir', 'per_page']),
         ]);
     }
 
@@ -468,6 +472,10 @@ class WifiPelangganController extends Controller
                   ->orWhere('no_id_pel', 'like', "%{$search}%")
                   ->orWhere('no_wa', 'like', "%{$search}%");
             });
+        }
+
+        if ($providerId = $request->input('provider_id')) {
+            $query->where('provider_wifi_id', $providerId);
         }
 
         if ($paket = $request->input('paket')) {

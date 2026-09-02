@@ -56,42 +56,95 @@ class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithT
         }
         $pembayaranRecords = $pembayaranQuery->get()->keyBy('pelanggan_wifi_id');
 
-        $this->pelangganList->transform(function ($item) use ($pembayaranRecords) {
+        $isPastMonth = $this->tahun < now()->year || ($this->tahun == now()->year && $this->bulan < now()->month);
+        $referenceDate = $isPastMonth ? \Carbon\Carbon::create($this->tahun, $this->bulan, 1)->endOfMonth() : now();
+
+        $totalTarikanRealisasi = 0;
+        $totalHasilBumdes      = 0;
+        $totalHakProvider      = 0;
+        $lunasCount            = 0;
+        $belumBayarCount       = 0;
+
+        $this->pelangganList->transform(function ($item) use ($pembayaranRecords, $referenceDate, &$totalTarikanRealisasi, &$totalHasilBumdes, &$totalHakProvider, &$lunasCount, &$belumBayarCount) {
             $pay = $pembayaranRecords->get($item->id);
-            $item->current_status     = $this->computeCurrentStatus($item, $pay);
             $item->pembayaran_periode = $pay;
+
+            $provider = $item->provider;
+            $tarikan  = (float) $item->total_tarikan;
+
+            if ($provider && $provider->tipe_bagi_hasil === 'FLAT_ADMIN') {
+                $adminFee     = (float) ($provider->nilai_bagi_hasil > 0 ? $provider->nilai_bagi_hasil : ($item->hasil_bumdes ?: 5000));
+                $bumdesPart   = min($adminFee, $tarikan);
+                $providerPart = max(0, $tarikan - $bumdesPart);
+            } else {
+                $pct = (float) ($item->bagi_hasil_bumdes ?: ($provider->nilai_bagi_hasil ?? 9.00));
+                if ($pct <= 0) $pct = 9.00;
+                $dasarProvider = (float) ($item->total_provider > 0 ? $item->total_provider : $tarikan);
+                $bumdesPart   = round($dasarProvider * ($pct / 100));
+                $providerPart = max(0, $dasarProvider - $bumdesPart);
+            }
+
+            $item->calc_hasil_bumdes   = $bumdesPart;
+            $item->calc_total_provider = $providerPart;
+
+            if ($pay) {
+                $item->status_bayar   = 'LUNAS';
+                $item->current_status = 'LUNAS';
+                $item->nominal_masuk  = (float) $pay->jumlah_bayar;
+                $item->bumdes_masuk   = $bumdesPart;
+                $item->provider_masuk = $providerPart;
+
+                $totalTarikanRealisasi += $item->nominal_masuk;
+                $totalHasilBumdes      += $bumdesPart;
+                $totalHakProvider      += $providerPart;
+                $lunasCount++;
+            } else {
+                $item->status_bayar    = 'BELUM_BAYAR';
+                $item->current_status  = $this->computeCurrentStatus($item, null, $referenceDate);
+                $item->nominal_masuk   = 0;
+                $item->bumdes_masuk    = 0;
+                $item->provider_masuk  = 0;
+                $belumBayarCount++;
+            }
+
             return $item;
         });
 
         $rekap = ProviderWifi::all()->map(function ($prov) {
             $provPelanggan = $this->pelangganList->where('provider_wifi_id', $prov->id);
+            $lunas         = $provPelanggan->where('status_bayar', 'LUNAS');
+            $belum         = $provPelanggan->where('status_bayar', '!=', 'LUNAS');
+
             return [
                 'id'                 => $prov->id,
                 'nama_provider'      => $prov->nama_provider,
                 'tipe_bagi_hasil'    => $prov->tipe_bagi_hasil,
                 'nilai_bagi_hasil'   => $prov->nilai_bagi_hasil,
                 'total_pelanggan'    => $provPelanggan->count(),
-                'total_tarikan'      => $provPelanggan->sum('total_tarikan'),
-                'total_hasil_bumdes' => $provPelanggan->sum('hasil_bumdes'),
-                'total_hak_provider' => $provPelanggan->sum('total_provider'),
-                'lunas_count'        => $provPelanggan->where('current_status', 'LUNAS')->count(),
-                'tunggakan_count'    => $provPelanggan->whereIn('current_status', ['TUNGGAKAN', 'ISOLIR'])->count(),
+                'total_tarikan'      => $lunas->sum('nominal_masuk'),
+                'total_hasil_bumdes' => $lunas->sum('bumdes_masuk'),
+                'total_hak_provider' => $lunas->sum('provider_masuk'),
+                'lunas_count'        => $lunas->count(),
+                'tunggakan_count'    => $belum->count(),
             ];
         });
 
         $tanpaProvPelanggan = $this->pelangganList->whereNull('provider_wifi_id');
         if ($tanpaProvPelanggan->count() > 0) {
+            $lunas = $tanpaProvPelanggan->where('status_bayar', 'LUNAS');
+            $belum = $tanpaProvPelanggan->where('status_bayar', '!=', 'LUNAS');
+
             $rekap->push([
                 'id'                 => 'tanpa_provider',
                 'nama_provider'      => 'Tanpa Provider / Umum',
                 'tipe_bagi_hasil'    => 'PERSENTASE',
                 'nilai_bagi_hasil'   => 9.00,
                 'total_pelanggan'    => $tanpaProvPelanggan->count(),
-                'total_tarikan'      => $tanpaProvPelanggan->sum('total_tarikan'),
-                'total_hasil_bumdes' => $tanpaProvPelanggan->sum('hasil_bumdes'),
-                'total_hak_provider' => $tanpaProvPelanggan->sum('total_provider'),
-                'lunas_count'        => $tanpaProvPelanggan->where('current_status', 'LUNAS')->count(),
-                'tunggakan_count'    => $tanpaProvPelanggan->whereIn('current_status', ['TUNGGAKAN', 'ISOLIR'])->count(),
+                'total_tarikan'      => $lunas->sum('nominal_masuk'),
+                'total_hasil_bumdes' => $lunas->sum('bumdes_masuk'),
+                'total_hak_provider' => $lunas->sum('provider_masuk'),
+                'lunas_count'        => $lunas->count(),
+                'tunggakan_count'    => $belum->count(),
             ]);
         }
 
@@ -104,18 +157,21 @@ class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithT
         $this->rekapPerProvider = $rekap;
 
         $this->filters = [
-            'bulan'        => $this->bulan,
-            'tahun'        => $this->tahun,
-            'provider_id'  => $providerId,
+            'bulan'          => $this->bulan,
+            'tahun'          => $this->tahun,
+            'provider_id'    => $providerId,
             'tanggal_dari'   => $tglDari,
             'tanggal_sampai' => $tglSampai,
         ];
 
         $this->stats = [
             'total_pelanggan'     => $this->pelangganList->count(),
-            'total_tarikan_bruto' => $this->pelangganList->sum('total_tarikan'),
-            'total_hasil_bumdes'  => $this->pelangganList->sum('hasil_bumdes'),
-            'total_hak_provider'  => $this->pelangganList->sum('total_provider'),
+            'total_tarikan_bruto' => $totalTarikanRealisasi,
+            'potensi_tarikan'     => $this->pelangganList->sum('total_tarikan'),
+            'total_hasil_bumdes'  => $totalHasilBumdes,
+            'total_hak_provider'  => $totalHakProvider,
+            'lunas_count'         => $lunasCount,
+            'belum_bayar_count'   => $belumBayarCount,
         ];
     }
 

@@ -20,6 +20,7 @@ const logout = () => { router.post(route('logout')); };
 
 // ─── Search & Filters ──────────────────────────────────────
 const search          = ref(props.filters.search          ?? '');
+const filterProvider  = ref(props.filters.provider_id     ?? '');
 const filterPaket     = ref(props.filters.paket           ?? '');
 const filterGelombang = ref(props.filters.gelombang       ?? '');
 const filterStatus    = ref(props.filters.status          ?? '');
@@ -49,6 +50,7 @@ const setGelombangFilter = (gel) => {
 const applyFilters = () => {
     router.get(route('wifi.pelanggan.index'), {
         search:         search.value          || undefined,
+        provider_id:    filterProvider.value  || undefined,
         paket:          filterPaket.value     || undefined,
         gelombang:      filterGelombang.value || undefined,
         status:         filterStatus.value    || undefined,
@@ -63,7 +65,7 @@ const applyFilters = () => {
 };
 
 const resetFilters = () => {
-    search.value = ''; filterPaket.value = ''; filterGelombang.value = '';
+    search.value = ''; filterProvider.value = ''; filterPaket.value = ''; filterGelombang.value = '';
     filterStatus.value = '';
     filterRt.value = ''; filterRw.value = '';
     filterTglDari.value = ''; filterTglSampai.value = '';
@@ -88,6 +90,7 @@ const changePerPage = (val) => {
 const doPrintPDF = () => {
     const params = new URLSearchParams();
     if (search.value) params.set('search', search.value);
+    if (filterProvider.value) params.set('provider_id', filterProvider.value);
     if (filterPaket.value) params.set('paket', filterPaket.value);
     if (filterGelombang.value) params.set('gelombang', filterGelombang.value);
     if (filterRt.value) params.set('rt', filterRt.value);
@@ -720,6 +723,18 @@ const activeFilterCount = computed(() =>
                 <!-- Filter Panel -->
                 <div v-if="isFilterOpen"
                      class="bg-white border border-slate-200 rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+                    <!-- Provider -->
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Provider</label>
+                        <select v-model="filterProvider" @change="applyFilters"
+                                class="w-full text-xs border border-slate-200 bg-slate-50 rounded-xl px-2 py-1.5 focus:border-blue-500 focus:outline-none font-semibold text-slate-700">
+                            <option value="">Semua Provider</option>
+                            <option v-for="prov in providersList" :key="prov.id" :value="prov.id">
+                                {{ prov.nama_provider }}
+                            </option>
+                        </select>
+                    </div>
+
                     <!-- Paket -->
                     <div class="space-y-1">
                         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Paket</label>

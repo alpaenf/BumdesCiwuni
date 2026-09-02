@@ -363,13 +363,15 @@
                     <span class="badge" style="background:#e0e7ff; color:#3730a3;">Tgl 1 - 10</span>
                 </td>
                 <td class="text-right font-mono font-bold">Rp {{ number_format($p->total_tarikan, 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->hasil_bumdes, 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->total_provider, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->calc_hasil_bumdes ?? $p->hasil_bumdes, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->calc_total_provider ?? $p->total_provider, 0, ',', '.') }}</td>
                 <td class="text-center">
-                    @if($stVal === 'ISOLIR')
+                    @if(($p->status_bayar ?? '') === 'LUNAS')
+                        <span class="badge badge-lunas">LUNAS</span>
+                    @elseif(($p->current_status ?? '') === 'ISOLIR')
                         <span class="badge badge-isolir">ISOLIR</span>
                     @else
-                        <span class="badge badge-lunas">AKTIF</span>
+                        <span class="badge" style="background:#fef3c7; color:#92400e;">BLM BAYAR</span>
                     @endif
                 </td>
             </tr>

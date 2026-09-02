@@ -34,6 +34,10 @@ class PelangganWifiExport implements FromView, ShouldAutoSize, WithDrawings
             });
         }
 
+        if ($providerId = $request->input('provider_id')) {
+            $query->where('provider_wifi_id', $providerId);
+        }
+
         if ($paket = $request->input('paket')) {
             $query->where('paket', $paket);
         }
