@@ -549,16 +549,16 @@ const cancelDeleteModal = () => {
                                     <span>Masa Bayar (Tanggal 1 s.d. 10)</span>
                                 </div>
                                 <p class="text-slate-600 text-[11px] leading-relaxed">
-                                    Warga yang <strong>Belum Bayar</strong> internetnya tetap <strong>AKTIF</strong> agar warga ada masa tenggang untuk membayar. Kasir dapat menekan tombol <em>Pengingat WA</em>.
+                                    Warga yang <strong>Belum Bayar</strong> bulan ini internetnya tetap <strong>AKTIF</strong> jika <em>tagihan bulan lalunya lunas</em>. Kasir dapat menekan tombol <em>Pengingat WA</em>.
                                 </p>
                             </div>
                             <div class="bg-white/90 p-3 rounded-xl border border-blue-100 space-y-1">
                                 <div class="flex items-center gap-1.5 font-bold text-slate-900 text-xs">
                                     <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
-                                    <span>Masa Isolir (Mulai Tanggal 11 ke Atas)</span>
+                                    <span>Koneksi Terisolir (ISOLIR)</span>
                                 </div>
                                 <p class="text-slate-600 text-[11px] leading-relaxed">
-                                    Warga yang belum melunasi tagihan otomatis berubah koneksinya menjadi <strong>ISOLIR</strong> (menunggak) dan koneksi siap dinonaktifkan sementara oleh teknisi.
+                                    Koneksi otomatis <strong>ISOLIR</strong> jika: (1) Menunggak di bulan sebelumnya, atau (2) Belum bayar bulan ini dan sudah lewat tanggal 10.
                                 </p>
                             </div>
                         </div>
@@ -761,7 +761,7 @@ const cancelDeleteModal = () => {
                                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                                                 AKTIF
                                             </span>
-                                            <span class="text-[9px] text-slate-400 mt-0.5 font-medium">{{ item.koneksi_note }}</span>
+                                            <span class="text-[9px] mt-0.5 font-semibold" :class="item.status_koneksi === 'ISOLIR' ? 'text-rose-600' : 'text-slate-400'">{{ item.koneksi_note }}</span>
                                         </div>
                                     </td>
                                     <td class="p-3.5 text-center whitespace-nowrap">
