@@ -270,6 +270,7 @@ Route::middleware(['auth'])->prefix('unit/wifi')->group(function () {
     Route::post('/pembayaran', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'store'])->name('wifi.pembayaran.store');
     Route::post('/pembayaran/masal', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'bayarMasal'])->name('wifi.pembayaran.masal');
     Route::get('/pembayaran/history/{pelanggan}', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'history'])->name('wifi.pembayaran.history');
+    Route::delete('/pembayaran/{pembayaran}', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'destroy'])->name('wifi.pembayaran.destroy');
     Route::get('/pembayaran/struk/{pembayaran}', [\App\Http\Controllers\Wifi\WifiPembayaranController::class, 'struk'])->name('wifi.pembayaran.struk')->withoutMiddleware(['auth', 'role:admin_unit,manager,manager_pusat']);
 
     // Master Provider & Skema Bagi Hasil

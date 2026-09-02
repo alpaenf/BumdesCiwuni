@@ -317,6 +317,55 @@ class WifiPembayaranController extends Controller
     }
 
     /**
+     * Hapus / Batalkan Transaksi Pembayaran WiFi
+     */
+    public function destroy(Request $request, PembayaranWifi $pembayaran)
+    {
+        $this->authorizeUnit();
+
+        $infoTrx = $pembayaran->no_transaksi;
+        $namaPelanggan = $pembayaran->pelanggan?->nama ?? 'Pelanggan';
+
+        DB::transaction(function () use ($pembayaran) {
+            $pelanggan = $pembayaran->pelanggan;
+            $periodeBulan = $pembayaran->periode_bulan;
+            $periodeTahun = $pembayaran->periode_tahun;
+            $gelombang = $pembayaran->gelombang;
+
+            // Hapus record pembayaran
+            $pembayaran->delete();
+
+            // Sinkronisasi status pelanggan berdasarkan riwayat pembayaran terbaru yang masih tersisa
+            if ($pelanggan) {
+                $latestPay = PembayaranWifi::where('pelanggan_wifi_id', $pelanggan->id)
+                    ->where('gelombang', $gelombang)
+                    ->orderByDesc('periode_tahun')
+                    ->orderByDesc('periode_bulan')
+                    ->orderByDesc('id')
+                    ->first();
+
+                if ($gelombang === '1_15') {
+                    $pelanggan->status_1_15 = $latestPay ? $latestPay->status : null;
+                } else {
+                    $pelanggan->status_16_30 = $latestPay ? $latestPay->status : null;
+                }
+                $pelanggan->save();
+            }
+        });
+
+        $message = "Transaksi {$infoTrx} ({$namaPelanggan}) berhasil dibatalkan/dihapus.";
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
      * Halaman Struk Thermal (80mm) Printable
      */
     public function struk(PembayaranWifi $pembayaran)

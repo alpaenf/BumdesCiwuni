@@ -237,10 +237,54 @@ const closeModal = () => {
     selectedRow.value     = null;
     historyCustomer.value = null;
     customerHistory.value = [];
+    paymentToDelete.value = null;
     importState.file  = null;
     importState.preview = null;
     importState.errors  = [];
     importState.loading = false;
+};
+
+// ── Delete Payment in Pelanggan History (Senior-Friendly & Safe) ───────────
+const paymentToDelete   = ref(null);
+const isDeletingPayment = ref(false);
+
+const confirmDeletePayment = (payment) => {
+    paymentToDelete.value = {
+        ...payment,
+        customer_nama: historyCustomer.value?.nama || 'Pelanggan',
+        customer_id_pel: historyCustomer.value?.no_id_pel || '-',
+        customer_paket: historyCustomer.value?.paket || '-',
+    };
+    modalMode.value = 'confirm_delete_payment';
+};
+
+const executeDeletePayment = () => {
+    if (!paymentToDelete.value) return;
+    isDeletingPayment.value = true;
+
+    router.delete(route('wifi.pembayaran.destroy', paymentToDelete.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            isDeletingPayment.value = false;
+            if (customerHistory.value && customerHistory.value.length > 0) {
+                customerHistory.value = customerHistory.value.filter(h => h.id !== paymentToDelete.value.id);
+            }
+            paymentToDelete.value = null;
+            modalMode.value = historyCustomer.value ? 'history' : '';
+        },
+        onError: () => {
+            isDeletingPayment.value = false;
+        }
+    });
+};
+
+const cancelDeleteModal = () => {
+    paymentToDelete.value = null;
+    if (historyCustomer.value) {
+        modalMode.value = 'history';
+    } else {
+        modalMode.value = '';
+    }
 };
 
 // ─── Form ──────────────────────────────────────────────────
@@ -1836,12 +1880,21 @@ const activeFilterCount = computed(() =>
                             </td>
                             <td class="py-3 px-3 text-center text-slate-600 whitespace-nowrap">{{ h.kasir ? h.kasir.nama : 'Admin' }}</td>
                             <td class="py-3 px-3 text-center whitespace-nowrap">
-                                <a :href="route('wifi.pembayaran.struk', h.id)" target="_blank"
-                                   title="Cetak Struk Thermal"
-                                   class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-[10px] transition shadow-sm">
-                                    <span class="material-symbols-outlined text-xs">print</span>
-                                    Struk
-                                </a>
+                                <div class="inline-flex items-center gap-1.5">
+                                    <a :href="route('wifi.pembayaran.struk', h.id)" target="_blank"
+                                       title="Cetak Struk Thermal"
+                                       class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-[10px] transition shadow-2xs">
+                                        <span class="material-symbols-outlined text-xs">print</span>
+                                        Struk
+                                    </a>
+                                    <button type="button"
+                                            @click="confirmDeletePayment(h)"
+                                            title="Batalkan / Hapus Transaksi Ini"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg font-bold text-[10px] transition shadow-2xs">
+                                        <span class="material-symbols-outlined text-xs">delete</span>
+                                        Hapus
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="customerHistory.length === 0">
@@ -1857,6 +1910,86 @@ const activeFilterCount = computed(() =>
             <div class="flex justify-end pt-2 shrink-0 border-t border-slate-100">
                 <button type="button" @click="closeModal" class="px-5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition">
                     Tutup Modal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════════════
+         MODAL: KONFIRMASI HAPUS TRANSAKSI (SENIOR-FRIENDLY & NO EMOJI)
+    ══════════════════════════════════════════════════════════════════════════ -->
+    <div v-if="modalMode === 'confirm_delete_payment' && paymentToDelete"
+         class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs"
+         @click.self="cancelDeleteModal">
+        <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 sm:p-7 space-y-5 border border-slate-200">
+            <!-- Header with Warning SVG Icon -->
+            <div class="flex items-start gap-3.5 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-base font-extrabold text-slate-900">Batalkan / Hapus Transaksi?</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Mohon periksa rincian data di bawah ini sebelum menghapus.</p>
+                </div>
+                <button @click="cancelDeleteModal" class="text-slate-400 hover:text-slate-700 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Detail Transaksi Card -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-500 font-semibold">No. Struk Transaksi</span>
+                    <span class="font-mono font-extrabold text-slate-900">#{{ paymentToDelete.no_transaksi?.replace(/^TRX-?/i, '') }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-500 font-semibold">Nama Pelanggan</span>
+                    <span class="font-bold text-slate-900">{{ paymentToDelete.customer_nama }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-500 font-semibold">Periode Tagihan</span>
+                    <span class="font-bold text-slate-800">{{ getBulanName(paymentToDelete.periode_bulan) }} {{ paymentToDelete.periode_tahun }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-500 font-semibold">Tanggal Pembayaran</span>
+                    <span class="font-semibold text-slate-700">{{ formatDate(paymentToDelete.tanggal_bayar) }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs border-t border-slate-200 pt-2.5">
+                    <span class="text-slate-600 font-bold">Total Pembayaran</span>
+                    <span class="font-mono font-black text-lg text-rose-600">{{ rupiah(paymentToDelete.jumlah_bayar) }}</span>
+                </div>
+            </div>
+
+            <!-- Notice Box with Warning SVG -->
+            <div class="flex items-start gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs leading-relaxed">
+                <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p>
+                    <strong>Perhatian:</strong> Menghapus transaksi ini akan mengembalikan status tagihan pelanggan menjadi <strong>Belum Bayar</strong>, serta mengurangi pembukuan kas hari ini.
+                </p>
+            </div>
+
+            <!-- Buttons Action -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" @click="cancelDeleteModal" :disabled="isDeletingPayment"
+                        class="px-5 py-2.5 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+                    Batal / Kembali
+                </button>
+                <button type="button" @click="executeDeletePayment" :disabled="isDeletingPayment"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-xl shadow transition">
+                    <svg v-if="isDeletingPayment" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg v-else class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    {{ isDeletingPayment ? 'Menghapus Transaksi...' : 'Ya, Hapus Transaksi Ini' }}
                 </button>
             </div>
         </div>
