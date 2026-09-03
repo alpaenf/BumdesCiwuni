@@ -173,6 +173,13 @@
                     <span class="mr-2">:</span>
                     <span>{{ $pembayaran->metode_pembayaran }}</span>
                 </div>
+                @if(!empty($pembayaran->catatan))
+                <div class="flex text-[10px] text-gray-700">
+                    <span class="field-label">KETERANGAN</span>
+                    <span class="mr-2">:</span>
+                    <span class="font-medium">{{ $pembayaran->catatan }}</span>
+                </div>
+                @endif
                 <div class="flex font-extrabold text-xs mt-2 pt-1 border-t border-dashed border-gray-400">
                     <span class="field-label">TOTAL BAYAR</span>
                     <span class="mr-2">:</span>
@@ -213,12 +220,17 @@
         ['t'=>'kv','label'=>'GELOMBANG',  'value'=>$gel],
         ['t'=>'kv','label'=>'STATUS',     'value'=>strtoupper($pembayaran->status ?? 'LUNAS')],
         ['t'=>'kv','label'=>'METODE',     'value'=>$pembayaran->metode_pembayaran],
-        ['t'=>'sep_dot'],
-        ['t'=>'kv_bold','label'=>'TOTAL BAYAR', 'value'=>'Rp.'.number_format($pembayaran->jumlah_bayar,0,',','.')],
-        ['t'=>'sep_dbl'],
-        ['t'=>'center_sm','text'=>'Terima kasih atas pembayaran Anda.'],
-        ['t'=>'center_sm','text'=>'Simpan struk ini sebagai bukti pembayaran sah.'],
     ];
+
+    if (!empty($pembayaran->catatan)) {
+        $receiptLines[] = ['t'=>'kv','label'=>'KETERANGAN', 'value'=>$pembayaran->catatan];
+    }
+
+    $receiptLines[] = ['t'=>'sep_dot'];
+    $receiptLines[] = ['t'=>'kv_bold','label'=>'TOTAL BAYAR', 'value'=>'Rp.'.number_format($pembayaran->jumlah_bayar,0,',','.')];
+    $receiptLines[] = ['t'=>'sep_dbl'];
+    $receiptLines[] = ['t'=>'center_sm','text'=>'Terima kasih atas pembayaran Anda.'];
+    $receiptLines[] = ['t'=>'center_sm','text'=>'Simpan struk ini sebagai bukti pembayaran sah.'];
 
     $pdfUrl = route('wifi.pembayaran.struk', $pembayaran);
 @endphp
