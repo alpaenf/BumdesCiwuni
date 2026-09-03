@@ -139,10 +139,15 @@ const detectGelombang = (tglString) => {
 
 const todayStr = new Date().toISOString().split('T')[0];
 
+const quickPayBulanMulai = ref(new Date().getMonth() + 1);
+const quickPayTahunMulai = ref(new Date().getFullYear());
+const quickPayDurasi     = ref(1);
+
 const quickPayForm = useForm({
     pelanggan_wifi_id: '',
     periode_bulan:     new Date().getMonth() + 1,
     periode_tahun:     new Date().getFullYear(),
+    periode_list:      [],
     gelombang:         detectGelombang(todayStr),
     tanggal_bayar:     todayStr,
     jumlah_bayar:      0,
@@ -156,6 +161,30 @@ watch(() => quickPayForm.tanggal_bayar, (newTgl) => {
         quickPayForm.gelombang = detectGelombang(newTgl);
     }
 });
+
+const updateQuickPayPeriode = () => {
+    const durasi = Math.max(1, parseInt(quickPayDurasi.value) || 1);
+    const startB = parseInt(quickPayBulanMulai.value) || 1;
+    const startY = parseInt(quickPayTahunMulai.value) || new Date().getFullYear();
+
+    const list = [];
+    let curB = startB;
+    let curY = startY;
+    for (let i = 0; i < durasi; i++) {
+        list.push({ bulan: curB, tahun: curY });
+        curB++;
+        if (curB > 12) {
+            curB = 1;
+            curY++;
+        }
+    }
+    quickPayForm.periode_list  = list;
+    quickPayForm.periode_bulan = list[0].bulan;
+    quickPayForm.periode_tahun = list[0].tahun;
+
+    const tarifPerBulan = Number(selectedRow.value?.total_tarikan) || 0;
+    quickPayForm.jumlah_bayar = tarifPerBulan * list.length;
+};
 
 const openModal = (mode, row = null) => {
     modalMode.value   = mode;
@@ -181,18 +210,20 @@ const openModal = (mode, row = null) => {
     if (mode === 'quick_pay' && row) {
         quickPayForm.reset();
         quickPayForm.pelanggan_wifi_id = row.id;
-        quickPayForm.periode_bulan     = new Date().getMonth() + 1;
-        quickPayForm.periode_tahun     = new Date().getFullYear();
+        quickPayBulanMulai.value       = new Date().getMonth() + 1;
+        quickPayTahunMulai.value       = new Date().getFullYear();
+        quickPayDurasi.value           = 1;
         quickPayForm.tanggal_bayar     = todayStr;
         quickPayForm.gelombang         = detectGelombang(todayStr);
-        quickPayForm.jumlah_bayar      = row.total_tarikan ?? 0;
         quickPayForm.metode_pembayaran = 'TUNAI';
         quickPayForm.status            = 'LUNAS';
         quickPayForm.catatan           = '';
+        updateQuickPayPeriode();
     }
 };
 
 const submitQuickPay = () => {
+    updateQuickPayPeriode();
     quickPayForm.post(route('wifi.pembayaran.store'), {
         onSuccess: () => closeModal(),
         preserveScroll: true,
@@ -1713,20 +1744,58 @@ const activeFilterCount = computed(() =>
                     <p class="text-[11px] text-slate-500">ID: {{ selectedRow.no_id_pel || '-' }} &bull; Paket: {{ selectedRow.paket || '-' }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Bulan</label>
-                        <select v-model="quickPayForm.periode_bulan" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option v-for="b in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="b" :value="b">
-                                {{ ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][b-1] }}
-                            </option>
-                        </select>
+                <!-- Pemilihan Periode & Multi-Bulan -->
+                <div class="space-y-2.5 bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[10px] font-bold text-slate-600 uppercase">Periode Tagihan</label>
+                        <span class="text-[10px] font-bold text-blue-600 font-mono">
+                            {{ quickPayDurasi === 1 ? '1 Bulan' : `${quickPayDurasi} Bulan Sekaligus` }}
+                        </span>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-semibold text-slate-400 uppercase mb-0.5">Mulai Bulan</label>
+                            <select v-model="quickPayBulanMulai" @change="updateQuickPayPeriode"
+                                    class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold bg-white focus:border-blue-500 focus:outline-none">
+                                <option v-for="b in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="b" :value="b">
+                                    {{ ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][b-1] }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-semibold text-slate-400 uppercase mb-0.5">Tahun</label>
+                            <select v-model="quickPayTahunMulai" @change="updateQuickPayPeriode"
+                                    class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold bg-white focus:border-blue-500 focus:outline-none">
+                                <option v-for="y in [2025, 2026, 2027, 2028]" :key="y" :value="y">{{ y }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quick Buttons Durasi Bulan -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tahun</label>
-                        <select v-model="quickPayForm.periode_tahun" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 font-bold">
-                            <option v-for="y in [2025, 2026, 2027, 2028]" :key="y" :value="y">{{ y }}</option>
-                        </select>
+                        <label class="block text-[9px] font-semibold text-slate-400 uppercase mb-1">Jumlah Bulan yang Dibayar</label>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button v-for="d in [1, 2, 3, 6, 12]" :key="d" type="button"
+                                    @click="quickPayDurasi = d; updateQuickPayPeriode();"
+                                    :class="quickPayDurasi === d ? 'bg-blue-600 text-white shadow-2xs font-bold' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold'"
+                                    class="px-2.5 py-1 text-xs rounded-lg transition">
+                                {{ d }} Bulan {{ d > 1 ? 'Sekaligus' : '' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rincian Periode yang Dilunasi -->
+                    <div v-if="quickPayForm.periode_list && quickPayForm.periode_list.length > 0"
+                         class="pt-2 border-t border-slate-200 text-[11px] space-y-1">
+                        <p class="font-bold text-slate-600 text-[10px] uppercase">Rincian Periode yang Akan Dilunasi:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span v-for="(p, idx) in quickPayForm.periode_list" :key="idx"
+                                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[11px] font-bold font-mono">
+                                <span class="material-symbols-outlined text-xs">check</span>
+                                {{ getBulanName(p.bulan) }} {{ p.tahun }}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -1762,16 +1831,23 @@ const activeFilterCount = computed(() =>
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Jumlah Bayar (Rp)</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Jumlah Bayar (Rp)</label>
+                        <span v-if="quickPayDurasi > 1" class="text-[10px] text-slate-400 font-mono">
+                            {{ quickPayDurasi }} × {{ rupiah(selectedRow.total_tarikan) }}
+                        </span>
+                    </div>
                     <input v-model="quickPayForm.jumlah_bayar" type="number" step="1000" min="0" required
                            class="w-full text-sm font-bold text-slate-900 border border-slate-200 rounded-xl px-3 py-2" />
                 </div>
 
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" @click="closeModal" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl">Batal</button>
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" @click="closeModal" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition">
+                        Batal
+                    </button>
                     <button type="submit" :disabled="quickPayForm.processing"
-                            class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow transition">
-                        {{ quickPayForm.processing ? 'Simpan...' : 'Simpan Pembayaran' }}
+                            class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow transition disabled:opacity-60">
+                        {{ quickPayForm.processing ? 'Simpan...' : (quickPayDurasi > 1 ? `Simpan Pembayaran (${quickPayDurasi} Bulan)` : 'Simpan Pembayaran') }}
                     </button>
                 </div>
             </form>

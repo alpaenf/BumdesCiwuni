@@ -153,13 +153,18 @@ watch(selectedIds, (newVal) => {
     }
 });
 
-// ── Form Single Pay ────────────────────────────────────────────────────────
+// ── Form Single / Multi Pay ────────────────────────────────────────────────
 const todayStr = new Date().toISOString().split('T')[0];
+
+const payBulanMulai  = ref(Number(selectedBulan.value));
+const payTahunMulai  = ref(Number(selectedTahun.value));
+const payDurasiBulan = ref(1); // 1 = 1 bulan, 2 = 2 bulan sekaligus, dst.
 
 const payForm = useForm({
     pelanggan_wifi_id: '',
     periode_bulan:     selectedBulan.value,
     periode_tahun:     selectedTahun.value,
+    periode_list:      [],
     gelombang:         detectGelombang(todayStr),
     tanggal_bayar:     todayStr,
     jumlah_bayar:      0,
@@ -168,22 +173,59 @@ const payForm = useForm({
     catatan:           '',
 });
 
+const updatePeriodeDanTagihan = () => {
+    if (!selectedCustomer.value) return;
+    const durasi = Math.max(1, parseInt(payDurasiBulan.value) || 1);
+    const startB = parseInt(payBulanMulai.value) || 1;
+    const startY = parseInt(payTahunMulai.value) || new Date().getFullYear();
+
+    const list = [];
+    let curB = startB;
+    let curY = startY;
+    for (let i = 0; i < durasi; i++) {
+        list.push({ bulan: curB, tahun: curY });
+        curB++;
+        if (curB > 12) {
+            curB = 1;
+            curY++;
+        }
+    }
+    payForm.periode_list  = list;
+    payForm.periode_bulan = list[0].bulan;
+    payForm.periode_tahun = list[0].tahun;
+
+    const tarifPerBulan  = Number(selectedCustomer.value.total_tarikan) || 0;
+    payForm.jumlah_bayar = tarifPerBulan * list.length;
+};
+
+const setPayPeriod = (bulan, tahun, durasi) => {
+    payBulanMulai.value  = Number(bulan);
+    payTahunMulai.value  = Number(tahun);
+    payDurasiBulan.value = Number(durasi);
+    updatePeriodeDanTagihan();
+};
+
 const openPayModal = (item) => {
     selectedCustomer.value = item;
     payForm.reset();
     payForm.pelanggan_wifi_id = item.id;
-    payForm.periode_bulan     = selectedBulan.value;
-    payForm.periode_tahun     = selectedTahun.value;
+
+    payBulanMulai.value  = Number(selectedBulan.value);
+    payTahunMulai.value  = Number(selectedTahun.value);
+    payDurasiBulan.value = 1;
+
     payForm.gelombang         = selectedGelombang.value;
     payForm.tanggal_bayar     = todayStr;
-    payForm.jumlah_bayar      = item.total_tarikan ?? 0;
     payForm.metode_pembayaran = 'TUNAI';
     payForm.status            = 'LUNAS';
     payForm.catatan           = '';
+
+    updatePeriodeDanTagihan();
     modalMode.value           = 'pay';
 };
 
 const submitSinglePay = () => {
+    updatePeriodeDanTagihan();
     payForm.post(route('wifi.pembayaran.store'), {
         onSuccess: () => closeModal(),
         preserveScroll: true,
@@ -837,27 +879,120 @@ const cancelDeleteModal = () => {
     </div>
 
     <!-- ══════════════════════════════════════════════════════════════════════════
-         MODAL: BAYAR SINGLE
+         MODAL: BAYAR SINGLE / MULTI-BULAN
     ══════════════════════════════════════════════════════════════════════════════ -->
     <Teleport to="body">
     <div v-if="modalMode === 'pay' && selectedCustomer"
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
          @click.self="closeModal">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 space-y-4">
+        <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-extrabold text-slate-900 uppercase">Input Pembayaran WiFi</h3>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600 text-xl">payments</span>
+                    <h3 class="text-sm font-extrabold text-slate-900 uppercase">Input Pembayaran WiFi</h3>
+                </div>
                 <button @click="closeModal" class="text-slate-400 hover:text-slate-700">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
-            <form @submit.prevent="submitSinglePay" class="space-y-3">
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl">
-                    <p class="text-xs font-bold text-slate-900">{{ selectedCustomer.nama }}</p>
-                    <p class="text-[11px] text-slate-500">ID: {{ selectedCustomer.no_id_pel || '-' }} &bull; Paket: {{ selectedCustomer.paket || '-' }}</p>
-                    <p class="text-[11px] text-blue-700 font-bold mt-1">
-                        Periode: {{ getBulanName(selectedBulan) }} {{ selectedTahun }} (Masa Bayar Tgl 1 - 10)
-                    </p>
+            <form @submit.prevent="submitSinglePay" class="space-y-3.5">
+                <!-- Info Pelanggan -->
+                <div class="bg-blue-50/70 border border-blue-100 p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">{{ selectedCustomer.nama }}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">ID: {{ selectedCustomer.no_id_pel || '-' }} &bull; Paket: {{ selectedCustomer.paket || '-' }}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold block">Tarif / Bln</span>
+                        <span class="text-xs font-mono font-bold text-blue-700">{{ rupiah(selectedCustomer.total_tarikan) }}</span>
+                    </div>
+                </div>
+
+                <!-- Alert Shortcut jika Belum Lunas Bulan Lalu -->
+                <div v-if="!selectedCustomer.lunas_bulan_lalu && !selectedCustomer.is_new_this_month"
+                     class="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-amber-600 text-base shrink-0 mt-0.5">warning</span>
+                        <div>
+                            <p class="text-xs font-bold text-amber-900">
+                                Tagihan {{ getBulanName(selectedCustomer.prev_bulan) }} {{ selectedCustomer.prev_tahun }} (Bulan Lalu) Belum Lunas
+                            </p>
+                            <p class="text-[10px] text-amber-700 mt-0.5">
+                                Pilih tombol cepat di bawah ini untuk membayar bulan lalu saja atau 2 bulan sekaligus:
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1 flex-wrap">
+                        <button type="button"
+                                @click="setPayPeriod(selectedCustomer.prev_bulan, selectedCustomer.prev_tahun, 1)"
+                                :class="payBulanMulai === selectedCustomer.prev_bulan && payDurasiBulan === 1 ? 'bg-amber-600 text-white font-bold' : 'bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold'"
+                                class="px-2.5 py-1 text-[11px] rounded-lg transition shadow-2xs">
+                            Bayar {{ getBulanName(selectedCustomer.prev_bulan) }} Saja (1 Bln)
+                        </button>
+                        <button type="button"
+                                @click="setPayPeriod(selectedCustomer.prev_bulan, selectedCustomer.prev_tahun, 2)"
+                                :class="payBulanMulai === selectedCustomer.prev_bulan && payDurasiBulan === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold'"
+                                class="px-2.5 py-1 text-[11px] rounded-lg transition shadow-2xs">
+                            Bayar 2 Bulan Sekaligus ({{ getBulanName(selectedCustomer.prev_bulan) }} + {{ getBulanName(selectedBulan) }})
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pemilihan Periode & Multi-Bulan -->
+                <div class="space-y-2.5 bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[10px] font-bold text-slate-600 uppercase">Periode Tagihan</label>
+                        <span class="text-[10px] font-bold text-blue-600 font-mono">
+                            {{ payDurasiBulan === 1 ? '1 Bulan' : `${payDurasiBulan} Bulan Sekaligus` }}
+                        </span>
+                    </div>
+
+                    <!-- Pilihan Bulan Mulai & Tahun Mulai -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[9px] font-semibold text-slate-400 uppercase mb-0.5">Mulai Bulan</label>
+                            <select v-model="payBulanMulai" @change="updatePeriodeDanTagihan"
+                                    class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold bg-white focus:border-blue-500 focus:outline-none">
+                                <option v-for="b in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="b" :value="b">
+                                    {{ ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][b-1] }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-semibold text-slate-400 uppercase mb-0.5">Tahun</label>
+                            <select v-model="payTahunMulai" @change="updatePeriodeDanTagihan"
+                                    class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold bg-white focus:border-blue-500 focus:outline-none">
+                                <option v-for="y in [2025, 2026, 2027, 2028]" :key="y" :value="y">{{ y }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quick Buttons Durasi Bulan (1, 2, 3, 6, 12 Bln) -->
+                    <div>
+                        <label class="block text-[9px] font-semibold text-slate-400 uppercase mb-1">Jumlah Bulan yang Dibayar</label>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button v-for="d in [1, 2, 3, 6, 12]" :key="d" type="button"
+                                    @click="payDurasiBulan = d; updatePeriodeDanTagihan();"
+                                    :class="payDurasiBulan === d ? 'bg-blue-600 text-white shadow-2xs font-bold' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold'"
+                                    class="px-2.5 py-1 text-xs rounded-lg transition">
+                                {{ d }} Bulan {{ d > 1 ? 'Sekaligus' : '' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rincian Periode yang Dilunasi -->
+                    <div v-if="payForm.periode_list && payForm.periode_list.length > 0"
+                         class="pt-2 border-t border-slate-200 text-[11px] space-y-1">
+                        <p class="font-bold text-slate-600 text-[10px] uppercase">Rincian Periode yang Akan Dilunasi:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span v-for="(p, idx) in payForm.periode_list" :key="idx"
+                                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[11px] font-bold font-mono">
+                                <span class="material-symbols-outlined text-xs">check</span>
+                                {{ getBulanName(p.bulan) }} {{ p.tahun }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -884,7 +1019,12 @@ const cancelDeleteModal = () => {
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Jumlah Bayar (Rp)</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Total Bayar (Rp)</label>
+                        <span v-if="payDurasiBulan > 1" class="text-[10px] text-slate-400 font-mono">
+                            {{ payDurasiBulan }} × {{ rupiah(selectedCustomer.total_tarikan) }}
+                        </span>
+                    </div>
                     <input v-model="payForm.jumlah_bayar" type="number" step="1000" min="0" required
                            class="w-full text-sm font-bold text-slate-900 border border-slate-200 rounded-xl px-3 py-2 focus:border-blue-500 focus:outline-none" />
                 </div>
@@ -895,11 +1035,13 @@ const cancelDeleteModal = () => {
                            class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 focus:border-blue-500 focus:outline-none" />
                 </div>
 
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" @click="closeModal" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl">Batal</button>
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" @click="closeModal" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition">
+                        Batal
+                    </button>
                     <button type="submit" :disabled="payForm.processing"
-                            class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow transition">
-                        {{ payForm.processing ? 'Menyimpan...' : 'Simpan Pembayaran' }}
+                            class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow transition disabled:opacity-60">
+                        {{ payForm.processing ? 'Menyimpan...' : (payDurasiBulan > 1 ? `Simpan Pembayaran (${payDurasiBulan} Bulan)` : 'Simpan Pembayaran') }}
                     </button>
                 </div>
             </form>

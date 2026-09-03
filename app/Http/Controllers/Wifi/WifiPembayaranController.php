@@ -215,6 +215,10 @@ class WifiPembayaranController extends Controller
             }
 
             $lunasBulanLalu = $prevPembayaranRecords->has($item->id);
+            $item->lunas_bulan_lalu = $lunasBulanLalu;
+            $item->is_new_this_month = $isNewThisMonth;
+            $item->prev_bulan = $prevBulan;
+            $item->prev_tahun = $prevTahun;
 
             // 3. Status Koneksi WiFi (Aktif vs Isolir)
             if ($item->status_bayar === 'LUNAS') {
@@ -350,56 +354,110 @@ class WifiPembayaranController extends Controller
     }
 
     /**
-     * Input Pembayaran Single
+     * Input Pembayaran Single / Multi-Bulan
      */
     public function store(Request $request): RedirectResponse
     {
         $this->authorizeUnit();
 
         $request->validate([
-            'pelanggan_wifi_id' => 'required|exists:pelanggan_wifi,id',
-            'periode_bulan'     => 'required|integer|between:1,12',
-            'periode_tahun'     => 'required|integer|min:2020',
-            'gelombang'         => 'required|in:1_15,16_30',
-            'tanggal_bayar'     => 'required|date',
-            'jumlah_bayar'      => 'required|numeric|min:0',
-            'metode_pembayaran' => 'required|in:TUNAI,TRANSFER',
-            'status'            => 'required|in:AKTIF,LUNAS,ISOLIR',
-            'catatan'           => 'nullable|string|max:500',
+            'pelanggan_wifi_id'    => 'required|exists:pelanggan_wifi,id',
+            'periode_bulan'        => 'nullable|integer|between:1,12',
+            'periode_tahun'        => 'nullable|integer|min:2020',
+            'periode_list'         => 'nullable|array|min:1',
+            'periode_list.*.bulan' => 'required_with:periode_list|integer|between:1,12',
+            'periode_list.*.tahun' => 'required_with:periode_list|integer|min:2020',
+            'gelombang'            => 'required|in:1_15,16_30',
+            'tanggal_bayar'        => 'required|date',
+            'jumlah_bayar'         => 'required|numeric|min:0',
+            'metode_pembayaran'    => 'required|in:TUNAI,TRANSFER',
+            'status'               => 'required|in:AKTIF,LUNAS,ISOLIR',
+            'catatan'              => 'nullable|string|max:500',
         ]);
 
-        DB::transaction(function () use ($request) {
+        $namaBulanMap = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        DB::transaction(function () use ($request, $namaBulanMap) {
             $pelanggan = PelangganWifi::findOrFail($request->pelanggan_wifi_id);
+
+            // Tentukan daftar periode yang akan dibayar (bisa 1 bulan atau banyak bulan sekaligus)
+            $targetPeriods = [];
+            if ($request->has('periode_list') && is_array($request->periode_list) && count($request->periode_list) > 0) {
+                foreach ($request->periode_list as $p) {
+                    $targetPeriods[] = [
+                        'bulan' => (int) $p['bulan'],
+                        'tahun' => (int) $p['tahun'],
+                    ];
+                }
+            } else {
+                $targetPeriods[] = [
+                    'bulan' => (int) ($request->periode_bulan ?? now()->month),
+                    'tahun' => (int) ($request->periode_tahun ?? now()->year),
+                ];
+            }
 
             // Map status for MySQL enum ('LUNAS', 'TUNGGAKAN', 'ISOLIR')
             $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
 
-            // Generate nomor transaksi unik WF-202608-0001
-            $prefix = sprintf('WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
-            $lastCount = PembayaranWifi::where(function ($q) use ($prefix) {
-                $q->where('no_transaksi', 'like', "{$prefix}%")
-                  ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
-            })->count();
-            $noTransaksi = $prefix . sprintf('%04d', $lastCount + 1);
+            $countPeriods = count($targetPeriods);
+            $totalBayar   = (float) $request->jumlah_bayar;
+            $nominalPerBulan = $countPeriods > 0 ? round($totalBayar / $countPeriods) : $totalBayar;
 
-            // Create or update payment record for this customer + period + gelombang
-            $pembayaran = PembayaranWifi::updateOrCreate(
-                [
+            $namaBulanTeks = collect($targetPeriods)
+                ->map(fn($p) => ($namaBulanMap[$p['bulan']] ?? $p['bulan']) . ' ' . $p['tahun'])
+                ->join(', ');
+
+            foreach ($targetPeriods as $item) {
+                $b = $item['bulan'];
+                $y = $item['tahun'];
+
+                $existing = PembayaranWifi::where([
                     'pelanggan_wifi_id' => $pelanggan->id,
-                    'periode_bulan'     => $request->periode_bulan,
-                    'periode_tahun'     => $request->periode_tahun,
+                    'periode_bulan'     => $b,
+                    'periode_tahun'     => $y,
                     'gelombang'         => $request->gelombang,
-                ],
-                [
-                    'no_transaksi'      => $noTransaksi,
-                    'tanggal_bayar'     => $request->tanggal_bayar,
-                    'jumlah_bayar'      => $request->jumlah_bayar,
-                    'metode_pembayaran' => $request->metode_pembayaran,
-                    'status'            => $statusEnum,
-                    'catatan'           => $request->catatan,
-                    'kasir_user_id'     => Auth::id(),
-                ]
-            );
+                ])->first();
+
+                if ($existing && $existing->no_transaksi) {
+                    $noTransaksi = $existing->no_transaksi;
+                } else {
+                    $prefix = sprintf('WF-%04d%02d-', $y, $b);
+                    $lastCount = PembayaranWifi::where(function ($q) use ($prefix) {
+                        $q->where('no_transaksi', 'like', "{$prefix}%")
+                          ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
+                    })->count();
+                    $noTransaksi = $prefix . sprintf('%04d', $lastCount + 1);
+                }
+
+                $catatanItem = $request->catatan;
+                if ($countPeriods > 1) {
+                    $multiNote = "Bayar Sekaligus ({$namaBulanTeks})";
+                    $catatanItem = $catatanItem ? "{$multiNote} - {$catatanItem}" : $multiNote;
+                }
+
+                // Create or update payment record for this customer + period + gelombang
+                PembayaranWifi::updateOrCreate(
+                    [
+                        'pelanggan_wifi_id' => $pelanggan->id,
+                        'periode_bulan'     => $b,
+                        'periode_tahun'     => $y,
+                        'gelombang'         => $request->gelombang,
+                    ],
+                    [
+                        'no_transaksi'      => $noTransaksi,
+                        'tanggal_bayar'     => $request->tanggal_bayar,
+                        'jumlah_bayar'      => $nominalPerBulan,
+                        'metode_pembayaran' => $request->metode_pembayaran,
+                        'status'            => $statusEnum,
+                        'catatan'           => $catatanItem,
+                        'kasir_user_id'     => Auth::id(),
+                    ]
+                );
+            }
 
             // Update PelangganWifi main status and gelombang
             if ($request->gelombang === '1_15') {
