@@ -11,6 +11,7 @@ const props = defineProps({
     rwOptions:     { type: Array, default: () => [] },
     providersList: { type: Array, default: () => [] },
     filters:       { type: Object, default: () => ({}) },
+    nextNo:        { type: Number, default: 1 },
 });
 
 // ─── Sidebar ──────────────────────────────────────────────
@@ -205,6 +206,7 @@ const openModal = (mode, row = null) => {
     }
     if (mode === 'add') {
         form.reset();
+        form.no = props.nextNo || 1;
         persentaseBumdes.value = 9;
     }
     if (mode === 'quick_pay' && row) {
@@ -1298,9 +1300,12 @@ const activeFilterCount = computed(() =>
                     </h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">No</label>
-                            <input v-model="form.no" type="number" placeholder="1" id="form-no"
-                                   class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none" />
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">No</label>
+                                <span v-if="modalMode === 'add'" class="text-[9px] text-blue-600 font-bold bg-blue-50 border border-blue-200/60 px-1.5 py-0.5 rounded-md">Otomatis</span>
+                            </div>
+                            <input v-model="form.no" type="number" :placeholder="String(nextNo || 1)" id="form-no"
+                                   class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 focus:border-blue-500 focus:outline-none" />
                         </div>
                         <div class="col-span-2">
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama <span class="text-red-500">*</span></label>

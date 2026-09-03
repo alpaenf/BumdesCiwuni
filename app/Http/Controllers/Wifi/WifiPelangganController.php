@@ -203,6 +203,7 @@ class WifiPelangganController extends Controller
         $rwOptions      = PelangganWifi::select('rw')->whereNotNull('rw')->distinct()->orderBy('rw')->pluck('rw');
 
         $providersList  = \App\Models\ProviderWifi::orderBy('nama_provider')->get();
+        $nextNo         = (PelangganWifi::max('no') ?? 0) + 1;
 
         return Inertia::render('Wifi/Pelanggan', [
             'unit'          => $unit,
@@ -212,6 +213,7 @@ class WifiPelangganController extends Controller
             'rtOptions'     => $rtOptions,
             'rwOptions'     => $rwOptions,
             'providersList' => $providersList,
+            'nextNo'        => $nextNo,
             'filters'       => $request->only(['search', 'provider_id', 'paket', 'gelombang', 'status', 'rt', 'rw', 'tanggal_dari', 'tanggal_sampai', 'sort', 'dir', 'per_page']),
         ]);
     }
@@ -224,6 +226,10 @@ class WifiPelangganController extends Controller
         $this->authorizeUnit();
 
         $data = $request->validated();
+
+        if (empty($data['no'])) {
+            $data['no'] = (PelangganWifi::max('no') ?? 0) + 1;
+        }
 
         // Handle foto upload
         if ($request->hasFile('foto_rumah')) {
