@@ -195,7 +195,7 @@ class WifiPembayaranController extends Controller
             ->get()
             ->keyBy('pelanggan_wifi_id');
 
-        $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords, $prevPembayaranRecords, $statusCol, $currentPeriodYM) {
+        $pelanggan->getCollection()->transform(function ($item) use ($pembayaranRecords, $prevPembayaranRecords, $statusCol, $currentPeriodYM, $prevBulan, $prevTahun) {
             $item->pembayaran_periode = $pembayaranRecords->get($item->id);
 
             // 1. Status Pembayaran Periode Ini
