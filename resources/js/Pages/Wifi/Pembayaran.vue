@@ -897,6 +897,17 @@ const cancelDeleteModal = () => {
             </div>
 
             <form @submit.prevent="submitSinglePay" class="space-y-3.5">
+                <!-- Alert Error jika ada kegagalan -->
+                <div v-if="Object.keys(payForm.errors).length > 0" class="p-3 bg-red-50 border border-red-200 rounded-xl space-y-1">
+                    <p class="text-xs font-bold text-red-800 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">warning</span>
+                        Gagal Menyimpan Pembayaran:
+                    </p>
+                    <ul class="text-[11px] text-red-700 list-disc list-inside">
+                        <li v-for="(err, field) in payForm.errors" :key="field">{{ err }}</li>
+                    </ul>
+                </div>
+
                 <!-- Info Pelanggan -->
                 <div class="bg-blue-50/70 border border-blue-100 p-3 rounded-xl flex items-center justify-between">
                     <div>

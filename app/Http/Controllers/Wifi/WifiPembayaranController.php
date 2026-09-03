@@ -364,9 +364,9 @@ class WifiPembayaranController extends Controller
             'pelanggan_wifi_id'    => 'required|exists:pelanggan_wifi,id',
             'periode_bulan'        => 'nullable|integer|between:1,12',
             'periode_tahun'        => 'nullable|integer|min:2020',
-            'periode_list'         => 'nullable|array|min:1',
-            'periode_list.*.bulan' => 'required_with:periode_list|integer|between:1,12',
-            'periode_list.*.tahun' => 'required_with:periode_list|integer|min:2020',
+            'periode_list'         => 'nullable|array',
+            'periode_list.*.bulan' => 'nullable|integer|between:1,12',
+            'periode_list.*.tahun' => 'nullable|integer|min:2020',
             'gelombang'            => 'required|in:1_15,16_30',
             'tanggal_bayar'        => 'required|date',
             'jumlah_bayar'         => 'required|numeric|min:0',
@@ -381,95 +381,138 @@ class WifiPembayaranController extends Controller
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
 
-        DB::transaction(function () use ($request, $namaBulanMap) {
-            $pelanggan = PelangganWifi::findOrFail($request->pelanggan_wifi_id);
+        try {
+            DB::transaction(function () use ($request, $namaBulanMap) {
+                $pelanggan = PelangganWifi::findOrFail($request->pelanggan_wifi_id);
 
-            // Tentukan daftar periode yang akan dibayar (bisa 1 bulan atau banyak bulan sekaligus)
-            $targetPeriods = [];
-            if ($request->has('periode_list') && is_array($request->periode_list) && count($request->periode_list) > 0) {
-                foreach ($request->periode_list as $p) {
+                // Tentukan daftar periode yang akan dibayar
+                $targetPeriods = [];
+                if ($request->has('periode_list') && is_array($request->periode_list) && count($request->periode_list) > 0) {
+                    foreach ($request->periode_list as $p) {
+                        if (!empty($p['bulan']) && !empty($p['tahun'])) {
+                            $targetPeriods[] = [
+                                'bulan' => (int) $p['bulan'],
+                                'tahun' => (int) $p['tahun'],
+                            ];
+                        }
+                    }
+                }
+
+                if (empty($targetPeriods)) {
                     $targetPeriods[] = [
-                        'bulan' => (int) $p['bulan'],
-                        'tahun' => (int) $p['tahun'],
+                        'bulan' => (int) ($request->periode_bulan ?? now()->month),
+                        'tahun' => (int) ($request->periode_tahun ?? now()->year),
                     ];
                 }
-            } else {
-                $targetPeriods[] = [
-                    'bulan' => (int) ($request->periode_bulan ?? now()->month),
-                    'tahun' => (int) ($request->periode_tahun ?? now()->year),
-                ];
-            }
 
-            // Map status for MySQL enum ('LUNAS', 'TUNGGAKAN', 'ISOLIR')
-            $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
+                // Map status for MySQL enum ('LUNAS', 'TUNGGAKAN', 'ISOLIR')
+                $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
 
-            $countPeriods = count($targetPeriods);
-            $totalBayar   = (float) $request->jumlah_bayar;
-            $nominalPerBulan = $countPeriods > 0 ? round($totalBayar / $countPeriods) : $totalBayar;
+                $countPeriods = count($targetPeriods);
+                $totalBayar   = (float) $request->jumlah_bayar;
+                $nominalPerBulan = $countPeriods > 0 ? round($totalBayar / $countPeriods) : $totalBayar;
 
-            $namaBulanTeks = collect($targetPeriods)
-                ->map(fn($p) => ($namaBulanMap[$p['bulan']] ?? $p['bulan']) . ' ' . $p['tahun'])
-                ->join(', ');
+                $namaBulanTeks = collect($targetPeriods)
+                    ->map(fn($p) => ($namaBulanMap[$p['bulan']] ?? $p['bulan']) . ' ' . $p['tahun'])
+                    ->join(', ');
 
-            foreach ($targetPeriods as $item) {
-                $b = $item['bulan'];
-                $y = $item['tahun'];
+                $kasirId = Auth::check() ? Auth::id() : null;
 
-                $existing = PembayaranWifi::where([
-                    'pelanggan_wifi_id' => $pelanggan->id,
-                    'periode_bulan'     => $b,
-                    'periode_tahun'     => $y,
-                    'gelombang'         => $request->gelombang,
-                ])->first();
+                foreach ($targetPeriods as $item) {
+                    $b = $item['bulan'];
+                    $y = $item['tahun'];
 
-                if ($existing && $existing->no_transaksi) {
-                    $noTransaksi = $existing->no_transaksi;
-                } else {
-                    $prefix = sprintf('WF-%04d%02d-', $y, $b);
-                    $lastCount = PembayaranWifi::where(function ($q) use ($prefix) {
-                        $q->where('no_transaksi', 'like', "{$prefix}%")
-                          ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
-                    })->count();
-                    $noTransaksi = $prefix . sprintf('%04d', $lastCount + 1);
-                }
-
-                $catatanItem = $request->catatan;
-                if ($countPeriods > 1) {
-                    $multiNote = "Bayar Sekaligus ({$namaBulanTeks})";
-                    $catatanItem = $catatanItem ? "{$multiNote} - {$catatanItem}" : $multiNote;
-                }
-
-                // Create or update payment record for this customer + period + gelombang
-                PembayaranWifi::updateOrCreate(
-                    [
+                    $existing = PembayaranWifi::withTrashed()->where([
                         'pelanggan_wifi_id' => $pelanggan->id,
                         'periode_bulan'     => $b,
                         'periode_tahun'     => $y,
-                        'gelombang'         => $request->gelombang,
-                    ],
-                    [
-                        'no_transaksi'      => $noTransaksi,
-                        'tanggal_bayar'     => $request->tanggal_bayar,
-                        'jumlah_bayar'      => $nominalPerBulan,
-                        'metode_pembayaran' => $request->metode_pembayaran,
-                        'status'            => $statusEnum,
-                        'catatan'           => $catatanItem,
-                        'kasir_user_id'     => Auth::id(),
-                    ]
-                );
-            }
+                    ])->first();
 
-            // Update PelangganWifi main status and gelombang
-            if ($request->gelombang === '1_15') {
-                $pelanggan->status_1_15 = $statusEnum;
-            } else {
-                $pelanggan->status_16_30 = $statusEnum;
-            }
-            $pelanggan->gelombang = $request->gelombang;
-            $pelanggan->save();
-        });
+                    if ($existing) {
+                        if ($existing->trashed()) {
+                            $existing->restore();
+                        }
+                        $noTransaksi = $existing->no_transaksi;
+                    } else {
+                        // Generate nomor transaksi unik yang dijamin belum terpakai
+                        $prefix = sprintf('WF-%04d%02d-', $y, $b);
+                        $lastRecord = PembayaranWifi::withTrashed()
+                            ->where(function ($q) use ($prefix) {
+                                $q->where('no_transaksi', 'like', "{$prefix}%")
+                                  ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
+                            })
+                            ->orderByDesc('id')
+                            ->first();
 
-        return redirect()->back()->with('success', 'Pembayaran berhasil disimpan.');
+                        $nextSeq = 1;
+                        if ($lastRecord && preg_match('/(\d+)$/', $lastRecord->no_transaksi, $matches)) {
+                            $nextSeq = ((int) $matches[1]) + 1;
+                        }
+
+                        do {
+                            $candidate = $prefix . sprintf('%04d', $nextSeq);
+                            $exists = PembayaranWifi::withTrashed()->where('no_transaksi', $candidate)->exists();
+                            if (!$exists) {
+                                $noTransaksi = $candidate;
+                                break;
+                            }
+                            $nextSeq++;
+                        } while (true);
+                    }
+
+                    $catatanItem = $request->catatan;
+                    if ($countPeriods > 1) {
+                        $multiNote = "Bayar Sekaligus ({$namaBulanTeks})";
+                        $catatanItem = $catatanItem ? "{$multiNote} - {$catatanItem}" : $multiNote;
+                    }
+
+                    if ($existing) {
+                        $existing->update([
+                            'no_transaksi'      => $noTransaksi,
+                            'gelombang'         => $request->gelombang,
+                            'tanggal_bayar'     => $request->tanggal_bayar,
+                            'jumlah_bayar'      => $nominalPerBulan,
+                            'metode_pembayaran' => $request->metode_pembayaran,
+                            'status'            => $statusEnum,
+                            'catatan'           => $catatanItem,
+                            'kasir_user_id'     => $kasirId,
+                        ]);
+                    } else {
+                        PembayaranWifi::create([
+                            'pelanggan_wifi_id' => $pelanggan->id,
+                            'periode_bulan'     => $b,
+                            'periode_tahun'     => $y,
+                            'gelombang'         => $request->gelombang,
+                            'no_transaksi'      => $noTransaksi,
+                            'tanggal_bayar'     => $request->tanggal_bayar,
+                            'jumlah_bayar'      => $nominalPerBulan,
+                            'metode_pembayaran' => $request->metode_pembayaran,
+                            'status'            => $statusEnum,
+                            'catatan'           => $catatanItem,
+                            'kasir_user_id'     => $kasirId,
+                        ]);
+                    }
+                }
+
+                // Update PelangganWifi main status and gelombang
+                if ($request->gelombang === '1_15') {
+                    $pelanggan->status_1_15 = $statusEnum;
+                } else {
+                    $pelanggan->status_16_30 = $statusEnum;
+                }
+                $pelanggan->gelombang = $request->gelombang;
+                $pelanggan->save();
+            });
+
+            return redirect()->back()->with('success', 'Pembayaran berhasil disimpan.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal simpan pembayaran WiFi: ' . $e->getMessage(), [
+                'file' => $e->getFile() . ':' . $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'Gagal menyimpan pembayaran: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -490,49 +533,95 @@ class WifiPembayaranController extends Controller
             'status'            => 'required|in:AKTIF,LUNAS,ISOLIR',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $pelangganList = PelangganWifi::whereIn('id', $request->pelanggan_ids)->get();
-            $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
+        try {
+            DB::transaction(function () use ($request) {
+                $pelangganList = PelangganWifi::whereIn('id', $request->pelanggan_ids)->get();
+                $statusEnum = in_array($request->status, ['LUNAS', 'AKTIF']) ? 'LUNAS' : $request->status;
 
-            foreach ($pelangganList as $pelanggan) {
                 $prefix = sprintf('WF-%04d%02d-', $request->periode_tahun, $request->periode_bulan);
-                $lastCount = PembayaranWifi::where(function ($q) use ($prefix) {
-                    $q->where('no_transaksi', 'like', "{$prefix}%")
-                      ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
-                })->count();
-                $noTransaksi = $prefix . sprintf('%04d', $lastCount + 1);
+                $lastRecord = PembayaranWifi::withTrashed()
+                    ->where(function ($q) use ($prefix) {
+                        $q->where('no_transaksi', 'like', "{$prefix}%")
+                          ->orWhere('no_transaksi', 'like', "TRX-{$prefix}%");
+                    })
+                    ->orderByDesc('id')
+                    ->first();
 
-                $nominal = $pelanggan->total_tarikan ?? 0;
+                $nextSeq = 1;
+                if ($lastRecord && preg_match('/(\d+)$/', $lastRecord->no_transaksi, $matches)) {
+                    $nextSeq = ((int) $matches[1]) + 1;
+                }
 
-                PembayaranWifi::updateOrCreate(
-                    [
+                $kasirId = Auth::check() ? Auth::id() : null;
+
+                foreach ($pelangganList as $pelanggan) {
+                    $existing = PembayaranWifi::withTrashed()->where([
                         'pelanggan_wifi_id' => $pelanggan->id,
                         'periode_bulan'     => $request->periode_bulan,
                         'periode_tahun'     => $request->periode_tahun,
-                        'gelombang'         => $request->gelombang,
-                    ],
-                    [
-                        'no_transaksi'      => $noTransaksi,
-                        'tanggal_bayar'     => $request->tanggal_bayar,
-                        'jumlah_bayar'      => $nominal,
-                        'metode_pembayaran' => $request->metode_pembayaran,
-                        'status'            => $statusEnum,
-                        'catatan'           => 'Pembayaran Masal / Kolektor',
-                        'kasir_user_id'     => Auth::id(),
-                    ]
-                );
+                    ])->first();
 
-                if ($request->gelombang === '1_15') {
-                    $pelanggan->status_1_15 = $statusEnum;
-                } else {
-                    $pelanggan->status_16_30 = $statusEnum;
+                    if ($existing) {
+                        if ($existing->trashed()) {
+                            $existing->restore();
+                        }
+                        $noTransaksi = $existing->no_transaksi;
+                    } else {
+                        do {
+                            $candidate = $prefix . sprintf('%04d', $nextSeq);
+                            $exists = PembayaranWifi::withTrashed()->where('no_transaksi', $candidate)->exists();
+                            $nextSeq++;
+                            if (!$exists) {
+                                $noTransaksi = $candidate;
+                                break;
+                            }
+                        } while (true);
+                    }
+
+                    $nominal = $pelanggan->total_tarikan ?? 0;
+
+                    if ($existing) {
+                        $existing->update([
+                            'no_transaksi'      => $noTransaksi,
+                            'gelombang'         => $request->gelombang,
+                            'tanggal_bayar'     => $request->tanggal_bayar,
+                            'jumlah_bayar'      => $nominal,
+                            'metode_pembayaran' => $request->metode_pembayaran,
+                            'status'            => $statusEnum,
+                            'catatan'           => 'Pembayaran Masal / Kolektor',
+                            'kasir_user_id'     => $kasirId,
+                        ]);
+                    } else {
+                        PembayaranWifi::create([
+                            'pelanggan_wifi_id' => $pelanggan->id,
+                            'periode_bulan'     => $request->periode_bulan,
+                            'periode_tahun'     => $request->periode_tahun,
+                            'gelombang'         => $request->gelombang,
+                            'no_transaksi'      => $noTransaksi,
+                            'tanggal_bayar'     => $request->tanggal_bayar,
+                            'jumlah_bayar'      => $nominal,
+                            'metode_pembayaran' => $request->metode_pembayaran,
+                            'status'            => $statusEnum,
+                            'catatan'           => 'Pembayaran Masal / Kolektor',
+                            'kasir_user_id'     => $kasirId,
+                        ]);
+                    }
+
+                    if ($request->gelombang === '1_15') {
+                        $pelanggan->status_1_15 = $statusEnum;
+                    } else {
+                        $pelanggan->status_16_30 = $statusEnum;
+                    }
+                    $pelanggan->gelombang = $request->gelombang;
+                    $pelanggan->save();
                 }
-                $pelanggan->gelombang = $request->gelombang;
-                $pelanggan->save();
-            }
-        });
+            });
 
-        return redirect()->back()->with('success', count($request->pelanggan_ids) . ' pembayaran pelanggan berhasil diproses.');
+            return redirect()->back()->with('success', 'Pembayaran masal berhasil disimpan.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal bayar masal WiFi: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Gagal bayar masal: ' . $e->getMessage()]);
+        }
     }
 
     /**
