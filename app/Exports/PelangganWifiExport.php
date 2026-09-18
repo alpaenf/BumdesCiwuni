@@ -61,7 +61,7 @@ class PelangganWifiExport implements FromView, ShouldAutoSize, WithDrawings
             'total_pelanggan'    => $this->pelangganList->count(),
             'total_tarikan'      => $this->pelangganList->sum('total_tarikan'),
             'total_hasil_bumdes' => $this->pelangganList->sum('hasil_bumdes'),
-            'total_provider'     => $this->pelangganList->sum('total_provider'),
+            'total_provider'     => $this->pelangganList->sum(fn($p) => max(0, ($p->total_tarikan ?? 0) - ($p->hasil_bumdes ?? 0))),
             'lunas_115'          => $this->pelangganList->where('status_1_15', 'LUNAS')->count(),
             'tunggakan_115'      => $this->pelangganList->where('status_1_15', 'TUNGGAKAN')->count(),
             'isolir_115'        => $this->pelangganList->where('status_1_15', 'ISOLIR')->count(),

@@ -298,7 +298,7 @@
                     @endif
                 </td>
                 <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->hasil_bumdes, 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->total_provider, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->hak_provider ?? max(0, ($p->total_tarikan ?? 0) - ($p->hasil_bumdes ?? 0)), 0, ',', '.') }}</td>
                 <td class="text-center">
                     @if(($p->current_status ?? $p->status_1_15) === 'ISOLIR')
                         <span class="badge badge-isolir">ISOLIR</span>

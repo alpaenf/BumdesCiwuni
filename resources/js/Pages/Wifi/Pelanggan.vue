@@ -252,19 +252,31 @@ const openHistoryModal = async (row) => {
     }
 };
 
+const calcPelangganHakProvider = (row) => {
+    if (!row) return 0;
+    if (row.hak_provider !== undefined && row.hak_provider !== null) {
+        return Number(row.hak_provider);
+    }
+    const tarikan = parseFloat(row.total_tarikan) || 0;
+    const bumdes  = parseFloat(row.hasil_bumdes) || 0;
+    return Math.max(0, tarikan - bumdes);
+};
+
 const calcBumdes = (h) => {
     if (!historyCustomer.value) return 0;
     const provider = historyCustomer.value.provider;
-    const tarikan  = h.jumlah_bayar || 0;
+    const tarikan  = parseFloat(h.jumlah_bayar) || 0;
     if (provider && provider.tipe_bagi_hasil === 'FLAT_ADMIN') {
-        return provider.nilai_bagi_hasil || 0;
+        const admin = parseFloat(provider.nilai_bagi_hasil) || 0;
+        return Math.min(admin, tarikan);
     }
-    const pct = historyCustomer.value.bagi_hasil_bumdes ?? 9;
-    return Math.round(tarikan * (pct / 100));
+    const dasar = parseFloat(historyCustomer.value.total_provider) || tarikan;
+    const pct   = parseFloat(historyCustomer.value.bagi_hasil_bumdes) || 9;
+    return Math.round(dasar * (pct / 100));
 };
 
 const calcProvider = (h) => {
-    const tarikan = h.jumlah_bayar || 0;
+    const tarikan = parseFloat(h.jumlah_bayar) || 0;
     return Math.max(0, tarikan - calcBumdes(h));
 };
 
@@ -904,6 +916,10 @@ const activeFilterCount = computed(() =>
                                         <p class="text-[10px] text-slate-400">BUMDes</p>
                                         <p class="text-xs font-mono font-bold text-emerald-600">{{ rupiah(row.hasil_bumdes) }}</p>
                                     </div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-400">Hak Provider</p>
+                                        <p class="text-xs font-mono font-bold text-blue-700">{{ rupiah(calcPelangganHakProvider(row)) }}</p>
+                                    </div>
                                 </div>
                                 <div v-if="row.no_wa">
                                     <a :href="`https://wa.me/${row.no_wa.replace(/\D/g,'')}`" target="_blank"
@@ -1111,7 +1127,7 @@ const activeFilterCount = computed(() =>
 
                                     <!-- Hak Provider -->
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-bold font-mono text-slate-800" style="min-width:140px">
-                                        {{ rupiah(row.total_provider) }}
+                                        {{ rupiah(calcPelangganHakProvider(row)) }}
                                     </td>
 
 
@@ -1561,7 +1577,7 @@ const activeFilterCount = computed(() =>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Dasar Tarikan Non PPN</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.total_provider > 0 ? selectedRow.total_provider : selectedRow.total_dasar_tarikan_non_ppn) }}</span></div>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Bagi Hasil BUMDes</span><span class="font-mono text-slate-700">{{ selectedRow.bagi_hasil_bumdes ?? 9 }}%</span></div>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Hasil BUMDes</span><span class="font-mono font-semibold text-emerald-600">{{ rupiah(selectedRow.hasil_bumdes) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Hak Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_provider) }}</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Hak Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(calcPelangganHakProvider(selectedRow)) }}</span></div>
 
                     <div>
                         <span class="font-bold text-slate-500 block text-[10px] uppercase">Masa Pembayaran</span>

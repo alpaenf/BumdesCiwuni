@@ -53,7 +53,17 @@ class PelangganWifi extends Model
         'gps_lat'                     => 'float',
     ];
 
-    protected $appends = ['foto_rumah_url'];
+    protected $appends = ['foto_rumah_url', 'hak_provider'];
+
+    /**
+     * Accessor: Hak Provider (Total Tarikan - Hasil BUMDes).
+     */
+    public function getHakProviderAttribute(): float
+    {
+        $tarikan = (float) ($this->total_tarikan ?? 0);
+        $bumdes  = (float) ($this->hasil_bumdes ?? 0);
+        return max(0, $tarikan - $bumdes);
+    }
 
     /**
      * Accessor: URL publik foto rumah.

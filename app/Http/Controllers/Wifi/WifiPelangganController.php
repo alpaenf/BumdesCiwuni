@@ -521,7 +521,7 @@ class WifiPelangganController extends Controller
             'total_pelanggan'    => $pelangganList->count(),
             'total_tarikan'      => $pelangganList->sum('total_tarikan'),
             'total_hasil_bumdes' => $pelangganList->sum('hasil_bumdes'),
-            'total_provider'     => $pelangganList->sum('total_provider'),
+            'total_provider'     => $pelangganList->sum(fn($p) => max(0, ($p->total_tarikan ?? 0) - ($p->hasil_bumdes ?? 0))),
             'aktif_count'        => $pelangganList->where('status_1_15', '!=', 'ISOLIR')->count(),
             'isolir_count'       => $pelangganList->where('status_1_15', 'ISOLIR')->count(),
         ];

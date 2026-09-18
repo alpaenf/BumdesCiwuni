@@ -89,7 +89,7 @@
                     @endif
                 </td>
                 <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $row->hasil_bumdes }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $row->total_provider }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $row->hak_provider ?? max(0, ($row->total_tarikan ?? 0) - ($row->hasil_bumdes ?? 0)) }}</td>
                 <td style="text-align:center; font-weight:bold;">{{ $row->status_1_15 ?? '-' }}</td>
                 <td style="text-align:center; font-weight:bold;">{{ $row->status_16_30 ?? '-' }}</td>
                 <td style="mso-number-format:'\@'; text-align:center;">{{ $row->gps_long ?? '-' }}</td>
