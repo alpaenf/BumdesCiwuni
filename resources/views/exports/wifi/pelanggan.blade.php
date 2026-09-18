@@ -35,7 +35,7 @@
             <td colspan="16" style="font-weight:bold; text-align:left; color:#047857;">Rp {{ number_format($summary['total_hasil_bumdes'], 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Total Setoran Hak Provider:</td>
+            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Total Hak Provider:</td>
             <td colspan="16" style="font-weight:bold; text-align:left; color:#1D4ED8;">Rp {{ number_format($summary['total_provider'], 0, ',', '.') }}</td>
         </tr>
         <tr><td colspan="19"></td></tr>

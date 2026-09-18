@@ -248,7 +248,7 @@
             <strong>Rp {{ number_format($stats['total_hasil_bumdes'], 0, ',', '.') }}</strong>
         </div>
         <div class="summary-card blue">
-            <span>Setoran Hak Provider</span>
+            <span>Hak Provider</span>
             <strong>Rp {{ number_format($stats['total_hak_provider'], 0, ',', '.') }}</strong>
         </div>
         <div class="summary-card">
@@ -268,7 +268,7 @@
                 <th class="text-right" style="width:95px;">Tarif Warga</th>
                 <th class="text-right" style="width:95px;">Dasar Non PPN</th>
                 <th class="text-right" style="width:95px;">Hasil BUMDes</th>
-                <th class="text-right" style="width:95px;">Setor Provider</th>
+                <th class="text-right" style="width:95px;">Hak Provider</th>
                 <th class="text-center" style="width:90px;">Status</th>
             </tr>
         </thead>

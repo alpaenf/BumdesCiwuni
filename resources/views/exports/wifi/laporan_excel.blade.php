@@ -43,7 +43,7 @@
             <td colspan="11" style="font-weight:bold; text-align:left; color:#047857;">Rp {{ number_format($stats['total_hasil_bumdes'], 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Setoran Hak Provider ISP:</td>
+            <td colspan="3" style="font-weight:bold; background-color:#F1F5F9;">Hak Provider:</td>
             <td colspan="11" style="font-weight:bold; text-align:left; color:#1D4ED8;">Rp {{ number_format($stats['total_hak_provider'], 0, ',', '.') }}</td>
         </tr>
         <tr>
@@ -64,7 +64,7 @@
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Tarif Warga (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Dasar Non PPN (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Hasil BUMDes (Rp)</th>
-                <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Setoran Provider (Rp)</th>
+                <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:right; width:140px;">Hak Provider (Rp)</th>
                 <th style="background-color:#0F172A; color:#FFFFFF; font-weight:bold; text-align:center; width:130px;">Status Pembayaran</th>
                 <th colspan="6" style="background-color:#0F172A;"></th>
             </tr>

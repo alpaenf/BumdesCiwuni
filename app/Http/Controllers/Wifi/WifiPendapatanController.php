@@ -166,7 +166,7 @@ class WifiPendapatanController extends Controller
 
                 $dasarProvider = (float) ($pelanggan->total_provider > 0 ? $pelanggan->total_provider : $tarikan);
                 $hakBumdes     = round($dasarProvider * ($pct / 100));
-                $hakProvider   = max(0, $dasarProvider - $hakBumdes);
+                $hakProvider   = max(0, $tarikan - $hakBumdes);
 
                 $pendapatanPersentase += $hakBumdes;
                 $totalHakProvider     += $hakProvider;

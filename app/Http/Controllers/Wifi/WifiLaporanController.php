@@ -96,7 +96,7 @@ class WifiLaporanController extends Controller
                 if ($pct <= 0) $pct = 9.00;
                 $dasarProvider = (float) ($item->total_provider > 0 ? $item->total_provider : $tarikan);
                 $bumdesPart   = round($dasarProvider * ($pct / 100));
-                $providerPart = max(0, $dasarProvider - $bumdesPart);
+                $providerPart = max(0, $tarikan - $bumdesPart);
             }
 
             $item->calc_hasil_bumdes   = $bumdesPart;
@@ -277,7 +277,7 @@ class WifiLaporanController extends Controller
                 if ($pct <= 0) $pct = 9.00;
                 $dasarProvider = (float) ($item->total_provider > 0 ? $item->total_provider : $tarikan);
                 $bumdesPart   = round($dasarProvider * ($pct / 100));
-                $providerPart = max(0, $dasarProvider - $bumdesPart);
+                $providerPart = max(0, $tarikan - $bumdesPart);
             }
 
             $item->calc_hasil_bumdes   = $bumdesPart;

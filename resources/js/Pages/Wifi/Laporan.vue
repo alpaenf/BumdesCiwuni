@@ -309,7 +309,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     </div>
 
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-2">
-                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block">Setoran Hak Provider</span>
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block">Hak Provider</span>
                         <p class="text-xl font-black text-blue-600">{{ rupiah(stats.total_hak_provider) }}</p>
                         <span class="text-[10px] text-slate-400">Porsi provider ISP periode ini</span>
                     </div>
@@ -359,7 +359,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <span class="font-mono font-bold text-emerald-600 ml-1">{{ rupiah(r.total_hasil_bumdes) }}</span>
                                 </div>
                                 <div class="col-span-2 text-right pt-1 border-t border-slate-100">
-                                    <span class="text-slate-400">Setoran Provider:</span>
+                                    <span class="text-slate-400">Hak Provider:</span>
                                     <span class="font-mono font-bold text-blue-600 ml-1">{{ rupiah(r.total_hak_provider) }}</span>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     <th class="p-3.5 text-right">Tarif Warga (Omset)</th>
                                     <th class="p-3.5 text-right">Dasar Non PPN</th>
                                     <th class="p-3.5 text-right">Hasil BUMDes</th>
-                                    <th class="p-3.5 text-right">Setoran Provider</th>
+                                    <th class="p-3.5 text-right">Hak Provider</th>
                                     <th class="p-3.5 text-center">Status Pembayaran</th>
                                 </tr>
                             </thead>
@@ -399,7 +399,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </td>
                                     <td class="p-3.5 text-right font-mono font-bold text-blue-600">
                                         <div>{{ rupiah(r.total_hak_provider) }}</div>
-                                        <span v-if="r.tipe_bagi_hasil === 'PERSENTASE'" class="text-[9px] text-slate-400 font-sans block">Dasar - BUMDes</span>
+                                        <span v-if="r.tipe_bagi_hasil === 'PERSENTASE'" class="text-[9px] text-slate-400 font-sans block">Tarikan - BUMDes</span>
                                     </td>
                                     <td class="p-3.5 text-center">
                                         <span class="text-[11px] font-bold text-emerald-600">{{ r.lunas_count ?? 0 }} Lunas</span>

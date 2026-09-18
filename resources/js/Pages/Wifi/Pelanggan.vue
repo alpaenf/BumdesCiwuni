@@ -983,7 +983,7 @@ const activeFilterCount = computed(() =>
                                             { key:'total_dasar_tarikan_non_ppn', label:'Dasar Tarikan Non PPN', w:'170px' },
                                             { key:'bagi_hasil_bumdes', label:'Bagi Hasil BUMDes', w:'150px' },
                                             { key:'hasil_bumdes',   label:'Hasil BUMDes',   w:'140px' },
-                                            { key:'total_provider', label:'Setor Provider', w:'140px' },
+                                            { key:'total_provider', label:'Hak Provider', w:'140px' },
                                             { key:'status_tagihan', label:'Status Tagihan', w:'130px' },
                                             { key:'gps_long',       label:'GPS Long',       w:'110px' },
                                             { key:'gps_lat',        label:'GPS Lat',        w:'110px' },
@@ -1109,7 +1109,7 @@ const activeFilterCount = computed(() =>
                                         {{ rupiah(row.hasil_bumdes) }}
                                     </td>
 
-                                    <!-- Setor Provider -->
+                                    <!-- Hak Provider -->
                                     <td class="border-r border-slate-100 px-3 py-2.5 text-right whitespace-nowrap font-bold font-mono text-slate-800" style="min-width:140px">
                                         {{ rupiah(row.total_provider) }}
                                     </td>
@@ -1561,7 +1561,7 @@ const activeFilterCount = computed(() =>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Dasar Tarikan Non PPN</span><span class="font-mono text-slate-700">{{ rupiah(selectedRow.total_provider > 0 ? selectedRow.total_provider : selectedRow.total_dasar_tarikan_non_ppn) }}</span></div>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Bagi Hasil BUMDes</span><span class="font-mono text-slate-700">{{ selectedRow.bagi_hasil_bumdes ?? 9 }}%</span></div>
                     <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Hasil BUMDes</span><span class="font-mono font-semibold text-emerald-600">{{ rupiah(selectedRow.hasil_bumdes) }}</span></div>
-                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Setor Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_provider) }}</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Hak Provider</span><span class="font-mono font-bold text-slate-900">{{ rupiah(selectedRow.total_provider) }}</span></div>
 
                     <div>
                         <span class="font-bold text-slate-500 block text-[10px] uppercase">Masa Pembayaran</span>

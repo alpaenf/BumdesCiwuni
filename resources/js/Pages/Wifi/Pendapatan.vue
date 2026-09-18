@@ -674,11 +674,11 @@ const executeDeletePayment = () => {
                                 </div>
                                 <div class="bg-blue-50/80 p-3.5 rounded-xl border border-blue-200 shadow-2xs">
                                     <div class="flex items-center justify-between text-blue-700 mb-1">
-                                        <span class="text-[10px] uppercase font-bold">3. Setor Bersih Provider</span>
+                                        <span class="text-[10px] uppercase font-bold">3. Hak Provider</span>
                                         <span class="text-[10px] bg-blue-100 px-1.5 py-0.5 rounded font-bold text-blue-800">KE ISP</span>
                                     </div>
                                     <div class="text-base font-black text-blue-700 font-mono">{{ rupiah(totalHakProvider) }}</div>
-                                    <p class="text-[10px] text-blue-600 mt-1 font-medium">{{ rupiah(totalDasarProvider) }} - {{ rupiah(pendapatanPersentase) }}</p>
+                                    <p class="text-[10px] text-blue-600 mt-1 font-medium">{{ rupiah(totalTarikanBruto) }} - {{ rupiah(pendapatanPersentase) }}</p>
                                 </div>
                             </div>
                         </div>
