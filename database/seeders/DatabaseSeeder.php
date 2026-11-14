@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            PortalSeeder::class, // seeds Units & WebsiteSettings first so unit IDs exist
             UserSeeder::class,
             LandingPageSettingSeeder::class,
-            PortalSeeder::class, // seeds Units & WebsiteSettings - safe, uses updateOrCreate
         ]);
     }
 }

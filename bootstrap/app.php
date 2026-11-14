@@ -21,6 +21,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(function (Request $request) {
             $user = $request->user();
             if ($user && $request->is('login')) {
+                if ($user->role === 'admin_unit' && $user->unit_id) {
+                    $unit = \App\Models\Unit::find($user->unit_id);
+                    if ($unit && $unit->slug === 'perdagangan-besar') {
+                        return route('pb.dashboard');
+                    } elseif ($unit && $unit->slug === 'wifi') {
+                        return route('wifi.dashboard');
+                    } elseif ($unit && $unit->slug === 'ketahanan-pangan') {
+                        return route('kp.hewani.dashboard');
+                    }
+                }
                 return route('dashboard');
             }
             if ($user && $request->is('portal/login')) {

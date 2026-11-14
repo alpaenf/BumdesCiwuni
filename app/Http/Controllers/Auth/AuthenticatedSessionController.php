@@ -54,6 +54,18 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
+        // Redirect sesuai unit jika admin_unit
+        if ($user->role === 'admin_unit' && $user->unit_id) {
+            $unit = \App\Models\Unit::find($user->unit_id);
+            if ($unit && $unit->slug === 'perdagangan-besar') {
+                return redirect()->intended(route('pb.dashboard', absolute: false));
+            } elseif ($unit && $unit->slug === 'wifi') {
+                return redirect()->intended(route('wifi.dashboard', absolute: false));
+            } elseif ($unit && $unit->slug === 'ketahanan-pangan') {
+                return redirect()->intended(route('kp.hewani.dashboard', absolute: false));
+            }
+        }
+
         // Login default dari unit Simpan Pinjam
         if ($user->role === 'admin' || $user->role === 'admin_unit' || $user->role === 'manager' || $user->role === 'manager_pusat') {
             return redirect()->intended(route('dashboard', absolute: false));

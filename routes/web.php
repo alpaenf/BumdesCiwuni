@@ -239,6 +239,60 @@ Route::get('/unit/{slug}', [App\Http\Controllers\Portal\UnitLandingController::c
 Route::get('/unit/{slug}/login', [App\Http\Controllers\Portal\UnitLandingController::class, 'login'])->name('unit.login');
 Route::post('/unit/{slug}/login', [App\Http\Controllers\Portal\UnitLandingController::class, 'loginStore']);
 
+// =====================================================
+// UNIT PERDAGANGAN BESAR (Laku Pandai, Samsat, PBB, Umum, Keuangan, Laporan)
+// Didefinisikan sebelum wildcard /unit/{slug}/dashboard untuk mencegah loop redirect
+// =====================================================
+Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function () {
+    // 1. Dashboard Utama
+    Route::get('/dashboard', [\App\Http\Controllers\PerdaganganBesar\PbDashboardController::class, 'index'])->name('pb.dashboard');
+
+    // 2. Laku Pandai
+    Route::get('/laku-pandai', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'index'])->name('pb.laku-pandai.index');
+    Route::post('/laku-pandai', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'store'])->name('pb.laku-pandai.store');
+    Route::delete('/laku-pandai/{id}', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'destroy'])->name('pb.laku-pandai.destroy');
+    
+    // Master Nasabah Laku Pandai
+    Route::get('/laku-pandai/nasabah', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'nasabahIndex'])->name('pb.laku-pandai.nasabah.index');
+    Route::post('/laku-pandai/nasabah', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'nasabahStore'])->name('pb.laku-pandai.nasabah.store');
+    Route::put('/laku-pandai/nasabah/{id}', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'nasabahUpdate'])->name('pb.laku-pandai.nasabah.update');
+    Route::delete('/laku-pandai/nasabah/{id}', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'nasabahDestroy'])->name('pb.laku-pandai.nasabah.destroy');
+
+    // 3. Samsat Budiman
+    Route::get('/samsat', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'index'])->name('pb.samsat.index');
+    Route::post('/samsat', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'store'])->name('pb.samsat.store');
+    Route::delete('/samsat/{id}', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'destroy'])->name('pb.samsat.destroy');
+
+    // Database Wajib Pajak & Kendaraan Samsat
+    Route::get('/samsat/wajib-pajak', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'wajibPajakIndex'])->name('pb.samsat.wajib-pajak.index');
+    Route::post('/samsat/wajib-pajak', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'wajibPajakStore'])->name('pb.samsat.wajib-pajak.store');
+    Route::put('/samsat/wajib-pajak/{id}', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'wajibPajakUpdate'])->name('pb.samsat.wajib-pajak.update');
+    Route::delete('/samsat/wajib-pajak/{id}', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'wajibPajakDestroy'])->name('pb.samsat.wajib-pajak.destroy');
+
+    // 4. Pajak PBB
+    Route::get('/pbb', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'index'])->name('pb.pbb.index');
+    Route::post('/pbb', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'store'])->name('pb.pbb.store');
+    Route::delete('/pbb/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'destroy'])->name('pb.pbb.destroy');
+
+    // 5. Transaksi Umum
+    Route::get('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'index'])->name('pb.transaksi-umum.index');
+    Route::post('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'store'])->name('pb.transaksi-umum.store');
+    Route::delete('/transaksi-umum/{id}', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'destroy'])->name('pb.transaksi-umum.destroy');
+
+    // 6. Keuangan & Kas
+    Route::get('/kas', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasIndex'])->name('pb.kas.index');
+    Route::post('/kas', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasStore'])->name('pb.kas.store');
+    Route::delete('/kas/{id}', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasDestroy'])->name('pb.kas.destroy');
+
+    Route::get('/biaya-operasional', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaIndex'])->name('pb.biaya.index');
+    Route::post('/biaya-operasional', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaStore'])->name('pb.biaya.store');
+    Route::delete('/biaya-operasional/{id}', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaDestroy'])->name('pb.biaya.destroy');
+
+    // 7. Laporan & Rekapitulasi
+    Route::get('/laporan', [\App\Http\Controllers\PerdaganganBesar\PbLaporanController::class, 'index'])->name('pb.laporan.index');
+    Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbLaporanController::class, 'cetakPdf'])->name('pb.laporan.cetak-pdf');
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/unit/{slug}/dashboard', [App\Http\Controllers\Portal\UnitLandingController::class, 'dashboard'])->name('unit.dashboard');
     

@@ -97,6 +97,9 @@ class UnitLandingController extends Controller
                 if ($slug === 'ketahanan-pangan') {
                     return redirect()->route('kp.hewani.dashboard');
                 }
+                if ($slug === 'perdagangan-besar') {
+                    return redirect()->route('pb.dashboard');
+                }
                 return redirect()->route('unit.dashboard', ['slug' => $slug]);
             }
         }
@@ -132,6 +135,9 @@ class UnitLandingController extends Controller
                 if ($slug === 'ketahanan-pangan') {
                     return redirect()->route('kp.hewani.dashboard');
                 }
+                if ($slug === 'perdagangan-besar') {
+                    return redirect()->route('pb.dashboard');
+                }
                 return redirect()->intended("/unit/$slug/dashboard");
             }
 
@@ -162,6 +168,9 @@ class UnitLandingController extends Controller
 
         if ($slug === 'ketahanan-pangan') {
             return redirect()->route('kp.hewani.dashboard');
+        }
+        if ($slug === 'perdagangan-besar') {
+            return redirect()->route('pb.dashboard');
         }
 
         $folder = $this->getViewFolder($slug);
@@ -285,6 +294,14 @@ class UnitLandingController extends Controller
             ->orderBy('urutan')
             ->orderByDesc('id')
             ->get();
+
+        if ($slug === 'perdagangan-besar') {
+            return Inertia::render('Perdagangan Besar/LandingPage/Settings', [
+                'unit' => $unit,
+                'settings' => $settings,
+                'galeri' => $galeri,
+            ]);
+        }
 
         return Inertia::render('Portal/UnitSettings', [
             'unit' => $unit,
