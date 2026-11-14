@@ -10,7 +10,7 @@ class PortalSeeder extends Seeder
 {
     public function run(): void
     {
-        // === Default Units ===
+        // === Default Units (4 Unit Utama Sesuai Ketentuan) ===
         $units = [
             [
                 'nama_unit' => 'Unit Simpan Pinjam',
@@ -22,62 +22,22 @@ class PortalSeeder extends Seeder
                 'urutan' => 1,
             ],
             [
-                'nama_unit' => 'KP-SPAMS Dammar Wulan',
-                'slug' => 'kp-spams',
-                'deskripsi' => 'Layanan penyediaan air bersih desa terpadu untuk kesehatan dan pemenuhan kebutuhan sanitasi warga.',
-                'tipe' => 'external',
-                'status' => 'aktif',
-                'api_url' => 'https://kp-spamsdammarwulan.com/',
-                'icon' => 'water_drop',
-                'urutan' => 2,
-            ],
-            [
-                'nama_unit' => 'Toko Desa & Grosir Sembako',
-                'slug' => 'toko-desa',
-                'deskripsi' => 'Pusat belanja kebutuhan pokok masyarakat desa dan suplai warung kelontong dengan harga bersaing.',
-                'tipe' => 'external',
-                'status' => 'aktif',
-                'api_url' => 'https://toko.bumdesciwuni.com',
-                'icon' => 'storefront',
-                'urutan' => 3,
-            ],
-            [
-                'nama_unit' => 'Pengelolaan Sampah & Sanitasi (TPS3R)',
-                'slug' => 'tps3r',
-                'deskripsi' => 'Sistem pengangkutan sampah warga terpadu dan pengolahan daur ulang limbah menjadi pupuk organik.',
-                'tipe' => 'external',
-                'status' => 'aktif',
-                'api_url' => 'https://tps3r.bumdesciwuni.com',
-                'icon' => 'delete_sweep',
-                'urutan' => 4,
-            ],
-            [
-                'nama_unit' => 'Unit Desa Wisata & Kuliner',
-                'slug' => 'wisata',
-                'deskripsi' => 'Pengembangan potensi pariwisata alam lokal, wahana edukasi, dan sentra UMKM kuliner Desa Ciwuni.',
-                'tipe' => 'external',
-                'status' => 'aktif',
-                'api_url' => 'https://wisata.bumdesciwuni.com',
-                'icon' => 'forest',
-                'urutan' => 5,
-            ],
-            [
                 'nama_unit' => 'Bumdes Ciwuni Unit Wifi',
                 'slug' => 'wifi',
                 'deskripsi' => 'Layanan internet desa murah dan cepat untuk seluruh masyarakat Desa Ciwuni.',
                 'tipe' => 'internal',
                 'status' => 'aktif',
                 'icon' => 'wifi',
-                'urutan' => 6,
+                'urutan' => 2,
             ],
             [
                 'nama_unit' => 'Bumdes Ciwuni Unit Ketahanan Pangan',
                 'slug' => 'ketahanan-pangan',
-                'deskripsi' => 'Pengelolaan lumbung pangan desa dan distribusi bibit serta pupuk untuk ketahanan pangan warga.',
+                'deskripsi' => 'Pengelolaan budidaya ayam ras petelur hewani serta produksi pertanian nabati desa.',
                 'tipe' => 'internal',
                 'status' => 'aktif',
-                'icon' => 'grass',
-                'urutan' => 7,
+                'icon' => 'agriculture',
+                'urutan' => 3,
             ],
             [
                 'nama_unit' => 'Bumdes Ciwuni Unit Perdagangan Besar',
@@ -86,9 +46,12 @@ class PortalSeeder extends Seeder
                 'tipe' => 'internal',
                 'status' => 'aktif',
                 'icon' => 'local_shipping',
-                'urutan' => 8,
+                'urutan' => 4,
             ],
         ];
+
+        // Nonaktifkan unit di luar 4 unit utama
+        Unit::whereNotIn('slug', ['simpan-pinjam', 'wifi', 'ketahanan-pangan', 'perdagangan-besar'])->update(['status' => 'nonaktif']);
 
         foreach ($units as $unit) {
             Unit::updateOrCreate(['slug' => $unit['slug']], $unit);

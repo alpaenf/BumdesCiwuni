@@ -37,7 +37,10 @@ class PortalController extends Controller
 
         $settings = WebsiteSetting::getMany($settingKeys);
 
+        $allowedSlugs = ['simpan-pinjam', 'wifi', 'ketahanan-pangan', 'perdagangan-besar'];
+
         $units = Unit::where('status', '!=', 'nonaktif')
+            ->whereIn('slug', $allowedSlugs)
             ->orderBy('urutan')
             ->get();
 
