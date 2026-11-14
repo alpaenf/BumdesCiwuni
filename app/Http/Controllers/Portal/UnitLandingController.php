@@ -93,7 +93,10 @@ class UnitLandingController extends Controller
         $user = Auth::user();
         if ($user) {
             $unit = Unit::where('slug', $slug)->firstOrFail();
-            if ($user->role === 'admin' || $user->unit_id == $unit->id) {
+            if ($user->role === 'admin' || $user->role === 'manager_pusat' || $user->unit_id == $unit->id) {
+                if ($slug === 'ketahanan-pangan') {
+                    return redirect()->route('kp.hewani.dashboard');
+                }
                 return redirect()->route('unit.dashboard', ['slug' => $slug]);
             }
         }
@@ -126,6 +129,9 @@ class UnitLandingController extends Controller
 
             // Check if user is Super Admin, Manager Pusat, or Admin of this specific Unit
             if ($user->role === 'admin' || $user->role === 'manager_pusat' || ($user->unit_id == $unit->id && in_array($user->role, ['admin_unit', 'manager']))) {
+                if ($slug === 'ketahanan-pangan') {
+                    return redirect()->route('kp.hewani.dashboard');
+                }
                 return redirect()->intended("/unit/$slug/dashboard");
             }
 
@@ -144,14 +150,18 @@ class UnitLandingController extends Controller
     /**
      * Show the unit dashboard.
      */
-    public function dashboard(string $slug): Response
+    public function dashboard(string $slug): Response|RedirectResponse
     {
         $unit = Unit::where('slug', $slug)->firstOrFail();
         $user = Auth::user();
 
         // Security check
-        if ($user->role !== 'admin' && $user->unit_id != $unit->id) {
+        if ($user->role !== 'admin' && $user->role !== 'manager_pusat' && $user->unit_id != $unit->id) {
             abort(403, 'Unauthorized access to this unit dashboard.');
+        }
+
+        if ($slug === 'ketahanan-pangan') {
+            return redirect()->route('kp.hewani.dashboard');
         }
 
         $folder = $this->getViewFolder($slug);

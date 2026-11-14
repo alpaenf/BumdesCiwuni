@@ -203,9 +203,9 @@ const deleteGaleri = (id) => {
             <!-- Branding (Fixed top) -->
             <div class="p-6 pb-4 shrink-0 flex items-center justify-between gap-3 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <img :src="unit.slug === 'wifi' ? '/logowifi.png' : (settings.custom_logo || '/logo.png')" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" />
+                    <img :src="unit.slug === 'wifi' ? '/logowifi.png' : (unit.slug === 'ketahanan-pangan' ? '/logo2.png' : (settings.custom_logo || '/logo.png'))" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" />
                     <div>
-                        <h2 class="text-xs font-black text-slate-900 leading-tight">Admin Unit WiFi</h2>
+                        <h2 class="text-xs font-black text-slate-900 leading-tight">Admin {{ unit.name || unit.nama_unit || 'Unit' }}</h2>
                         <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
                     </div>
                 </div>
@@ -216,7 +216,8 @@ const deleteGaleri = (id) => {
 
             <!-- Nav (Scrollable) -->
             <div class="flex-1 overflow-y-auto p-6 space-y-4">
-                <nav class="space-y-1">
+                <!-- Nav Khusus Unit WiFi -->
+                <nav v-if="unit.slug === 'wifi'" class="space-y-1">
                     <Link :href="route('unit.dashboard', { slug: unit.slug })" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
                         <span class="material-symbols-outlined text-lg">dashboard</span>
                         Dashboard
@@ -250,42 +251,82 @@ const deleteGaleri = (id) => {
                         <span class="material-symbols-outlined text-lg">web</span>
                         Pengaturan Landing Page
                     </a>
-
-                    <!-- Section Portal BUMDes (Hanya tampil untuk Super Admin / Manager Pusat) -->
-                    <div v-if="($page?.props?.auth?.user?.role || user?.role) === 'admin' || ($page?.props?.auth?.user?.role || user?.role) === 'manager_pusat'" class="pt-4 mt-4 border-t border-slate-200 space-y-1">
-                        <p class="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Portal BUMDes</p>
-                        <Link :href="route('portal.exec.dashboard')"
-                              class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">hub</span>
-                            Dashboard Portal
-                        </Link>
-                        <Link v-if="($page?.props?.auth?.user?.role || user?.role) === 'admin'" :href="route('portal.cms.dashboard')"
-                              class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">edit_note</span>
-                            Kelola Website
-                        </Link>
-                        <Link :href="route('dashboard')"
-                              class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">account_balance</span>
-                            Unit Simpan Pinjam
-                        </Link>
-                        <a :href="route('unit.welcome', { slug: 'wifi' })" target="_blank"
-                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">wifi</span>
-                            Unit Wifi
-                        </a>
-                        <a :href="route('unit.welcome', { slug: 'ketahanan-pangan' })" target="_blank"
-                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">agriculture</span>
-                            Unit Ketahanan Pangan
-                        </a>
-                        <a :href="route('unit.welcome', { slug: 'perdagangan-besar' })" target="_blank"
-                           class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
-                            <span class="material-symbols-outlined text-lg">local_shipping</span>
-                            Unit Perdagangan Besar
-                        </a>
-                    </div>
                 </nav>
+
+                <!-- Nav Khusus Unit Ketahanan Pangan -->
+                <nav v-else-if="unit.slug === 'ketahanan-pangan'" class="space-y-1">
+                    <Link :href="route('kp.hewani.dashboard')" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">dashboard</span>
+                        Dashboard Utama
+                    </Link>
+                    <Link :href="route('kp.customers.index')" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">group</span>
+                        Data Pelanggan
+                    </Link>
+                    <Link :href="route('kp.feed.index')" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">inventory_2</span>
+                        Logistik Pakan
+                    </Link>
+                    <Link :href="route('kp.production.index')" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">egg</span>
+                        Produksi Telur
+                    </Link>
+                    <Link :href="route('kp.sale.index')" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">shopping_cart</span>
+                        Penjualan Telur
+                    </Link>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-emerald-600 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-600/20">
+                        <span class="material-symbols-outlined text-lg">settings</span>
+                        Pengaturan Landing Page
+                    </a>
+                </nav>
+
+                <!-- Nav Default / Unit Lain -->
+                <nav v-else class="space-y-1">
+                    <Link :href="route('unit.dashboard', { slug: unit.slug })" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">dashboard</span>
+                        Dashboard
+                    </Link>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600/10 text-blue-600 font-bold text-xs rounded-xl border border-blue-600/20">
+                        <span class="material-symbols-outlined text-lg">web</span>
+                        Pengaturan Landing Page
+                    </a>
+                </nav>
+
+                <!-- Section Portal BUMDes (Hanya tampil untuk Super Admin / Manager Pusat) -->
+                <div v-if="($page?.props?.auth?.user?.role || user?.role) === 'admin' || ($page?.props?.auth?.user?.role || user?.role) === 'manager_pusat'" class="pt-4 mt-4 border-t border-slate-200 space-y-1">
+                    <p class="px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Portal BUMDes</p>
+                    <Link :href="route('portal.exec.dashboard')"
+                          class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">hub</span>
+                        Dashboard Portal
+                    </Link>
+                    <Link v-if="($page?.props?.auth?.user?.role || user?.role) === 'admin'" :href="route('portal.cms.dashboard')"
+                          class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">edit_note</span>
+                        Kelola Website
+                    </Link>
+                    <Link :href="route('dashboard')"
+                          class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">account_balance</span>
+                        Unit Simpan Pinjam
+                    </Link>
+                    <a :href="route('unit.welcome', { slug: 'wifi' })" target="_blank"
+                       class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">wifi</span>
+                        Unit Wifi
+                    </a>
+                    <a :href="route('unit.welcome', { slug: 'ketahanan-pangan' })" target="_blank"
+                       class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">agriculture</span>
+                        Unit Ketahanan Pangan
+                    </a>
+                    <a :href="route('unit.welcome', { slug: 'perdagangan-besar' })" target="_blank"
+                       class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-900 font-semibold text-xs rounded-xl transition">
+                        <span class="material-symbols-outlined text-lg">local_shipping</span>
+                        Unit Perdagangan Besar
+                    </a>
+                </div>
             </div>
 
             <!-- User Info & Logout (Fixed bottom) -->

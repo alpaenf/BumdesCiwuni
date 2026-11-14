@@ -290,4 +290,60 @@ Route::middleware(['auth'])->prefix('unit/wifi')->group(function () {
     Route::get('/pendapatan/excel', [\App\Http\Controllers\Wifi\WifiPendapatanController::class, 'excel'])->name('wifi.pendapatan.excel');
 });
 
+// =====================================================
+// KETAHANAN PANGAN UNIT (HEWANI & NABATI)
+// =====================================================
+Route::middleware(['auth'])->prefix('unit/ketahanan-pangan/admin')->group(function () {
+    // 1. Dashboard Utama / Hewani
+    Route::get('/dashboard', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'index'])->name('kp.hewani.dashboard');
+
+    // 2. Data Pelanggan
+    Route::get('/pelanggan', [\App\Http\Controllers\KetahananPangan\KpCustomerController::class, 'index'])->name('kp.customers.index');
+    Route::post('/pelanggan', [\App\Http\Controllers\KetahananPangan\KpCustomerController::class, 'store'])->name('kp.customers.store');
+    Route::put('/pelanggan/{id}', [\App\Http\Controllers\KetahananPangan\KpCustomerController::class, 'update'])->name('kp.customers.update');
+    Route::delete('/pelanggan/{id}', [\App\Http\Controllers\KetahananPangan\KpCustomerController::class, 'destroy'])->name('kp.customers.destroy');
+
+    // 3. Logistik Pakan (Pemakaian & Pembelian)
+    Route::get('/pakan', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'index'])->name('kp.feed.index');
+    Route::post('/pakan/pembelian', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'storePurchase'])->name('kp.feed.purchase.store');
+    Route::delete('/pakan/pembelian/{id}', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'destroyPurchase'])->name('kp.feed.purchase.destroy');
+    Route::post('/pakan/pemakaian', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'storeUsage'])->name('kp.feed.usage.store');
+    Route::delete('/pakan/pemakaian/{id}', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'destroyUsage'])->name('kp.feed.usage.destroy');
+
+    // 4. Produksi Telur Harian
+    Route::get('/produksi-telur', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'index'])->name('kp.production.index');
+    Route::post('/produksi-telur', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'store'])->name('kp.production.store');
+    Route::delete('/produksi-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'destroy'])->name('kp.production.destroy');
+
+    // 5. Penjualan Telur & Cetak Struk
+    Route::get('/penjualan-telur', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'index'])->name('kp.sale.index');
+    Route::post('/penjualan-telur', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'store'])->name('kp.sale.store');
+    Route::get('/penjualan-telur/struk/{id}', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'struk'])->name('kp.sale.struk')->withoutMiddleware(['auth']);
+    Route::delete('/penjualan-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'destroy'])->name('kp.sale.destroy');
+
+    // 6. Keuangan Hewani (Pendapatan & Pengeluaran)
+    Route::get('/pengeluaran', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'pengeluaran'])->name('kp.finance.pengeluaran');
+    Route::post('/pengeluaran', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'storePengeluaran'])->name('kp.finance.pengeluaran.store');
+    Route::delete('/pengeluaran/{id}', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'destroyPengeluaran'])->name('kp.finance.pengeluaran.destroy');
+
+    Route::get('/pendapatan', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'pendapatan'])->name('kp.finance.pendapatan');
+    Route::post('/pendapatan/lain', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'storePendapatanLain'])->name('kp.finance.pendapatan.store');
+    Route::delete('/pendapatan/lain/{id}', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'destroyPendapatanLain'])->name('kp.finance.pendapatan.destroy');
+
+    // 7. Laporan-laporan Hewani
+    Route::get('/laporan/produksi', [\App\Http\Controllers\KetahananPangan\KpReportController::class, 'produksi'])->name('kp.report.produksi');
+    Route::get('/laporan/penjualan', [\App\Http\Controllers\KetahananPangan\KpReportController::class, 'penjualan'])->name('kp.report.penjualan');
+    Route::get('/laporan/arus-kas', [\App\Http\Controllers\KetahananPangan\KpReportController::class, 'arusKas'])->name('kp.report.arus-kas');
+    Route::get('/laporan/laba-rugi', [\App\Http\Controllers\KetahananPangan\KpReportController::class, 'labaRugi'])->name('kp.report.laba-rugi');
+
+    // 8. Unit Nabati
+    Route::get('/nabati/dashboard', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'dashboard'])->name('kp.nabati.dashboard');
+    Route::get('/nabati/komoditas', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'komoditas'])->name('kp.nabati.komoditas');
+    Route::post('/nabati/komoditas', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'storeKomoditas'])->name('kp.nabati.komoditas.store');
+    Route::get('/nabati/produksi', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'produksi'])->name('kp.nabati.produksi');
+    Route::post('/nabati/produksi', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'storeProduksi'])->name('kp.nabati.produksi.store');
+    Route::get('/nabati/penjualan', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'penjualan'])->name('kp.nabati.penjualan');
+    Route::post('/nabati/penjualan', [\App\Http\Controllers\KetahananPangan\KpNabatiController::class, 'storePenjualan'])->name('kp.nabati.penjualan.store');
+});
+
 require __DIR__.'/auth.php';
