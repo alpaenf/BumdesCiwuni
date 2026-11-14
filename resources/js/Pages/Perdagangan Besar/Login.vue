@@ -78,26 +78,6 @@ const submit = () => {
                 <p class="text-slate-600 text-sm leading-relaxed">
                     Sistem informasi terpadu pengelolaan layanan perbankan Laku Pandai, Samsat Budiman, Pajak PBB, dan Transaksi Umum PPOB BUMDes Dammar Wulan Desa Ciwuni.
                 </p>
-
-                <!-- Service Highlights Pills -->
-                <div class="grid grid-cols-2 gap-2.5 pt-2">
-                    <div class="flex items-center gap-2.5 p-2.5 bg-slate-50/80 rounded-xl border border-slate-100 text-xs font-medium text-slate-700">
-                        <span class="material-symbols-outlined text-blue-600 text-lg">account_balance</span>
-                        <span>Laku Pandai</span>
-                    </div>
-                    <div class="flex items-center gap-2.5 p-2.5 bg-slate-50/80 rounded-xl border border-slate-100 text-xs font-medium text-slate-700">
-                        <span class="material-symbols-outlined text-amber-600 text-lg">directions_car</span>
-                        <span>Samsat Budiman</span>
-                    </div>
-                    <div class="flex items-center gap-2.5 p-2.5 bg-slate-50/80 rounded-xl border border-slate-100 text-xs font-medium text-slate-700">
-                        <span class="material-symbols-outlined text-emerald-600 text-lg">receipt_long</span>
-                        <span>Pajak PBB</span>
-                    </div>
-                    <div class="flex items-center gap-2.5 p-2.5 bg-slate-50/80 rounded-xl border border-slate-100 text-xs font-medium text-slate-700">
-                        <span class="material-symbols-outlined text-indigo-600 text-lg">point_of_sale</span>
-                        <span>Transaksi PPOB</span>
-                    </div>
-                </div>
             </div>
 
             <!-- Bottom: Footer Info -->
