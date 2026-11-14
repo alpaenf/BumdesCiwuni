@@ -6,12 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    protected $connection = 'ketahanan_pangan';
-
     public function up(): void
     {
         // 1. Data Pelanggan (Hewani)
-        Schema::connection('ketahanan_pangan')->create('kp_customers', function (Blueprint $table) {
+        Schema::create('kp_customers', function (Blueprint $table) {
             $table->id();
             $table->date('tanggal')->nullable();
             $table->string('nama');
@@ -24,7 +22,7 @@ return new class extends Migration
         });
 
         // 2. Data Produk Telur (Hewani)
-        Schema::connection('ketahanan_pangan')->create('kp_products', function (Blueprint $table) {
+        Schema::create('kp_products', function (Blueprint $table) {
             $table->id();
             $table->string('kode')->unique();
             $table->string('nama');
@@ -37,7 +35,7 @@ return new class extends Migration
         });
 
         // 3. Logistik Pakan (Hewani)
-        Schema::connection('ketahanan_pangan')->create('kp_feed_stocks', function (Blueprint $table) {
+        Schema::create('kp_feed_stocks', function (Blueprint $table) {
             $table->id();
             $table->string('nama_pakan')->default('Pakan Layer');
             $table->decimal('stok_tersedia_kg', 12, 2)->default(0);
@@ -46,7 +44,7 @@ return new class extends Migration
         });
 
         // 4. Pembelian Pakan (Feed Purchases)
-        Schema::connection('ketahanan_pangan')->create('kp_feed_purchases', function (Blueprint $table) {
+        Schema::create('kp_feed_purchases', function (Blueprint $table) {
             $table->id();
             $table->date('tanggal');
             $table->string('nama_pakan');
@@ -60,7 +58,7 @@ return new class extends Migration
         });
 
         // 5. Pemakaian Pakan Harian (Feed Usages)
-        Schema::connection('ketahanan_pangan')->create('kp_feed_usages', function (Blueprint $table) {
+        Schema::create('kp_feed_usages', function (Blueprint $table) {
             $table->id();
             $table->integer('hari_ke')->nullable();
             $table->string('hari')->nullable();
@@ -80,7 +78,7 @@ return new class extends Migration
         });
 
         // 6. Produksi Telur Harian (Egg Productions)
-        Schema::connection('ketahanan_pangan')->create('kp_egg_productions', function (Blueprint $table) {
+        Schema::create('kp_egg_productions', function (Blueprint $table) {
             $table->id();
             $table->integer('umur_ke')->nullable();
             $table->string('hari')->nullable();
@@ -103,7 +101,7 @@ return new class extends Migration
         });
 
         // 7. Transaksi Penjualan Telur (Egg Sales)
-        Schema::connection('ketahanan_pangan')->create('kp_egg_sales', function (Blueprint $table) {
+        Schema::create('kp_egg_sales', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_transaksi')->unique();
             $table->date('tanggal');
@@ -123,7 +121,7 @@ return new class extends Migration
         });
 
         // 8. Pengeluaran (Expenses - Fixed & Variable Cost)
-        Schema::connection('ketahanan_pangan')->create('kp_expenses', function (Blueprint $table) {
+        Schema::create('kp_expenses', function (Blueprint $table) {
             $table->id();
             $table->enum('unit_kategori', ['hewani', 'nabati'])->default('hewani');
             $table->date('tanggal');
@@ -139,7 +137,7 @@ return new class extends Migration
         });
 
         // 9. Pendapatan Lain-lain (Other Incomes)
-        Schema::connection('ketahanan_pangan')->create('kp_other_incomes', function (Blueprint $table) {
+        Schema::create('kp_other_incomes', function (Blueprint $table) {
             $table->id();
             $table->enum('unit_kategori', ['hewani', 'nabati'])->default('hewani');
             $table->date('tanggal');
@@ -152,7 +150,7 @@ return new class extends Migration
         });
 
         // 10. Arus Kas (Cash Flow)
-        Schema::connection('ketahanan_pangan')->create('kp_cash_flows', function (Blueprint $table) {
+        Schema::create('kp_cash_flows', function (Blueprint $table) {
             $table->id();
             $table->enum('unit_kategori', ['hewani', 'nabati'])->default('hewani');
             $table->date('tanggal');
@@ -169,7 +167,7 @@ return new class extends Migration
 
         // ================= NABATI TABLES =================
         // 11. Komoditas Nabati
-        Schema::connection('ketahanan_pangan')->create('kp_plant_commodities', function (Blueprint $table) {
+        Schema::create('kp_plant_commodities', function (Blueprint $table) {
             $table->id();
             $table->string('kode')->unique();
             $table->string('nama');
@@ -182,7 +180,7 @@ return new class extends Migration
         });
 
         // 12. Produksi Tanaman / Hasil Panen (Plant Productions)
-        Schema::connection('ketahanan_pangan')->create('kp_plant_productions', function (Blueprint $table) {
+        Schema::create('kp_plant_productions', function (Blueprint $table) {
             $table->id();
             $table->date('tanggal');
             $table->foreignId('commodity_id')->constrained('kp_plant_commodities')->cascadeOnDelete();
@@ -195,7 +193,7 @@ return new class extends Migration
         });
 
         // 13. Penjualan Hasil Panen Nabati (Plant Sales)
-        Schema::connection('ketahanan_pangan')->create('kp_plant_sales', function (Blueprint $table) {
+        Schema::create('kp_plant_sales', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_transaksi')->unique();
             $table->date('tanggal');
@@ -216,19 +214,19 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_plant_sales');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_plant_productions');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_plant_commodities');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_cash_flows');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_other_incomes');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_expenses');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_egg_sales');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_egg_productions');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_feed_usages');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_feed_purchases');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_feed_stocks');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_products');
-        Schema::connection('ketahanan_pangan')->dropIfExists('kp_customers');
+        Schema::dropIfExists('kp_plant_sales');
+        Schema::dropIfExists('kp_plant_productions');
+        Schema::dropIfExists('kp_plant_commodities');
+        Schema::dropIfExists('kp_cash_flows');
+        Schema::dropIfExists('kp_other_incomes');
+        Schema::dropIfExists('kp_expenses');
+        Schema::dropIfExists('kp_egg_sales');
+        Schema::dropIfExists('kp_egg_productions');
+        Schema::dropIfExists('kp_feed_usages');
+        Schema::dropIfExists('kp_feed_purchases');
+        Schema::dropIfExists('kp_feed_stocks');
+        Schema::dropIfExists('kp_products');
+        Schema::dropIfExists('kp_customers');
     }
 };
 

@@ -78,7 +78,7 @@ class KpFinanceController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated) {
             $expense = KpExpense::create([
                 'unit_kategori' => 'hewani',
                 'tanggal' => $validated['tanggal'],
@@ -114,7 +114,7 @@ class KpFinanceController extends Controller
     {
         $this->authorizeUnit();
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $expense = KpExpense::findOrFail($id);
             KpCashFlow::where('sumber_tipe', 'expense')->where('sumber_id', $expense->id)->delete();
             $expense->delete();
@@ -170,7 +170,7 @@ class KpFinanceController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated) {
             $income = KpOtherIncome::create([
                 'unit_kategori' => 'hewani',
                 'tanggal' => $validated['tanggal'],
@@ -205,7 +205,7 @@ class KpFinanceController extends Controller
     {
         $this->authorizeUnit();
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $income = KpOtherIncome::findOrFail($id);
             KpCashFlow::where('sumber_tipe', 'other_income')->where('sumber_id', $income->id)->delete();
             $income->delete();

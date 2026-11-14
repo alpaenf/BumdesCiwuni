@@ -106,7 +106,7 @@ class KpProductionController extends Controller
         $carbonDate = Carbon::parse($validated['tanggal']);
         $hariName = $validated['hari'] ?: $carbonDate->locale('id')->isoFormat('dddd');
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated, $product, $stokSebelum, $produksiKg, $sisaStok, $hargaPerKg, $estimasiPendapatan, $hariName) {
+        DB::transaction(function () use ($validated, $product, $stokSebelum, $produksiKg, $sisaStok, $hargaPerKg, $estimasiPendapatan, $hariName) {
             KpEggProduction::create([
                 'umur_ke' => $validated['umur_ke'] ?? null,
                 'hari' => $hariName,
@@ -136,7 +136,7 @@ class KpProductionController extends Controller
     {
         $this->authorizeUnit();
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $prod = KpEggProduction::findOrFail($id);
             $product = KpProduct::where('kode', 'TELUR-BGS')->first();
             if ($product) {

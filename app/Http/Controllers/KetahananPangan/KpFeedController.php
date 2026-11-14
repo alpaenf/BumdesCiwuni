@@ -97,7 +97,7 @@ class KpFeedController extends Controller
 
         $totalBiaya = round($validated['jumlah_kg'] * $validated['harga_per_kg'], 2);
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated, $totalBiaya) {
+        DB::transaction(function () use ($validated, $totalBiaya) {
             $purchase = KpFeedPurchase::create([
                 'tanggal' => $validated['tanggal'],
                 'nama_pakan' => $validated['nama_pakan'],
@@ -187,7 +187,7 @@ class KpFeedController extends Controller
         $carbonDate = Carbon::parse($validated['tanggal']);
         $hariName = $validated['hari'] ?: $carbonDate->locale('id')->isoFormat('dddd');
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated, $stokAwal, $totalKebutuhanKg, $sisaPakan, $hargaPerKg, $totalBiaya, $hariName, $feedStock) {
+        DB::transaction(function () use ($validated, $stokAwal, $totalKebutuhanKg, $sisaPakan, $hargaPerKg, $totalBiaya, $hariName, $feedStock) {
             KpFeedUsage::create([
                 'hari_ke' => $validated['hari_ke'] ?? null,
                 'hari' => $hariName,
@@ -215,7 +215,7 @@ class KpFeedController extends Controller
     {
         $this->authorizeUnit();
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $purchase = KpFeedPurchase::findOrFail($id);
 
             // Rollback stok
@@ -238,7 +238,7 @@ class KpFeedController extends Controller
     {
         $this->authorizeUnit();
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $usage = KpFeedUsage::findOrFail($id);
 
             // Kembalikan stok

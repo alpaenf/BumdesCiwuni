@@ -122,7 +122,7 @@ class KpNabatiController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated) {
             KpPlantProduction::create($validated);
 
             $comm = KpPlantCommodity::findOrFail($validated['commodity_id']);
@@ -177,7 +177,7 @@ class KpNabatiController extends Controller
 
         $nomorTransaksi = 'STR-NBT-' . Carbon::parse($validated['tanggal'])->format('ymd') . '-' . str_pad(KpPlantSale::where('tanggal', $validated['tanggal'])->count() + 1, 3, '0', STR_PAD_LEFT);
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated, $comm, $totalHarga, $status, $nomorTransaksi) {
+        DB::transaction(function () use ($validated, $comm, $totalHarga, $status, $nomorTransaksi) {
             $sale = KpPlantSale::create([
                 'nomor_transaksi' => $nomorTransaksi,
                 'tanggal' => $validated['tanggal'],

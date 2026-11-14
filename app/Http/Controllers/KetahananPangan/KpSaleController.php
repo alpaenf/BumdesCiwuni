@@ -117,7 +117,7 @@ class KpSaleController extends Controller
         $randomSeq = str_pad(KpEggSale::where('tanggal', $validated['tanggal'])->count() + 1, 3, '0', STR_PAD_LEFT);
         $nomorTransaksi = "STR-TLR-{$dateCode}-{$randomSeq}";
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($validated, $product, $totalHarga, $kembalian, $statusPembayaran, $nomorTransaksi) {
+        DB::transaction(function () use ($validated, $product, $totalHarga, $kembalian, $statusPembayaran, $nomorTransaksi) {
             $sale = KpEggSale::create([
                 'nomor_transaksi' => $nomorTransaksi,
                 'tanggal' => $validated['tanggal'],
@@ -176,7 +176,7 @@ class KpSaleController extends Controller
     {
         $this->authorizeUnit();
 
-        DB::connection('ketahanan_pangan')->transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $sale = KpEggSale::findOrFail($id);
 
             // Rollback stok telur
