@@ -10,7 +10,6 @@ class KpEggSale extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $connection = 'ketahanan_pangan';
     protected $table = 'kp_egg_sales';
 
     protected $fillable = [

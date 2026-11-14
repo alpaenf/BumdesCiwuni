@@ -79,7 +79,7 @@ class KpNabatiController extends Controller
         $this->authorizeUnit();
 
         $validated = $request->validate([
-            'kode' => 'required|string|unique:ketahanan_pangan.kp_plant_commodities,kode|max:50',
+            'kode' => 'required|string|unique:kp_plant_commodities,kode|max:50',
             'nama' => 'required|string|max:255',
             'satuan' => 'required|string|max:20',
             'harga_default' => 'nullable|numeric|min:0',
@@ -115,7 +115,7 @@ class KpNabatiController extends Controller
 
         $validated = $request->validate([
             'tanggal' => 'required|date',
-            'commodity_id' => 'required|exists:ketahanan_pangan.kp_plant_commodities,id',
+            'commodity_id' => 'required|exists:kp_plant_commodities,id',
             'jumlah_panen' => 'required|numeric|min:0.01',
             'satuan' => 'required|string|max:20',
             'lokasi_lahan' => 'nullable|string|max:255',
@@ -156,7 +156,7 @@ class KpNabatiController extends Controller
         $validated = $request->validate([
             'tanggal' => 'required|date',
             'nama_pelanggan' => 'required|string|max:255',
-            'commodity_id' => 'required|exists:ketahanan_pangan.kp_plant_commodities,id',
+            'commodity_id' => 'required|exists:kp_plant_commodities,id',
             'jumlah' => 'required|numeric|min:0.01',
             'satuan' => 'required|string|max:20',
             'harga_satuan' => 'required|numeric|min:0',

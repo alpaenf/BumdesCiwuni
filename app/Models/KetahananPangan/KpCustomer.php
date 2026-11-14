@@ -10,7 +10,6 @@ class KpCustomer extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $connection = 'ketahanan_pangan';
     protected $table = 'kp_customers';
 
     protected $fillable = [

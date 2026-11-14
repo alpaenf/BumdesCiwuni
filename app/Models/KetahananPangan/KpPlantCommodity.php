@@ -10,7 +10,6 @@ class KpPlantCommodity extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $connection = 'ketahanan_pangan';
     protected $table = 'kp_plant_commodities';
 
     protected $fillable = [

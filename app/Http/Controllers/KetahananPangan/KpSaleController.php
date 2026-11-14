@@ -90,7 +90,7 @@ class KpSaleController extends Controller
 
         $validated = $request->validate([
             'tanggal' => 'required|date',
-            'customer_id' => 'nullable|exists:ketahanan_pangan.kp_customers,id',
+            'customer_id' => 'nullable|exists:kp_customers,id',
             'nama_pelanggan' => 'required|string|max:255',
             'customer_type' => 'required|in:Eceran,Agen',
             'jumlah_kg' => 'required|numeric|min:0.01',

@@ -10,7 +10,6 @@ class KpExpense extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $connection = 'ketahanan_pangan';
     protected $table = 'kp_expenses';
 
     protected $fillable = [

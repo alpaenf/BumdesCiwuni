@@ -10,7 +10,6 @@ class KpFeedUsage extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $connection = 'ketahanan_pangan';
     protected $table = 'kp_feed_usages';
 
     protected $fillable = [

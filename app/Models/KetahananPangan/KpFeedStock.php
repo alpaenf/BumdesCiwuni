@@ -9,7 +9,6 @@ class KpFeedStock extends Model
 {
     use HasFactory;
 
-    protected $connection = 'ketahanan_pangan';
     protected $table = 'kp_feed_stocks';
 
     protected $fillable = [
