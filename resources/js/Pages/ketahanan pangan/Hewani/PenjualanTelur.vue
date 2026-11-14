@@ -56,9 +56,25 @@ const updatePayment = () => {
     form.value.jumlah_pembayaran = Math.round(form.value.jumlah_kg * form.value.harga_per_kg);
 };
 
+const isSubmitting = ref(false);
+const formErrors = ref({});
+
 const submitForm = () => {
+    isSubmitting.value = true;
+    formErrors.value = {};
     router.post(route('kp.sale.store'), form.value, {
-        onSuccess: () => { isModalOpen.value = false; }
+        onSuccess: () => { 
+            isModalOpen.value = false; 
+            isSubmitting.value = false;
+        },
+        onError: (errs) => {
+            isSubmitting.value = false;
+            formErrors.value = errs;
+            alert(Object.values(errs).join('\n'));
+        },
+        onFinish: () => {
+            isSubmitting.value = false;
+        }
     });
 };
 
@@ -320,9 +336,10 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </div>
 
                     <div class="pt-2 flex justify-end gap-2">
-                        <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl">
-                            Simpan & Cetak Struk
+                        <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmitting">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmitting">
+                            <span v-if="isSubmitting" class="material-symbols-outlined notranslate text-xs animate-spin">progress_activity</span>
+                            {{ isSubmitting ? 'Menyimpan...' : 'Simpan & Cetak Struk' }}
                         </button>
                     </div>
                 </form>

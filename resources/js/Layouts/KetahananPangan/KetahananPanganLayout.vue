@@ -1,12 +1,16 @@
 <script setup>
-import { ref } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     title: { type: String, default: 'Ketahanan Pangan' },
     unit: { type: Object, default: () => ({ name: 'Unit Ketahanan Pangan', slug: 'ketahanan-pangan' }) },
-    user: { type: Object, default: () => ({ name: 'Admin Pangan' }) },
+    user: { type: Object, default: () => null },
 });
+
+const page = usePage();
+const authUser = computed(() => page.props.auth?.user || props.user || {});
+const isSuperAdmin = computed(() => authUser.value?.role === 'admin' || authUser.value?.role === 'manager_pusat' || authUser.value?.isSuperAdmin);
 
 const isSidebarOpen = ref(true);
 const isMobileSidebarOpen = ref(false);
@@ -309,18 +313,74 @@ const logout = () => {
                         </a>
                     </div>
                 </div>
+
+                <!-- Section Navigasi Portal BUMDes (Khusus Super Admin / Manager Pusat) Sesuai Gambar -->
+                <div v-if="isSuperAdmin" class="pt-2 border-t border-slate-100">
+                    <div v-show="isSidebarOpen" class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        PORTAL BUMDES
+                    </div>
+                    <div class="space-y-1">
+                        <Link 
+                            :href="route('portal.exec.dashboard')"
+                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                        >
+                            <span class="material-symbols-outlined notranslate text-xl">hub</span>
+                            <span v-show="isSidebarOpen">Dashboard Portal</span>
+                        </Link>
+
+                        <Link 
+                            v-if="authUser?.role === 'admin'"
+                            :href="route('portal.cms.dashboard')"
+                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                        >
+                            <span class="material-symbols-outlined notranslate text-xl">edit_note</span>
+                            <span v-show="isSidebarOpen">Kelola Website</span>
+                        </Link>
+
+                        <a 
+                            :href="route('unit.welcome', { slug: 'wifi' })" 
+                            target="_blank"
+                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                        >
+                            <span class="material-symbols-outlined notranslate text-xl">wifi</span>
+                            <span v-show="isSidebarOpen">Unit Wifi</span>
+                        </a>
+
+                        <a 
+                            :href="route('unit.welcome', { slug: 'ketahanan-pangan' })" 
+                            target="_blank"
+                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                        >
+                            <span class="material-symbols-outlined notranslate text-xl">agriculture</span>
+                            <span v-show="isSidebarOpen">Unit Ketahanan Pangan</span>
+                        </a>
+
+                        <a 
+                            :href="route('unit.welcome', { slug: 'perdagangan-besar' })" 
+                            target="_blank"
+                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                        >
+                            <span class="material-symbols-outlined notranslate text-xl">local_shipping</span>
+                            <span v-show="isSidebarOpen">Unit Perdagangan Besar</span>
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <!-- User Footer -->
-            <div class="p-3 border-t border-slate-100 bg-slate-50/60">
+            <!-- User Footer (Sesuai Gambar 1 & 2) -->
+            <div class="p-3 border-t border-slate-200 bg-white">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
-                            {{ user.name ? user.name.charAt(0).toUpperCase() : 'A' }}
+                    <div class="flex items-center gap-2.5 overflow-hidden">
+                        <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
+                            <span class="material-symbols-outlined notranslate text-xl">person</span>
                         </div>
                         <div v-show="isSidebarOpen" class="overflow-hidden">
-                            <p class="text-xs font-semibold text-slate-800 truncate">{{ user.name || 'Admin Pangan' }}</p>
-                            <p class="text-[10px] text-slate-400 truncate">{{ user.email || 'ciwuni@desa.id' }}</p>
+                            <p class="text-xs font-bold text-slate-900 truncate">
+                                {{ authUser?.nama || authUser?.name || 'Admin BUMDes' }}
+                            </p>
+                            <p class="text-[9.5px] font-semibold text-slate-500 uppercase tracking-wider truncate">
+                                {{ authUser?.role === 'admin' ? 'SUPER ADMIN' : (authUser?.role === 'manager_pusat' ? 'MANAGER PUSAT' : (authUser?.email || 'ciwuni@desa.id')) }}
+                            </p>
                         </div>
                     </div>
                     <button 
@@ -328,7 +388,7 @@ const logout = () => {
                         title="Keluar"
                         class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                     >
-                        <span class="material-symbols-outlined notranslate text-lg">logout</span>
+                        <span class="material-symbols-outlined notranslate text-xl">logout</span>
                     </button>
                 </div>
             </div>
