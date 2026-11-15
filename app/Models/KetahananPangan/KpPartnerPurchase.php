@@ -24,3 +24,4 @@ class KpPartnerPurchase extends Model
         'keterangan',
     ];
 }
+

@@ -18,6 +18,8 @@ class KpEggProduction extends Model
         'tanggal',
         'umur_minggu',
         'hari_ke',
+        'produksi_butir',
+        'butir_per_kg',
         'produksi_kg',
         'stok_sebelum_kg',
         'terjual_kg',

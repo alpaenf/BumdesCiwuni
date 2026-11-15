@@ -92,13 +92,17 @@ class KpSaleController extends Controller
             'tanggal' => 'required|date',
             'customer_id' => 'nullable|exists:kp_customers,id',
             'nama_pelanggan' => 'required|string|max:255',
-            'customer_type' => 'required|in:Eceran,Agen',
+            'customer_type' => 'nullable|string',
             'jumlah_kg' => 'required|numeric|min:0.01',
             'harga_per_kg' => 'required|numeric|min:0',
             'jumlah_pembayaran' => 'required|numeric|min:0',
             'metode_pembayaran' => 'required|in:Tunai,Transfer,Qris,Hutang',
             'keterangan' => 'nullable|string',
         ]);
+
+        if (empty($validated['customer_type'])) {
+            $validated['customer_type'] = 'Eceran';
+        }
 
         $product = KpProduct::where('kode', 'TELUR-BGS')->firstOrFail();
 

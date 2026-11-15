@@ -29,6 +29,8 @@ const form = ref({
     umur_ke: 1,
     umur_minggu: 24,
     hari_ke: 1,
+    produksi_butir: 800,
+    butir_per_kg: 16.0,
     produksi_kg: 50.0,
     harga_per_kg: props.product.harga_default || 22000,
     telur_retak_butir: 0,
@@ -36,6 +38,22 @@ const form = ref({
     telur_rusak_butir: 0,
     keterangan_rusak: '',
 });
+
+const hitungManualDariButir = () => {
+    const butir = Number(form.value.produksi_butir) || 0;
+    const rasio = Number(form.value.butir_per_kg) || 16;
+    if (rasio > 0) {
+        form.value.produksi_kg = Number((butir / rasio).toFixed(2));
+    }
+};
+
+const hitungManualDariKg = () => {
+    const kg = Number(form.value.produksi_kg) || 0;
+    const rasio = Number(form.value.butir_per_kg) || 16;
+    if (rasio > 0) {
+        form.value.produksi_butir = Math.round(kg * rasio);
+    }
+};
 
 const submitForm = () => {
     router.post(route('kp.production.store'), form.value, {
@@ -55,7 +73,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 <template>
     <KetahananPanganLayout title="Pencatatan Produksi Telur" :unit="unit" :user="user">
         <!-- Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <p class="text-xs font-medium text-slate-500">Stok Telur Bagus Siap Jual</p>
                 <h4 class="text-2xl font-bold text-emerald-600 mt-1">
@@ -70,6 +88,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     {{ Number(summary.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
                 </h4>
                 <div class="mt-2 text-[11px] text-emerald-600 font-semibold">Telur Cokelat/Bagus</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <p class="text-xs font-medium text-slate-500">Total Butir (Periode)</p>
+                <h4 class="text-2xl font-bold text-blue-600 mt-1">
+                    {{ (summary.total_produksi_butir || 0).toLocaleString('id-ID') }} <span class="text-xs font-normal text-slate-400">butir</span>
+                </h4>
+                <div class="mt-2 text-[11px] text-blue-500 font-medium">Hasil panen fisik harian</div>
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
@@ -121,6 +147,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <tr>
                             <th class="p-3">Hari & Tgl</th>
                             <th class="p-3">Umur Ayam</th>
+                            <th class="p-3 text-right">Butir</th>
                             <th class="p-3 text-right">Produksi (kg)</th>
                             <th class="p-3 text-right">Stok Sblm (kg)</th>
                             <th class="p-3 text-right">Sisa Stok (kg)</th>
@@ -140,6 +167,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-slate-600">
                                 Mgg {{ prod.umur_minggu || '-' }} (Hr {{ prod.hari_ke || '-' }})
                             </td>
+                            <td class="p-3 text-right font-bold text-blue-600">{{ prod.produksi_butir ? Number(prod.produksi_butir).toLocaleString('id-ID') : '-' }}</td>
                             <td class="p-3 text-right font-bold text-emerald-600">{{ Number(prod.produksi_kg).toFixed(1) }} kg</td>
                             <td class="p-3 text-right text-slate-500">{{ Number(prod.stok_sebelum_kg).toFixed(1) }}</td>
                             <td class="p-3 text-right font-bold text-slate-800">{{ Number(prod.sisa_stok_kg).toFixed(1) }}</td>
@@ -164,7 +192,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             </td>
                         </tr>
                         <tr v-if="productions.data.length === 0">
-                            <td colspan="10" class="text-center py-8 text-slate-400">
+                            <td colspan="11" class="text-center py-8 text-slate-400">
                                 Belum ada catatan hasil produksi pada periode ini.
                             </td>
                         </tr>
@@ -207,15 +235,54 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <input type="number" v-model="form.umur_minggu" class="w-full text-xs rounded-xl border-slate-200" />
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Telur Bagus (kg) - Masuk Stok</label>
-                            <input type="number" step="0.1" v-model="form.produksi_kg" class="w-full text-xs rounded-xl border-slate-200 font-bold text-emerald-700" required />
+                    <!-- Kalkulator Manual Butir ke Kg -->
+                    <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200/80 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-blue-900 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">calculate</span>
+                                Hitung Manual Butir & kg
+                            </span>
+                            <span class="text-[10px] text-blue-600 font-medium">Bisa diisi manual dua arah</span>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Jual Acuan @ Rp/kg</label>
-                            <input type="number" v-model="form.harga_per_kg" class="w-full text-xs rounded-xl border-slate-200" required />
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Jumlah Butir</label>
+                                <input 
+                                    type="number" 
+                                    v-model="form.produksi_butir" 
+                                    @input="hitungManualDariButir" 
+                                    placeholder="Cth: 800"
+                                    class="w-full text-xs rounded-xl border-slate-200 font-bold text-blue-700" 
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Rasio (Butir/kg)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    v-model="form.butir_per_kg" 
+                                    @input="hitungManualDariButir" 
+                                    placeholder="16"
+                                    class="w-full text-xs rounded-xl border-slate-200 font-semibold" 
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Total kg (Masuk Stok)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.01" 
+                                    v-model="form.produksi_kg" 
+                                    @input="hitungManualDariKg" 
+                                    class="w-full text-xs rounded-xl border-slate-200 font-bold text-emerald-700" 
+                                    required 
+                                />
+                            </div>
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Jual Acuan @ Rp/kg</label>
+                        <input type="number" v-model="form.harga_per_kg" class="w-full text-xs rounded-xl border-slate-200" required />
                     </div>
                     <div class="grid grid-cols-2 gap-2 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
                         <div>

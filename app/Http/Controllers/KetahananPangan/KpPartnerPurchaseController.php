@@ -139,3 +139,4 @@ class KpPartnerPurchaseController extends Controller
         return redirect()->back()->with('success', 'Data pembelian rekanan berhasil dihapus.');
     }
 }
+

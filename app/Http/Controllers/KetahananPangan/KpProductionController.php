@@ -52,6 +52,7 @@ class KpProductionController extends Controller
             ->withQueryString();
 
         $totalProduksiKg = (float) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('produksi_kg');
+        $totalProduksiButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('produksi_butir');
         $totalRetakButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('telur_retak_butir');
         $totalRusakButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('telur_rusak_butir');
 
@@ -67,6 +68,7 @@ class KpProductionController extends Controller
             'summary' => [
                 'stok_saat_ini_kg' => (float) $product->stok_tersedia,
                 'total_produksi_kg' => $totalProduksiKg,
+                'total_produksi_butir' => $totalProduksiButir,
                 'total_retak_butir' => $totalRetakButir,
                 'total_rusak_butir' => $totalRusakButir,
             ]
@@ -83,6 +85,8 @@ class KpProductionController extends Controller
             'umur_ke' => 'nullable|integer',
             'umur_minggu' => 'nullable|integer',
             'hari_ke' => 'nullable|integer',
+            'produksi_butir' => 'nullable|integer|min:0',
+            'butir_per_kg' => 'nullable|numeric|min:0.1',
             'produksi_kg' => 'required|numeric|min:0',
             'harga_per_kg' => 'nullable|numeric|min:0',
             'telur_retak_butir' => 'nullable|integer|min:0',
@@ -113,6 +117,8 @@ class KpProductionController extends Controller
                 'tanggal' => $validated['tanggal'],
                 'umur_minggu' => $validated['umur_minggu'] ?? null,
                 'hari_ke' => $validated['hari_ke'] ?? null,
+                'produksi_butir' => $validated['produksi_butir'] ?? 0,
+                'butir_per_kg' => $validated['butir_per_kg'] ?? 16,
                 'produksi_kg' => $produksiKg,
                 'stok_sebelum_kg' => $stokSebelum,
                 'terjual_kg' => 0,
