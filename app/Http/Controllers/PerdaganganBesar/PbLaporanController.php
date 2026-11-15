@@ -33,6 +33,8 @@ class PbLaporanController extends Controller
         $tab = $request->input('tab', 'rekap'); // rekap, laku_pandai, samsat, pbb, umum, laba_rugi
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        $subLayananUmum = $request->input('sub_layanan_umum'); // filter jenis layanan di tab umum
+        $statusUmum = $request->input('status_umum'); // filter status di tab umum
 
         // 1. Data Rekap Per Layanan
         // Laku Pandai
@@ -117,6 +119,8 @@ class PbLaporanController extends Controller
                 ->withQueryString();
         } elseif ($tab === 'umum') {
             $dataDetail = PbTransaksiUmum::whereBetween('tanggal', [$startDate, $endDate])
+                ->when($subLayananUmum, fn($q) => $q->where('jenis_transaksi', $subLayananUmum))
+                ->when($statusUmum, fn($q) => $q->where('status', $statusUmum))
                 ->orderByDesc('tanggal')
                 ->paginate(20)
                 ->withQueryString();
@@ -144,6 +148,8 @@ class PbLaporanController extends Controller
             'filters' => [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
+                'sub_layanan_umum' => $subLayananUmum,
+                'status_umum' => $statusUmum,
             ],
             'rekap_layanan' => $rekapLayanan,
             'total_pendapatan' => $totalPendapatanJasa,
@@ -160,6 +166,8 @@ class PbLaporanController extends Controller
     {
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        $subLayananUmum = $request->input('sub_layanan_umum'); // filter jenis layanan di tab umum
+        $statusUmum = $request->input('status_umum'); // filter status di tab umum
         $layanan = $request->input('layanan', 'semua');
 
         $lpTrx = PbTransaksiLakuPandai::whereBetween('tanggal', [$startDate, $endDate])->get();

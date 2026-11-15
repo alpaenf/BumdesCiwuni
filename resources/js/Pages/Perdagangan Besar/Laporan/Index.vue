@@ -17,6 +17,27 @@ const props = defineProps({
 const activeTab = ref(props.tab || 'rekap');
 const startDate = ref(props.filters.start_date || '');
 const endDate = ref(props.filters.end_date || '');
+const subLayananUmum = ref(props.filters.sub_layanan_umum || '');
+const statusUmum = ref(props.filters.status_umum || '');
+
+const jenisUmumOptions = [
+    'Pulsa',
+    'Pulsa data',
+    'Pulsa listrik',
+    'PDAM',
+    'BPJS',
+    'WIFI',
+    'Virtual account',
+    'Pajak kendaraan',
+    'Pajak PBB',
+    'Deposit',
+    'Transfer sesama',
+    'Transfer antarbank',
+    'Tarik tunai',
+    'Pelunasan hutang',
+    'Multi payment',
+    'Lain-lain',
+];
 
 const tabs = [
     { key: 'rekap', label: 'Ringkasan Layanan', icon: 'pie_chart' },
@@ -37,6 +58,8 @@ const switchTab = (tabKey) => {
         tab: tabKey,
         start_date: startDate.value || undefined,
         end_date: endDate.value || undefined,
+        sub_layanan_umum: tabKey === 'umum' ? (subLayananUmum.value || undefined) : undefined,
+        status_umum: tabKey === 'umum' ? (statusUmum.value || undefined) : undefined,
     }, { preserveState: true, preserveScroll: true });
 };
 
@@ -45,6 +68,8 @@ const applyFilter = () => {
         tab: activeTab.value,
         start_date: startDate.value || undefined,
         end_date: endDate.value || undefined,
+        sub_layanan_umum: activeTab.value === 'umum' ? (subLayananUmum.value || undefined) : undefined,
+        status_umum: activeTab.value === 'umum' ? (statusUmum.value || undefined) : undefined,
     }, { preserveState: true, preserveScroll: true });
 };
 
@@ -377,8 +402,40 @@ const downloadPdf = () => {
 
             <!-- TAB 6: DETAIL TRANSAKSI UMUM -->
             <div v-else-if="activeTab === 'umum'" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="p-4 border-b border-slate-100">
-                    <h4 class="text-sm font-bold text-slate-800">Detail Layanan Umum & PPOB</h4>
+                <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800">Detail Layanan Umum & PPOB</h4>
+                        <p class="text-[11px] text-slate-400">Filter berdasarkan jenis layanan atau status transaksi</p>
+                    </div>
+                    <!-- Filter Jenis Layanan & Status -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select
+                            v-model="subLayananUmum"
+                            @change="applyFilter"
+                            class="text-xs px-3 py-1.5 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold text-slate-700"
+                        >
+                            <option value="">Semua Jenis Layanan</option>
+                            <option v-for="opt in jenisUmumOptions" :key="opt" :value="opt">{{ opt }}</option>
+                        </select>
+                        <select
+                            v-model="statusUmum"
+                            @change="applyFilter"
+                            class="text-xs px-3 py-1.5 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold text-slate-700"
+                        >
+                            <option value="">Semua Status</option>
+                            <option value="SUCCES">SUCCES</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="CANCEL">CANCEL</option>
+                        </select>
+                        <button
+                            v-if="subLayananUmum || statusUmum"
+                            @click="subLayananUmum = ''; statusUmum = ''; applyFilter();"
+                            class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+                            title="Reset Filter Layanan"
+                        >
+                            <span class="material-symbols-outlined text-sm">close</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-xs">
