@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KetahananPangan\KpCashFlow;
 use App\Models\KetahananPangan\KpCustomer;
 use App\Models\KetahananPangan\KpEggSale;
+use App\Models\KetahananPangan\KpPartnerPurchase;
 use App\Models\KetahananPangan\KpProduct;
 use App\Models\Unit;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -64,6 +65,11 @@ class KpSaleController extends Controller
         $totalKg = (float) KpEggSale::whereBetween('tanggal', [$startDate, $endDate])->sum('jumlah_kg');
         $totalRp = (float) KpEggSale::whereBetween('tanggal', [$startDate, $endDate])->sum('total_harga');
 
+        // Total pembelian rekanan kumulatif & pemakaian untuk penjualan
+        $totalBeliRekanan = (float) KpPartnerPurchase::sum('jumlah_kg');
+        $terpakaiRekanan = (float) KpEggSale::sum('ambil_rekanan_kg');
+        $sisaStokRekanan = max(0, $totalBeliRekanan - $terpakaiRekanan);
+
         return Inertia::render('ketahanan pangan/Hewani/PenjualanTelur', [
             'unit' => $unit,
             'user' => $user,
@@ -78,6 +84,8 @@ class KpSaleController extends Controller
             ],
             'summary' => [
                 'stok_tersedia_kg' => (float) $product->stok_tersedia,
+                'stok_rekanan_kg' => $sisaStokRekanan,
+                'total_stok_gabungan_kg' => (float) $product->stok_tersedia + $sisaStokRekanan,
                 'total_terjual_kg' => $totalKg,
                 'total_pendapatan_rp' => $totalRp,
             ]
@@ -94,6 +102,9 @@ class KpSaleController extends Controller
             'nama_pelanggan' => 'required|string|max:255',
             'customer_type' => 'nullable|string',
             'jumlah_kg' => 'required|numeric|min:0.01',
+            'sumber_stok' => 'nullable|in:kandang,rekanan,gabungan',
+            'ambil_kandang_kg' => 'nullable|numeric|min:0',
+            'ambil_rekanan_kg' => 'nullable|numeric|min:0',
             'harga_per_kg' => 'required|numeric|min:0',
             'jumlah_pembayaran' => 'required|numeric|min:0',
             'metode_pembayaran' => 'required|in:Tunai,Transfer,Qris,Hutang',
@@ -105,14 +116,48 @@ class KpSaleController extends Controller
         }
 
         $product = KpProduct::where('kode', 'TELUR-BGS')->firstOrFail();
+        $stokKandang = (float) $product->stok_tersedia;
 
-        if ($product->stok_tersedia < $validated['jumlah_kg']) {
+        $totalBeliRekanan = (float) KpPartnerPurchase::sum('jumlah_kg');
+        $terpakaiRekanan = (float) KpEggSale::sum('ambil_rekanan_kg');
+        $sisaStokRekanan = max(0, $totalBeliRekanan - $terpakaiRekanan);
+
+        $totalKebutuhan = (float) $validated['jumlah_kg'];
+        $sumberStok = $validated['sumber_stok'] ?? 'kandang';
+
+        // Tentukan alokasi otomatis jika belum ditentukan
+        $ambilKandang = isset($validated['ambil_kandang_kg']) ? (float) $validated['ambil_kandang_kg'] : 0;
+        $ambilRekanan = isset($validated['ambil_rekanan_kg']) ? (float) $validated['ambil_rekanan_kg'] : 0;
+
+        if ($sumberStok === 'kandang') {
+            $ambilKandang = $totalKebutuhan;
+            $ambilRekanan = 0;
+        } elseif ($sumberStok === 'rekanan') {
+            $ambilKandang = 0;
+            $ambilRekanan = $totalKebutuhan;
+        } elseif ($sumberStok === 'gabungan') {
+            // Jika user tidak manual set breakdown atau breakdown tidak pas dengan total
+            if (round($ambilKandang + $ambilRekanan, 2) != round($totalKebutuhan, 2)) {
+                // Utamakan stok kandang semampunya, sisanya ambil dari rekanan
+                $ambilKandang = min($stokKandang, $totalKebutuhan);
+                $ambilRekanan = round($totalKebutuhan - $ambilKandang, 2);
+            }
+        }
+
+        // Cek ketersediaan masing-masing
+        if ($ambilKandang > $stokKandang) {
             return redirect()->back()->withErrors([
-                'jumlah_kg' => "Stok telur tidak mencukupi! Tersedia: {$product->stok_tersedia} kg."
+                'jumlah_kg' => "Stok telur kandang/BUMDes tidak mencukupi! Dibutuhkan: {$ambilKandang} kg, Tersedia: {$stokKandang} kg. Gunakan fitur gabungan dengan rekanan jika ingin menggabungkan."
             ]);
         }
 
-        $totalHarga = round($validated['jumlah_kg'] * $validated['harga_per_kg'], 2);
+        if ($ambilRekanan > $sisaStokRekanan) {
+            return redirect()->back()->withErrors([
+                'jumlah_kg' => "Stok telur rekanan tidak mencukupi! Dibutuhkan: {$ambilRekanan} kg, Tersedia: {$sisaStokRekanan} kg."
+            ]);
+        }
+
+        $totalHarga = round($totalKebutuhan * $validated['harga_per_kg'], 2);
         $kembalian = max(0, $validated['jumlah_pembayaran'] - $totalHarga);
         $statusPembayaran = ($validated['jumlah_pembayaran'] >= $totalHarga && $validated['metode_pembayaran'] !== 'Hutang') ? 'Lunas' : 'Belum Lunas';
 
@@ -121,14 +166,17 @@ class KpSaleController extends Controller
         $randomSeq = str_pad(KpEggSale::where('tanggal', $validated['tanggal'])->count() + 1, 3, '0', STR_PAD_LEFT);
         $nomorTransaksi = "STR-TLR-{$dateCode}-{$randomSeq}";
 
-        DB::transaction(function () use ($validated, $product, $totalHarga, $kembalian, $statusPembayaran, $nomorTransaksi) {
+        DB::transaction(function () use ($validated, $product, $ambilKandang, $ambilRekanan, $sumberStok, $totalKebutuhan, $totalHarga, $kembalian, $statusPembayaran, $nomorTransaksi) {
             $sale = KpEggSale::create([
                 'nomor_transaksi' => $nomorTransaksi,
                 'tanggal' => $validated['tanggal'],
                 'customer_id' => $validated['customer_id'] ?? null,
                 'nama_pelanggan' => $validated['nama_pelanggan'],
                 'customer_type' => $validated['customer_type'],
-                'jumlah_kg' => $validated['jumlah_kg'],
+                'jumlah_kg' => $totalKebutuhan,
+                'ambil_kandang_kg' => $ambilKandang,
+                'ambil_rekanan_kg' => $ambilRekanan,
+                'sumber_stok' => $sumberStok,
                 'harga_per_kg' => $validated['harga_per_kg'],
                 'total_harga' => $totalHarga,
                 'jumlah_pembayaran' => $validated['jumlah_pembayaran'],
@@ -138,8 +186,10 @@ class KpSaleController extends Controller
                 'keterangan' => $validated['keterangan'] ?? null,
             ]);
 
-            // Potong stok telur
-            $product->decrement('stok_tersedia', $validated['jumlah_kg']);
+            // Potong stok telur kandang hanya sejumlah yang diambil dari kandang
+            if ($ambilKandang > 0) {
+                $product->decrement('stok_tersedia', $ambilKandang);
+            }
 
             // Catat ke Arus Kas (Debit/Pemasukan) hanya jika menerima pembayaran real
             if ($validated['metode_pembayaran'] !== 'Hutang' && $validated['jumlah_pembayaran'] > 0) {
@@ -148,10 +198,17 @@ class KpSaleController extends Controller
                 $currentSaldo = $lastCash ? (float) $lastCash->saldo_berjalan : 0;
                 $newSaldo = $currentSaldo + $pemasukanKas;
 
+                $ketSumber = '';
+                if ($sumberStok === 'gabungan') {
+                    $ketSumber = " [Gabungan: Kandang {$ambilKandang} kg + Rekanan {$ambilRekanan} kg]";
+                } elseif ($sumberStok === 'rekanan') {
+                    $ketSumber = " [Stok Rekanan]";
+                }
+
                 KpCashFlow::create([
                     'unit_kategori' => 'hewani',
                     'tanggal' => $validated['tanggal'],
-                    'uraian' => 'Penjualan Telur: ' . $sale->nomor_transaksi . ' (' . $sale->nama_pelanggan . ')',
+                    'uraian' => 'Penjualan Telur: ' . $sale->nomor_transaksi . ' (' . $sale->nama_pelanggan . ')' . $ketSumber,
                     'debit' => $pemasukanKas,
                     'kredit' => 0,
                     'saldo_berjalan' => $newSaldo,
@@ -183,10 +240,11 @@ class KpSaleController extends Controller
         DB::transaction(function () use ($id) {
             $sale = KpEggSale::findOrFail($id);
 
-            // Rollback stok telur
+            // Rollback stok telur kandang (jika ada pemotongan kandang)
             $product = KpProduct::where('kode', 'TELUR-BGS')->first();
-            if ($product) {
-                $product->increment('stok_tersedia', $sale->jumlah_kg);
+            $ambilKandang = $sale->ambil_kandang_kg ?? $sale->jumlah_kg;
+            if ($product && $ambilKandang > 0) {
+                $product->increment('stok_tersedia', $ambilKandang);
             }
 
             // Hapus referensi cashflow

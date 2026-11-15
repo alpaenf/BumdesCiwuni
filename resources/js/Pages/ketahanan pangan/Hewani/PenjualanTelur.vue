@@ -34,7 +34,10 @@ const form = ref({
     customer_id: '',
     nama_pelanggan: '',
     customer_type: 'Eceran',
+    sumber_stok: 'kandang', // 'kandang', 'rekanan', 'gabungan'
     jumlah_kg: 5.0,
+    ambil_kandang_kg: 5.0,
+    ambil_rekanan_kg: 0,
     harga_per_kg: props.product.harga_default || 22000,
     jumlah_pembayaran: 110000,
     metode_pembayaran: 'Tunai',
@@ -54,7 +57,32 @@ const onSelectCustomer = (e) => {
     }
 };
 
+const hitungAlokasiStok = () => {
+    const total = parseFloat(form.value.jumlah_kg) || 0;
+    const stokKandang = parseFloat(props.summary.stok_tersedia_kg) || 0;
+    const stokRekanan = parseFloat(props.summary.stok_rekanan_kg) || 0;
+
+    if (form.value.sumber_stok === 'kandang') {
+        form.value.ambil_kandang_kg = total;
+        form.value.ambil_rekanan_kg = 0;
+    } else if (form.value.sumber_stok === 'rekanan') {
+        form.value.ambil_kandang_kg = 0;
+        form.value.ambil_rekanan_kg = total;
+    } else if (form.value.sumber_stok === 'gabungan') {
+        // Otomatis pakai sisa stok kandang semampunya, sisanya ambil rekanan
+        const dariKandang = Math.min(stokKandang, total);
+        const dariRekanan = Math.max(0, +(total - dariKandang).toFixed(2));
+        form.value.ambil_kandang_kg = dariKandang;
+        form.value.ambil_rekanan_kg = dariRekanan;
+    }
+};
+
+const onSumberStokChange = () => {
+    hitungAlokasiStok();
+};
+
 const updatePayment = () => {
+    hitungAlokasiStok();
     form.value.jumlah_pembayaran = Math.round(form.value.jumlah_kg * form.value.harga_per_kg);
 };
 
@@ -96,31 +124,39 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 <template>
     <KetahananPanganLayout title="Transaksi Penjualan Telur" :unit="unit" :user="user">
         <!-- Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Stok Telur Bagus Tersedia</p>
+                <p class="text-xs font-medium text-slate-500">Stok Kandang BUMDes</p>
                 <h4 class="text-2xl font-bold text-emerald-600 mt-1">
                     {{ Number(summary.stok_tersedia_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
                 </h4>
-                <div class="mt-2 text-[11px] text-slate-400">Siap ditransaksikan langsung ke pembeli</div>
+                <div class="mt-2 text-[11px] text-slate-400">Gudang telur produksi kandang</div>
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Total Telur Terjual (Periode)</p>
-                <h4 class="text-2xl font-bold text-slate-800 mt-1">
-                    {{ Number(summary.total_terjual_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                <p class="text-xs font-medium text-slate-500">Sisa Stok Rekanan</p>
+                <h4 class="text-2xl font-bold text-blue-600 mt-1">
+                    {{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
                 </h4>
-                <div class="mt-2 text-[11px] text-emerald-600 font-semibold">{{ formatRp(summary.total_pendapatan_rp) }}</div>
+                <div class="mt-2 text-[11px] text-blue-500 font-medium">Berasal dari pembelian luar</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <p class="text-xs font-medium text-slate-500">Total Stok Gabungan</p>
+                <h4 class="text-2xl font-bold text-indigo-600 mt-1">
+                    {{ Number(summary.total_stok_gabungan_kg || summary.stok_tersedia_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                </h4>
+                <div class="mt-2 text-[11px] text-indigo-500 font-semibold">Siap dijual (Kandang + Rekanan)</div>
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-semibold text-slate-800">Kasir / Buat Nota Baru</p>
-                    <p class="text-[11px] text-slate-400">Cetak struk thermal & kurangi stok otomatis</p>
+                    <p class="text-xs font-semibold text-slate-800">Kasir / Buat Nota</p>
+                    <p class="text-[11px] text-slate-400">Otomatis gabung stok kandang & rekanan</p>
                 </div>
                 <button 
                     @click="isModalOpen = true"
-                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                    class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
                 >
                     <span class="material-symbols-outlined text-base">point_of_sale</span>
                     Transaksi Baru
@@ -164,6 +200,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <th class="p-3">Tanggal</th>
                             <th class="p-3">Nama Customer</th>
                             <th class="p-3 text-center">Kategori</th>
+                            <th class="p-3 text-center">Sumber Stok</th>
                             <th class="p-3 text-right">Qty (kg)</th>
                             <th class="p-3 text-right">Harga Satuan per kg</th>
                             <th class="p-3 text-right">Total Transaksi</th>
@@ -185,6 +222,26 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 ]">
                                     {{ sale.customer_type || 'Eceran' }}
                                 </span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <div v-if="sale.sumber_stok === 'gabungan'">
+                                    <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                        Gabungan
+                                    </span>
+                                    <div class="text-[9px] text-slate-500 mt-0.5">
+                                        {{ Number(sale.ambil_kandang_kg).toFixed(1) }}k + {{ Number(sale.ambil_rekanan_kg).toFixed(1) }}r
+                                    </div>
+                                </div>
+                                <div v-else-if="sale.sumber_stok === 'rekanan'">
+                                    <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                        Rekanan Luar
+                                    </span>
+                                </div>
+                                <div v-else>
+                                    <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                        Kandang BUMDes
+                                    </span>
+                                </div>
                             </td>
                             <td class="p-3 text-right font-bold text-slate-800">{{ Number(sale.jumlah_kg).toFixed(1) }} kg</td>
                             <td class="p-3 text-right text-slate-600">{{ formatRp(sale.harga_per_kg) }}</td>
@@ -253,7 +310,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
                         <h4 class="text-sm font-bold text-slate-800">Kasir Penjualan Telur Ayam</h4>
-                        <p class="text-xs text-slate-400">Stok telur bagus: {{ summary.stok_tersedia_kg }} kg</p>
+                        <p class="text-xs text-slate-400">
+                            Stok Kandang: <span class="font-bold text-emerald-600">{{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</span> | Rekanan: <span class="font-bold text-blue-600">{{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</span>
+                        </p>
                     </div>
                     <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
                         <span class="material-symbols-outlined text-lg">close</span>
@@ -286,6 +345,83 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 <option value="Eceran">Eceran</option>
                                 <option value="Agen">Agen</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <!-- Pilihan Sumber Stok (Kandang / Rekanan / Gabungan) -->
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <label class="block text-xs font-bold text-slate-800 mb-1.5">
+                            Sumber Pengambilan Stok Telur
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label 
+                                :class="[
+                                    'cursor-pointer border rounded-xl p-2.5 text-center transition-all',
+                                    form.sumber_stok === 'kandang' 
+                                        ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs' 
+                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                                ]"
+                            >
+                                <input type="radio" value="kandang" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
+                                <div class="text-xs">Kandang BUMDes</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Sisa: {{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</div>
+                            </label>
+
+                            <label 
+                                :class="[
+                                    'cursor-pointer border rounded-xl p-2.5 text-center transition-all',
+                                    form.sumber_stok === 'gabungan' 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-800 font-bold shadow-xs' 
+                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                                ]"
+                            >
+                                <input type="radio" value="gabungan" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
+                                <div class="text-xs">Gabungan (K+R)</div>
+                                <div class="text-[10px] text-indigo-500 font-semibold mt-0.5">Total: {{ Number(summary.total_stok_gabungan_kg || 0).toFixed(1) }} kg</div>
+                            </label>
+
+                            <label 
+                                :class="[
+                                    'cursor-pointer border rounded-xl p-2.5 text-center transition-all',
+                                    form.sumber_stok === 'rekanan' 
+                                        ? 'bg-blue-50 border-blue-500 text-blue-800 font-bold shadow-xs' 
+                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                                ]"
+                            >
+                                <input type="radio" value="rekanan" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
+                                <div class="text-xs">Rekanan Luar</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Sisa: {{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</div>
+                            </label>
+                        </div>
+
+                        <!-- Rincian Alokasi Jika Memilih Gabungan -->
+                        <div v-if="form.sumber_stok === 'gabungan'" class="mt-3 pt-2.5 border-t border-slate-200/80">
+                            <div class="text-[11px] text-slate-600 font-medium mb-1.5 flex items-center justify-between">
+                                <span>Rincian Pembagian Stok:</span>
+                                <span class="text-indigo-600 font-bold">Total: {{ (Number(form.ambil_kandang_kg || 0) + Number(form.ambil_rekanan_kg || 0)).toFixed(1) }} kg</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-0.5">Ambil dr Kandang BUMDes (kg)</label>
+                                    <input 
+                                        type="number" 
+                                        step="0.1" 
+                                        v-model="form.ambil_kandang_kg" 
+                                        class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold"
+                                    />
+                                    <div class="text-[9px] text-slate-400 mt-0.5">Maks. stok: {{ summary.stok_tersedia_kg }} kg</div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-0.5">Ambil dr Rekanan Luar (kg)</label>
+                                    <input 
+                                        type="number" 
+                                        step="0.1" 
+                                        v-model="form.ambil_rekanan_kg" 
+                                        class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold text-blue-700"
+                                    />
+                                    <div class="text-[9px] text-slate-400 mt-0.5">Maks. stok: {{ summary.stok_rekanan_kg || 0 }} kg</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -221,6 +221,15 @@
                             <span>- kg</span>
                             <span>{{ number_format($jmlKg, 2) }} kg</span>
                         </div>
+                        @if($sale->sumber_stok === 'gabungan')
+                        <div class="flex justify-between text-[9.5px] text-indigo-700 bg-indigo-50/80 px-1 py-0.5 rounded">
+                            <span>* Kandang: {{ number_format($sale->ambil_kandang_kg, 1) }} kg | Rekanan: {{ number_format($sale->ambil_rekanan_kg, 1) }} kg</span>
+                        </div>
+                        @elseif($sale->sumber_stok === 'rekanan')
+                        <div class="flex justify-between text-[9.5px] text-blue-700 bg-blue-50/80 px-1 py-0.5 rounded">
+                            <span>* Pasokan Rekanan Luar</span>
+                        </div>
+                        @endif
                         <div class="flex justify-between text-[10px] text-gray-600">
                             <span>- peti</span>
                             <span>{{ $jmlPeti }} peti</span>
