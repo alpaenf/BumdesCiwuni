@@ -37,6 +37,8 @@ class PortalSeeder extends Seeder
                 'tipe' => 'internal',
                 'status' => 'aktif',
                 'icon' => 'agriculture',
+                'logo' => '/logopangan.png',
+                'thumbnail' => '/logopangan.png',
                 'urutan' => 3,
             ],
             [

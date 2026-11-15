@@ -60,7 +60,7 @@ const formatRp = (val) => {
         <!-- 7 Kartu Statistik Utama -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <!-- 1. Populasi Ayam -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-medium text-slate-500">Populasi Ayam</p>
@@ -70,9 +70,12 @@ const formatRp = (val) => {
                         <span class="material-symbols-outlined text-2xl">pest_control</span>
                     </div>
                 </div>
-                <div class="mt-3 flex items-center gap-1 text-[11px] text-amber-600">
-                    <span class="material-symbols-outlined text-sm">info</span>
-                    <span>Ayam ras petelur aktif</span>
+                <div class="mt-3 flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Ayam ras petelur aktif</span>
+                    <a :href="route('kp.feed.index') + '?tab=pemakaian'" class="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-0.5">
+                        Update di Logistik
+                        <span class="material-symbols-outlined notranslate text-xs">arrow_forward</span>
+                    </a>
                 </div>
             </div>
 

@@ -203,7 +203,7 @@ const deleteGaleri = (id) => {
             <!-- Branding (Fixed top) -->
             <div class="p-6 pb-4 shrink-0 flex items-center justify-between gap-3 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <img :src="unit.slug === 'wifi' ? '/logowifi.png' : (unit.slug === 'ketahanan-pangan' ? '/logo2.png' : (settings.custom_logo || '/logo.png'))" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" />
+                    <img :src="unit.slug === 'wifi' ? '/logowifi.png' : (unit.slug === 'ketahanan-pangan' ? '/logopangan.png' : (settings.custom_logo || '/logo.png'))" alt="Logo Unit" class="w-10 h-10 object-contain drop-shadow-sm" onerror="this.onerror=null; this.src='/images/logo-dammar-wulan.png';" />
                     <div>
                         <h2 class="text-xs font-black text-slate-900 leading-tight">Admin {{ unit.name || unit.nama_unit || 'Unit' }}</h2>
                         <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-0.5">BUMDes Ciwuni</p>
