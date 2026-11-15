@@ -20,7 +20,9 @@ class PbTransaksiSamsat extends Model
         'nomor_polisi',
         'jenis_kendaraan',
         'jenis_pembayaran',
+        'tanggal_jatuh_tempo',
         'nominal_pajak',
+        'denda_pajak',
         'biaya_admin',
         'biaya_jasa_bumdes',
         'total_pembayaran',
@@ -31,7 +33,9 @@ class PbTransaksiSamsat extends Model
 
     protected $casts = [
         'tanggal' => 'date:Y-m-d',
+        'tanggal_jatuh_tempo' => 'date:Y-m-d',
         'nominal_pajak' => 'decimal:2',
+        'denda_pajak' => 'decimal:2',
         'biaya_admin' => 'decimal:2',
         'biaya_jasa_bumdes' => 'decimal:2',
         'total_pembayaran' => 'decimal:2',

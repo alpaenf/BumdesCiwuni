@@ -19,12 +19,14 @@ const filterKendaraan = ref(props.filters.jenis_kendaraan || '');
 
 const form = useForm({
     tanggal: new Date().toISOString().split('T')[0],
+    tanggal_jatuh_tempo: '',
     wajib_pajak_id: null,
     nama_wajib_pajak: '',
     nomor_polisi: '',
     jenis_kendaraan: 'Sepeda Motor',
     jenis_pembayaran: 'Cash',
     nominal_pajak: 0,
+    denda_pajak: 0,
     biaya_admin: 0,
     biaya_jasa_bumdes: 10000,
     status_transaksi: 'SUCCES',
@@ -35,11 +37,49 @@ const formatRupiah = (val) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
 };
 
+// Hitung keterlambatan (bulan) & estimasi denda otomatis
+const keterlambatanInfo = computed(() => {
+    if (!form.tanggal_jatuh_tempo || !form.tanggal) {
+        return { isTelat: false, bulanTelat: 0, teks: 'Tepat Waktu' };
+    }
+    const tglTrx = new Date(form.tanggal);
+    const tglTempo = new Date(form.tanggal_jatuh_tempo);
+
+    if (tglTrx <= tglTempo) {
+        return { isTelat: false, bulanTelat: 0, teks: 'Tepat Waktu' };
+    }
+
+    // Hitung selisih hari & bulan
+    const diffTime = tglTrx.getTime() - tglTempo.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const bulanTelat = Math.min(24, Math.max(1, Math.ceil(diffDays / 30)));
+
+    return {
+        isTelat: true,
+        bulanTelat,
+        diffDays,
+        teks: `Terlambat ${bulanTelat} Bulan (${diffDays} hari)`
+    };
+});
+
+// Auto-suggest denda saat tanggal jatuh tempo / nominal pajak berubah
+const hitungEstimasiDenda = () => {
+    if (keterlambatanInfo.value.isTelat) {
+        const pokok = Number(form.nominal_pajak) || 0;
+        // Rumus PKB Jateng/standar: 2% per bulan telat (maksimal 24 bulan = 48%)
+        const estimasiDendaPkb = Math.round(pokok * (keterlambatanInfo.value.bulanTelat * 0.02));
+        form.denda_pajak = estimasiDendaPkb;
+    } else {
+        form.denda_pajak = 0;
+    }
+};
+
 const calculatedTotal = computed(() => {
     const pajak = Number(form.nominal_pajak) || 0;
+    const denda = Number(form.denda_pajak) || 0;
     const admin = Number(form.biaya_admin) || 0;
     const jasa = Number(form.biaya_jasa_bumdes) || 0;
-    return pajak + admin + jasa;
+    return pajak + denda + admin + jasa;
 });
 
 const onSelectWp = (e) => {
@@ -51,6 +91,10 @@ const onSelectWp = (e) => {
         form.nama_wajib_pajak = wp.nama_wajib_pajak;
         form.nomor_polisi = wp.nomor_plat;
         form.jenis_kendaraan = wp.jenis_kendaraan;
+        if (wp.tanggal_jatuh_tempo) {
+            form.tanggal_jatuh_tempo = wp.tanggal_jatuh_tempo.split('T')[0];
+            hitungEstimasiDenda();
+        }
     }
 };
 
@@ -77,6 +121,8 @@ const submitForm = () => {
             isModalOpen.value = false;
             form.reset();
             form.tanggal = new Date().toISOString().split('T')[0];
+            form.tanggal_jatuh_tempo = '';
+            form.denda_pajak = 0;
             form.biaya_jasa_bumdes = 10000;
         },
     });
@@ -185,6 +231,7 @@ const openStruk = (id) => {
                                 <th class="px-3 py-3">Plat / Kendaraan</th>
                                 <th class="px-3 py-3 text-center">Metode</th>
                                 <th class="px-3 py-3 text-right">Nominal Pajak</th>
+                                <th class="px-3 py-3 text-right">Denda</th>
                                 <th class="px-3 py-3 text-right">Biaya Admin</th>
                                 <th class="px-3 py-3 text-right text-emerald-600 font-bold">Jasa BUMDes</th>
                                 <th class="px-3 py-3 text-right font-bold text-slate-900">Total Bayar</th>
@@ -195,7 +242,7 @@ const openStruk = (id) => {
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <tr v-if="!transaksi.data?.length">
-                                <td colspan="12" class="text-center py-8 text-slate-400">
+                                <td colspan="13" class="text-center py-8 text-slate-400">
                                     <span class="material-symbols-outlined text-3xl mb-1 text-slate-300">directions_car</span>
                                     <p>Belum ada data transaksi Samsat Budiman.</p>
                                 </td>
@@ -220,7 +267,18 @@ const openStruk = (id) => {
                                         {{ item.jenis_pembayaran }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-2.5 text-right font-medium text-slate-700">{{ formatRupiah(item.nominal_pajak) }}</td>
+                                <td class="px-3 py-2.5 text-right font-medium text-slate-700">
+                                    <div>{{ formatRupiah(item.nominal_pajak) }}</div>
+                                    <div v-if="item.tanggal_jatuh_tempo" class="text-[9px] text-slate-400">
+                                        JT: {{ item.tanggal_jatuh_tempo }}
+                                    </div>
+                                </td>
+                                <td class="px-3 py-2.5 text-right">
+                                    <span v-if="item.denda_pajak > 0" class="font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                                        {{ formatRupiah(item.denda_pajak) }}
+                                    </span>
+                                    <span v-else class="text-slate-400">-</span>
+                                </td>
                                 <td class="px-3 py-2.5 text-right text-slate-500">{{ formatRupiah(item.biaya_admin) }}</td>
                                 <td class="px-3 py-2.5 text-right font-bold text-emerald-600">{{ formatRupiah(item.biaya_jasa_bumdes) }}</td>
                                 <td class="px-3 py-2.5 text-right font-bold text-slate-900">{{ formatRupiah(item.total_pembayaran) }}</td>
@@ -338,13 +396,71 @@ const openStruk = (id) => {
                         </div>
                     </div>
 
-                    <!-- Komponen Biaya -->
-                    <div class="p-3 bg-amber-50/60 rounded-2xl border border-amber-200 space-y-2">
-                        <span class="font-bold text-amber-900 text-[11px] uppercase tracking-wider block">Rincian Komponen Biaya</span>
+                    <!-- Komponen Biaya & Status Keterlambatan -->
+                    <div class="p-3.5 bg-amber-50/60 rounded-2xl border border-amber-200 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200/80 pb-2.5">
+                            <div>
+                                <span class="font-bold text-amber-900 text-[11px] uppercase tracking-wider block">Rincian Komponen Biaya</span>
+                                <span class="text-[10px] text-amber-700">Estimasi denda dihitung otomatis berdasarkan tanggal jatuh tempo</span>
+                            </div>
+                            <!-- Badge Status Keterlambatan -->
+                            <div v-if="form.tanggal_jatuh_tempo">
+                                <span v-if="keterlambatanInfo.isTelat" class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-100 text-rose-700 font-bold rounded-lg text-[10px] border border-rose-300">
+                                    <span class="material-symbols-outlined text-xs">warning</span>
+                                    {{ keterlambatanInfo.teks }}
+                                </span>
+                                <span v-else class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-[10px] border border-emerald-300">
+                                    <span class="material-symbols-outlined text-xs">check_circle</span>
+                                    Tepat Waktu (Tidak Ada Denda)
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Jatuh Tempo Input -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-700 mb-0.5">Tanggal Jatuh Tempo STNK / Pajak</label>
+                                <input
+                                    v-model="form.tanggal_jatuh_tempo"
+                                    type="date"
+                                    @change="hitungEstimasiDenda"
+                                    class="w-full text-xs rounded-xl border border-amber-200 bg-white px-2.5 py-1.5 font-medium"
+                                />
+                                <span class="text-[9px] text-slate-400">Diisi jika ingin deteksi denda otomatis</span>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-rose-700 mb-0.5">Denda Keterlambatan Pajak (Rp)</label>
+                                <div class="relative">
+                                    <input
+                                        v-model.number="form.denda_pajak"
+                                        type="number"
+                                        min="0"
+                                        class="w-full text-xs rounded-xl border border-rose-300 bg-white px-2.5 py-1.5 font-bold text-rose-700 focus:ring-rose-500"
+                                    />
+                                    <button
+                                        type="button"
+                                        @click="hitungEstimasiDenda"
+                                        class="absolute right-1 top-1 bottom-1 px-2 text-[9px] font-semibold bg-rose-100 text-rose-700 rounded-lg hover:bg-rose-200"
+                                        title="Hitung Ulang Estimasi Denda"
+                                    >
+                                        Auto Hitung
+                                    </button>
+                                </div>
+                                <span class="text-[9px] text-slate-400">Bisa disesuaikan manual sesuai cetakan tagihan Samsat</span>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">Nominal Pokok Pajak *</label>
-                                <input v-model.number="form.nominal_pajak" type="number" min="0" required class="w-full text-xs rounded-xl border border-amber-200 bg-white px-2.5 py-1.5" />
+                                <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">Nominal Pokok Pajak (PKB) *</label>
+                                <input
+                                    v-model.number="form.nominal_pajak"
+                                    type="number"
+                                    min="0"
+                                    @input="hitungEstimasiDenda"
+                                    required
+                                    class="w-full text-xs rounded-xl border border-amber-200 bg-white px-2.5 py-1.5"
+                                />
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-600 mb-0.5">Biaya Admin</label>
@@ -355,6 +471,7 @@ const openStruk = (id) => {
                                 <input v-model.number="form.biaya_jasa_bumdes" type="number" min="0" class="w-full text-xs rounded-xl border border-amber-200 bg-white px-2.5 py-1.5" />
                             </div>
                         </div>
+
                         <div class="pt-2 border-t border-amber-200 flex items-center justify-between text-xs">
                             <span class="font-bold text-amber-900">Total Pembayaran Konsumen:</span>
                             <span class="text-base font-black text-amber-950">{{ formatRupiah(calculatedTotal) }}</span>

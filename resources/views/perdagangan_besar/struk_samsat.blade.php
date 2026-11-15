@@ -91,9 +91,15 @@
         $tglStr = $carbonTgl->isoFormat('D MMMM Y');
 
         $pajak = (float) $transaksi->nominal_pajak;
+        $denda = (float) ($transaksi->denda_pajak ?? 0);
         $admin = (float) $transaksi->biaya_admin;
         $jasa = (float) $transaksi->biaya_jasa_bumdes;
         $total = (float) $transaksi->total_pembayaran;
+
+        $jatuhTempoStr = null;
+        if (!empty($transaksi->tanggal_jatuh_tempo)) {
+            $jatuhTempoStr = Carbon::parse($transaksi->tanggal_jatuh_tempo)->locale('id')->isoFormat('D MMMM Y');
+        }
 
         $logoSrc = asset('images/logo-dammar-wulan.png');
         if (!empty($unit?->logo)) {
@@ -175,6 +181,13 @@
                     <span class="mr-2">:</span>
                     <span class="font-semibold text-gray-800">{{ $transaksi->jenis_kendaraan }}</span>
                 </div>
+                @if($jatuhTempoStr)
+                <div class="flex">
+                    <span class="field-label">Jatuh Tempo</span>
+                    <span class="mr-2">:</span>
+                    <span class="font-semibold {{ $denda > 0 ? 'text-red-700' : 'text-gray-800' }}">{{ $jatuhTempoStr }}</span>
+                </div>
+                @endif
             </div>
 
             <div class="section-separator"></div>
@@ -185,6 +198,12 @@
                     <span class="text-gray-600">Nominal Pajak (PKB)</span>
                     <span class="font-bold text-gray-900">Rp {{ number_format($pajak, 0, ',', '.') }}</span>
                 </div>
+                @if($denda > 0)
+                <div class="flex justify-between text-red-600">
+                    <span>Denda Pajak (Keterlambatan)</span>
+                    <span class="font-bold">Rp {{ number_format($denda, 0, ',', '.') }}</span>
+                </div>
+                @endif
                 @if($admin > 0)
                 <div class="flex justify-between">
                     <span class="text-gray-600">Biaya Admin Samsat</span>
@@ -295,3 +314,4 @@
 
 </body>
 </html>
+

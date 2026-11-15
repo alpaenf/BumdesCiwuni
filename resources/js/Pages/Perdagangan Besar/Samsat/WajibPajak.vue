@@ -22,6 +22,7 @@ const form = useForm({
     nomor_plat: '',
     merek_tipe: '',
     tahun_kendaraan: '',
+    tanggal_jatuh_tempo: '',
 });
 
 const applySearch = () => {
@@ -34,6 +35,7 @@ const openAddModal = () => {
     editingWp.value = null;
     form.reset();
     form.jenis_kendaraan = 'Sepeda Motor';
+    form.tanggal_jatuh_tempo = '';
     isModalOpen.value = true;
 };
 
@@ -47,6 +49,7 @@ const openEditModal = (item) => {
     form.nomor_plat = item.nomor_plat || '';
     form.merek_tipe = item.merek_tipe || '';
     form.tahun_kendaraan = item.tahun_kendaraan || '';
+    form.tanggal_jatuh_tempo = item.tanggal_jatuh_tempo ? item.tanggal_jatuh_tempo.split('T')[0] : '';
     isModalOpen.value = true;
 };
 
@@ -124,6 +127,7 @@ const deleteWp = (id) => {
                                 <th class="px-4 py-3">Nama Wajib Pajak</th>
                                 <th class="px-4 py-3">Nomor Plat</th>
                                 <th class="px-4 py-3">Merek / Tipe</th>
+                                <th class="px-4 py-3">Jatuh Tempo</th>
                                 <th class="px-4 py-3">Jenis & Tahun</th>
                                 <th class="px-4 py-3">No. HP</th>
                                 <th class="px-4 py-3 text-center">Jml Trx</th>
@@ -132,7 +136,7 @@ const deleteWp = (id) => {
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <tr v-if="!wajib_pajak.data?.length">
-                                <td colspan="8" class="text-center py-8 text-slate-400">
+                                <td colspan="9" class="text-center py-8 text-slate-400">
                                     <span class="material-symbols-outlined text-3xl mb-1 text-slate-300">directions_car</span>
                                     <p>Belum ada data Wajib Pajak & Kendaraan.</p>
                                 </td>
@@ -151,6 +155,12 @@ const deleteWp = (id) => {
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-800 font-semibold">{{ item.merek_tipe || '-' }}</td>
+                                <td class="px-4 py-3 font-medium">
+                                    <span v-if="item.tanggal_jatuh_tempo" class="text-slate-800">
+                                        {{ item.tanggal_jatuh_tempo.split('T')[0] }}
+                                    </span>
+                                    <span v-else class="text-slate-400 italic text-[11px]">Belum diatur</span>
+                                </td>
                                 <td class="px-4 py-3 text-slate-600">
                                     <div>{{ item.jenis_kendaraan }}</div>
                                     <div class="text-[10px] text-slate-400 font-medium">Thn {{ item.tahun_kendaraan || '-' }}</div>
@@ -259,6 +269,12 @@ const deleteWp = (id) => {
                             <label class="block font-bold text-slate-700 mb-1">Tahun Perakitan</label>
                             <input v-model="form.tahun_kendaraan" type="text" placeholder="Contoh: 2021" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Tanggal Jatuh Tempo STNK / Pajak</label>
+                        <input v-model="form.tanggal_jatuh_tempo" type="date" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
+                        <span class="text-[10px] text-slate-400 mt-0.5 block">Tanggal jatuh tempo tahunan untuk memicu peringatan keterlambatan / denda otomatis saat input transaksi.</span>
                     </div>
 
                     <div>

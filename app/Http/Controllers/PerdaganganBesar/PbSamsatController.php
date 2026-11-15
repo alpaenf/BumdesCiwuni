@@ -81,12 +81,14 @@ class PbSamsatController extends Controller
     {
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],
+            'tanggal_jatuh_tempo' => ['nullable', 'date'],
             'wajib_pajak_id' => ['nullable', 'exists:pb_wajib_pajak_samsat,id'],
             'nama_wajib_pajak' => ['required', 'string', 'max:255'],
             'nomor_polisi' => ['required', 'string', 'max:20'],
             'jenis_kendaraan' => ['required', 'string'],
             'jenis_pembayaran' => ['required', 'in:Cash,Transfer'],
             'nominal_pajak' => ['required', 'numeric', 'min:0'],
+            'denda_pajak' => ['nullable', 'numeric', 'min:0'],
             'biaya_admin' => ['nullable', 'numeric', 'min:0'],
             'biaya_jasa_bumdes' => ['nullable', 'numeric', 'min:0'],
             'status_transaksi' => ['required', 'in:SUCCES,PENDING,CANCEL'],
@@ -103,19 +105,22 @@ class PbSamsatController extends Controller
             $nomorTransaksi = sprintf('TRX-PKB-%s-%04d', $dateClean, $countToday);
 
             $nomPajak = (float)$validated['nominal_pajak'];
+            $dendaPajak = (float)($validated['denda_pajak'] ?? 0);
             $biayaAdmin = (float)($validated['biaya_admin'] ?? 0);
             $jasaBumdes = (float)($validated['biaya_jasa_bumdes'] ?? 0);
-            $totalBayar = $nomPajak + $biayaAdmin + $jasaBumdes;
+            $totalBayar = $nomPajak + $dendaPajak + $biayaAdmin + $jasaBumdes;
 
             PbTransaksiSamsat::create([
                 'nomor_transaksi' => $nomorTransaksi,
                 'tanggal' => $validated['tanggal'],
+                'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo'] ?? null,
                 'wajib_pajak_id' => $validated['wajib_pajak_id'] ?? null,
                 'nama_wajib_pajak' => $validated['nama_wajib_pajak'],
                 'nomor_polisi' => strtoupper(trim($validated['nomor_polisi'])),
                 'jenis_kendaraan' => $validated['jenis_kendaraan'],
                 'jenis_pembayaran' => $validated['jenis_pembayaran'],
                 'nominal_pajak' => $nomPajak,
+                'denda_pajak' => $dendaPajak,
                 'biaya_admin' => $biayaAdmin,
                 'biaya_jasa_bumdes' => $jasaBumdes,
                 'total_pembayaran' => $totalBayar,
@@ -203,6 +208,7 @@ class PbSamsatController extends Controller
             'nomor_plat' => ['required', 'string', 'max:20'],
             'merek_tipe' => ['nullable', 'string', 'max:100'],
             'tahun_kendaraan' => ['nullable', 'string', 'max:10'],
+            'tanggal_jatuh_tempo' => ['nullable', 'date'],
         ]);
 
         $validated['nomor_plat'] = strtoupper(trim($validated['nomor_plat']));
@@ -223,6 +229,7 @@ class PbSamsatController extends Controller
             'nomor_plat' => ['required', 'string', 'max:20'],
             'merek_tipe' => ['nullable', 'string', 'max:100'],
             'tahun_kendaraan' => ['nullable', 'string', 'max:10'],
+            'tanggal_jatuh_tempo' => ['nullable', 'date'],
         ]);
 
         $validated['nomor_plat'] = strtoupper(trim($validated['nomor_plat']));

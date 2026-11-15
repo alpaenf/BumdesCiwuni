@@ -21,6 +21,11 @@ class PbWajibPajakSamsat extends Model
         'nomor_plat',
         'merek_tipe',
         'tahun_kendaraan',
+        'tanggal_jatuh_tempo',
+    ];
+
+    protected $casts = [
+        'tanggal_jatuh_tempo' => 'date:Y-m-d',
     ];
 
     public function transaksi()
