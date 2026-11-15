@@ -41,6 +41,7 @@ const availableAccounts = computed(() => {
 
 const form = useForm({
     tanggal: new Date().toISOString().split('T')[0],
+    nama_admin: '',
     nasabah_id: null,
     nama_nasabah: '',
     jenis_transaksi: 'Tarik tunai',
@@ -487,18 +488,15 @@ const openStruk = (id) => {
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Jenis Pembayaran Jasa</label>
-                            <select v-model="form.jenis_pembayaran" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                                <option value="Cash">Cash (Uang Tunai)</option>
-                                <option value="Transfer">Transfer Rekening</option>
-                            </select>
-                        </div>
-                        <div>
                             <label class="block font-bold text-slate-700 mb-1">Status Pembayaran</label>
                             <select v-model="form.status_pembayaran" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                                 <option value="Lunas">Lunas</option>
                                 <option value="Hutang">Hutang</option>
                             </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Petugas Kasir / Admin</label>
+                            <input v-model="form.nama_admin" type="text" placeholder="Nama petugas kasir (opsional)..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
                     </div>
 

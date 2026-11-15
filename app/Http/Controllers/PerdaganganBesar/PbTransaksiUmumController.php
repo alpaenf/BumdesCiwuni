@@ -81,6 +81,7 @@ class PbTransaksiUmumController extends Controller
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],
             'waktu' => ['nullable'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
             'nama_pelanggan' => ['required', 'string', 'max:255'],
             'jenis_transaksi' => ['required', 'string'],
             'nomor_tujuan' => ['required', 'string', 'max:100'],
@@ -94,7 +95,9 @@ class PbTransaksiUmumController extends Controller
 
         DB::transaction(function () use ($validated) {
             $user = Auth::user();
-            $adminName = $user ? $user->nama : 'Admin';
+            $adminName = !empty($validated['nama_admin']) 
+                ? trim($validated['nama_admin']) 
+                : ($user ? $user->nama : 'Admin');
 
             // Prefix berdasarkan jenis transaksi
             $prefix = match ($validated['jenis_transaksi']) {

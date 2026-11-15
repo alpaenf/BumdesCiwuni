@@ -112,6 +112,7 @@ class PbPbbController extends Controller
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],
             'waktu' => ['nullable'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
             'wajib_pajak_pbb_id' => ['nullable', 'exists:pb_wajib_pajak_pbb,id'],
             'nama_wajib_pajak' => ['required', 'string', 'max:255'],
             'nop' => ['required', 'string', 'max:50'],
@@ -126,7 +127,9 @@ class PbPbbController extends Controller
 
         DB::transaction(function () use ($validated) {
             $user = Auth::user();
-            $adminName = $user ? $user->nama : 'Admin';
+            $adminName = !empty($validated['nama_admin']) 
+                ? trim($validated['nama_admin']) 
+                : ($user ? $user->nama : 'Admin');
 
             // Auto Generate: TRX-PBB-YYYYMMDD-XXXX
             $dateClean = str_replace('-', '', $validated['tanggal']);

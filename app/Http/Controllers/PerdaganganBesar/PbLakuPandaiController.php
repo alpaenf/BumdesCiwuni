@@ -93,6 +93,7 @@ class PbLakuPandaiController extends Controller
     {
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
             'nasabah_id' => ['nullable', 'exists:pb_nasabah_laku_pandai,id'],
             'nama_nasabah' => ['required', 'string', 'max:255'],
             'jenis_transaksi' => ['required', 'string'],
@@ -109,7 +110,9 @@ class PbLakuPandaiController extends Controller
 
         DB::transaction(function () use ($validated) {
             $user = Auth::user();
-            $adminName = $user ? $user->nama : 'Admin';
+            $adminName = !empty($validated['nama_admin']) 
+                ? trim($validated['nama_admin']) 
+                : ($user ? $user->nama : 'Admin');
 
             // Auto Generate Nomor Transaksi: LP-YYYYMMDD-XXXX
             $dateClean = str_replace('-', '', $validated['tanggal']);

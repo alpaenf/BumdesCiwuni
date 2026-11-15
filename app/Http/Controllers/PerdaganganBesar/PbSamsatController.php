@@ -115,6 +115,7 @@ class PbSamsatController extends Controller
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],
             'tanggal_jatuh_tempo' => ['nullable', 'date'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
             'wajib_pajak_id' => ['nullable', 'exists:pb_wajib_pajak_samsat,id'],
             'nama_wajib_pajak' => ['required', 'string', 'max:255'],
             'nomor_polisi' => ['required', 'string', 'max:20'],
@@ -130,7 +131,9 @@ class PbSamsatController extends Controller
 
         DB::transaction(function () use ($validated) {
             $user = Auth::user();
-            $adminName = $user ? $user->nama : 'Admin';
+            $adminName = !empty($validated['nama_admin']) 
+                ? trim($validated['nama_admin']) 
+                : ($user ? $user->nama : 'Admin');
 
             // Auto Generate Nomor Transaksi: TRX-PKB-YYYYMMDD-XXXX
             $dateClean = str_replace('-', '', $validated['tanggal']);

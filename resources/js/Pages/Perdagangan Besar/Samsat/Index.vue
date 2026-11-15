@@ -20,6 +20,7 @@ const filterKendaraan = ref(props.filters.jenis_kendaraan || '');
 const form = useForm({
     tanggal: new Date().toISOString().split('T')[0],
     tanggal_jatuh_tempo: '',
+    nama_admin: '',
     wajib_pajak_id: null,
     nama_wajib_pajak: '',
     nomor_polisi: '',
@@ -488,9 +489,14 @@ const openStruk = (id) => {
                             </select>
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Keterangan (Opsional)</label>
-                            <input v-model="form.keterangan" type="text" placeholder="Catatan transaksi..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
+                            <label class="block font-bold text-slate-700 mb-1">Petugas Kasir / Admin</label>
+                            <input v-model="form.nama_admin" type="text" placeholder="Nama petugas (kosongkan jika sesuai login)..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Keterangan (Opsional)</label>
+                        <input v-model="form.keterangan" type="text" placeholder="Catatan transaksi..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
