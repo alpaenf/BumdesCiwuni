@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PerdaganganBesar;
 
 use App\Http\Controllers\Controller;
 use App\Models\PerdaganganBesar\PbKas;
+use App\Models\PerdaganganBesar\PbNasabahLakuPandai;
 use App\Models\PerdaganganBesar\PbTransaksiUmum;
 use App\Models\Unit;
 use Carbon\Carbon;
@@ -56,10 +57,13 @@ class PbTransaksiUmumController extends Controller
             'total_bayar' => PbTransaksiUmum::where('status', 'SUCCES')->sum('total_bayar'),
         ];
 
+        $nasabahList = PbNasabahLakuPandai::orderBy('nama')->get(['id', 'nama', 'no_hp', 'no_rekening', 'nama_bank', 'rekening_list']);
+
         return Inertia::render('Perdagangan Besar/TransaksiUmum/Index', [
             'unit' => $unit,
             'transaksi' => $transaksi,
             'summary' => $summary,
+            'nasabah_list' => $nasabahList,
             'filters' => [
                 'search' => $search,
                 'date' => $date,

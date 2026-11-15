@@ -8,6 +8,7 @@ const props = defineProps({
     transaksi: { type: Object, required: true },
     summary: { type: Object, default: () => ({}) },
     filters: { type: Object, default: () => ({}) },
+    nasabah_list: { type: Array, default: () => [] },
 });
 
 const isModalOpen = ref(false);
@@ -15,6 +16,56 @@ const search = ref(props.filters.search || '');
 const filterDate = ref(props.filters.date || '');
 const filterStatus = ref(props.filters.status || '');
 const filterJenis = ref(props.filters.jenis_transaksi || '');
+const selectedNasabahId = ref('');
+const selectedAccountIndex = ref('');
+
+const selectedNasabah = computed(() => {
+    return props.nasabah_list.find(n => n.id == selectedNasabahId.value);
+});
+
+const availableAccounts = computed(() => {
+    if (!selectedNasabah.value) return [];
+    if (selectedNasabah.value.rekening_list && Array.isArray(selectedNasabah.value.rekening_list) && selectedNasabah.value.rekening_list.length > 0) {
+        return selectedNasabah.value.rekening_list;
+    }
+    if (selectedNasabah.value.no_rekening || selectedNasabah.value.nama_bank) {
+        return [{
+            nama_bank: selectedNasabah.value.nama_bank || 'Layanan',
+            no_rekening: selectedNasabah.value.no_rekening || '',
+            atas_nama: selectedNasabah.value.nama || '',
+        }];
+    }
+    return [];
+});
+
+const onSelectNasabah = (e) => {
+    const val = e.target.value;
+    selectedNasabahId.value = val;
+    selectedAccountIndex.value = '';
+    if (!val) return;
+
+    const n = props.nasabah_list.find(item => item.id == val);
+    if (n) {
+        form.nama_pelanggan = n.nama;
+        // Jika hanya punya 1 nomor rekening/ID pelanggan, langsung auto-fill
+        const accounts = (n.rekening_list && n.rekening_list.length > 0)
+            ? n.rekening_list
+            : (n.no_rekening ? [{ nama_bank: n.nama_bank, no_rekening: n.no_rekening }] : []);
+
+        if (accounts.length === 1) {
+            form.nomor_tujuan = accounts[0].no_rekening || '';
+            selectedAccountIndex.value = 0;
+        }
+    }
+};
+
+const onSelectAccount = (e) => {
+    const idx = e.target.value;
+    selectedAccountIndex.value = idx;
+    if (idx !== '' && availableAccounts.value[idx]) {
+        form.nomor_tujuan = availableAccounts.value[idx].no_rekening || '';
+    }
+};
 
 const jenisTransaksiOptions = [
     'Pulsa',
@@ -347,36 +398,69 @@ const getBadgeColor = (jenis) => {
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Nama Pelanggan</label>
-                        <input
-                            v-model="form.nama_pelanggan"
-                            type="text"
-                            required
-                            placeholder="Nama pembeli / nasabah"
-                            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                        />
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Pilih dari Master Nasabah (Opsional)</label>
+                            <select
+                                :value="selectedNasabahId"
+                                @change="onSelectNasabah"
+                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-xs bg-emerald-50/50 border-emerald-200"
+                            >
+                                <option value="">-- Pelanggan Bebas / Manual --</option>
+                                <option v-for="n in nasabah_list" :key="n.id" :value="n.id">
+                                    {{ n.nama }} {{ n.no_hp ? '(' + n.no_hp + ')' : '' }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Nama Pelanggan *</label>
+                            <input
+                                v-model="form.nama_pelanggan"
+                                type="text"
+                                required
+                                placeholder="Nama pembeli / nasabah"
+                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-xs"
+                            />
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1">Jenis Layanan Transaksi</label>
+                            <label class="block font-semibold text-slate-700 mb-1">Jenis Layanan Transaksi *</label>
                             <select
                                 v-model="form.jenis_transaksi"
                                 required
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-xs"
                             >
                                 <option v-for="opt in jenisTransaksiOptions" :key="opt" :value="opt">{{ opt }}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1">Nomor Tujuan / ID Pelanggan</label>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="font-semibold text-slate-700">Nomor Tujuan / ID Pelanggan *</label>
+                                <span v-if="availableAccounts.length > 1" class="text-[10px] text-emerald-600 font-semibold">Ada {{ availableAccounts.length }} akun tersimpan</span>
+                            </div>
+                            
+                            <!-- Dropdown pilih rekening jika nasabah memiliki lebih dari 1 rekening tersimpan -->
+                            <div v-if="availableAccounts.length > 1" class="mb-1.5">
+                                <select
+                                    :value="selectedAccountIndex"
+                                    @change="onSelectAccount"
+                                    class="w-full px-2.5 py-1.5 border border-emerald-300 bg-emerald-50 text-emerald-900 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                >
+                                    <option value="">-- Pilih Akun / No. Meter Nasabah --</option>
+                                    <option v-for="(acc, aIdx) in availableAccounts" :key="aIdx" :value="aIdx">
+                                        [{{ acc.nama_bank || 'Layanan' }}] {{ acc.no_rekening }} {{ acc.atas_nama ? '- ' + acc.atas_nama : '' }}
+                                    </option>
+                                </select>
+                            </div>
+
                             <input
                                 v-model="form.nomor_tujuan"
                                 type="text"
                                 required
                                 placeholder="No HP / Meter / Rekening"
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-xs font-mono"
                             />
                         </div>
                     </div>
