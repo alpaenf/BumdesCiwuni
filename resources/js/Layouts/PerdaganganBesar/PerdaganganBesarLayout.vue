@@ -73,12 +73,25 @@ const logout = () => {
 
                 <!-- Group: Layanan Transaksi -->
                 <div class="mt-4 px-3">
-                    <p class="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-[color:var(--color-secondary)]">Layanan Transaksi</p>
+                    <p class="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-[color:var(--color-secondary)]">Master & Layanan</p>
                     
+                    <!-- Data Nasabah / Warga Terpadu -->
+                    <Link
+                        :href="route('pb.laku-pandai.nasabah.index')"
+                        class="relative mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all border border-blue-500/20"
+                        :class="$page.component.includes('LakuPandai/Nasabah')
+                            ? 'bg-blue-600 text-white font-bold shadow-md'
+                            : 'bg-blue-50/70 text-blue-900 font-semibold hover:bg-blue-100'"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[19px]" :style="{ fontVariationSettings: '\'FILL\' 1' }">groups</span>
+                        <span>Data Nasabah / Warga</span>
+                    </Link>
+
                     <!-- Laku Pandai -->
                     <Link
                         :href="route('pb.laku-pandai.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
                         :class="$page.component.includes('LakuPandai/Index')
                             ? 'bg-primary text-white font-semibold shadow-sm'
                             : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
@@ -88,22 +101,10 @@ const logout = () => {
                         <span>Laku Pandai</span>
                     </Link>
 
-                    <Link
-                        :href="route('pb.laku-pandai.nasabah.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                        :class="$page.component.includes('LakuPandai/Nasabah')
-                            ? 'bg-primary text-white font-semibold shadow-sm'
-                            : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
-                        @click="showingSidebar = false"
-                    >
-                        <span class="material-symbols-outlined text-[18px]" :style="{ fontVariationSettings: $page.component.includes('LakuPandai/Nasabah') ? '\'FILL\' 1' : '\'FILL\' 0' }">people</span>
-                        <span>Nasabah Laku Pandai</span>
-                    </Link>
-
                     <!-- Samsat Budiman -->
                     <Link
                         :href="route('pb.samsat.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
                         :class="$page.component.includes('Samsat/Index')
                             ? 'bg-primary text-white font-semibold shadow-sm'
                             : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
@@ -113,22 +114,10 @@ const logout = () => {
                         <span>Samsat Budiman</span>
                     </Link>
 
-                    <Link
-                        :href="route('pb.samsat.wajib-pajak.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                        :class="$page.component.includes('Samsat/WajibPajak')
-                            ? 'bg-primary text-white font-semibold shadow-sm'
-                            : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
-                        @click="showingSidebar = false"
-                    >
-                        <span class="material-symbols-outlined text-[18px]" :style="{ fontVariationSettings: $page.component.includes('Samsat/WajibPajak') ? '\'FILL\' 1' : '\'FILL\' 0' }">badge</span>
-                        <span>Database Wajib Pajak</span>
-                    </Link>
-
                     <!-- Pajak PBB -->
                     <Link
                         :href="route('pb.pbb.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
                         :class="$page.component.includes('Pbb/Index')
                             ? 'bg-primary text-white font-semibold shadow-sm'
                             : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
@@ -138,22 +127,10 @@ const logout = () => {
                         <span>Pajak PBB</span>
                     </Link>
 
-                    <Link
-                        :href="route('pb.pbb.wajib-pajak.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
-                        :class="$page.component.includes('Pbb/WajibPajak')
-                            ? 'bg-primary text-white font-semibold shadow-sm'
-                            : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
-                        @click="showingSidebar = false"
-                    >
-                        <span class="material-symbols-outlined text-[18px]" :style="{ fontVariationSettings: $page.component.includes('Pbb/WajibPajak') ? '\'FILL\' 1' : '\'FILL\' 0' }">domain</span>
-                        <span>Database WP PBB</span>
-                    </Link>
-
                     <!-- Transaksi Umum -->
                     <Link
                         :href="route('pb.transaksi-umum.index')"
-                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
                         :class="$page.component.includes('TransaksiUmum/Index')
                             ? 'bg-primary text-white font-semibold shadow-sm'
                             : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PerdaganganBesar;
 
 use App\Http\Controllers\Controller;
 use App\Models\PerdaganganBesar\PbKas;
+use App\Models\PerdaganganBesar\PbNasabahLakuPandai;
 use App\Models\PerdaganganBesar\PbTransaksiPbb;
 use App\Models\PerdaganganBesar\PbWajibPajakPbb;
 use App\Models\Unit;
@@ -57,7 +58,37 @@ class PbPbbController extends Controller
             'total_bayar' => PbTransaksiPbb::where('status', 'SUCCES')->sum('total_bayar'),
         ];
 
-        $wpList = PbWajibPajakPbb::orderBy('nama_wajib_pajak')->get();
+        // Ambil daftar nasabah terpadu beserta pbb_list
+        $nasabahTerpadu = PbNasabahLakuPandai::orderBy('nama')->get();
+
+        $wpList = [];
+        foreach ($nasabahTerpadu as $n) {
+            if (!empty($n->pbb_list) && is_array($n->pbb_list)) {
+                foreach ($n->pbb_list as $pbb) {
+                    if (!empty($pbb['nop'])) {
+                        $wpList[] = [
+                            'id' => 'nb_' . $n->id . '_' . preg_replace('/[^a-zA-Z0-9]/', '', $pbb['nop']),
+                            'nama_wajib_pajak' => $n->nama,
+                            'nop' => trim($pbb['nop']),
+                            'alamat_objek_pajak' => $pbb['alamat_objek_pajak'] ?? ($n->alamat ?: 'Desa Ciwuni'),
+                            'nominal_sppt_terakhir' => $pbb['nominal_sppt_terakhir'] ?? 0,
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Gabungkan juga dengan data legacy pb_wajib_pajak_pbb jika ada
+        $legacyWp = PbWajibPajakPbb::orderBy('nama_wajib_pajak')->get();
+        foreach ($legacyWp as $lw) {
+            $wpList[] = [
+                'id' => $lw->id,
+                'nama_wajib_pajak' => $lw->nama_wajib_pajak,
+                'nop' => $lw->nop,
+                'alamat_objek_pajak' => $lw->alamat_objek_pajak,
+                'nominal_sppt_terakhir' => $lw->nominal_sppt_terakhir,
+            ];
+        }
 
         return Inertia::render('Perdagangan Besar/Pbb/Index', [
             'unit' => $unit,

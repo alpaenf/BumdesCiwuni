@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PerdaganganBesar;
 
 use App\Http\Controllers\Controller;
 use App\Models\PerdaganganBesar\PbKas;
+use App\Models\PerdaganganBesar\PbNasabahLakuPandai;
 use App\Models\PerdaganganBesar\PbTransaksiSamsat;
 use App\Models\PerdaganganBesar\PbWajibPajakSamsat;
 use App\Models\Unit;
@@ -58,7 +59,39 @@ class PbSamsatController extends Controller
             'total_pembayaran' => PbTransaksiSamsat::where('status_transaksi', 'SUCCES')->sum('total_pembayaran'),
         ];
 
-        $wpList = PbWajibPajakSamsat::orderBy('nama_wajib_pajak')->get();
+        // Ambil daftar nasabah terpadu beserta kendaraan_list
+        $nasabahTerpadu = PbNasabahLakuPandai::orderBy('nama')->get();
+
+        $wpList = [];
+        foreach ($nasabahTerpadu as $n) {
+            if (!empty($n->kendaraan_list) && is_array($n->kendaraan_list)) {
+                foreach ($n->kendaraan_list as $kdr) {
+                    if (!empty($kdr['nomor_plat'])) {
+                        $wpList[] = [
+                            'id' => 'nb_' . $n->id . '_' . preg_replace('/[^a-zA-Z0-9]/', '', $kdr['nomor_plat']),
+                            'nama_wajib_pajak' => $n->nama,
+                            'nomor_plat' => strtoupper($kdr['nomor_plat']),
+                            'jenis_kendaraan' => $kdr['jenis_kendaraan'] ?? 'Sepeda Motor',
+                            'merek_tipe' => $kdr['merek_tipe'] ?? '',
+                            'tanggal_jatuh_tempo' => $kdr['tanggal_jatuh_tempo'] ?? null,
+                        ];
+                    }
+                }
+            }
+        }
+
+        // Gabungkan juga dengan data legacy pb_wajib_pajak_samsat jika ada
+        $legacyWp = PbWajibPajakSamsat::orderBy('nama_wajib_pajak')->get();
+        foreach ($legacyWp as $lw) {
+            $wpList[] = [
+                'id' => $lw->id,
+                'nama_wajib_pajak' => $lw->nama_wajib_pajak,
+                'nomor_plat' => $lw->nomor_plat,
+                'jenis_kendaraan' => $lw->jenis_kendaraan,
+                'merek_tipe' => $lw->merek_tipe,
+                'tanggal_jatuh_tempo' => $lw->tanggal_jatuh_tempo,
+            ];
+        }
 
         return Inertia::render('Perdagangan Besar/Samsat/Index', [
             'unit' => $unit,

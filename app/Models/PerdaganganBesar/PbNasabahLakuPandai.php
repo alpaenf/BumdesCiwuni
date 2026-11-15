@@ -14,16 +14,21 @@ class PbNasabahLakuPandai extends Model
 
     protected $fillable = [
         'nama',
+        'nik',
         'no_hp',
         'no_rekening',
         'nama_bank',
         'rekening_list',
+        'kendaraan_list',
+        'pbb_list',
         'alamat',
         'keterangan',
     ];
 
     protected $casts = [
         'rekening_list' => 'array',
+        'kendaraan_list' => 'array',
+        'pbb_list' => 'array',
     ];
 
     public function transaksi()
@@ -31,4 +36,3 @@ class PbNasabahLakuPandai extends Model
         return $this->hasMany(PbTransaksiLakuPandai::class, 'nasabah_id');
     }
 }
-

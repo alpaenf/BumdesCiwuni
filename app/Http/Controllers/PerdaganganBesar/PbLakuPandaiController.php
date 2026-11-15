@@ -248,6 +248,7 @@ class PbLakuPandaiController extends Controller
     {
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
+            'nik' => ['nullable', 'string', 'max:30'],
             'no_hp' => ['nullable', 'string', 'max:20'],
             'no_rekening' => ['nullable', 'string', 'max:50'],
             'nama_bank' => ['nullable', 'string', 'max:50'],
@@ -255,6 +256,16 @@ class PbLakuPandaiController extends Controller
             'rekening_list.*.nama_bank' => ['nullable', 'string', 'max:100'],
             'rekening_list.*.no_rekening' => ['nullable', 'string', 'max:100'],
             'rekening_list.*.atas_nama' => ['nullable', 'string', 'max:100'],
+            'kendaraan_list' => ['nullable', 'array'],
+            'kendaraan_list.*.nomor_plat' => ['nullable', 'string', 'max:20'],
+            'kendaraan_list.*.jenis_kendaraan' => ['nullable', 'string', 'max:50'],
+            'kendaraan_list.*.merek_tipe' => ['nullable', 'string', 'max:100'],
+            'kendaraan_list.*.tahun_kendaraan' => ['nullable', 'string', 'max:10'],
+            'kendaraan_list.*.tanggal_jatuh_tempo' => ['nullable', 'date'],
+            'pbb_list' => ['nullable', 'array'],
+            'pbb_list.*.nop' => ['nullable', 'string', 'max:50'],
+            'pbb_list.*.alamat_objek_pajak' => ['nullable', 'string'],
+            'pbb_list.*.nominal_sppt_terakhir' => ['nullable', 'numeric', 'min:0'],
             'alamat' => ['nullable', 'string'],
             'keterangan' => ['nullable', 'string'],
         ]);
@@ -279,6 +290,7 @@ class PbLakuPandaiController extends Controller
         $nasabah = PbNasabahLakuPandai::findOrFail($id);
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
+            'nik' => ['nullable', 'string', 'max:30'],
             'no_hp' => ['nullable', 'string', 'max:20'],
             'no_rekening' => ['nullable', 'string', 'max:50'],
             'nama_bank' => ['nullable', 'string', 'max:50'],
@@ -286,6 +298,16 @@ class PbLakuPandaiController extends Controller
             'rekening_list.*.nama_bank' => ['nullable', 'string', 'max:100'],
             'rekening_list.*.no_rekening' => ['nullable', 'string', 'max:100'],
             'rekening_list.*.atas_nama' => ['nullable', 'string', 'max:100'],
+            'kendaraan_list' => ['nullable', 'array'],
+            'kendaraan_list.*.nomor_plat' => ['nullable', 'string', 'max:20'],
+            'kendaraan_list.*.jenis_kendaraan' => ['nullable', 'string', 'max:50'],
+            'kendaraan_list.*.merek_tipe' => ['nullable', 'string', 'max:100'],
+            'kendaraan_list.*.tahun_kendaraan' => ['nullable', 'string', 'max:10'],
+            'kendaraan_list.*.tanggal_jatuh_tempo' => ['nullable', 'date'],
+            'pbb_list' => ['nullable', 'array'],
+            'pbb_list.*.nop' => ['nullable', 'string', 'max:50'],
+            'pbb_list.*.alamat_objek_pajak' => ['nullable', 'string'],
+            'pbb_list.*.nominal_sppt_terakhir' => ['nullable', 'numeric', 'min:0'],
             'alamat' => ['nullable', 'string'],
             'keterangan' => ['nullable', 'string'],
         ]);
