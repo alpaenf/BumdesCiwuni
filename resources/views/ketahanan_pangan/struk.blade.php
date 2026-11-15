@@ -187,23 +187,15 @@
 
             <div class="section-separator"></div>
 
-            <!-- Rincian Harga Sesuai Gambar -->
+            <!-- Rincian Harga -->
             <div class="space-y-1 my-2 text-[11px]">
                 <div class="flex items-start">
-                    <span class="field-label font-bold text-gray-900">Harga</span>
+                    <span class="field-label font-bold text-gray-900">Harga Satuan</span>
                     <span class="mr-2">:</span>
-                    <div class="flex-1 space-y-0.5">
-                        <div class="flex justify-between font-semibold">
+                    <div class="flex-1">
+                        <div class="flex justify-between font-bold text-gray-900">
                             <span>- kg</span>
                             <span>Rp {{ number_format($hargaPerKg, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px] text-gray-600">
-                            <span>- peti (10 kg)</span>
-                            <span>Rp {{ number_format($hargaPeti, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="flex justify-between text-[10px] text-gray-600">
-                            <span>- kwintal (100 kg)</span>
-                            <span>Rp {{ number_format($hargaKwintal, 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -211,13 +203,13 @@
 
             <div class="section-separator"></div>
 
-            <!-- Rincian Jumlah Pembelian Sesuai Gambar -->
+            <!-- Rincian Jumlah Pembelian -->
             <div class="space-y-1 my-2 text-[11px]">
                 <div class="flex items-start">
                     <span class="field-label font-bold text-gray-900">Jml Pembelian</span>
                     <span class="mr-2">:</span>
                     <div class="flex-1 space-y-0.5">
-                        <div class="flex justify-between font-bold text-emerald-800">
+                        <div class="flex justify-between font-bold text-emerald-800 text-xs">
                             <span>- kg</span>
                             <span>{{ number_format($jmlKg, 2) }} kg</span>
                         </div>
@@ -230,14 +222,6 @@
                             <span>* Pasokan Rekanan Luar</span>
                         </div>
                         @endif
-                        <div class="flex justify-between text-[10px] text-gray-600">
-                            <span>- peti</span>
-                            <span>{{ $jmlPeti }} peti</span>
-                        </div>
-                        <div class="flex justify-between text-[10px] text-gray-600">
-                            <span>- kwintal</span>
-                            <span>{{ $jmlKwintal }} kw</span>
-                        </div>
                     </div>
                 </div>
             </div>
