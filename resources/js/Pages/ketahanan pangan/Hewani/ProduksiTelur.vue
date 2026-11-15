@@ -29,9 +29,9 @@ const form = ref({
     umur_ke: 1,
     umur_minggu: 24,
     hari_ke: 1,
-    produksi_butir: 800,
-    butir_per_kg: 16.0,
-    produksi_kg: 50.0,
+    produksi_butir: 805,
+    butir_per_kg: 17.89,
+    produksi_kg: 45.0,
     harga_per_kg: props.product.harga_default || 22000,
     telur_retak_butir: 0,
     keterangan_retak: '',
@@ -39,20 +39,30 @@ const form = ref({
     keterangan_rusak: '',
 });
 
-const hitungManualDariButir = () => {
+// Hitung otomatis Rasio (Butir / kg) saat butir atau kg diisi
+const hitungRasioOtomatis = () => {
     const butir = Number(form.value.produksi_butir) || 0;
-    const rasio = Number(form.value.butir_per_kg) || 16;
-    if (rasio > 0) {
+    const kg = Number(form.value.produksi_kg) || 0;
+    if (butir > 0 && kg > 0) {
+        form.value.butir_per_kg = Number((butir / kg).toFixed(2));
+    }
+};
+
+// Jika user mengubah rasio secara manual, hitung ulang kg
+const hitungDariRasio = () => {
+    const butir = Number(form.value.produksi_butir) || 0;
+    const rasio = Number(form.value.butir_per_kg) || 0;
+    if (butir > 0 && rasio > 0) {
         form.value.produksi_kg = Number((butir / rasio).toFixed(2));
     }
 };
 
+const hitungManualDariButir = () => {
+    hitungRasioOtomatis();
+};
+
 const hitungManualDariKg = () => {
-    const kg = Number(form.value.produksi_kg) || 0;
-    const rasio = Number(form.value.butir_per_kg) || 16;
-    if (rasio > 0) {
-        form.value.produksi_butir = Math.round(kg * rasio);
-    }
+    hitungRasioOtomatis();
 };
 
 const submitForm = () => {
@@ -240,9 +250,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-blue-900 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-sm">calculate</span>
-                                Hitung Manual Butir & kg
+                                Hitung Butir, kg & Rasio Otomatis
                             </span>
-                            <span class="text-[10px] text-blue-600 font-medium">Bisa diisi manual dua arah</span>
+                            <span class="text-[10px] text-blue-600 font-medium">Isi Butir & kg $\rightarrow$ Rasio otomatis</span>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <div>
@@ -251,19 +261,21 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                     type="number" 
                                     v-model="form.produksi_butir" 
                                     @input="hitungManualDariButir" 
-                                    placeholder="Cth: 800"
+                                    placeholder="Cth: 805"
                                     class="w-full text-xs rounded-xl border-slate-200 font-bold text-blue-700" 
                                 />
                             </div>
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Rasio (Butir/kg)</label>
+                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+                                    Rasio (Butir/kg)
+                                </label>
                                 <input 
                                     type="number" 
-                                    step="0.1" 
+                                    step="0.01" 
                                     v-model="form.butir_per_kg" 
-                                    @input="hitungManualDariButir" 
-                                    placeholder="16"
-                                    class="w-full text-xs rounded-xl border-slate-200 font-semibold" 
+                                    @input="hitungDariRasio" 
+                                    placeholder="Otomatis"
+                                    class="w-full text-xs rounded-xl border-slate-200 font-bold bg-white text-indigo-700" 
                                 />
                             </div>
                             <div>
@@ -273,10 +285,18 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                     step="0.01" 
                                     v-model="form.produksi_kg" 
                                     @input="hitungManualDariKg" 
+                                    placeholder="Cth: 45"
                                     class="w-full text-xs rounded-xl border-slate-200 font-bold text-emerald-700" 
                                     required 
                                 />
                             </div>
+                        </div>
+                        <div v-if="form.produksi_butir > 0 && form.produksi_kg > 0" class="text-[11px] text-slate-600 bg-white/70 p-2 rounded-lg border border-blue-100 flex items-center justify-between">
+                            <span>Rata-rata berat per butir:</span>
+                            <span class="font-bold text-indigo-700">
+                                {{ Number((form.produksi_kg * 1000) / form.produksi_butir).toFixed(1) }} gram / butir
+                                ({{ Number(form.butir_per_kg).toFixed(2) }} btr/kg)
+                            </span>
                         </div>
                     </div>
 
