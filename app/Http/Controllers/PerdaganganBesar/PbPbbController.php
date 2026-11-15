@@ -144,5 +144,19 @@ class PbPbbController extends Controller
         $trx->delete();
         return back()->with('success', 'Transaksi PBB berhasil dihapus!');
     }
+
+    /**
+     * Cetak Struk Transaksi PBB
+     */
+    public function cetakStruk($id)
+    {
+        $unit = $this->getUnit();
+        $transaksi = PbTransaksiPbb::findOrFail($id);
+
+        return view('perdagangan_besar.struk_pbb', [
+            'unit' => $unit,
+            'transaksi' => $transaksi,
+        ]);
+    }
 }
 

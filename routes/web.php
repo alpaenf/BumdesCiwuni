@@ -251,6 +251,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
     Route::get('/laku-pandai', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'index'])->name('pb.laku-pandai.index');
     Route::post('/laku-pandai', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'store'])->name('pb.laku-pandai.store');
     Route::delete('/laku-pandai/{id}', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'destroy'])->name('pb.laku-pandai.destroy');
+    Route::get('/laku-pandai/{id}/struk', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'cetakStruk'])->name('pb.laku-pandai.struk');
     
     // Master Nasabah Laku Pandai
     Route::get('/laku-pandai/nasabah', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'nasabahIndex'])->name('pb.laku-pandai.nasabah.index');
@@ -262,6 +263,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
     Route::get('/samsat', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'index'])->name('pb.samsat.index');
     Route::post('/samsat', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'store'])->name('pb.samsat.store');
     Route::delete('/samsat/{id}', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'destroy'])->name('pb.samsat.destroy');
+    Route::get('/samsat/{id}/struk', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'cetakStruk'])->name('pb.samsat.struk');
 
     // Database Wajib Pajak & Kendaraan Samsat
     Route::get('/samsat/wajib-pajak', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'wajibPajakIndex'])->name('pb.samsat.wajib-pajak.index');
@@ -273,6 +275,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
     Route::get('/pbb', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'index'])->name('pb.pbb.index');
     Route::post('/pbb', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'store'])->name('pb.pbb.store');
     Route::delete('/pbb/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'destroy'])->name('pb.pbb.destroy');
+    Route::get('/pbb/{id}/struk', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'cetakStruk'])->name('pb.pbb.struk');
 
     // 5. Transaksi Umum
     Route::get('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'index'])->name('pb.transaksi-umum.index');

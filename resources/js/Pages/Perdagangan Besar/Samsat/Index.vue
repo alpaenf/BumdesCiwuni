@@ -87,6 +87,10 @@ const deleteTransaksi = (id) => {
         router.delete(route('pb.samsat.destroy', id));
     }
 };
+
+const openStruk = (id) => {
+    window.open(route('pb.samsat.struk', id), '_blank', 'width=420,height=600');
+};
 </script>
 
 <template>
@@ -230,14 +234,24 @@ const deleteTransaksi = (id) => {
                                     </span>
                                 </td>
                                 <td class="px-3 py-2.5 text-slate-500 text-[11px]">{{ item.nama_admin }}</td>
-                                <td class="px-3 py-2.5 text-center">
-                                    <button
-                                        @click="deleteTransaksi(item.id)"
-                                        class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
-                                        title="Hapus"
-                                    >
-                                        <span class="material-symbols-outlined text-base">delete</span>
-                                    </button>
+                                <td class="px-3 py-2.5 text-center whitespace-nowrap">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button
+                                            @click="openStruk(item.id)"
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold border border-emerald-200 transition"
+                                            title="Cetak Struk Samsat"
+                                        >
+                                            <span class="material-symbols-outlined text-sm">print</span>
+                                            <span>Struk</span>
+                                        </button>
+                                        <button
+                                            @click="deleteTransaksi(item.id)"
+                                            class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
+                                            title="Hapus"
+                                        >
+                                            <span class="material-symbols-outlined text-base">delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

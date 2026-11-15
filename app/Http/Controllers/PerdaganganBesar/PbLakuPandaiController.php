@@ -205,6 +205,20 @@ class PbLakuPandaiController extends Controller
     }
 
     /**
+     * Cetak Struk Transaksi Laku Pandai
+     */
+    public function cetakStruk($id)
+    {
+        $unit = $this->getUnit();
+        $transaksi = PbTransaksiLakuPandai::findOrFail($id);
+
+        return view('perdagangan_besar.struk_laku_pandai', [
+            'unit' => $unit,
+            'transaksi' => $transaksi,
+        ]);
+    }
+
+    /**
      * Master Data Nasabah Laku Pandai
      */
     public function nasabahIndex(Request $request): Response

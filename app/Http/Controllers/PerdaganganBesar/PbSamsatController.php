@@ -152,6 +152,20 @@ class PbSamsatController extends Controller
     }
 
     /**
+     * Cetak Struk Transaksi Samsat Budiman
+     */
+    public function cetakStruk($id)
+    {
+        $unit = $this->getUnit();
+        $transaksi = PbTransaksiSamsat::findOrFail($id);
+
+        return view('perdagangan_besar.struk_samsat', [
+            'unit' => $unit,
+            'transaksi' => $transaksi,
+        ]);
+    }
+
+    /**
      * Database Wajib Pajak & Kendaraan (DATABASE WP)
      */
     public function wajibPajakIndex(Request $request): Response
