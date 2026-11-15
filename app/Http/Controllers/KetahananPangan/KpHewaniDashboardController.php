@@ -82,8 +82,21 @@ class KpHewaniDashboardController extends Controller
         $terpakaiRekananAll = (float) KpEggSale::sum('ambil_rekanan_kg');
         $sisaStokRekanan = max(0, $totalBeliRekananAll - $terpakaiRekananAll);
 
-        // 5. Tren Harian (14 Hari Terakhir)
-        $chartDates = collect(range(13, 0))->map(fn($days) => Carbon::now()->subDays($days)->toDateString());
+        // 5. Tren Harian Sesuai Rentang Filter (Default 1 Bulan Penuh)
+        $startCarbon = Carbon::parse($startDate);
+        $endCarbon = Carbon::parse($endDate);
+
+        // Jika rentang lebih dari 31 hari, batas maksimal 31 hari agar grafik tetap optimal
+        if ($startCarbon->diffInDays($endCarbon) > 31) {
+            $startCarbon = $endCarbon->copy()->subDays(30);
+        }
+
+        $chartDates = collect();
+        $curr = $startCarbon->copy();
+        while ($curr->lte($endCarbon)) {
+            $chartDates->push($curr->toDateString());
+            $curr->addDay();
+        }
         
         // Data Grafik Harian Produksi & Penjualan
         $dailyTrends = $chartDates->map(function ($date) {

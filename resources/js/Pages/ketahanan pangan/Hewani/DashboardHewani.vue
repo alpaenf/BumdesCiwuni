@@ -321,36 +321,36 @@ const savePopulasi = () => {
             </div>
         </div>
 
-        <!-- Grid Grafik Harian: Produksi Telur & Penjualan Telur -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <!-- 1. Grafik Harian Produksi Telur -->
+        <!-- Grid Grafik Harian: Produksi Telur & Penjualan Telur (Atas - Bawah Full Width) -->
+        <div class="space-y-6 mb-6">
+            <!-- 1. Grafik Harian Produksi Telur (Full Width) -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">Grafik Harian Produksi Telur</h4>
-                        <p class="text-xs text-slate-500">Hasil produksi harian kandang (kg) 14 hari terakhir</p>
+                        <h4 class="text-sm font-bold text-slate-800">Grafik Harian Produksi Telur (1 Bulan)</h4>
+                        <p class="text-xs text-slate-500">Hasil produksi harian kandang (kg) per tanggal pada periode monitoring</p>
                     </div>
-                    <span class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Produksi (kg)
+                    <span class="text-[11px] px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Produksi (kg)
                     </span>
                 </div>
-                <div class="h-64 w-full">
+                <div class="h-64 sm:h-72 w-full">
                     <canvas ref="produksiChartRef"></canvas>
                 </div>
             </div>
 
-            <!-- 2. Grafik Harian Penjualan Telur -->
+            <!-- 2. Grafik Harian Penjualan Telur (Full Width) -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">Grafik Harian Penjualan Telur</h4>
-                        <p class="text-xs text-slate-500">Volume penjualan telur (kg) 14 hari terakhir</p>
+                        <h4 class="text-sm font-bold text-slate-800">Grafik Harian Penjualan Telur (1 Bulan)</h4>
+                        <p class="text-xs text-slate-500">Volume dan tren penjualan telur (kg) per tanggal pada periode monitoring</p>
                     </div>
-                    <span class="text-[11px] px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-100 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> Penjualan (kg)
+                    <span class="text-[11px] px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-100 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Penjualan (kg)
                     </span>
                 </div>
-                <div class="h-64 w-full">
+                <div class="h-64 sm:h-72 w-full">
                     <canvas ref="penjualanChartRef"></canvas>
                 </div>
             </div>
@@ -362,7 +362,7 @@ const savePopulasi = () => {
             <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">Rekap Data Harian (14 Hari Terakhir)</h4>
+                        <h4 class="text-sm font-bold text-slate-800">Rekap Data Harian (Periode 1 Bulan)</h4>
                         <p class="text-xs text-slate-500">Rincian produksi telur bagus, kondisi retak/rusak, dan penjualan</p>
                     </div>
                     <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium">Harian</span>
