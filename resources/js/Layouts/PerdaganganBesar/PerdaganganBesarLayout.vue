@@ -40,12 +40,9 @@ const logout = () => {
         >
             <!-- Logo & Unit Header -->
             <div class="flex h-16 items-center justify-between border-b border-[color:var(--color-outline-variant)] px-5">
-                <div class="flex items-center gap-2">
-                    <img src="/logo.png" alt="Logo" class="h-9 w-9 object-contain" />
-                    <div>
-                        <p class="text-xs font-semibold leading-tight text-[color:var(--color-on-surface)]">Perdagangan Besar</p>
-                        <p class="text-[10px] text-[color:var(--color-secondary)]">BUMDes Dammar Wulan</p>
-                    </div>
+                <div>
+                    <p class="text-xs font-semibold leading-tight text-[color:var(--color-on-surface)]">Perdagangan Besar</p>
+                    <p class="text-[10px] text-[color:var(--color-secondary)]">BUMDes Dammar Wulan</p>
                 </div>
                 <!-- Close button for mobile -->
                 <button

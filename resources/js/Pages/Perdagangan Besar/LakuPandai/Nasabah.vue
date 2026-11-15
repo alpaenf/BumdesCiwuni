@@ -116,9 +116,9 @@ const deleteNasabah = (id) => {
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                             <tr>
                                 <th class="px-4 py-3 text-center" width="5%">No</th>
-                                <th class="px-4 py-3">Nama Nasabah</th>
+                                <th class="px-4 py-3">Nama Nasabah / Pelanggan</th>
                                 <th class="px-4 py-3">No. HP / WA</th>
-                                <th class="px-4 py-3">Rekening & Bank</th>
+                                <th class="px-4 py-3">Lembaga / Provider & ID / No. Rek</th>
                                 <th class="px-4 py-3">Alamat</th>
                                 <th class="px-4 py-3 text-center">Jml Transaksi</th>
                                 <th class="px-4 py-3 text-center">Aksi</th>
@@ -138,8 +138,8 @@ const deleteNasabah = (id) => {
                                 <td class="px-4 py-3 font-bold text-slate-900">{{ item.nama }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ item.no_hp || '-' }}</td>
                                 <td class="px-4 py-3">
-                                    <div class="font-mono text-slate-800 font-semibold">{{ item.no_rekening || '-' }}</div>
-                                    <div class="text-[10px] text-slate-400">{{ item.nama_bank || '' }}</div>
+                                    <div class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded inline-block mb-0.5">{{ item.nama_bank || 'Umum / Lainnya' }}</div>
+                                    <div class="font-mono text-slate-800 font-bold">{{ item.no_rekening || '-' }}</div>
                                 </td>
                                 <td class="px-4 py-3 text-slate-500 max-w-xs truncate">{{ item.alamat || '-' }}</td>
                                 <td class="px-4 py-3 text-center">
@@ -215,14 +215,14 @@ const deleteNasabah = (id) => {
                             <input v-model="form.no_hp" type="text" placeholder="08xxxxxxxxxx" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Nama Bank / Lembaga</label>
-                            <input v-model="form.nama_bank" type="text" placeholder="BRI / Mandiri / BCA..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
+                            <label class="block font-bold text-slate-700 mb-1">Bank / Provider / Lembaga</label>
+                            <input v-model="form.nama_bank" type="text" placeholder="Contoh: PLN, PDAM, IndiHome, BRI, Pamsimas..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
                     </div>
 
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Nomor Rekening</label>
-                        <input v-model="form.no_rekening" type="text" placeholder="Nomor rekening bank nasabah..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-mono" />
+                        <label class="block font-bold text-slate-700 mb-1">Nomor Rekening / No. Meter / ID Pelanggan</label>
+                        <input v-model="form.no_rekening" type="text" placeholder="Masukkan nomor rekening, ID pelanggan, atau no. meter..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-mono" />
                     </div>
 
                     <div>
