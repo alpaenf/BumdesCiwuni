@@ -11,7 +11,6 @@ const props = defineProps({
 });
 
 const search = ref(props.filters.search || '');
-const customerType = ref(props.filters.customer_type || '');
 
 const isModalOpen = ref(false);
 const editingCustomer = ref(null);
@@ -28,7 +27,6 @@ const form = ref({
 const handleSearch = () => {
     router.get(route('kp.customers.index'), {
         search: search.value,
-        customer_type: customerType.value,
     }, { preserveState: true, replace: true });
 };
 
@@ -50,7 +48,7 @@ const openEditModal = (cust) => {
     form.value = {
         tanggal: cust.tanggal || new Date().toISOString().split('T')[0],
         nama: cust.nama,
-        customer_type: cust.customer_type,
+        customer_type: cust.customer_type || 'Eceran',
         no_hp: cust.no_hp || '',
         alamat: cust.alamat || '',
         keterangan: cust.keterangan || '',
@@ -85,7 +83,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h3 class="text-base font-bold text-slate-800">Data Base Pelanggan Unit Hewani</h3>
-                <p class="text-xs text-slate-500">Pencatatan database pelanggan kategori Eceran dan Agen telur ayam petelur</p>
+                <p class="text-xs text-slate-500">Pencatatan database pelanggan telur ayam petelur</p>
             </div>
             <button 
                 @click="openCreateModal"
@@ -109,20 +107,11 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 />
             </div>
             <div class="flex items-center gap-2">
-                <select 
-                    v-model="customerType" 
-                    @change="handleSearch"
-                    class="text-xs rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-                >
-                    <option value="">Semua Kategori Customer</option>
-                    <option value="Eceran">Eceran</option>
-                    <option value="Agen">Agen</option>
-                </select>
                 <button 
                     @click="handleSearch"
                     class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl transition-colors"
                 >
-                    Terapkan
+                    Cari
                 </button>
             </div>
         </div>
@@ -149,12 +138,6 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3.5 text-slate-600">{{ cust.tanggal || '-' }}</td>
                             <td class="p-3.5">
                                 <div class="font-bold text-slate-800">{{ cust.nama }}</div>
-                                <span :class="[
-                                    'inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold',
-                                    cust.customer_type === 'Agen' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'
-                                ]">
-                                    {{ cust.customer_type }}
-                                </span>
                             </td>
                             <td class="p-3.5 text-slate-600">{{ cust.no_hp || '-' }}</td>
                             <td class="p-3.5 text-right font-medium text-slate-700">
@@ -231,14 +214,6 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
                         <input type="text" v-model="form.nama" placeholder="Contoh: Toko Berkah / Ibu Siti" class="w-full text-xs rounded-xl border-slate-200" required />
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Customer</label>
-                        <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200" required>
-                            <option value="Eceran">Eceran (Konsumen Langsung)</option>
-                            <option value="Agen">Agen (Warung / Pengecer)</option>
-                        </select>
                     </div>
 
                     <div>

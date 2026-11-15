@@ -265,7 +265,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih dari Database Pelanggan</label>
                             <select v-model="form.customer_id" @change="onSelectCustomer" class="w-full text-xs rounded-xl border-slate-200">
                                 <option value="">-- Pelanggan Bebas / Baru --</option>
-                                <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.nama }} ({{ c.customer_type }})</option>
+                                <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.nama }}</option>
                             </select>
                         </div>
                     </div>
