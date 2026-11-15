@@ -17,6 +17,27 @@ const search = ref(props.filters.search || '');
 const filterDate = ref(props.filters.date || '');
 const filterJenis = ref(props.filters.jenis_transaksi || '');
 const filterStatus = ref(props.filters.status_pembayaran || '');
+const selectedNasabahId = ref('');
+const selectedAccountIndex = ref('');
+
+const selectedNasabah = computed(() => {
+    return props.nasabah_list.find(n => n.id == selectedNasabahId.value);
+});
+
+const availableAccounts = computed(() => {
+    if (!selectedNasabah.value) return [];
+    if (selectedNasabah.value.rekening_list && Array.isArray(selectedNasabah.value.rekening_list) && selectedNasabah.value.rekening_list.length > 0) {
+        return selectedNasabah.value.rekening_list;
+    }
+    if (selectedNasabah.value.no_rekening || selectedNasabah.value.nama_bank) {
+        return [{
+            nama_bank: selectedNasabah.value.nama_bank || 'Layanan',
+            no_rekening: selectedNasabah.value.no_rekening || '',
+            atas_nama: selectedNasabah.value.nama || '',
+        }];
+    }
+    return [];
+});
 
 const form = useForm({
     tanggal: new Date().toISOString().split('T')[0],
@@ -63,11 +84,34 @@ const calculatedJasa = computed(() => {
 
 const onSelectNasabah = (e) => {
     const selectedId = e.target.value;
-    if (!selectedId) return;
+    selectedNasabahId.value = selectedId;
+    selectedAccountIndex.value = '';
+    if (!selectedId) {
+        form.nasabah_id = null;
+        return;
+    }
     const n = props.nasabah_list.find(item => item.id == selectedId);
     if (n) {
         form.nasabah_id = n.id;
         form.nama_nasabah = n.nama;
+        const accounts = (n.rekening_list && n.rekening_list.length > 0)
+            ? n.rekening_list
+            : (n.no_rekening ? [{ nama_bank: n.nama_bank, no_rekening: n.no_rekening, atas_nama: n.nama }] : []);
+
+        if (accounts.length === 1) {
+            selectedAccountIndex.value = 0;
+            const acc = accounts[0];
+            form.keterangan = `Rek: ${acc.nama_bank || ''} ${acc.no_rekening || ''}`;
+        }
+    }
+};
+
+const onSelectAccount = (e) => {
+    const idx = e.target.value;
+    selectedAccountIndex.value = idx;
+    if (idx !== '' && availableAccounts.value[idx]) {
+        const acc = availableAccounts.value[idx];
+        form.keterangan = `Rek: ${acc.nama_bank || ''} ${acc.no_rekening || ''}`;
     }
 };
 
@@ -332,9 +376,17 @@ const deleteTransaksi = (id) => {
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Pilih dari Master Nasabah (Opsional)</label>
-                            <select @change="onSelectNasabah" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                            <select :value="selectedNasabahId" @change="onSelectNasabah" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                                 <option value="">-- Pilih Nasabah Terdaftar --</option>
-                                <option v-for="n in nasabah_list" :key="n.id" :value="n.id">{{ n.nama }} ({{ n.nama_bank || 'Nasabah' }})</option>
+                                <option v-for="n in nasabah_list" :key="n.id" :value="n.id">
+                                    {{ n.nama }}
+                                    <template v-if="n.rekening_list && n.rekening_list.length > 0">
+                                        ({{ n.rekening_list.map(r => r.nama_bank || 'Akun').join(', ') }})
+                                    </template>
+                                    <template v-else-if="n.nama_bank">
+                                        ({{ n.nama_bank }})
+                                    </template>
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -345,11 +397,34 @@ const deleteTransaksi = (id) => {
                             <input v-model="form.nama_nasabah" type="text" placeholder="Nama lengkap..." required class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Jenis Layanan / Transaksi *</label>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block font-bold text-slate-700">Jenis Layanan / Transaksi *</label>
+                                <span v-if="availableAccounts.length > 1" class="text-[10px] text-blue-600 font-bold">
+                                    {{ availableAccounts.length }} akun tersimpan
+                                </span>
+                            </div>
                             <select v-model="form.jenis_transaksi" required class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                                 <option v-for="j in jenisTransaksiOptions" :key="j" :value="j">{{ j }}</option>
                             </select>
                         </div>
+                    </div>
+
+                    <!-- Dropdown pilihan rekening/bank milik nasabah jika nasabah punya lebih dari 1 rekening -->
+                    <div v-if="availableAccounts.length > 1" class="p-3 bg-blue-50/70 border border-blue-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div>
+                            <span class="text-[11px] font-bold text-blue-900 block">Pilih Akun / Rekening Yang Digunakan:</span>
+                            <span class="text-[10px] text-blue-700">Nasabah ini memiliki beberapa akun terdaftar</span>
+                        </div>
+                        <select
+                            :value="selectedAccountIndex"
+                            @change="onSelectAccount"
+                            class="text-xs font-semibold rounded-xl border border-blue-300 bg-white px-3 py-1.5 focus:border-blue-600 focus:outline-none"
+                        >
+                            <option value="">-- Pilih Rekening / Bank --</option>
+                            <option v-for="(acc, aIdx) in availableAccounts" :key="aIdx" :value="aIdx">
+                                [{{ acc.nama_bank || 'Layanan' }}] {{ acc.no_rekening }} {{ acc.atas_nama ? '- ' + acc.atas_nama : '' }}
+                            </option>
+                        </select>
                     </div>
 
                     <!-- Input Mutasi Nominal -->
