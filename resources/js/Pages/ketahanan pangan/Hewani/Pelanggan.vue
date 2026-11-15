@@ -135,8 +135,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <tr>
                             <th class="p-3.5">No.</th>
                             <th class="p-3.5">Tanggal</th>
-                            <th class="p-3.5">Nama</th>
-                            <th class="p-3.5">Customer (Kategori)</th>
+                            <th class="p-3.5">Nama Customer</th>
                             <th class="p-3.5">No. HP / WA</th>
                             <th class="p-3.5 text-right">Jml Pembelian</th>
                             <th class="p-3.5 text-right">Total Transaksi</th>
@@ -147,10 +146,10 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <tr v-for="(cust, idx) in customers.data" :key="cust.id" class="hover:bg-slate-50/50">
                             <td class="p-3.5 text-slate-400 font-medium">{{ (customers.current_page - 1) * customers.per_page + idx + 1 }}</td>
                             <td class="p-3.5 text-slate-600">{{ cust.tanggal || '-' }}</td>
-                            <td class="p-3.5 font-bold text-slate-800">{{ cust.nama }}</td>
                             <td class="p-3.5">
+                                <div class="font-bold text-slate-800">{{ cust.nama }}</div>
                                 <span :class="[
-                                    'px-2 py-0.5 rounded-full text-[10px] font-bold',
+                                    'inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold',
                                     cust.customer_type === 'Agen' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'
                                 ]">
                                     {{ cust.customer_type }}
@@ -226,12 +225,12 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pelanggan (Wajib)</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
                         <input type="text" v-model="form.nama" placeholder="Contoh: Toko Berkah / Ibu Siti" class="w-full text-xs rounded-xl border-slate-200" required />
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Customer (Kategori Pembeli)</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Customer</label>
                         <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200" required>
                             <option value="Eceran">Eceran (Konsumen Langsung)</option>
                             <option value="Agen">Agen (Warung / Pengecer)</option>

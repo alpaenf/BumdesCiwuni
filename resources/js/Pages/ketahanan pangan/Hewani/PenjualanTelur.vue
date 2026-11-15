@@ -160,10 +160,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <tr>
                             <th class="p-3">No. Struk</th>
                             <th class="p-3">Tanggal</th>
-                            <th class="p-3">Pelanggan</th>
-                            <th class="p-3">Customer</th>
+                            <th class="p-3">Nama Customer</th>
                             <th class="p-3 text-right">Qty (kg)</th>
-                            <th class="p-3 text-right">Harga / kg</th>
+                            <th class="p-3 text-right">Harga Satuan per kg</th>
                             <th class="p-3 text-right">Total Transaksi</th>
                             <th class="p-3">Metode & Status</th>
                             <th class="p-3 text-center">Aksi</th>
@@ -173,10 +172,10 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <tr v-for="sale in sales.data" :key="sale.id" class="hover:bg-slate-50/50">
                             <td class="p-3 font-mono font-bold text-slate-800">{{ sale.nomor_transaksi }}</td>
                             <td class="p-3 text-slate-600">{{ sale.tanggal }}</td>
-                            <td class="p-3 font-bold text-slate-800">{{ sale.nama_pelanggan }}</td>
                             <td class="p-3">
+                                <div class="font-bold text-slate-800">{{ sale.nama_pelanggan }}</div>
                                 <span :class="[
-                                    'px-2 py-0.5 rounded-full text-[10px] font-bold',
+                                    'inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold',
                                     sale.customer_type === 'Agen' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'
                                 ]">
                                     {{ sale.customer_type }}
@@ -215,7 +214,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             </td>
                         </tr>
                         <tr v-if="sales.data.length === 0">
-                            <td colspan="9" class="text-center py-8 text-slate-400">
+                            <td colspan="8" class="text-center py-8 text-slate-400">
                                 Belum ada riwayat transaksi penjualan pada periode ini.
                             </td>
                         </tr>
@@ -273,11 +272,11 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pelanggan (Wajib)</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
                             <input type="text" v-model="form.nama_pelanggan" class="w-full text-xs rounded-xl border-slate-200" required />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Customer (Kategori)</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Customer</label>
                             <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200" required>
                                 <option value="Eceran">Eceran</option>
                                 <option value="Agen">Agen</option>
@@ -298,7 +297,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Jual per kg</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Satuan per kg</label>
                             <input 
                                 type="number" 
                                 v-model="form.harga_per_kg" 
