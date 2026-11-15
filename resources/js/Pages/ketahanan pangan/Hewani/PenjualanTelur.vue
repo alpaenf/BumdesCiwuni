@@ -305,8 +305,8 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         </div>
 
         <!-- Modal Transaksi Penjualan Baru -->
-        <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-            <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200">
+        <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs overflow-y-auto">
+            <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl border border-slate-200 my-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
                         <h4 class="text-sm font-bold text-slate-800">Kasir Penjualan Telur Ayam</h4>
@@ -319,29 +319,29 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </button>
                 </div>
 
-                <form @submit.prevent="submitForm" class="mt-4 space-y-3">
-                    <div class="grid grid-cols-2 gap-2">
+                <form @submit.prevent="submitForm" class="mt-3 space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Transaksi</label>
-                            <input type="date" v-model="form.tanggal" class="w-full text-xs rounded-xl border-slate-200" required />
+                            <input type="date" v-model="form.tanggal" class="w-full text-xs rounded-xl border-slate-200 py-1.5" required />
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih dari Database Pelanggan</label>
-                            <select v-model="form.customer_id" @change="onSelectCustomer" class="w-full text-xs rounded-xl border-slate-200">
+                            <select v-model="form.customer_id" @change="onSelectCustomer" class="w-full text-xs rounded-xl border-slate-200 py-1.5">
                                 <option value="">-- Pelanggan Bebas / Baru --</option>
                                 <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.nama }}</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
-                            <input type="text" v-model="form.nama_pelanggan" class="w-full text-xs rounded-xl border-slate-200" required />
+                            <input type="text" v-model="form.nama_pelanggan" class="w-full text-xs rounded-xl border-slate-200 py-1.5" required />
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Customer</label>
-                            <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200" required>
+                            <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200 py-1.5" required>
                                 <option value="Eceran">Eceran</option>
                                 <option value="Agen">Agen</option>
                             </select>
@@ -349,14 +349,19 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </div>
 
                     <!-- Pilihan Sumber Stok (Kandang / Rekanan / Gabungan) -->
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                            Sumber Pengambilan Stok Telur
-                        </label>
+                    <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-200">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-slate-800">
+                                Sumber Pengambilan Stok Telur
+                            </label>
+                            <span v-if="form.sumber_stok === 'gabungan'" class="text-[11px] text-indigo-600 font-bold">
+                                Alokasi: {{ (Number(form.ambil_kandang_kg || 0) + Number(form.ambil_rekanan_kg || 0)).toFixed(1) }} kg
+                            </span>
+                        </div>
                         <div class="grid grid-cols-3 gap-2">
                             <label 
                                 :class="[
-                                    'cursor-pointer border rounded-xl p-2.5 text-center transition-all',
+                                    'cursor-pointer border rounded-xl p-2 text-center transition-all',
                                     form.sumber_stok === 'kandang' 
                                         ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs' 
                                         : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
@@ -364,12 +369,12 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             >
                                 <input type="radio" value="kandang" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
                                 <div class="text-xs">Kandang BUMDes</div>
-                                <div class="text-[10px] text-slate-400 mt-0.5">Sisa: {{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</div>
+                                <div class="text-[10px] text-slate-400">Sisa: {{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</div>
                             </label>
 
                             <label 
                                 :class="[
-                                    'cursor-pointer border rounded-xl p-2.5 text-center transition-all',
+                                    'cursor-pointer border rounded-xl p-2 text-center transition-all',
                                     form.sumber_stok === 'gabungan' 
                                         ? 'bg-indigo-50 border-indigo-500 text-indigo-800 font-bold shadow-xs' 
                                         : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
@@ -377,12 +382,12 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             >
                                 <input type="radio" value="gabungan" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
                                 <div class="text-xs">Gabungan (K+R)</div>
-                                <div class="text-[10px] text-indigo-500 font-semibold mt-0.5">Total: {{ Number(summary.total_stok_gabungan_kg || 0).toFixed(1) }} kg</div>
+                                <div class="text-[10px] text-indigo-500 font-semibold">Total: {{ Number(summary.total_stok_gabungan_kg || 0).toFixed(1) }} kg</div>
                             </label>
 
                             <label 
                                 :class="[
-                                    'cursor-pointer border rounded-xl p-2.5 text-center transition-all',
+                                    'cursor-pointer border rounded-xl p-2 text-center transition-all',
                                     form.sumber_stok === 'rekanan' 
                                         ? 'bg-blue-50 border-blue-500 text-blue-800 font-bold shadow-xs' 
                                         : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
@@ -390,42 +395,46 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             >
                                 <input type="radio" value="rekanan" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
                                 <div class="text-xs">Rekanan Luar</div>
-                                <div class="text-[10px] text-slate-400 mt-0.5">Sisa: {{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</div>
+                                <div class="text-[10px] text-slate-400">Sisa: {{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</div>
                             </label>
                         </div>
 
-                        <!-- Rincian Alokasi Jika Memilih Gabungan -->
-                        <div v-if="form.sumber_stok === 'gabungan'" class="mt-3 pt-2.5 border-t border-slate-200/80">
-                            <div class="text-[11px] text-slate-600 font-medium mb-1.5 flex items-center justify-between">
-                                <span>Rincian Pembagian Stok:</span>
-                                <span class="text-indigo-600 font-bold">Total: {{ (Number(form.ambil_kandang_kg || 0) + Number(form.ambil_rekanan_kg || 0)).toFixed(1) }} kg</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-[10px] text-slate-500 mb-0.5">Ambil dr Kandang BUMDes (kg)</label>
-                                    <input 
-                                        type="number" 
-                                        step="0.1" 
-                                        v-model="form.ambil_kandang_kg" 
-                                        class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold"
-                                    />
-                                    <div class="text-[9px] text-slate-400 mt-0.5">Maks. stok: {{ summary.stok_tersedia_kg }} kg</div>
+                        <!-- Rincian Alokasi Jika Memilih Gabungan (Compact & Responsive Grid) -->
+                        <div v-if="form.sumber_stok === 'gabungan'" class="mt-2.5 pt-2 border-t border-slate-200/80">
+                            <div class="grid grid-cols-2 gap-3 items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between text-[10px] text-slate-600 mb-0.5">
+                                            <span>Kandang BUMDes (kg)</span>
+                                            <span class="text-slate-400">Maks {{ summary.stok_tersedia_kg }}</span>
+                                        </div>
+                                        <input 
+                                            type="number" 
+                                            step="0.1" 
+                                            v-model="form.ambil_kandang_kg" 
+                                            class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold"
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-[10px] text-slate-500 mb-0.5">Ambil dr Rekanan Luar (kg)</label>
-                                    <input 
-                                        type="number" 
-                                        step="0.1" 
-                                        v-model="form.ambil_rekanan_kg" 
-                                        class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold text-blue-700"
-                                    />
-                                    <div class="text-[9px] text-slate-400 mt-0.5">Maks. stok: {{ summary.stok_rekanan_kg || 0 }} kg</div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between text-[10px] text-slate-600 mb-0.5">
+                                            <span>Rekanan Luar (kg)</span>
+                                            <span class="text-slate-400">Maks {{ summary.stok_rekanan_kg || 0 }}</span>
+                                        </div>
+                                        <input 
+                                            type="number" 
+                                            step="0.1" 
+                                            v-model="form.ambil_rekanan_kg" 
+                                            class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold text-blue-700"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Pembelian (kg)</label>
                             <input 
@@ -433,7 +442,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 step="0.1" 
                                 v-model="form.jumlah_kg" 
                                 @input="updatePayment"
-                                class="w-full text-xs rounded-xl border-slate-200 font-bold" 
+                                class="w-full text-xs rounded-xl border-slate-200 py-1.5 font-bold" 
                                 required 
                             />
                         </div>
@@ -443,26 +452,26 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 type="number" 
                                 v-model="form.harga_per_kg" 
                                 @input="updatePayment"
-                                class="w-full text-xs rounded-xl border-slate-200" 
+                                class="w-full text-xs rounded-xl border-slate-200 py-1.5" 
                                 required 
                             />
                         </div>
                     </div>
 
                     <!-- Total Tagihan Box -->
-                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-emerald-900">
+                    <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-emerald-900">
                         <span class="text-xs font-semibold">Total Tagihan:</span>
-                        <span class="text-lg font-extrabold">{{ formatRp(form.jumlah_kg * form.harga_per_kg) }}</span>
+                        <span class="text-base font-extrabold">{{ formatRp(form.jumlah_kg * form.harga_per_kg) }}</span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Uang Diterima</label>
-                            <input type="number" v-model="form.jumlah_pembayaran" class="w-full text-xs rounded-xl border-slate-200 font-semibold" required />
+                            <input type="number" v-model="form.jumlah_pembayaran" class="w-full text-xs rounded-xl border-slate-200 py-1.5 font-semibold" required />
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Metode Pembayaran</label>
-                            <select v-model="form.metode_pembayaran" class="w-full text-xs rounded-xl border-slate-200" required>
+                            <select v-model="form.metode_pembayaran" class="w-full text-xs rounded-xl border-slate-200 py-1.5" required>
                                 <option value="Tunai">Tunai</option>
                                 <option value="Transfer">Transfer Bank</option>
                                 <option value="Qris">QRIS</option>
@@ -475,7 +484,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         Kembalian: <span class="font-bold text-emerald-600">{{ formatRp(form.jumlah_pembayaran - (form.jumlah_kg * form.harga_per_kg)) }}</span>
                     </div>
 
-                    <div class="pt-2 flex justify-end gap-2">
+                    <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
                         <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmitting">Batal</button>
                         <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmitting">
                             <span v-if="isSubmitting" class="material-symbols-outlined notranslate text-xs animate-spin">progress_activity</span>
