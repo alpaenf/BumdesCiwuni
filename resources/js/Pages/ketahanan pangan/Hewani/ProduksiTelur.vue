@@ -75,27 +75,19 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Stok Telur Bagus Siap Jual</p>
-                <h4 class="text-2xl font-bold text-emerald-600 mt-1">
-                    {{ Number(summary.stok_saat_ini_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
-                </h4>
-                <div class="mt-2 text-[11px] text-slate-400">Gudang Penyimpanan BUMDes</div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Total Produksi (Periode)</p>
-                <h4 class="text-2xl font-bold text-slate-800 mt-1">
-                    {{ Number(summary.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
-                </h4>
-                <div class="mt-2 text-[11px] text-emerald-600 font-semibold">Telur Cokelat/Bagus</div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <p class="text-xs font-medium text-slate-500">Total Butir (Periode)</p>
                 <h4 class="text-2xl font-bold text-blue-600 mt-1">
                     {{ (summary.total_produksi_butir || 0).toLocaleString('id-ID') }} <span class="text-xs font-normal text-slate-400">butir</span>
                 </h4>
                 <div class="mt-2 text-[11px] text-blue-500 font-medium">Hasil panen fisik harian</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <p class="text-xs font-medium text-slate-500">Stok Telur Bagus Siap Jual</p>
+                <h4 class="text-2xl font-bold text-emerald-600 mt-1">
+                    {{ Number(summary.stok_saat_ini_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                </h4>
+                <div class="mt-2 text-[11px] text-slate-400">Gudang Penyimpanan BUMDes</div>
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
@@ -118,6 +110,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     <span class="material-symbols-outlined text-base">add_circle</span>
                     Input Produksi Harian
                 </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <p class="text-xs font-medium text-slate-500">Total Produksi (Periode)</p>
+                <h4 class="text-2xl font-bold text-slate-800 mt-1">
+                    {{ Number(summary.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                </h4>
+                <div class="mt-2 text-[11px] text-emerald-600 font-semibold">Telur Cokelat/Bagus</div>
             </div>
         </div>
 
