@@ -207,6 +207,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <th class="p-3 text-right">Kebutuhan/Ekor</th>
                             <th class="p-3 text-right">Jml Ayam</th>
                             <th class="p-3 text-right">Total Kebutuhan (kg)</th>
+                            <th class="p-3 text-right">Harga / kg</th>
                             <th class="p-3 text-right">Sisa Pakan (kg)</th>
                             <th class="p-3 text-right">Biaya Pemakaian</th>
                             <th class="p-3 text-center">Aksi</th>
@@ -226,8 +227,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-right text-slate-600">{{ Number(usage.kebutuhan_per_ekor_gram).toFixed(1) }} gr</td>
                             <td class="p-3 text-right font-bold text-amber-600">{{ usage.populasi_ayam }}</td>
                             <td class="p-3 text-right font-bold text-rose-600">{{ Number(usage.total_kebutuhan_kg).toFixed(1) }} kg</td>
+                            <td class="p-3 text-right text-slate-500 font-medium">{{ formatRp(usage.harga_per_kg || 0) }}</td>
                             <td class="p-3 text-right font-bold text-emerald-600">{{ Number(usage.sisa_pakan_kg).toFixed(1) }} kg</td>
-                            <td class="p-3 text-right text-slate-700 font-medium">{{ formatRp(usage.total_biaya_pemakaian) }}</td>
+                            <td class="p-3 text-right text-emerald-700 font-bold">{{ formatRp(usage.total_biaya_pemakaian) }}</td>
                             <td class="p-3 text-center">
                                 <button @click="deleteUsage(usage.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus">
                                     <span class="material-symbols-outlined text-base">delete</span>
@@ -372,14 +374,31 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <input type="number" step="0.1" v-model="usageForm.kebutuhan_per_ekor_gram" class="w-full text-xs rounded-xl border-slate-200" required />
                         </div>
                     </div>
-                    <div class="p-3 bg-amber-50 rounded-xl text-xs space-y-1 text-amber-900 font-medium">
-                        <div class="flex justify-between">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Pakan per kg (Rp)</label>
+                        <input 
+                            type="number" 
+                            step="100" 
+                            v-model="usageForm.harga_per_kg" 
+                            placeholder="Contoh: 8500"
+                            class="w-full text-xs rounded-xl border-slate-200 font-bold text-slate-800" 
+                            required 
+                        />
+                    </div>
+                    <div class="p-3 bg-amber-50 rounded-xl text-xs space-y-1.5 text-amber-900 font-medium border border-amber-200/60">
+                        <div class="flex justify-between items-center">
                             <span>Total Pakan Dibutuhkan:</span>
                             <span class="font-bold text-sm text-rose-700">
                                 {{ Number((usageForm.populasi_ayam * usageForm.kebutuhan_per_ekor_gram) / 1000).toFixed(2) }} kg
                             </span>
                         </div>
-                        <div class="flex justify-between text-[11px] text-slate-500">
+                        <div class="flex justify-between items-center pt-1 border-t border-amber-200/50">
+                            <span class="font-bold text-slate-700">Hasil Biaya Pemakaian:</span>
+                            <span class="font-extrabold text-sm text-emerald-700">
+                                {{ formatRp(((usageForm.populasi_ayam * usageForm.kebutuhan_per_ekor_gram) / 1000) * (usageForm.harga_per_kg || 0)) }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500 pt-0.5">
                             <span>Stok Pakan Saat Ini:</span>
                             <span>{{ Number(summary.stok_saat_ini_kg).toFixed(1) }} kg</span>
                         </div>
