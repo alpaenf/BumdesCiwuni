@@ -12,6 +12,7 @@ use App\Models\KetahananPangan\KpFeedUsage;
 use App\Models\KetahananPangan\KpOtherIncome;
 use App\Models\KetahananPangan\KpProduct;
 use App\Models\KetahananPangan\KpCashFlow;
+use App\Models\KetahananPangan\KpPartnerPurchase;
 use App\Models\LandingPageSetting;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -74,17 +75,32 @@ class KpHewaniDashboardController extends Controller
         $latestCash = KpCashFlow::where('unit_kategori', 'hewani')->orderByDesc('id')->first();
         $saldoKas = $latestCash ? (float) $latestCash->saldo_berjalan : 0;
 
-        // 5. Tren Produksi 14 Hari Terakhir
+        // Data Rekanan
+        $totalBeliRekananPeriodeKg = (float) KpPartnerPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('jumlah_kg');
+        $totalBiayaRekananPeriode = (float) KpPartnerPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('total_biaya');
+        $totalBeliRekananAll = (float) KpPartnerPurchase::sum('jumlah_kg');
+        $terpakaiRekananAll = (float) KpEggSale::sum('ambil_rekanan_kg');
+        $sisaStokRekanan = max(0, $totalBeliRekananAll - $terpakaiRekanan);
+
+        // 5. Tren Harian (14 Hari Terakhir)
         $chartDates = collect(range(13, 0))->map(fn($days) => Carbon::now()->subDays($days)->toDateString());
-        $productionTrend = $chartDates->map(function ($date) {
+        
+        // Data Grafik Harian Produksi & Penjualan
+        $dailyTrends = $chartDates->map(function ($date) {
             $prod = KpEggProduction::where('tanggal', $date)->first();
-            $sales = KpEggSale::where('tanggal', $date)->sum('total_harga');
+            $salesKg = (float) KpEggSale::where('tanggal', $date)->sum('jumlah_kg');
+            $salesRp = (float) KpEggSale::where('tanggal', $date)->sum('total_harga');
+            $partnerKg = (float) KpPartnerPurchase::where('tanggal', $date)->sum('jumlah_kg');
+
             return [
+                'tanggal_raw' => $date,
                 'tanggal' => Carbon::parse($date)->format('d M'),
-                'produksi' => $prod ? (float) $prod->produksi_kg : 0,
+                'produksi_kg' => $prod ? (float) $prod->produksi_kg : 0,
                 'retak' => $prod ? (int) $prod->telur_retak_butir : 0,
                 'rusak' => $prod ? (int) $prod->telur_rusak_butir : 0,
-                'penjualan_rp' => (float) $sales,
+                'penjualan_kg' => $salesKg,
+                'penjualan_rp' => $salesRp,
+                'rekanan_kg' => $partnerKg,
             ];
         });
 
@@ -112,8 +128,12 @@ class KpHewaniDashboardController extends Controller
                 'total_pengeluaran' => $totalPengeluaran,
                 'laba_bersih' => $labaBersih,
                 'saldo_kas' => $saldoKas,
+                'total_beli_rekanan_kg' => $totalBeliRekananPeriodeKg,
+                'total_biaya_rekanan' => $totalBiayaRekananPeriode,
+                'sisa_stok_rekanan_kg' => $sisaStokRekanan,
+                'total_stok_gabungan_kg' => $stokTelurKg + $sisaStokRekanan,
             ],
-            'chartData' => $productionTrend,
+            'chartData' => $dailyTrends,
             'recentSales' => $recentSales,
         ]);
     }

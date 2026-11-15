@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import KetahananPanganLayout from '@/Layouts/KetahananPangan/KetahananPanganLayout.vue';
+import Chart from 'chart.js/auto';
 
 const props = defineProps({
     unit: Object,
@@ -25,6 +26,110 @@ const applyFilter = () => {
 const formatRp = (val) => {
     return 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 };
+
+// Canvas Refs for Charts
+const produksiChartRef = ref(null);
+const penjualanChartRef = ref(null);
+let produksiChartInstance = null;
+let penjualanChartInstance = null;
+
+onMounted(() => {
+    if (produksiChartRef.value) {
+        const labels = props.chartData.map(d => d.tanggal);
+        const dataProduksi = props.chartData.map(d => d.produksi_kg);
+        
+        produksiChartInstance = new Chart(produksiChartRef.value, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Produksi Telur (kg)',
+                        data: dataProduksi,
+                        backgroundColor: '#10b981',
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.raw} kg`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    }
+
+    if (penjualanChartRef.value) {
+        const labels = props.chartData.map(d => d.tanggal);
+        const dataPenjualanKg = props.chartData.map(d => d.penjualan_kg);
+        const dataPenjualanRp = props.chartData.map(d => d.penjualan_rp);
+
+        penjualanChartInstance = new Chart(penjualanChartRef.value, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Penjualan Telur (kg)',
+                        data: dataPenjualanKg,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#2563eb',
+                        pointRadius: 3,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const index = ctx.dataIndex;
+                                const rp = dataPenjualanRp[index] || 0;
+                                return `${ctx.raw} kg (Rp ${Number(rp).toLocaleString('id-ID')})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    }
+});
 
 // Modal Ubah Populasi Ayam Cepat
 const isPopulasiModalOpen = ref(false);
@@ -87,78 +192,97 @@ const savePopulasi = () => {
             </div>
         </div>
 
-        <!-- 7 Kartu Statistik Utama -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- 5 Kartu Statistik Operasional & Rekanan -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <!-- 1. Populasi Ayam -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col justify-between">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-500">Populasi Ayam</p>
-                        <h4 class="text-2xl font-bold text-slate-800 mt-1">{{ stats.populasi_ayam.toLocaleString('id-ID') }} <span class="text-xs font-normal text-slate-400">ekor</span></h4>
+                        <p class="text-[11px] font-medium text-slate-500">Populasi Ayam</p>
+                        <h4 class="text-xl font-bold text-slate-800 mt-1">{{ stats.populasi_ayam.toLocaleString('id-ID') }} <span class="text-xs font-normal text-slate-400">ekor</span></h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-2xl">pest_control</span>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">pest_control</span>
                     </div>
                 </div>
-                <div class="mt-3 flex items-center justify-between text-[11px]">
-                    <span class="text-slate-500">Ayam ras petelur aktif</span>
+                <div class="mt-2.5 flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Ayam ras aktif</span>
                     <button 
                         @click="openPopulasiModal" 
                         class="font-bold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
-                        Ubah Populasi
+                        Ubah
                         <span class="material-symbols-outlined notranslate text-xs">edit</span>
                     </button>
                 </div>
             </div>
 
             <!-- 2. Total Produksi Telur -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-500">Produksi Telur (Periode)</p>
-                        <h4 class="text-2xl font-bold text-emerald-700 mt-1">{{ Number(stats.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span></h4>
+                        <p class="text-[11px] font-medium text-slate-500">Produksi Telur</p>
+                        <h4 class="text-xl font-bold text-emerald-700 mt-1">{{ Number(stats.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span></h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-2xl">egg</span>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">egg</span>
                     </div>
                 </div>
-                <div class="mt-3 flex items-center gap-2 text-[11px] text-slate-500">
-                    <span class="text-amber-600 font-semibold">{{ stats.total_telur_retak }} butir retak</span>
+                <div class="mt-2.5 flex items-center gap-1.5 text-[10.5px] text-slate-500">
+                    <span class="text-amber-600 font-semibold">{{ stats.total_telur_retak }} retak</span>
                     <span>•</span>
                     <span class="text-rose-600 font-semibold">{{ stats.total_telur_rusak }} rusak</span>
                 </div>
             </div>
 
-            <!-- 3. Total Penjualan & Stok Telur -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
+            <!-- 3. Penjualan Telur -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-500">Penjualan Telur</p>
-                        <h4 class="text-2xl font-bold text-slate-800 mt-1">{{ Number(stats.total_penjualan_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span></h4>
+                        <p class="text-[11px] font-medium text-slate-500">Penjualan Telur</p>
+                        <h4 class="text-xl font-bold text-slate-800 mt-1">{{ Number(stats.total_penjualan_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span></h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-2xl">shopping_bag</span>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">shopping_bag</span>
                     </div>
                 </div>
-                <div class="mt-3 text-[11px] text-blue-600 font-medium">
-                    Sisa stok siap jual: <span class="font-bold">{{ Number(stats.stok_telur_kg).toFixed(1) }} kg</span>
+                <div class="mt-2.5 text-[10.5px] text-blue-600 font-medium">
+                    Stok kandang: <span class="font-bold">{{ Number(stats.stok_telur_kg).toFixed(1) }} kg</span>
                 </div>
             </div>
 
-            <!-- 4. Stok Pakan Tersedia -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
+            <!-- 4. Card Rekanan BUMDes -->
+            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-xs relative overflow-hidden bg-gradient-to-br from-indigo-50/30 to-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-500">Stok Pakan Tersedia</p>
-                        <h4 class="text-2xl font-bold text-slate-800 mt-1">{{ Number(stats.stok_pakan_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span></h4>
+                        <p class="text-[11px] font-semibold text-indigo-800">Pembelian Rekanan</p>
+                        <h4 class="text-xl font-bold text-indigo-700 mt-1">
+                            {{ Number(stats.total_beli_rekanan_kg || 0).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                        </h4>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-2xl">inventory_2</span>
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">handshake</span>
                     </div>
                 </div>
-                <div class="mt-3 text-[11px] text-purple-600 font-medium">
-                    Pakan layer ayam petelur
+                <div class="mt-2.5 flex items-center justify-between text-[10.5px]">
+                    <span class="text-slate-500">Sisa stok rekanan:</span>
+                    <span class="font-bold text-indigo-700">{{ Number(stats.sisa_stok_rekanan_kg || 0).toFixed(1) }} kg</span>
+                </div>
+            </div>
+
+            <!-- 5. Stok Pakan Tersedia -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-500">Stok Pakan Layer</p>
+                        <h4 class="text-xl font-bold text-purple-700 mt-1">{{ Number(stats.stok_pakan_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span></h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">inventory_2</span>
+                    </div>
+                </div>
+                <div class="mt-2.5 text-[10.5px] text-purple-600 font-medium">
+                    Siap konsumsi harian
                 </div>
             </div>
         </div>
@@ -197,14 +321,49 @@ const savePopulasi = () => {
             </div>
         </div>
 
-        <!-- Grid: Tren Produksi & Transaksi Terakhir -->
+        <!-- Grid Grafik Harian: Produksi Telur & Penjualan Telur -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- 1. Grafik Harian Produksi Telur -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800">Grafik Harian Produksi Telur</h4>
+                        <p class="text-xs text-slate-500">Hasil produksi harian kandang (kg) 14 hari terakhir</p>
+                    </div>
+                    <span class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Produksi (kg)
+                    </span>
+                </div>
+                <div class="h-64 w-full">
+                    <canvas ref="produksiChartRef"></canvas>
+                </div>
+            </div>
+
+            <!-- 2. Grafik Harian Penjualan Telur -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800">Grafik Harian Penjualan Telur</h4>
+                        <p class="text-xs text-slate-500">Volume penjualan telur (kg) 14 hari terakhir</p>
+                    </div>
+                    <span class="text-[11px] px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-100 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> Penjualan (kg)
+                    </span>
+                </div>
+                <div class="h-64 w-full">
+                    <canvas ref="penjualanChartRef"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid: Tabel Rekap Harian & Transaksi Penjualan Terakhir -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Tren Produksi Telur (Tabel & Bar Visual) -->
+            <!-- Tabel Rekap Produksi & Penjualan Harian -->
             <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">Tren Produksi Telur Harian (14 Hari Terakhir)</h4>
-                        <p class="text-xs text-slate-500">Jumlah telur bagus (kg) dan kondisi fisik retak/rusak</p>
+                        <h4 class="text-sm font-bold text-slate-800">Rekap Data Harian (14 Hari Terakhir)</h4>
+                        <p class="text-xs text-slate-500">Rincian produksi telur bagus, kondisi retak/rusak, dan penjualan</p>
                     </div>
                     <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium">Harian</span>
                 </div>
@@ -215,17 +374,19 @@ const savePopulasi = () => {
                             <tr>
                                 <th class="p-2.5 rounded-l-lg">Tanggal</th>
                                 <th class="p-2.5 text-right">Produksi (kg)</th>
-                                <th class="p-2.5 text-right">Retak (butir)</th>
-                                <th class="p-2.5 text-right">Rusak (butir)</th>
+                                <th class="p-2.5 text-right">Retak (btr)</th>
+                                <th class="p-2.5 text-right">Rusak (btr)</th>
+                                <th class="p-2.5 text-right">Terjual (kg)</th>
                                 <th class="p-2.5 text-right rounded-r-lg">Nilai Jual</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <tr v-for="item in chartData" :key="item.tanggal" class="hover:bg-slate-50/50">
                                 <td class="p-2.5 font-medium text-slate-800">{{ item.tanggal }}</td>
-                                <td class="p-2.5 text-right font-bold text-emerald-600">{{ item.produksi.toFixed(1) }}</td>
+                                <td class="p-2.5 text-right font-bold text-emerald-600">{{ item.produksi_kg.toFixed(1) }}</td>
                                 <td class="p-2.5 text-right text-amber-600">{{ item.retak }}</td>
                                 <td class="p-2.5 text-right text-rose-600">{{ item.rusak }}</td>
+                                <td class="p-2.5 text-right font-bold text-blue-600">{{ Number(item.penjualan_kg || 0).toFixed(1) }}</td>
                                 <td class="p-2.5 text-right font-medium text-slate-700">{{ formatRp(item.penjualan_rp) }}</td>
                             </tr>
                         </tbody>
