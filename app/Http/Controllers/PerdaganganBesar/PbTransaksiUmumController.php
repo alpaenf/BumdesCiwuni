@@ -167,5 +167,19 @@ class PbTransaksiUmumController extends Controller
         $trx->delete();
         return back()->with('success', 'Transaksi Umum berhasil dihapus!');
     }
+
+    /**
+     * Cetak Struk Transaksi Umum / PPOB
+     */
+    public function cetakStruk($id)
+    {
+        $unit = $this->getUnit();
+        $transaksi = PbTransaksiUmum::findOrFail($id);
+
+        return view('perdagangan_besar.struk', [
+            'unit' => $unit,
+            'transaksi' => $transaksi,
+        ]);
+    }
 }
 

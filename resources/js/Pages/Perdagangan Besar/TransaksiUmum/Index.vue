@@ -147,6 +147,10 @@ const deleteTransaksi = (id) => {
     }
 };
 
+const openStruk = (id) => {
+    window.open(route('pb.transaksi-umum.struk', id), '_blank', 'width=420,height=600');
+};
+
 const getBadgeColor = (jenis) => {
     switch (jenis) {
         case 'Pulsa':
@@ -325,13 +329,23 @@ const getBadgeColor = (jenis) => {
                                     </span>
                                 </td>
                                 <td class="p-3 text-center whitespace-nowrap">
-                                    <button
-                                        @click="deleteTransaksi(t.id)"
-                                        class="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded transition"
-                                        title="Hapus Transaksi"
-                                    >
-                                        <span class="material-symbols-outlined text-sm">delete</span>
-                                    </button>
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button
+                                            @click="openStruk(t.id)"
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold border border-emerald-200 transition"
+                                            title="Cetak Struk Transaksi"
+                                        >
+                                            <span class="material-symbols-outlined text-sm">print</span>
+                                            <span>Struk</span>
+                                        </button>
+                                        <button
+                                            @click="deleteTransaksi(t.id)"
+                                            class="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition"
+                                            title="Hapus Transaksi"
+                                        >
+                                            <span class="material-symbols-outlined text-base">delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr v-if="!transaksi.data || transaksi.data.length === 0">

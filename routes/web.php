@@ -278,6 +278,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
     Route::get('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'index'])->name('pb.transaksi-umum.index');
     Route::post('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'store'])->name('pb.transaksi-umum.store');
     Route::delete('/transaksi-umum/{id}', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'destroy'])->name('pb.transaksi-umum.destroy');
+    Route::get('/transaksi-umum/{id}/struk', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'cetakStruk'])->name('pb.transaksi-umum.struk');
 
     // 6. Keuangan & Kas
     Route::get('/kas', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasIndex'])->name('pb.kas.index');
