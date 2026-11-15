@@ -7,6 +7,7 @@ const props = defineProps({
     unit: { type: Object, required: true },
     transaksi: { type: Object, required: true },
     summary: { type: Object, default: () => ({}) },
+    wp_list: { type: Array, default: () => [] },
     filters: { type: Object, default: () => ({}) },
 });
 
@@ -19,6 +20,7 @@ const filterTahun = ref(props.filters.tahun || '');
 const form = useForm({
     tanggal: new Date().toISOString().split('T')[0],
     waktu: new Date().toTimeString().split(' ')[0],
+    wajib_pajak_pbb_id: null,
     nama_wajib_pajak: '',
     nop: '',
     alamat_objek_pajak: '',
@@ -32,6 +34,23 @@ const form = useForm({
 
 const formatRupiah = (val) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+};
+
+const onSelectWp = (e) => {
+    const selectedId = e.target.value;
+    if (!selectedId) return;
+    const wp = props.wp_list.find(item => item.id == selectedId);
+    if (wp) {
+        form.wajib_pajak_pbb_id = wp.id;
+        form.nama_wajib_pajak = wp.nama_wajib_pajak;
+        form.nop = wp.nop;
+        if (wp.alamat_objek_pajak) {
+            form.alamat_objek_pajak = wp.alamat_objek_pajak;
+        }
+        if (wp.nominal_sppt_terakhir && (!form.nominal_pokok || form.nominal_pokok === 0)) {
+            form.nominal_pokok = Number(wp.nominal_sppt_terakhir);
+        }
+    }
 };
 
 const calculatedTotal = computed(() => {
@@ -64,6 +83,7 @@ const submitForm = () => {
             form.reset();
             form.tanggal = new Date().toISOString().split('T')[0];
             form.waktu = new Date().toTimeString().split(' ')[0];
+            form.wajib_pajak_pbb_id = null;
             form.biaya_admin = 5000;
             form.tahun_pajak = new Date().getFullYear().toString();
         },
@@ -150,7 +170,14 @@ const openStruk = (id) => {
                     </button>
                 </div>
 
-                <div>
+                <div class="flex items-center gap-2">
+                    <Link
+                        :href="route('pb.pbb.wajib-pajak.index')"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition"
+                    >
+                        <span class="material-symbols-outlined text-base">domain</span>
+                        Database WP PBB
+                    </Link>
                     <button
                         @click="isModalOpen = true"
                         class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition"
@@ -290,6 +317,20 @@ const openStruk = (id) => {
                             <label class="block font-bold text-slate-700 mb-1">Waktu Transaksi</label>
                             <input v-model="form.waktu" type="time" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
+                    </div>
+
+                    <!-- Dropdown Pilih dari Database WP PBB -->
+                    <div class="p-3 bg-emerald-50/50 rounded-2xl border border-emerald-200">
+                        <label class="block font-bold text-emerald-900 mb-1">Pilih dari Database WP PBB (Opsional)</label>
+                        <select @change="onSelectWp" class="w-full text-xs rounded-xl border border-emerald-200 bg-white px-3 py-2">
+                            <option value="">-- Ketik / Pilih Wajib Pajak Terdaftar --</option>
+                            <option v-for="wp in wp_list" :key="wp.id" :value="wp.id">
+                                {{ wp.nama_wajib_pajak }} - NOP: {{ wp.nop }} ({{ wp.alamat_objek_pajak || 'Desa Ciwuni' }})
+                            </option>
+                        </select>
+                        <span class="text-[10px] text-emerald-700 mt-1 block">
+                            Memilih WP akan otomatis mengisi Nama, NOP, Alamat, dan estimasi nominal pokok SPPT.
+                        </span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -277,6 +277,12 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
     Route::delete('/pbb/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'destroy'])->name('pb.pbb.destroy');
     Route::get('/pbb/{id}/struk', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'cetakStruk'])->name('pb.pbb.struk');
 
+    // 4b. Master Wajib Pajak & Objek Pajak PBB
+    Route::get('/pbb/wajib-pajak', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'wajibPajakIndex'])->name('pb.pbb.wajib-pajak.index');
+    Route::post('/pbb/wajib-pajak', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'wajibPajakStore'])->name('pb.pbb.wajib-pajak.store');
+    Route::put('/pbb/wajib-pajak/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'wajibPajakUpdate'])->name('pb.pbb.wajib-pajak.update');
+    Route::delete('/pbb/wajib-pajak/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'wajibPajakDestroy'])->name('pb.pbb.wajib-pajak.destroy');
+
     // 5. Transaksi Umum
     Route::get('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'index'])->name('pb.transaksi-umum.index');
     Route::post('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'store'])->name('pb.transaksi-umum.store');

@@ -138,6 +138,18 @@ const logout = () => {
                         <span>Pajak PBB</span>
                     </Link>
 
+                    <Link
+                        :href="route('pb.pbb.wajib-pajak.index')"
+                        class="relative mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all"
+                        :class="$page.component.includes('Pbb/WajibPajak')
+                            ? 'bg-primary text-white font-semibold shadow-sm'
+                            : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'"
+                        @click="showingSidebar = false"
+                    >
+                        <span class="material-symbols-outlined text-[18px]" :style="{ fontVariationSettings: $page.component.includes('Pbb/WajibPajak') ? '\'FILL\' 1' : '\'FILL\' 0' }">domain</span>
+                        <span>Database WP PBB</span>
+                    </Link>
+
                     <!-- Transaksi Umum -->
                     <Link
                         :href="route('pb.transaksi-umum.index')"

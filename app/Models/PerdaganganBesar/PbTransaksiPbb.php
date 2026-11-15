@@ -16,6 +16,7 @@ class PbTransaksiPbb extends Model
         'nomor_transaksi',
         'tanggal',
         'waktu',
+        'wajib_pajak_pbb_id',
         'nama_admin',
         'nama_wajib_pajak',
         'nop',
@@ -35,5 +36,10 @@ class PbTransaksiPbb extends Model
         'biaya_admin' => 'decimal:2',
         'total_bayar' => 'decimal:2',
     ];
+
+    public function wajibPajak()
+    {
+        return $this->belongsTo(PbWajibPajakPbb::class, 'wajib_pajak_pbb_id');
+    }
 }
 

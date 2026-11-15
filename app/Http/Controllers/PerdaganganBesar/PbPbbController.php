@@ -5,6 +5,7 @@ namespace App\Http\Controllers\PerdaganganBesar;
 use App\Http\Controllers\Controller;
 use App\Models\PerdaganganBesar\PbKas;
 use App\Models\PerdaganganBesar\PbTransaksiPbb;
+use App\Models\PerdaganganBesar\PbWajibPajakPbb;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -56,10 +57,13 @@ class PbPbbController extends Controller
             'total_bayar' => PbTransaksiPbb::where('status', 'SUCCES')->sum('total_bayar'),
         ];
 
+        $wpList = PbWajibPajakPbb::orderBy('nama_wajib_pajak')->get();
+
         return Inertia::render('Perdagangan Besar/Pbb/Index', [
             'unit' => $unit,
             'transaksi' => $transaksi,
             'summary' => $summary,
+            'wp_list' => $wpList,
             'filters' => [
                 'search' => $search,
                 'date' => $date,
@@ -77,6 +81,7 @@ class PbPbbController extends Controller
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],
             'waktu' => ['nullable'],
+            'wajib_pajak_pbb_id' => ['nullable', 'exists:pb_wajib_pajak_pbb,id'],
             'nama_wajib_pajak' => ['required', 'string', 'max:255'],
             'nop' => ['required', 'string', 'max:50'],
             'alamat_objek_pajak' => ['nullable', 'string'],
@@ -105,6 +110,7 @@ class PbPbbController extends Controller
                 'nomor_transaksi' => $nomorTransaksi,
                 'tanggal' => $validated['tanggal'],
                 'waktu' => $validated['waktu'] ?? Carbon::now()->format('H:i:s'),
+                'wajib_pajak_pbb_id' => $validated['wajib_pajak_pbb_id'] ?? null,
                 'nama_admin' => $adminName,
                 'nama_wajib_pajak' => $validated['nama_wajib_pajak'],
                 'nop' => trim($validated['nop']),
@@ -117,6 +123,12 @@ class PbPbbController extends Controller
                 'status' => $validated['status'],
                 'keterangan' => $validated['keterangan'] ?? null,
             ]);
+
+            // Jika ada relasi wajib pajak PBB, update nominal_sppt_terakhir
+            if (!empty($validated['wajib_pajak_pbb_id'])) {
+                PbWajibPajakPbb::where('id', $validated['wajib_pajak_pbb_id'])
+                    ->update(['nominal_sppt_terakhir' => $nomPokok]);
+            }
 
             // Jika status SUCCES, catat ke Kas Masuk
             if ($validated['status'] === 'SUCCES') {
@@ -157,6 +169,79 @@ class PbPbbController extends Controller
             'unit' => $unit,
             'transaksi' => $transaksi,
         ]);
+    }
+
+    /**
+     * Database Wajib Pajak PBB (Master NOP & Wajib Pajak)
+     */
+    public function wajibPajakIndex(Request $request): Response
+    {
+        $unit = $this->getUnit();
+        $search = $request->input('search');
+
+        $query = PbWajibPajakPbb::withCount('transaksi')
+            ->when($search, function ($q) use ($search) {
+                $q->where('nama_wajib_pajak', 'like', "%{$search}%")
+                    ->orWhere('nop', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%")
+                    ->orWhere('nomor_hp', 'like', "%{$search}%")
+                    ->orWhere('alamat_objek_pajak', 'like', "%{$search}%");
+            })
+            ->orderBy('nama_wajib_pajak');
+
+        $wajibPajak = $query->paginate(15)->withQueryString();
+
+        return Inertia::render('Perdagangan Besar/Pbb/WajibPajak', [
+            'unit' => $unit,
+            'wajib_pajak' => $wajibPajak,
+            'filters' => ['search' => $search],
+        ]);
+    }
+
+    public function wajibPajakStore(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'nama_wajib_pajak' => ['required', 'string', 'max:255'],
+            'nop' => ['required', 'string', 'max:50', 'unique:pb_wajib_pajak_pbb,nop'],
+            'nik' => ['nullable', 'string', 'max:30'],
+            'nomor_hp' => ['nullable', 'string', 'max:25'],
+            'alamat_objek_pajak' => ['nullable', 'string'],
+            'alamat_wajib_pajak' => ['nullable', 'string'],
+            'nominal_sppt_terakhir' => ['nullable', 'numeric', 'min:0'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $validated['nop'] = trim($validated['nop']);
+
+        PbWajibPajakPbb::create($validated);
+        return back()->with('success', 'Data Wajib Pajak PBB berhasil ditambahkan!');
+    }
+
+    public function wajibPajakUpdate(Request $request, $id): RedirectResponse
+    {
+        $wp = PbWajibPajakPbb::findOrFail($id);
+        $validated = $request->validate([
+            'nama_wajib_pajak' => ['required', 'string', 'max:255'],
+            'nop' => ['required', 'string', 'max:50', 'unique:pb_wajib_pajak_pbb,nop,' . $wp->id],
+            'nik' => ['nullable', 'string', 'max:30'],
+            'nomor_hp' => ['nullable', 'string', 'max:25'],
+            'alamat_objek_pajak' => ['nullable', 'string'],
+            'alamat_wajib_pajak' => ['nullable', 'string'],
+            'nominal_sppt_terakhir' => ['nullable', 'numeric', 'min:0'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $validated['nop'] = trim($validated['nop']);
+
+        $wp->update($validated);
+        return back()->with('success', 'Data Wajib Pajak PBB berhasil diperbarui!');
+    }
+
+    public function wajibPajakDestroy($id): RedirectResponse
+    {
+        $wp = PbWajibPajakPbb::findOrFail($id);
+        $wp->delete();
+        return back()->with('success', 'Data Wajib Pajak PBB berhasil dihapus!');
     }
 }
 
