@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const form = useForm({
-    email: 'perdagangan@bumdes.com',
+    email: 'admin@bumdes.com',
     password: '',
     remember: false,
     role: 'admin',
@@ -25,8 +25,10 @@ const togglePassword = () => {
 const selectRole = (role) => {
     selectedRole.value = role;
     form.role = role;
-    if (role === 'admin' && !form.email) {
-        form.email = 'perdagangan@bumdes.com';
+    if (role === 'admin') {
+        form.email = 'admin@bumdes.com';
+    } else {
+        form.email = 'manager@bumdes.com';
     }
 };
 
@@ -144,7 +146,7 @@ const submit = () => {
                         >
                             person_check
                         </span>
-                        Petugas / Kasir
+                        Manager
                     </button>
                 </div>
 
@@ -163,7 +165,7 @@ const submit = () => {
                                 v-model="form.email"
                                 type="email"
                                 autocomplete="email"
-                                placeholder="perdagangan@bumdes.com"
+                                placeholder="admin@bumdes.com"
                                 class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/20 transition"
                                 required
                                 autofocus
@@ -230,7 +232,7 @@ const submit = () => {
                 <!-- Akun Default Uji Coba Info Card -->
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                     <p class="text-xs text-slate-500">
-                        Akun Uji Coba: <span class="font-bold text-slate-700">perdagangan@bumdes.com</span> • Sandi: <span class="font-bold text-slate-700">password</span>
+                        Akun Uji Coba: <span class="font-bold text-slate-700">admin@bumdes.com</span> • Sandi: <span class="font-bold text-slate-700">password</span>
                     </p>
                 </div>
 
