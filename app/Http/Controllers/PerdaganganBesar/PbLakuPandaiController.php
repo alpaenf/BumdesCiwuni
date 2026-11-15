@@ -69,7 +69,7 @@ class PbLakuPandaiController extends Controller
         ];
 
         // Nasabah list for selector dropdown
-        $nasabahList = PbNasabahLakuPandai::orderBy('nama')->get(['id', 'nama', 'no_rekening', 'nama_bank', 'no_hp']);
+        $nasabahList = PbNasabahLakuPandai::orderBy('nama')->get(['id', 'nama', 'no_rekening', 'nama_bank', 'no_hp', 'rekening_list']);
 
         return Inertia::render('Perdagangan Besar/LakuPandai/Index', [
             'unit' => $unit,
@@ -237,9 +237,24 @@ class PbLakuPandaiController extends Controller
             'no_hp' => ['nullable', 'string', 'max:20'],
             'no_rekening' => ['nullable', 'string', 'max:50'],
             'nama_bank' => ['nullable', 'string', 'max:50'],
+            'rekening_list' => ['nullable', 'array'],
+            'rekening_list.*.nama_bank' => ['nullable', 'string', 'max:100'],
+            'rekening_list.*.no_rekening' => ['nullable', 'string', 'max:100'],
+            'rekening_list.*.atas_nama' => ['nullable', 'string', 'max:100'],
             'alamat' => ['nullable', 'string'],
             'keterangan' => ['nullable', 'string'],
         ]);
+
+        // Jika rekening_list diisi, pastikan no_rekening & nama_bank utama terisi item pertama jika kosong
+        if (!empty($validated['rekening_list']) && is_array($validated['rekening_list'])) {
+            $first = $validated['rekening_list'][0];
+            if (empty($validated['nama_bank']) && !empty($first['nama_bank'])) {
+                $validated['nama_bank'] = $first['nama_bank'];
+            }
+            if (empty($validated['no_rekening']) && !empty($first['no_rekening'])) {
+                $validated['no_rekening'] = $first['no_rekening'];
+            }
+        }
 
         PbNasabahLakuPandai::create($validated);
         return back()->with('success', 'Data nasabah berhasil ditambahkan!');
@@ -253,9 +268,23 @@ class PbLakuPandaiController extends Controller
             'no_hp' => ['nullable', 'string', 'max:20'],
             'no_rekening' => ['nullable', 'string', 'max:50'],
             'nama_bank' => ['nullable', 'string', 'max:50'],
+            'rekening_list' => ['nullable', 'array'],
+            'rekening_list.*.nama_bank' => ['nullable', 'string', 'max:100'],
+            'rekening_list.*.no_rekening' => ['nullable', 'string', 'max:100'],
+            'rekening_list.*.atas_nama' => ['nullable', 'string', 'max:100'],
             'alamat' => ['nullable', 'string'],
             'keterangan' => ['nullable', 'string'],
         ]);
+
+        if (!empty($validated['rekening_list']) && is_array($validated['rekening_list'])) {
+            $first = $validated['rekening_list'][0];
+            if (!empty($first['nama_bank'])) {
+                $validated['nama_bank'] = $first['nama_bank'];
+            }
+            if (!empty($first['no_rekening'])) {
+                $validated['no_rekening'] = $first['no_rekening'];
+            }
+        }
 
         $nasabah->update($validated);
         return back()->with('success', 'Data nasabah berhasil diperbarui!');

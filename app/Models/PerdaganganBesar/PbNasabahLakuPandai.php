@@ -17,8 +17,13 @@ class PbNasabahLakuPandai extends Model
         'no_hp',
         'no_rekening',
         'nama_bank',
+        'rekening_list',
         'alamat',
         'keterangan',
+    ];
+
+    protected $casts = [
+        'rekening_list' => 'array',
     ];
 
     public function transaksi()

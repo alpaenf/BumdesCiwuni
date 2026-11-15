@@ -18,9 +18,22 @@ const form = useForm({
     no_hp: '',
     no_rekening: '',
     nama_bank: '',
+    rekening_list: [],
     alamat: '',
     keterangan: '',
 });
+
+const addRekeningItem = () => {
+    form.rekening_list.push({
+        nama_bank: '',
+        no_rekening: '',
+        atas_nama: '',
+    });
+};
+
+const removeRekeningItem = (idx) => {
+    form.rekening_list.splice(idx, 1);
+};
 
 const applySearch = () => {
     router.get(route('pb.laku-pandai.nasabah.index'), {
@@ -31,6 +44,9 @@ const applySearch = () => {
 const openAddModal = () => {
     editingNasabah.value = null;
     form.reset();
+    form.rekening_list = [
+        { nama_bank: '', no_rekening: '', atas_nama: '' }
+    ];
     isModalOpen.value = true;
 };
 
@@ -42,10 +58,30 @@ const openEditModal = (item) => {
     form.nama_bank = item.nama_bank || '';
     form.alamat = item.alamat || '';
     form.keterangan = item.keterangan || '';
+    
+    // Load rekening_list jika ada, atau buat dari no_rekening / nama_bank yang sudah ada
+    if (item.rekening_list && Array.isArray(item.rekening_list) && item.rekening_list.length > 0) {
+        form.rekening_list = JSON.parse(JSON.stringify(item.rekening_list));
+    } else if (item.no_rekening || item.nama_bank) {
+        form.rekening_list = [
+            { nama_bank: item.nama_bank || '', no_rekening: item.no_rekening || '', atas_nama: item.nama || '' }
+        ];
+    } else {
+        form.rekening_list = [
+            { nama_bank: '', no_rekening: '', atas_nama: '' }
+        ];
+    }
+    
     isModalOpen.value = true;
 };
 
 const submitForm = () => {
+    // Sinkronkan data utama dengan item rekening pertama
+    if (form.rekening_list.length > 0) {
+        form.nama_bank = form.rekening_list[0].nama_bank || '';
+        form.no_rekening = form.rekening_list[0].no_rekening || '';
+    }
+
     if (editingNasabah.value) {
         form.put(route('pb.laku-pandai.nasabah.update', editingNasabah.value.id), {
             onSuccess: () => {
@@ -138,8 +174,23 @@ const deleteNasabah = (id) => {
                                 <td class="px-4 py-3 font-bold text-slate-900">{{ item.nama }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ item.no_hp || '-' }}</td>
                                 <td class="px-4 py-3">
-                                    <div class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded inline-block mb-0.5">{{ item.nama_bank || 'Umum / Lainnya' }}</div>
-                                    <div class="font-mono text-slate-800 font-bold">{{ item.no_rekening || '-' }}</div>
+                                    <div v-if="item.rekening_list && item.rekening_list.length > 0" class="space-y-1.5">
+                                        <div v-for="(rek, rIdx) in item.rekening_list" :key="rIdx" class="flex flex-wrap items-center gap-1.5">
+                                            <span class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
+                                                {{ rek.nama_bank || 'Layanan' }}
+                                            </span>
+                                            <span class="font-mono text-slate-800 font-bold text-xs">
+                                                {{ rek.no_rekening || '-' }}
+                                            </span>
+                                            <span v-if="rek.atas_nama" class="text-[10px] text-slate-400">
+                                                (a/n {{ rek.atas_nama }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div v-else>
+                                        <div class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded inline-block mb-0.5">{{ item.nama_bank || 'Umum / Lainnya' }}</div>
+                                        <div class="font-mono text-slate-800 font-bold">{{ item.no_rekening || '-' }}</div>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-slate-500 max-w-xs truncate">{{ item.alamat || '-' }}</td>
                                 <td class="px-4 py-3 text-center">
@@ -192,7 +243,7 @@ const deleteNasabah = (id) => {
 
         <!-- Modal Tambah / Edit Nasabah -->
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-            <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
                 <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-bold text-slate-900">{{ editingNasabah ? 'Edit Data Nasabah' : 'Tambah Nasabah Baru' }}</h3>
@@ -203,26 +254,79 @@ const deleteNasabah = (id) => {
                     </button>
                 </div>
 
-                <form @submit.prevent="submitForm" class="p-4 sm:p-5 space-y-3.5 text-xs">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Nasabah *</label>
-                        <input v-model="form.nama" type="text" placeholder="Masukkan nama nasabah..." required class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
-                    </div>
-
+                <form @submit.prevent="submitForm" class="p-4 sm:p-5 space-y-4 text-xs overflow-y-auto">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Nasabah *</label>
+                            <input v-model="form.nama" type="text" placeholder="Masukkan nama nasabah..." required class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
+                        </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Nomor HP / WhatsApp</label>
                             <input v-model="form.no_hp" type="text" placeholder="08xxxxxxxxxx" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
                         </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 mb-1">Bank / Provider / Lembaga</label>
-                            <input v-model="form.nama_bank" type="text" placeholder="Contoh: PLN, PDAM, IndiHome, BRI, Pamsimas..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2" />
-                        </div>
                     </div>
 
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Nomor Rekening / No. Meter / ID Pelanggan</label>
-                        <input v-model="form.no_rekening" type="text" placeholder="Masukkan nomor rekening, ID pelanggan, atau no. meter..." class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-mono" />
+                    <!-- Dynamic Bank / Rekening List (Tak Terbatas) -->
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-slate-800 text-xs block">Daftar Rekening / Akun Provider / No. Meter</span>
+                                <span class="text-[10px] text-slate-500">Satu nasabah bisa memiliki banyak bank/rekening/ID pelanggan</span>
+                            </div>
+                            <button
+                                type="button"
+                                @click="addRekeningItem"
+                                class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] rounded-lg border border-blue-200 transition"
+                            >
+                                <span class="material-symbols-outlined text-sm">add</span>
+                                Tambah Rekening
+                            </button>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div
+                                v-for="(rek, idx) in form.rekening_list"
+                                :key="idx"
+                                class="p-2.5 bg-white rounded-xl border border-slate-200 shadow-xs relative flex flex-col sm:flex-row gap-2 items-center"
+                            >
+                                <div class="w-full sm:w-1/3">
+                                    <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Bank / Provider</label>
+                                    <input
+                                        v-model="rek.nama_bank"
+                                        type="text"
+                                        placeholder="BCA / BRI / PLN / PDAM..."
+                                        class="w-full text-xs rounded-lg border border-slate-200 bg-slate-50/50 px-2.5 py-1.5 focus:border-blue-500 focus:bg-white"
+                                    />
+                                </div>
+                                <div class="w-full sm:w-1/3">
+                                    <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">No. Rek / ID / Meter</label>
+                                    <input
+                                        v-model="rek.no_rekening"
+                                        type="text"
+                                        placeholder="No rekening / ID..."
+                                        class="w-full text-xs rounded-lg border border-slate-200 bg-slate-50/50 px-2.5 py-1.5 font-mono focus:border-blue-500 focus:bg-white"
+                                    />
+                                </div>
+                                <div class="w-full sm:w-1/3">
+                                    <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Atas Nama (Opsional)</label>
+                                    <input
+                                        v-model="rek.atas_nama"
+                                        type="text"
+                                        placeholder="Nama pemilik rek..."
+                                        class="w-full text-xs rounded-lg border border-slate-200 bg-slate-50/50 px-2.5 py-1.5 focus:border-blue-500 focus:bg-white"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    @click="removeRekeningItem(idx)"
+                                    v-if="form.rekening_list.length > 1"
+                                    class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition self-end sm:self-center mt-2 sm:mt-4"
+                                    title="Hapus baris ini"
+                                >
+                                    <span class="material-symbols-outlined text-base">delete</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div>
