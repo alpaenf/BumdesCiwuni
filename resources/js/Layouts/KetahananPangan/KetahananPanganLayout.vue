@@ -41,12 +41,9 @@ const logout = () => {
         >
             <!-- Logo & Unit Header -->
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div class="flex items-center gap-3 overflow-hidden">
-                    <img src="/logopangan.png" alt="Logo Ketahanan Pangan" class="w-10 h-10 object-contain drop-shadow-sm shrink-0" onerror="this.onerror=null; this.src='/images/logo-dammar-wulan.png';" />
-                    <div v-show="isSidebarOpen" class="transition-opacity duration-200">
-                        <h1 class="text-sm font-bold text-slate-900 tracking-wide">Ketahanan Pangan</h1>
-                        <p class="text-xs text-emerald-600 font-semibold">BUMDes Dammar Wulan</p>
-                    </div>
+                <div class="overflow-hidden">
+                    <h1 class="text-sm font-bold text-slate-900 tracking-wide">Ketahanan Pangan</h1>
+                    <p class="text-xs text-emerald-600 font-semibold">BUMDes Dammar Wulan</p>
                 </div>
                 <button 
                     @click="isSidebarOpen = !isSidebarOpen" 
