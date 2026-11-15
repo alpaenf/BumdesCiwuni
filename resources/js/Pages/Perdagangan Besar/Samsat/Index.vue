@@ -12,6 +12,7 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const editingItem = ref(null);
 const search = ref(props.filters.search || '');
 const filterDate = ref(props.filters.date || '');
 const filterStatus = ref(props.filters.status || '');
@@ -116,17 +117,59 @@ const resetFilter = () => {
     applyFilter();
 };
 
+const openCreateModal = () => {
+    editingItem.value = null;
+    form.reset();
+    form.tanggal = new Date().toISOString().split('T')[0];
+    form.tanggal_jatuh_tempo = '';
+    form.denda_pajak = 0;
+    form.biaya_jasa_bumdes = 10000;
+    form.jenis_kendaraan = 'Sepeda Motor';
+    form.jenis_pembayaran = 'Cash';
+    form.status_transaksi = 'SUCCES';
+    isModalOpen.value = true;
+};
+
+const openEditModal = (item) => {
+    editingItem.value = item;
+    form.tanggal = item.tanggal;
+    form.tanggal_jatuh_tempo = item.tanggal_jatuh_tempo || '';
+    form.nama_admin = item.nama_admin || '';
+    form.wajib_pajak_id = item.wajib_pajak_id || null;
+    form.nama_wajib_pajak = item.nama_wajib_pajak;
+    form.nomor_polisi = item.nomor_polisi;
+    form.jenis_kendaraan = item.jenis_kendaraan;
+    form.jenis_pembayaran = item.jenis_pembayaran || 'Cash';
+    form.nominal_pajak = item.nominal_pajak || 0;
+    form.denda_pajak = item.denda_pajak || 0;
+    form.biaya_admin = item.biaya_admin || 0;
+    form.biaya_jasa_bumdes = item.biaya_jasa_bumdes || 10000;
+    form.status_transaksi = item.status_transaksi || 'SUCCES';
+    form.keterangan = item.keterangan || '';
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    form.post(route('pb.samsat.store'), {
-        onSuccess: () => {
-            isModalOpen.value = false;
-            form.reset();
-            form.tanggal = new Date().toISOString().split('T')[0];
-            form.tanggal_jatuh_tempo = '';
-            form.denda_pajak = 0;
-            form.biaya_jasa_bumdes = 10000;
-        },
-    });
+    if (editingItem.value) {
+        form.put(route('pb.samsat.update', editingItem.value.id), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                editingItem.value = null;
+                form.reset();
+            },
+        });
+    } else {
+        form.post(route('pb.samsat.store'), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                form.reset();
+                form.tanggal = new Date().toISOString().split('T')[0];
+                form.tanggal_jatuh_tempo = '';
+                form.denda_pajak = 0;
+                form.biaya_jasa_bumdes = 10000;
+            },
+        });
+    }
 };
 
 const deleteTransaksi = (id) => {
@@ -211,7 +254,7 @@ const openStruk = (id) => {
                         Database Wajib Pajak
                     </Link>
                     <button
-                        @click="isModalOpen = true"
+                        @click="openCreateModal"
                         class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-amber-600/20 transition"
                     >
                         <span class="material-symbols-outlined text-base">add</span>
@@ -304,6 +347,13 @@ const openStruk = (id) => {
                                             <span>Struk</span>
                                         </button>
                                         <button
+                                            @click="openEditModal(item)"
+                                            class="p-1 text-slate-400 hover:text-amber-600 rounded-lg hover:bg-amber-50 transition"
+                                            title="Edit Transaksi"
+                                        >
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+                                        <button
                                             @click="deleteTransaksi(item.id)"
                                             class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
                                             title="Hapus"
@@ -342,8 +392,8 @@ const openStruk = (id) => {
             <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
                 <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900">Input Transaksi Samsat Budiman</h3>
-                        <p class="text-xs text-slate-500">Pembayaran Pajak Kendaraan Bermotor (PKB)</p>
+                        <h3 class="text-sm font-bold text-slate-900">{{ editingItem ? 'Edit Transaksi Samsat Budiman' : 'Input Transaksi Samsat Budiman' }}</h3>
+                        <p class="text-xs text-slate-500">{{ editingItem ? 'Perbarui data pembayaran pajak kendaraan' : 'Pembayaran Pajak Kendaraan Bermotor (PKB)' }}</p>
                     </div>
                     <button @click="isModalOpen = false" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
                         <span class="material-symbols-outlined text-xl">close</span>
@@ -504,7 +554,7 @@ const openStruk = (id) => {
                             Batal
                         </button>
                         <button type="submit" :disabled="form.processing" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold shadow-md shadow-amber-600/20">
-                            Simpan Transaksi Samsat
+                            {{ editingItem ? 'Simpan Perubahan' : 'Simpan Transaksi Samsat' }}
                         </button>
                     </div>
                 </form>

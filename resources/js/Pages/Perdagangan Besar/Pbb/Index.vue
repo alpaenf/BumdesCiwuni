@@ -12,6 +12,7 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const editingItem = ref(null);
 const search = ref(props.filters.search || '');
 const filterDate = ref(props.filters.date || '');
 const filterStatus = ref(props.filters.status || '');
@@ -77,18 +78,59 @@ const resetFilter = () => {
     applyFilter();
 };
 
+const openCreateModal = () => {
+    editingItem.value = null;
+    form.reset();
+    form.tanggal = new Date().toISOString().split('T')[0];
+    form.waktu = new Date().toTimeString().split(' ')[0];
+    form.wajib_pajak_pbb_id = null;
+    form.biaya_admin = 5000;
+    form.tahun_pajak = new Date().getFullYear().toString();
+    form.metode_pembayaran = 'CASH';
+    form.status = 'SUCCES';
+    isModalOpen.value = true;
+};
+
+const openEditModal = (item) => {
+    editingItem.value = item;
+    form.tanggal = item.tanggal;
+    form.waktu = item.waktu || new Date().toTimeString().split(' ')[0];
+    form.nama_admin = item.nama_admin || '';
+    form.wajib_pajak_pbb_id = item.wajib_pajak_pbb_id || null;
+    form.nama_wajib_pajak = item.nama_wajib_pajak;
+    form.nop = item.nop;
+    form.alamat_objek_pajak = item.alamat_objek_pajak || '';
+    form.tahun_pajak = item.tahun_pajak;
+    form.nominal_pokok = item.nominal_pokok || 0;
+    form.biaya_admin = item.biaya_admin || 0;
+    form.metode_pembayaran = item.metode_pembayaran || 'CASH';
+    form.status = item.status || 'SUCCES';
+    form.keterangan = item.keterangan || '';
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    form.post(route('pb.pbb.store'), {
-        onSuccess: () => {
-            isModalOpen.value = false;
-            form.reset();
-            form.tanggal = new Date().toISOString().split('T')[0];
-            form.waktu = new Date().toTimeString().split(' ')[0];
-            form.wajib_pajak_pbb_id = null;
-            form.biaya_admin = 5000;
-            form.tahun_pajak = new Date().getFullYear().toString();
-        },
-    });
+    if (editingItem.value) {
+        form.put(route('pb.pbb.update', editingItem.value.id), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                editingItem.value = null;
+                form.reset();
+            },
+        });
+    } else {
+        form.post(route('pb.pbb.store'), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                form.reset();
+                form.tanggal = new Date().toISOString().split('T')[0];
+                form.waktu = new Date().toTimeString().split(' ')[0];
+                form.wajib_pajak_pbb_id = null;
+                form.biaya_admin = 5000;
+                form.tahun_pajak = new Date().getFullYear().toString();
+            },
+        });
+    }
 };
 
 const deleteTransaksi = (id) => {
@@ -180,7 +222,7 @@ const openStruk = (id) => {
                         Database WP PBB
                     </Link>
                     <button
-                        @click="isModalOpen = true"
+                        @click="openCreateModal"
                         class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition"
                     >
                         <span class="material-symbols-outlined text-base">add</span>
@@ -262,6 +304,13 @@ const openStruk = (id) => {
                                             <span>Struk</span>
                                         </button>
                                         <button
+                                            @click="openEditModal(item)"
+                                            class="p-1 text-slate-400 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 transition"
+                                            title="Edit Transaksi"
+                                        >
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+                                        <button
                                             @click="deleteTransaksi(item.id)"
                                             class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
                                             title="Hapus"
@@ -300,8 +349,8 @@ const openStruk = (id) => {
             <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
                 <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900">Input Transaksi Pembayaran PBB</h3>
-                        <p class="text-xs text-slate-500">Pajak Bumi dan Bangunan Desa Ciwuni</p>
+                        <h3 class="text-sm font-bold text-slate-900">{{ editingItem ? 'Edit Transaksi Pembayaran PBB' : 'Input Transaksi Pembayaran PBB' }}</h3>
+                        <p class="text-xs text-slate-500">{{ editingItem ? 'Perbarui data pembayaran PBB' : 'Pajak Bumi dan Bangunan Desa Ciwuni' }}</p>
                     </div>
                     <button @click="isModalOpen = false" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
                         <span class="material-symbols-outlined text-xl">close</span>
@@ -408,7 +457,7 @@ const openStruk = (id) => {
                             Batal
                         </button>
                         <button type="submit" :disabled="form.processing" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-md shadow-emerald-600/20">
-                            Simpan Transaksi PBB
+                            {{ editingItem ? 'Simpan Perubahan' : 'Simpan Transaksi PBB' }}
                         </button>
                     </div>
                 </form>

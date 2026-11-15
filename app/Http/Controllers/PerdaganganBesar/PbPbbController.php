@@ -182,6 +182,57 @@ class PbPbbController extends Controller
     }
 
     /**
+     * Update Transaksi PBB
+     */
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $trx = PbTransaksiPbb::findOrFail($id);
+
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date'],
+            'waktu' => ['nullable'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
+            'wajib_pajak_pbb_id' => ['nullable', 'exists:pb_wajib_pajak_pbb,id'],
+            'nama_wajib_pajak' => ['required', 'string', 'max:255'],
+            'nop' => ['required', 'string', 'max:50'],
+            'alamat_objek_pajak' => ['nullable', 'string'],
+            'tahun_pajak' => ['required', 'string', 'max:10'],
+            'nominal_pokok' => ['required', 'numeric', 'min:0'],
+            'biaya_admin' => ['nullable', 'numeric', 'min:0'],
+            'metode_pembayaran' => ['required', 'in:CASH,TRANSFER'],
+            'status' => ['required', 'in:SUCCES,PENDING,CANCEL'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $adminName = !empty($validated['nama_admin']) 
+            ? trim($validated['nama_admin']) 
+            : ($trx->nama_admin ?: 'Admin');
+
+        $nomPokok = (float)$validated['nominal_pokok'];
+        $biayaAdmin = (float)($validated['biaya_admin'] ?? 0);
+        $totalBayar = $nomPokok + $biayaAdmin;
+
+        $trx->update([
+            'tanggal' => $validated['tanggal'],
+            'waktu' => $validated['waktu'] ?? $trx->waktu,
+            'wajib_pajak_pbb_id' => $validated['wajib_pajak_pbb_id'] ?? null,
+            'nama_admin' => $adminName,
+            'nama_wajib_pajak' => $validated['nama_wajib_pajak'],
+            'nop' => trim($validated['nop']),
+            'alamat_objek_pajak' => $validated['alamat_objek_pajak'] ?? null,
+            'tahun_pajak' => $validated['tahun_pajak'],
+            'nominal_pokok' => $nomPokok,
+            'biaya_admin' => $biayaAdmin,
+            'total_bayar' => $totalBayar,
+            'metode_pembayaran' => $validated['metode_pembayaran'],
+            'status' => $validated['status'],
+            'keterangan' => $validated['keterangan'] ?? null,
+        ]);
+
+        return back()->with('success', 'Transaksi PBB berhasil diperbarui!');
+    }
+
+    /**
      * Hapus Transaksi PBB
      */
     public function destroy($id): RedirectResponse

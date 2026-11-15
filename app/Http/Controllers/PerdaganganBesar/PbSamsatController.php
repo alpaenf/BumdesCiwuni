@@ -183,6 +183,61 @@ class PbSamsatController extends Controller
     }
 
     /**
+     * Update Transaksi Samsat
+     */
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $trx = PbTransaksiSamsat::findOrFail($id);
+
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date'],
+            'tanggal_jatuh_tempo' => ['nullable', 'date'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
+            'wajib_pajak_id' => ['nullable', 'exists:pb_wajib_pajak_samsat,id'],
+            'nama_wajib_pajak' => ['required', 'string', 'max:255'],
+            'nomor_polisi' => ['required', 'string', 'max:20'],
+            'jenis_kendaraan' => ['required', 'string'],
+            'jenis_pembayaran' => ['required', 'in:Cash,Transfer'],
+            'nominal_pajak' => ['required', 'numeric', 'min:0'],
+            'denda_pajak' => ['nullable', 'numeric', 'min:0'],
+            'biaya_admin' => ['nullable', 'numeric', 'min:0'],
+            'biaya_jasa_bumdes' => ['nullable', 'numeric', 'min:0'],
+            'status_transaksi' => ['required', 'in:SUCCES,PENDING,CANCEL'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $adminName = !empty($validated['nama_admin']) 
+            ? trim($validated['nama_admin']) 
+            : ($trx->nama_admin ?: 'Admin');
+
+        $nomPajak = (float)$validated['nominal_pajak'];
+        $dendaPajak = (float)($validated['denda_pajak'] ?? 0);
+        $biayaAdmin = (float)($validated['biaya_admin'] ?? 0);
+        $jasaBumdes = (float)($validated['biaya_jasa_bumdes'] ?? 0);
+        $totalBayar = $nomPajak + $dendaPajak + $biayaAdmin + $jasaBumdes;
+
+        $trx->update([
+            'tanggal' => $validated['tanggal'],
+            'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo'] ?? null,
+            'wajib_pajak_id' => $validated['wajib_pajak_id'] ?? null,
+            'nama_wajib_pajak' => $validated['nama_wajib_pajak'],
+            'nomor_polisi' => strtoupper(trim($validated['nomor_polisi'])),
+            'jenis_kendaraan' => $validated['jenis_kendaraan'],
+            'jenis_pembayaran' => $validated['jenis_pembayaran'],
+            'nominal_pajak' => $nomPajak,
+            'denda_pajak' => $dendaPajak,
+            'biaya_admin' => $biayaAdmin,
+            'biaya_jasa_bumdes' => $jasaBumdes,
+            'total_pembayaran' => $totalBayar,
+            'status_transaksi' => $validated['status_transaksi'],
+            'nama_admin' => $adminName,
+            'keterangan' => $validated['keterangan'] ?? null,
+        ]);
+
+        return back()->with('success', 'Transaksi Samsat Budiman berhasil diperbarui!');
+    }
+
+    /**
      * Hapus Transaksi Samsat
      */
     public function destroy($id): RedirectResponse

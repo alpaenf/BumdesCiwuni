@@ -162,6 +162,56 @@ class PbTransaksiUmumController extends Controller
     }
 
     /**
+     * Update Transaksi Umum
+     */
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $trx = PbTransaksiUmum::findOrFail($id);
+
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date'],
+            'waktu' => ['nullable'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
+            'nama_pelanggan' => ['required', 'string', 'max:255'],
+            'jenis_transaksi' => ['required', 'string'],
+            'nomor_tujuan' => ['required', 'string', 'max:100'],
+            'biaya_pokok' => ['required', 'numeric', 'min:0'],
+            'biaya_admin' => ['nullable', 'numeric', 'min:0'],
+            'biaya_jasa_agen' => ['nullable', 'numeric', 'min:0'],
+            'metode_pembayaran' => ['required', 'in:CASH,TRANSFER'],
+            'status' => ['required', 'in:SUCCES,PENDING,CANCEL'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $adminName = !empty($validated['nama_admin']) 
+            ? trim($validated['nama_admin']) 
+            : ($trx->nama_admin ?: 'Admin');
+
+        $pokok = (float)$validated['biaya_pokok'];
+        $admin = (float)($validated['biaya_admin'] ?? 0);
+        $jasa = (float)($validated['biaya_jasa_agen'] ?? 0);
+        $total = $pokok + $admin + $jasa;
+
+        $trx->update([
+            'tanggal' => $validated['tanggal'],
+            'waktu' => $validated['waktu'] ?? $trx->waktu,
+            'nama_admin' => $adminName,
+            'nama_pelanggan' => $validated['nama_pelanggan'],
+            'jenis_transaksi' => $validated['jenis_transaksi'],
+            'nomor_tujuan' => trim($validated['nomor_tujuan']),
+            'biaya_pokok' => $pokok,
+            'biaya_admin' => $admin,
+            'biaya_jasa_agen' => $jasa,
+            'total_bayar' => $total,
+            'metode_pembayaran' => $validated['metode_pembayaran'],
+            'status' => $validated['status'],
+            'keterangan' => $validated['keterangan'] ?? null,
+        ]);
+
+        return back()->with('success', 'Transaksi Umum berhasil diperbarui!');
+    }
+
+    /**
      * Hapus Transaksi Umum
      */
     public function destroy($id): RedirectResponse

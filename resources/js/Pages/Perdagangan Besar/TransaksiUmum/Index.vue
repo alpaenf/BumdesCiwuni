@@ -12,6 +12,7 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const editingItem = ref(null);
 const search = ref(props.filters.search || '');
 const filterDate = ref(props.filters.date || '');
 const filterStatus = ref(props.filters.status || '');
@@ -129,17 +130,61 @@ const resetFilter = () => {
     applyFilter();
 };
 
+const openCreateModal = () => {
+    editingItem.value = null;
+    form.reset();
+    form.tanggal = new Date().toISOString().split('T')[0];
+    form.waktu = new Date().toTimeString().split(' ')[0];
+    form.biaya_admin = 0;
+    form.biaya_jasa_agen = 2000;
+    form.jenis_transaksi = 'Pulsa';
+    form.metode_pembayaran = 'CASH';
+    form.status = 'SUCCES';
+    selectedNasabahId.value = '';
+    selectedAccountIndex.value = '';
+    isModalOpen.value = true;
+};
+
+const openEditModal = (item) => {
+    editingItem.value = item;
+    form.tanggal = item.tanggal;
+    form.waktu = item.waktu || new Date().toTimeString().split(' ')[0];
+    form.nama_admin = item.nama_admin || '';
+    form.nama_pelanggan = item.nama_pelanggan;
+    form.jenis_transaksi = item.jenis_transaksi;
+    form.nomor_tujuan = item.nomor_tujuan;
+    form.biaya_pokok = item.biaya_pokok || 0;
+    form.biaya_admin = item.biaya_admin || 0;
+    form.biaya_jasa_agen = item.biaya_jasa_agen || 0;
+    form.metode_pembayaran = item.metode_pembayaran || 'CASH';
+    form.status = item.status || 'SUCCES';
+    form.keterangan = item.keterangan || '';
+    selectedNasabahId.value = '';
+    selectedAccountIndex.value = '';
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    form.post(route('pb.transaksi-umum.store'), {
-        onSuccess: () => {
-            isModalOpen.value = false;
-            form.reset();
-            form.tanggal = new Date().toISOString().split('T')[0];
-            form.waktu = new Date().toTimeString().split(' ')[0];
-            form.biaya_admin = 0;
-            form.biaya_jasa_agen = 2000;
-        },
-    });
+    if (editingItem.value) {
+        form.put(route('pb.transaksi-umum.update', editingItem.value.id), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                editingItem.value = null;
+                form.reset();
+            },
+        });
+    } else {
+        form.post(route('pb.transaksi-umum.store'), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                form.reset();
+                form.tanggal = new Date().toISOString().split('T')[0];
+                form.waktu = new Date().toTimeString().split(' ')[0];
+                form.biaya_admin = 0;
+                form.biaya_jasa_agen = 2000;
+            },
+        });
+    }
 };
 
 const deleteTransaksi = (id) => {
@@ -254,7 +299,7 @@ const getBadgeColor = (jenis) => {
                             Reset
                         </button>
                         <button
-                            @click="isModalOpen = true"
+                            @click="openCreateModal"
                             class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm"
                         >
                             <span class="material-symbols-outlined text-sm">add_circle</span>
@@ -340,6 +385,13 @@ const getBadgeColor = (jenis) => {
                                             <span>Struk</span>
                                         </button>
                                         <button
+                                            @click="openEditModal(t)"
+                                            class="p-1 text-slate-400 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 transition"
+                                            title="Edit Transaksi"
+                                        >
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+                                        <button
                                             @click="deleteTransaksi(t.id)"
                                             class="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition"
                                             title="Hapus Transaksi"
@@ -385,7 +437,7 @@ const getBadgeColor = (jenis) => {
         <div v-if="isModalOpen" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <h3 class="text-base font-bold text-slate-800">Catat Transaksi Umum / PPOB</h3>
+                    <h3 class="text-base font-bold text-slate-800">{{ editingItem ? 'Edit Transaksi Umum / PPOB' : 'Catat Transaksi Umum / PPOB' }}</h3>
                     <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
                         <span class="material-symbols-outlined">close</span>
                     </button>
@@ -580,7 +632,7 @@ const getBadgeColor = (jenis) => {
                             class="px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold disabled:opacity-50 flex items-center gap-1.5"
                         >
                             <span v-if="form.processing" class="material-symbols-outlined text-sm animate-spin">refresh</span>
-                            <span>Simpan Transaksi</span>
+                            <span>{{ editingItem ? 'Simpan Perubahan' : 'Simpan Transaksi' }}</span>
                         </button>
                     </div>
                 </form>

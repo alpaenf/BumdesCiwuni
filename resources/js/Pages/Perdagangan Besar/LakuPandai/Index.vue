@@ -13,6 +13,7 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const editingItem = ref(null);
 const search = ref(props.filters.search || '');
 const filterDate = ref(props.filters.date || '');
 const filterJenis = ref(props.filters.jenis_transaksi || '');
@@ -133,14 +134,57 @@ const resetFilter = () => {
     applyFilter();
 };
 
+const openCreateModal = () => {
+    editingItem.value = null;
+    form.reset();
+    form.tanggal = new Date().toISOString().split('T')[0];
+    form.jenis_transaksi = 'Tarik tunai';
+    form.status_pembayaran = 'Lunas';
+    form.jenis_pembayaran = 'Cash';
+    selectedNasabahId.value = '';
+    selectedAccountIndex.value = '';
+    isModalOpen.value = true;
+};
+
+const openEditModal = (item) => {
+    editingItem.value = item;
+    form.tanggal = item.tanggal;
+    form.nama_admin = item.nama_admin || '';
+    form.nasabah_id = item.nasabah_id || null;
+    form.nama_nasabah = item.nama_nasabah;
+    form.jenis_transaksi = item.jenis_transaksi;
+    form.rekening_masuk = item.rekening_masuk || 0;
+    form.rekening_keluar = item.rekening_keluar || 0;
+    form.cash_masuk = item.cash_masuk || 0;
+    form.cash_keluar = item.cash_keluar || 0;
+    form.harga_agen = item.harga_agen || 0;
+    form.harga_konsumen = item.harga_konsumen || 0;
+    form.jenis_pembayaran = item.jenis_pembayaran || 'Cash';
+    form.status_pembayaran = item.status_pembayaran || 'Lunas';
+    form.keterangan = item.keterangan || '';
+    selectedNasabahId.value = item.nasabah_id ? String(item.nasabah_id) : '';
+    selectedAccountIndex.value = '';
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    form.post(route('pb.laku-pandai.store'), {
-        onSuccess: () => {
-            isModalOpen.value = false;
-            form.reset();
-            form.tanggal = new Date().toISOString().split('T')[0];
-        },
-    });
+    if (editingItem.value) {
+        form.put(route('pb.laku-pandai.update', editingItem.value.id), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                editingItem.value = null;
+                form.reset();
+            },
+        });
+    } else {
+        form.post(route('pb.laku-pandai.store'), {
+            onSuccess: () => {
+                isModalOpen.value = false;
+                form.reset();
+                form.tanggal = new Date().toISOString().split('T')[0];
+            },
+        });
+    }
 };
 
 const deleteTransaksi = (id) => {
@@ -236,7 +280,7 @@ const openStruk = (id) => {
                         Database Nasabah
                     </Link>
                     <button
-                        @click="isModalOpen = true"
+                        @click="openCreateModal"
                         class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-blue-600/20 transition"
                     >
                         <span class="material-symbols-outlined text-base">add</span>
@@ -337,6 +381,13 @@ const openStruk = (id) => {
                                             <span>Struk</span>
                                         </button>
                                         <button
+                                            @click="openEditModal(item)"
+                                            class="p-1 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition"
+                                            title="Edit Transaksi"
+                                        >
+                                            <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+                                        <button
                                             @click="deleteTransaksi(item.id)"
                                             class="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
                                             title="Hapus"
@@ -375,8 +426,8 @@ const openStruk = (id) => {
             <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
                 <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900">Catat Transaksi Harian Laku Pandai</h3>
-                        <p class="text-xs text-slate-500">Input transaksi agen keuangan dan pergerakan saldo</p>
+                        <h3 class="text-sm font-bold text-slate-900">{{ editingItem ? 'Edit Transaksi Laku Pandai' : 'Catat Transaksi Harian Laku Pandai' }}</h3>
+                        <p class="text-xs text-slate-500">{{ editingItem ? 'Perbarui data transaksi yang sudah dicatat' : 'Input transaksi agen keuangan dan pergerakan saldo' }}</p>
                     </div>
                     <button @click="isModalOpen = false" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg">
                         <span class="material-symbols-outlined text-xl">close</span>
@@ -510,7 +561,7 @@ const openStruk = (id) => {
                             Batal
                         </button>
                         <button type="submit" :disabled="form.processing" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-md shadow-blue-600/20">
-                            Simpan Transaksi
+                            {{ editingItem ? 'Simpan Perubahan' : 'Simpan Transaksi' }}
                         </button>
                     </div>
                 </form>

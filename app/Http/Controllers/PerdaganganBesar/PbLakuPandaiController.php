@@ -198,6 +198,73 @@ class PbLakuPandaiController extends Controller
     }
 
     /**
+     * Update Transaksi Harian
+     */
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $trx = PbTransaksiLakuPandai::findOrFail($id);
+
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date'],
+            'nama_admin' => ['nullable', 'string', 'max:100'],
+            'nasabah_id' => ['nullable', 'exists:pb_nasabah_laku_pandai,id'],
+            'nama_nasabah' => ['required', 'string', 'max:255'],
+            'jenis_transaksi' => ['required', 'string'],
+            'rekening_masuk' => ['nullable', 'numeric', 'min:0'],
+            'rekening_keluar' => ['nullable', 'numeric', 'min:0'],
+            'cash_masuk' => ['nullable', 'numeric', 'min:0'],
+            'cash_keluar' => ['nullable', 'numeric', 'min:0'],
+            'harga_agen' => ['nullable', 'numeric', 'min:0'],
+            'harga_konsumen' => ['nullable', 'numeric', 'min:0'],
+            'status_pembayaran' => ['required', 'in:Lunas,Hutang'],
+            'jenis_pembayaran' => ['required', 'in:Cash,Transfer'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $adminName = !empty($validated['nama_admin']) 
+            ? trim($validated['nama_admin']) 
+            : ($trx->nama_admin ?: 'Admin');
+
+        $hargaAgen = (float)($validated['harga_agen'] ?? 0);
+        $hargaKonsumen = (float)($validated['harga_konsumen'] ?? 0);
+        $selisih = max(0, $hargaKonsumen - $hargaAgen);
+
+        $pendapatanCash = 0;
+        $pendapatanRekening = 0;
+        if ($validated['jenis_pembayaran'] === 'Cash') {
+            $pendapatanCash = $selisih;
+        } else {
+            $pendapatanRekening = $selisih;
+        }
+
+        $rekMasuk = (float)($validated['rekening_masuk'] ?? 0);
+        $rekKeluar = (float)($validated['rekening_keluar'] ?? 0);
+        $cashMasuk = (float)($validated['cash_masuk'] ?? 0);
+        $cashKeluar = (float)($validated['cash_keluar'] ?? 0);
+
+        $trx->update([
+            'tanggal' => $validated['tanggal'],
+            'nama_admin' => $adminName,
+            'nasabah_id' => $validated['nasabah_id'] ?? null,
+            'nama_nasabah' => $validated['nama_nasabah'],
+            'jenis_transaksi' => $validated['jenis_transaksi'],
+            'rekening_masuk' => $rekMasuk,
+            'rekening_keluar' => $rekKeluar,
+            'cash_masuk' => $cashMasuk,
+            'cash_keluar' => $cashKeluar,
+            'harga_agen' => $hargaAgen,
+            'harga_konsumen' => $hargaKonsumen,
+            'pendapatan_jasa_cash' => $pendapatanCash,
+            'pendapatan_jasa_rekening' => $pendapatanRekening,
+            'status_pembayaran' => $validated['status_pembayaran'],
+            'jenis_pembayaran' => $validated['jenis_pembayaran'],
+            'keterangan' => $validated['keterangan'] ?? null,
+        ]);
+
+        return back()->with('success', 'Transaksi Laku Pandai berhasil diperbarui!');
+    }
+
+    /**
      * Hapus Transaksi Harian
      */
     public function destroy($id): RedirectResponse
