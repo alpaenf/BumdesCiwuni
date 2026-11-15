@@ -137,6 +137,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <th class="p-3.5">Tanggal</th>
                             <th class="p-3.5">Nama Customer</th>
                             <th class="p-3.5">No. HP / WA</th>
+                            <th class="p-3.5 text-right">Harga Satuan per kg</th>
                             <th class="p-3.5 text-right">Jml Pembelian</th>
                             <th class="p-3.5 text-right">Total Transaksi</th>
                             <th class="p-3.5 text-center">Aksi</th>
@@ -156,6 +157,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 </span>
                             </td>
                             <td class="p-3.5 text-slate-600">{{ cust.no_hp || '-' }}</td>
+                            <td class="p-3.5 text-right font-medium text-slate-700">
+                                {{ cust.egg_sales && cust.egg_sales.length > 0 ? formatRp(cust.egg_sales[0].harga_per_kg) : '-' }}
+                            </td>
                             <td class="p-3.5 text-right font-medium text-slate-700">{{ Number(cust.egg_sales_sum_jumlah_kg || 0).toFixed(1) }} kg</td>
                             <td class="p-3.5 text-right font-bold text-emerald-600">{{ formatRp(cust.egg_sales_sum_total_harga || 0) }}</td>
                             <td class="p-3.5 text-center">

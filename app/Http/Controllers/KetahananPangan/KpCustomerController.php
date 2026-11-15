@@ -27,7 +27,13 @@ class KpCustomerController extends Controller
         $unit = $this->authorizeUnit();
         $user = Auth::user();
 
-        $query = KpCustomer::query()->withCount('eggSales')->withSum('eggSales', 'total_harga')->withSum('eggSales', 'jumlah_kg');
+        $query = KpCustomer::query()
+            ->withCount('eggSales')
+            ->withSum('eggSales', 'total_harga')
+            ->withSum('eggSales', 'jumlah_kg')
+            ->with(['eggSales' => function ($q) {
+                $q->orderByDesc('tanggal')->orderByDesc('id')->limit(1);
+            }]);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
