@@ -15,12 +15,14 @@ const props = defineProps({
 
 const startDate = ref(props.filters.start_date);
 const endDate = ref(props.filters.end_date);
+const customerType = ref(props.filters.customer_type || '');
 const search = ref(props.filters.search || '');
 
 const applyFilter = () => {
     router.get(route('kp.sale.index'), {
         start_date: startDate.value,
         end_date: endDate.value,
+        customer_type: customerType.value,
         search: search.value,
     }, { preserveState: true });
 };
@@ -45,6 +47,9 @@ const onSelectCustomer = (e) => {
         const found = props.customers.find(c => c.id == custId);
         if (found) {
             form.value.nama_pelanggan = found.nama;
+            if (found.customer_type) {
+                form.value.customer_type = found.customer_type;
+            }
         }
     }
 };
@@ -135,6 +140,11 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 />
             </div>
             <div class="flex items-center gap-2">
+                <select v-model="customerType" @change="applyFilter" class="text-xs rounded-xl border-slate-200">
+                    <option value="">Semua Kategori</option>
+                    <option value="Eceran">Eceran</option>
+                    <option value="Agen">Agen</option>
+                </select>
                 <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200" />
                 <span class="text-xs text-slate-400">s/d</span>
                 <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200" />
@@ -153,6 +163,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <th class="p-3">No. Struk</th>
                             <th class="p-3">Tanggal</th>
                             <th class="p-3">Nama Customer</th>
+                            <th class="p-3 text-center">Kategori</th>
                             <th class="p-3 text-right">Qty (kg)</th>
                             <th class="p-3 text-right">Harga Satuan per kg</th>
                             <th class="p-3 text-right">Total Transaksi</th>
@@ -166,6 +177,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-slate-600">{{ sale.tanggal }}</td>
                             <td class="p-3 font-bold text-slate-800">
                                 {{ sale.nama_pelanggan }}
+                            </td>
+                            <td class="p-3 text-center">
+                                <span :class="[
+                                    'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold',
+                                    sale.customer_type === 'Agen' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'
+                                ]">
+                                    {{ sale.customer_type || 'Eceran' }}
+                                </span>
                             </td>
                             <td class="p-3 text-right font-bold text-slate-800">{{ Number(sale.jumlah_kg).toFixed(1) }} kg</td>
                             <td class="p-3 text-right text-slate-600">{{ formatRp(sale.harga_per_kg) }}</td>
@@ -256,9 +275,18 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
-                        <input type="text" v-model="form.nama_pelanggan" class="w-full text-xs rounded-xl border-slate-200" required />
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
+                            <input type="text" v-model="form.nama_pelanggan" class="w-full text-xs rounded-xl border-slate-200" required />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Customer</label>
+                            <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200" required>
+                                <option value="Eceran">Eceran</option>
+                                <option value="Agen">Agen</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
