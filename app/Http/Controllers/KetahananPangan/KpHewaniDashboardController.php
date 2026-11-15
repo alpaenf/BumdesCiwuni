@@ -80,7 +80,7 @@ class KpHewaniDashboardController extends Controller
         $totalBiayaRekananPeriode = (float) KpPartnerPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('total_biaya');
         $totalBeliRekananAll = (float) KpPartnerPurchase::sum('jumlah_kg');
         $terpakaiRekananAll = (float) KpEggSale::sum('ambil_rekanan_kg');
-        $sisaStokRekanan = max(0, $totalBeliRekananAll - $terpakaiRekanan);
+        $sisaStokRekanan = max(0, $totalBeliRekananAll - $terpakaiRekananAll);
 
         // 5. Tren Harian (14 Hari Terakhir)
         $chartDates = collect(range(13, 0))->map(fn($days) => Carbon::now()->subDays($days)->toDateString());
