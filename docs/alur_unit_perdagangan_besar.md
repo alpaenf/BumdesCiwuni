@@ -240,3 +240,4 @@ Halaman khusus di `/unit/perdagangan-besar/pengaturan-landing` memungkinkan admi
 ## 10. KESIMPULAN
 
 Sistem **Unit Perdagangan Besar** kini beroperasi secara mandiri dan komprehensif, memiliki konsistensi visual 100% dengan **Unit Simpan Pinjam**, tanpa mengubah atau mengganggu kode unit-unit lain yang sudah berjalan di BUMDes Dammar Wulan. Seluruh modul mulai dari login, operasional loket 4 layanan, manajemen kas, pelaporan PDF, hingga CMS landing page telah terintegrasi penuh.
+
