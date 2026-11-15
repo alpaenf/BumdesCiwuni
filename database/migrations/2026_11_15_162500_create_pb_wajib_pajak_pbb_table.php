@@ -45,3 +45,4 @@ return new class extends Migration
         Schema::dropIfExists('pb_wajib_pajak_pbb');
     }
 };
+

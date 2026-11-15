@@ -32,3 +32,4 @@ class PbWajibPajakPbb extends Model
         return $this->hasMany(PbTransaksiPbb::class, 'wajib_pajak_pbb_id');
     }
 }
+

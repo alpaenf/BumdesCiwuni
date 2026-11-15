@@ -300,3 +300,4 @@ const deleteWp = (id) => {
         </div>
     </PerdaganganBesarLayout>
 </template>
+
