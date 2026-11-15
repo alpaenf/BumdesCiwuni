@@ -108,9 +108,9 @@ class KpFeedController extends Controller
                 'keterangan' => $validated['keterangan'] ?? null,
             ]);
 
-            // Update stok pakan
+            // Update stok pakan utama Layer
             $feedStock = KpFeedStock::firstOrCreate(
-                ['nama_pakan' => $validated['nama_pakan']],
+                ['nama_pakan' => 'Pakan Layer'],
                 ['stok_tersedia_kg' => 0]
             );
             $feedStock->increment('stok_tersedia_kg', $validated['jumlah_kg']);
@@ -219,7 +219,7 @@ class KpFeedController extends Controller
             $purchase = KpFeedPurchase::findOrFail($id);
 
             // Rollback stok
-            $feedStock = KpFeedStock::where('nama_pakan', $purchase->nama_pakan)->first();
+            $feedStock = KpFeedStock::first();
             if ($feedStock) {
                 $feedStock->decrement('stok_tersedia_kg', $purchase->jumlah_kg);
             }

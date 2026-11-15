@@ -25,6 +25,36 @@ const applyFilter = () => {
 const formatRp = (val) => {
     return 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 };
+
+// Modal Ubah Populasi Ayam Cepat
+const isPopulasiModalOpen = ref(false);
+const newPopulasi = ref(props.stats.populasi_ayam || 1000);
+const isUpdatingPopulasi = ref(false);
+
+const openPopulasiModal = () => {
+    newPopulasi.value = props.stats.populasi_ayam || 1000;
+    isPopulasiModalOpen.value = true;
+};
+
+const savePopulasi = () => {
+    isUpdatingPopulasi.value = true;
+    router.post(route('kp.hewani.populasi.update'), {
+        populasi_ayam: newPopulasi.value,
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            isPopulasiModalOpen.value = false;
+            isUpdatingPopulasi.value = false;
+        },
+        onError: (errs) => {
+            isUpdatingPopulasi.value = false;
+            alert(Object.values(errs).join('\n'));
+        },
+        onFinish: () => {
+            isUpdatingPopulasi.value = false;
+        }
+    });
+};
 </script>
 
 <template>
@@ -72,10 +102,13 @@ const formatRp = (val) => {
                 </div>
                 <div class="mt-3 flex items-center justify-between text-[11px]">
                     <span class="text-slate-500">Ayam ras petelur aktif</span>
-                    <a :href="route('kp.feed.index') + '?tab=pemakaian'" class="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-0.5">
-                        Update di Logistik
-                        <span class="material-symbols-outlined notranslate text-xs">arrow_forward</span>
-                    </a>
+                    <button 
+                        @click="openPopulasiModal" 
+                        class="font-bold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                        Ubah Populasi
+                        <span class="material-symbols-outlined notranslate text-xs">edit</span>
+                    </button>
                 </div>
             </div>
 
@@ -229,6 +262,42 @@ const formatRp = (val) => {
                 <div v-else class="text-center py-8 text-xs text-slate-400">
                     Belum ada transaksi penjualan yang tercatat.
                 </div>
+            </div>
+        </div>
+
+        <!-- Modal Ubah Populasi Ayam Cepat -->
+        <div v-if="isPopulasiModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-800">Ubah Populasi Ayam Petelur</h4>
+                    <button @click="isPopulasiModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <form @submit.prevent="savePopulasi" class="mt-4 space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Populasi (Ekor)</label>
+                        <input 
+                            type="number" 
+                            min="1" 
+                            v-model="newPopulasi" 
+                            class="w-full text-sm font-bold rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500" 
+                            required 
+                        />
+                        <p class="text-[11px] text-slate-400 mt-1">Mengubah jumlah ayam produktif aktif yang dipelihara saat ini.</p>
+                    </div>
+
+                    <div class="pt-2 flex justify-end gap-2">
+                        <button type="button" @click="isPopulasiModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isUpdatingPopulasi">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isUpdatingPopulasi">
+                            <span v-if="isUpdatingPopulasi" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                            {{ isUpdatingPopulasi ? 'Menyimpan...' : 'Simpan Perubahan' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </KetahananPanganLayout>

@@ -46,9 +46,21 @@ const purchaseForm = ref({
     keterangan: '',
 });
 
+const isSubmittingPurchase = ref(false);
+const isSubmittingUsage = ref(false);
+
 const submitPurchase = () => {
+    isSubmittingPurchase.value = true;
     router.post(route('kp.feed.purchase.store'), purchaseForm.value, {
-        onSuccess: () => { isPurchaseModalOpen.value = false; }
+        onSuccess: () => { 
+            isPurchaseModalOpen.value = false; 
+            isSubmittingPurchase.value = false;
+        },
+        onError: (errs) => {
+            isSubmittingPurchase.value = false;
+            alert(Object.values(errs).join('\n'));
+        },
+        onFinish: () => { isSubmittingPurchase.value = false; }
     });
 };
 
@@ -73,8 +85,17 @@ const usageForm = ref({
 });
 
 const submitUsage = () => {
+    isSubmittingUsage.value = true;
     router.post(route('kp.feed.usage.store'), usageForm.value, {
-        onSuccess: () => { isUsageModalOpen.value = false; }
+        onSuccess: () => { 
+            isUsageModalOpen.value = false; 
+            isSubmittingUsage.value = false;
+        },
+        onError: (errs) => {
+            isSubmittingUsage.value = false;
+            alert(Object.values(errs).join('\n'));
+        },
+        onFinish: () => { isSubmittingUsage.value = false; }
     });
 };
 
@@ -306,8 +327,11 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <textarea v-model="purchaseForm.keterangan" rows="2" class="w-full text-xs rounded-xl border-slate-200"></textarea>
                     </div>
                     <div class="pt-2 flex justify-end gap-2">
-                        <button type="button" @click="isPurchaseModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-xl">Simpan Pembelian</button>
+                        <button type="button" @click="isPurchaseModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmittingPurchase">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmittingPurchase">
+                            <span v-if="isSubmittingPurchase" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                            {{ isSubmittingPurchase ? 'Menyimpan...' : 'Simpan Pembelian' }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -365,8 +389,11 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <input type="text" v-model="usageForm.keterangan" placeholder="Normal, cuaca panas, dll" class="w-full text-xs rounded-xl border-slate-200" />
                     </div>
                     <div class="pt-2 flex justify-end gap-2">
-                        <button type="button" @click="isUsageModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl">Simpan Pemakaian</button>
+                        <button type="button" @click="isUsageModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmittingUsage">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmittingUsage">
+                            <span v-if="isSubmittingUsage" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                            {{ isSubmittingUsage ? 'Menyimpan...' : 'Simpan Pemakaian' }}
+                        </button>
                     </div>
                 </form>
             </div>

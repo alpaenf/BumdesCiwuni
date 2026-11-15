@@ -12,6 +12,7 @@ use App\Models\KetahananPangan\KpFeedUsage;
 use App\Models\KetahananPangan\KpOtherIncome;
 use App\Models\KetahananPangan\KpProduct;
 use App\Models\KetahananPangan\KpCashFlow;
+use App\Models\LandingPageSetting;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -39,9 +40,14 @@ class KpHewaniDashboardController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
 
-        // 1. Populasi Ayam terbaru
-        $latestFeed = KpFeedUsage::orderByDesc('tanggal')->first();
-        $populasiAyam = $latestFeed ? $latestFeed->populasi_ayam : 1000;
+        // 1. Populasi Ayam terbaru (fallback dari setting jika belum ada pemakaian)
+        $latestFeed = KpFeedUsage::orderByDesc('tanggal')->orderByDesc('id')->first();
+        $savedPopulasi = LandingPageSetting::getByKey('kp_populasi_ayam', '');
+        if ($savedPopulasi !== '') {
+            $populasiAyam = (int) $savedPopulasi;
+        } else {
+            $populasiAyam = $latestFeed ? $latestFeed->populasi_ayam : 1000;
+        }
 
         // 2. Stok Pakan Tersedia
         $feedStock = KpFeedStock::first();
@@ -110,6 +116,19 @@ class KpHewaniDashboardController extends Controller
             'chartData' => $productionTrend,
             'recentSales' => $recentSales,
         ]);
+    }
+
+    public function updatePopulasi(Request $request)
+    {
+        $this->authorizeUnit();
+
+        $validated = $request->validate([
+            'populasi_ayam' => 'required|integer|min:1',
+        ]);
+
+        LandingPageSetting::setByKey('kp_populasi_ayam', (string) $validated['populasi_ayam']);
+
+        return redirect()->back()->with('success', 'Populasi ayam berhasil diperbarui.');
     }
 }
 

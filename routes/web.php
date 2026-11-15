@@ -350,6 +350,7 @@ Route::middleware(['auth'])->prefix('unit/wifi')->group(function () {
 Route::middleware(['auth'])->prefix('unit/ketahanan-pangan/admin')->group(function () {
     // 1. Dashboard Utama / Hewani
     Route::get('/dashboard', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'index'])->name('kp.hewani.dashboard');
+    Route::post('/dashboard/populasi', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'updatePopulasi'])->name('kp.hewani.populasi.update');
 
     // 2. Data Pelanggan
     Route::get('/pelanggan', [\App\Http\Controllers\KetahananPangan\KpCustomerController::class, 'index'])->name('kp.customers.index');
@@ -368,6 +369,11 @@ Route::middleware(['auth'])->prefix('unit/ketahanan-pangan/admin')->group(functi
     Route::get('/produksi-telur', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'index'])->name('kp.production.index');
     Route::post('/produksi-telur', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'store'])->name('kp.production.store');
     Route::delete('/produksi-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'destroy'])->name('kp.production.destroy');
+
+    // 4b. Pembelian Rekanan (Telur dari Luar - Tanpa Masuk Stok)
+    Route::get('/pembelian-rekanan', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'index'])->name('kp.partner.index');
+    Route::post('/pembelian-rekanan', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'store'])->name('kp.partner.store');
+    Route::delete('/pembelian-rekanan/{id}', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'destroy'])->name('kp.partner.destroy');
 
     // 5. Penjualan Telur & Cetak Struk
     Route::get('/penjualan-telur', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'index'])->name('kp.sale.index');

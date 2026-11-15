@@ -124,6 +124,19 @@ const logout = () => {
                         </Link>
 
                         <Link 
+                            :href="route('kp.partner.index')"
+                            :class="[
+                                'flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all relative overflow-hidden',
+                                $page.component.includes('Hewani/PembelianRekanan') 
+                                    ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/25' 
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            ]"
+                        >
+                            <span class="material-symbols-outlined notranslate text-xl">handshake</span>
+                            <span v-show="isSidebarOpen">Pembelian Rekanan</span>
+                        </Link>
+
+                        <Link 
                             :href="route('kp.sale.index')"
                             :class="[
                                 'flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all relative overflow-hidden',
