@@ -11,6 +11,7 @@ const props = defineProps({
 });
 
 const search = ref(props.filters.search || '');
+const customerTypeFilter = ref(props.filters.customer_type || '');
 
 const isModalOpen = ref(false);
 const editingCustomer = ref(null);
@@ -27,6 +28,7 @@ const form = ref({
 const handleSearch = () => {
     router.get(route('kp.customers.index'), {
         search: search.value,
+        customer_type: customerTypeFilter.value,
     }, { preserveState: true, replace: true });
 };
 
@@ -107,6 +109,15 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 />
             </div>
             <div class="flex items-center gap-2">
+                <select
+                    v-model="customerTypeFilter"
+                    @change="handleSearch"
+                    class="text-xs px-3 py-2 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 text-slate-700 font-semibold"
+                >
+                    <option value="">Semua Kategori</option>
+                    <option value="Eceran">Eceran</option>
+                    <option value="Agen">Agen</option>
+                </select>
                 <button 
                     @click="handleSearch"
                     class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl transition-colors"
@@ -125,6 +136,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <th class="p-3.5">No.</th>
                             <th class="p-3.5">Tanggal</th>
                             <th class="p-3.5">Nama Customer</th>
+                            <th class="p-3.5 text-center">Kategori</th>
                             <th class="p-3.5">No. HP / WA</th>
                             <th class="p-3.5 text-right">Harga Satuan per kg</th>
                             <th class="p-3.5 text-right">Jml Pembelian</th>
@@ -138,6 +150,16 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3.5 text-slate-600">{{ cust.tanggal || '-' }}</td>
                             <td class="p-3.5">
                                 <div class="font-bold text-slate-800">{{ cust.nama }}</div>
+                            </td>
+                            <td class="p-3.5 text-center">
+                                <span :class="[
+                                    'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider',
+                                    cust.customer_type === 'Agen'
+                                        ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                                        : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                                ]">
+                                    {{ cust.customer_type || 'Eceran' }}
+                                </span>
                             </td>
                             <td class="p-3.5 text-slate-600">{{ cust.no_hp || '-' }}</td>
                             <td class="p-3.5 text-right font-medium text-slate-700">
@@ -214,6 +236,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Customer (Wajib)</label>
                         <input type="text" v-model="form.nama" placeholder="Contoh: Toko Berkah / Ibu Siti" class="w-full text-xs rounded-xl border-slate-200" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Pelanggan *</label>
+                        <select v-model="form.customer_type" class="w-full text-xs rounded-xl border-slate-200" required>
+                            <option value="Eceran">Eceran (Konsumen Langsung)</option>
+                            <option value="Agen">Agen (Toko / Reseller / Rekanan)</option>
+                        </select>
                     </div>
 
                     <div>
