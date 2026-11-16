@@ -66,8 +66,8 @@ const submit = () => {
 
             <!-- Center Content: Logo & Brand Info -->
             <div class="relative z-10 my-auto max-w-md space-y-6">
-                <div class="inline-flex items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100 shadow-md w-20 h-20 mb-2">
-                    <img src="/logo.png" alt="Logo BUMDes" class="w-14 h-14 object-contain" />
+                <div class="inline-flex items-center justify-center p-3 bg-white rounded-2xl border border-slate-200/80 shadow-md w-24 h-24 mb-2">
+                    <img src="/images/logo-dammar-wulan.png" alt="Logo BUMDes" class="w-20 h-20 object-contain" />
                 </div>
                 <div>
                     <h1 class="text-3xl font-extrabold tracking-tight leading-tight text-slate-900">
@@ -99,7 +99,7 @@ const submit = () => {
                         Kembali ke Landing Page
                     </Link>
                     
-                    <img src="/logo.png" alt="Logo" class="h-14 w-14 object-contain" />
+                    <img src="/images/logo-dammar-wulan.png" alt="Logo" class="h-16 w-auto object-contain" />
                     <div>
                         <h1 class="text-xl font-bold text-slate-900">Unit Perdagangan Besar</h1>
                         <p class="text-xs text-[color:var(--color-primary)] uppercase tracking-wider font-semibold">Layanan Keuangan & PPOB</p>

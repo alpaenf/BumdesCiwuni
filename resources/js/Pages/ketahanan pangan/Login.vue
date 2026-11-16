@@ -46,8 +46,8 @@ const submit = () => {
 
             <!-- Logo and header -->
             <div class="text-center space-y-2">
-                <div class="inline-flex items-center justify-center p-3 bg-blue-700 text-white rounded-2xl w-16 h-16 shadow-lg mx-auto">
-                    <span class="material-symbols-outlined text-blue-600 text-3xl font-bold">agriculture</span>
+                <div class="inline-flex items-center justify-center p-2.5 bg-white rounded-2xl w-20 h-20 shadow-md border border-slate-200/80 mx-auto">
+                    <img src="/images/logo-dammar-wulan.png" alt="Logo BUMDes" class="w-16 h-16 object-contain" />
                 </div>
                 <h2 class="text-2xl font-black tracking-tight text-slate-800">Kelola Ketahanan Pangan</h2>
                 <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Portal Pengurus Gudang & Lumbung Desa</p>

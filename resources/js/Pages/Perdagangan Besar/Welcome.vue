@@ -82,7 +82,7 @@ onMounted(() => {
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center gap-2">
-                    <img :src="settings.custom_logo || '/logo.png'" alt="Logo" class="w-9 h-9 object-contain" />
+                    <img :src="settings.custom_logo || '/images/logo-dammar-wulan.png'" alt="Logo" class="w-9 h-9 object-contain" />
                     <div>
                         <h1 :class="['text-xs font-extrabold leading-tight transition-colors', isScrolled ? 'text-blue-800' : 'text-white']">Perdagangan Besar</h1>
                         <p :class="['text-[9px] tracking-wider font-semibold uppercase leading-none transition-colors', isScrolled ? 'text-[#5c5f61]' : 'text-slate-300']">BUMDES Dammar Wulan</p>
@@ -220,7 +220,7 @@ onMounted(() => {
                 <div class="scroll-animate scroll-scale-in relative bg-gradient-to-br from-blue-50 to-[#ffffff] p-8 border border-[#bfc9bd] rounded-2xl shadow-sm flex flex-col items-center justify-center text-center overflow-hidden">
                     <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/5 rounded-full"></div>
                     
-                    <img :src="settings.custom_logo || '/logo.png'" alt="Logo Unit" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
+                    <img :src="settings.custom_logo || '/images/logo-dammar-wulan.png'" alt="Logo Unit" class="w-16 h-16 object-contain mb-4 filter drop-shadow-sm" />
                     <h4 class="font-extrabold text-slate-800 text-base uppercase tracking-wider">Perdagangan Besar</h4>
                     <p class="text-[10px] font-bold text-blue-700 tracking-widest uppercase">BUMDES Dammar Wulan</p>
                     <div class="w-full border-t border-dashed border-[#bfc9bd] my-4"></div>
