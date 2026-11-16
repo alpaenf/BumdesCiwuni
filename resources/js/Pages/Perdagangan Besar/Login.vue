@@ -229,13 +229,6 @@ const submit = () => {
                     </button>
                 </form>
 
-                <!-- Akun Default Uji Coba Info Card -->
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                    <p class="text-xs text-slate-500">
-                        Akun Uji Coba: <span class="font-bold text-slate-700">admin@bumdes.com</span> • Sandi: <span class="font-bold text-slate-700">password</span>
-                    </p>
-                </div>
-
                 <!-- Help & Security Indicators -->
                 <div class="text-center text-xs text-slate-500">
                     <p>Butuh bantuan? Hubungi <span class="font-semibold text-[color:var(--color-primary)] cursor-pointer hover:underline">Support Desa</span></p>

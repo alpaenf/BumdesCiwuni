@@ -135,14 +135,6 @@ const submit = () => {
                         </button>
                     </div>
                 </form>
-
-                <!-- Seed Note info -->
-                <div class="mt-6 border-t border-slate-150 pt-5 text-center">
-                    <p class="text-[10px] text-slate-550 leading-relaxed">
-                        Akun Default Uji Coba: <br />
-                        Email: <span class="font-bold text-blue-600">pangan@bumdes.com</span> • Sandi: <span class="font-bold text-blue-600">password</span>
-                    </p>
-                </div>
             </div>
 
             <!-- Bottom security info -->
