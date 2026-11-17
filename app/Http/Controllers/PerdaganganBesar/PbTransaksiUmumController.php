@@ -7,6 +7,7 @@ use App\Models\PerdaganganBesar\PbKas;
 use App\Models\PerdaganganBesar\PbNasabahLakuPandai;
 use App\Models\PerdaganganBesar\PbTransaksiUmum;
 use App\Models\Unit;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PbTransaksiUmumController extends Controller
 {
@@ -29,12 +31,20 @@ class PbTransaksiUmumController extends Controller
     {
         $unit = $this->getUnit();
         $search = $request->input('search');
+        $periodMode = $request->input('period_mode', 'date');
         $date = $request->input('date');
+        $month = $request->input('month', Carbon::now()->format('Y-m'));
         $status = $request->input('status');
         $jenisTransaksi = $request->input('jenis_transaksi');
 
         $query = PbTransaksiUmum::query()
-            ->when($date, fn($q) => $q->where('tanggal', $date))
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $q->whereYear('tanggal', substr($month, 0, 4))
+                  ->whereMonth('tanggal', substr($month, 5, 2));
+            })
+            ->when($periodMode === 'date' && $date, function ($q) use ($date) {
+                $q->where('tanggal', $date);
+            })
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($jenisTransaksi, fn($q) => $q->where('jenis_transaksi', $jenisTransaksi))
             ->when($search, function ($q) use ($search) {
@@ -66,11 +76,74 @@ class PbTransaksiUmumController extends Controller
             'nasabah_list' => $nasabahList,
             'filters' => [
                 'search' => $search,
+                'period_mode' => $periodMode,
                 'date' => $date,
+                'month' => $month,
                 'status' => $status,
                 'jenis_transaksi' => $jenisTransaksi,
             ],
         ]);
+    }
+
+    /**
+     * Cetak Laporan PDF Transaksi Umum & PPOB
+     */
+    public function cetakPdf(Request $request): SymfonyResponse
+    {
+        $periodMode = $request->input('period_mode', 'date');
+        $date = $request->input('date');
+        $month = $request->input('month', Carbon::now()->format('Y-m'));
+        $status = $request->input('status');
+        $jenisTransaksi = $request->input('jenis_transaksi');
+        $search = $request->input('search');
+
+        $query = PbTransaksiUmum::query()
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $q->whereYear('tanggal', substr($month, 0, 4))
+                  ->whereMonth('tanggal', substr($month, 5, 2));
+            })
+            ->when($periodMode === 'date' && $date, function ($q) use ($date) {
+                $q->where('tanggal', $date);
+            })
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($jenisTransaksi, fn($q) => $q->where('jenis_transaksi', $jenisTransaksi))
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('nama_pelanggan', 'like', "%{$search}%")
+                        ->orWhere('nomor_tujuan', 'like', "%{$search}%")
+                        ->orWhere('nomor_transaksi', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal')
+            ->orderBy('id');
+
+        $transaksi = $query->get();
+
+        if ($periodMode === 'month' && $month) {
+            $periodLabel = Carbon::createFromFormat('Y-m', $month)->translatedFormat('F Y');
+        } elseif ($date) {
+            $periodLabel = Carbon::parse($date)->translatedFormat('d F Y');
+        } else {
+            $periodLabel = 'Semua Periode';
+        }
+
+        $summary = [
+            'total_transaksi' => $transaksi->count(),
+            'total_sukses' => $transaksi->where('status', 'SUCCES')->count(),
+            'total_biaya_pokok' => $transaksi->where('status', 'SUCCES')->sum('biaya_pokok'),
+            'total_biaya_admin' => $transaksi->where('status', 'SUCCES')->sum('biaya_admin'),
+            'total_jasa_agen' => $transaksi->where('status', 'SUCCES')->sum('biaya_jasa_agen'),
+            'total_bayar' => $transaksi->where('status', 'SUCCES')->sum('total_bayar'),
+        ];
+
+        $pdf = Pdf::loadView('perdagangan_besar.transaksi_umum_pdf', [
+            'periodMode' => $periodMode,
+            'periodLabel' => $periodLabel,
+            'summary' => $summary,
+            'transaksi' => $transaksi,
+        ]);
+
+        return $pdf->download("Laporan-Transaksi-Umum-{$periodLabel}.pdf");
     }
 
     /**

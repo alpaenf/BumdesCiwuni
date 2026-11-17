@@ -263,6 +263,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
 
     // 3. Samsat Budiman
     Route::get('/samsat', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'index'])->name('pb.samsat.index');
+    Route::get('/samsat/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'cetakPdf'])->name('pb.samsat.cetak-pdf');
     Route::post('/samsat', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'store'])->name('pb.samsat.store');
     Route::put('/samsat/{id}', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'update'])->name('pb.samsat.update');
     Route::delete('/samsat/{id}', [\App\Http\Controllers\PerdaganganBesar\PbSamsatController::class, 'destroy'])->name('pb.samsat.destroy');
@@ -276,6 +277,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
 
     // 4. Pajak PBB
     Route::get('/pbb', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'index'])->name('pb.pbb.index');
+    Route::get('/pbb/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'cetakPdf'])->name('pb.pbb.cetak-pdf');
     Route::post('/pbb', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'store'])->name('pb.pbb.store');
     Route::put('/pbb/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'update'])->name('pb.pbb.update');
     Route::delete('/pbb/{id}', [\App\Http\Controllers\PerdaganganBesar\PbPbbController::class, 'destroy'])->name('pb.pbb.destroy');
@@ -289,6 +291,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
 
     // 5. Transaksi Umum
     Route::get('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'index'])->name('pb.transaksi-umum.index');
+    Route::get('/transaksi-umum/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'cetakPdf'])->name('pb.transaksi-umum.cetak-pdf');
     Route::post('/transaksi-umum', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'store'])->name('pb.transaksi-umum.store');
     Route::put('/transaksi-umum/{id}', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'update'])->name('pb.transaksi-umum.update');
     Route::delete('/transaksi-umum/{id}', [\App\Http\Controllers\PerdaganganBesar\PbTransaksiUmumController::class, 'destroy'])->name('pb.transaksi-umum.destroy');
@@ -296,10 +299,12 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
 
     // 6. Keuangan & Kas
     Route::get('/kas', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasIndex'])->name('pb.kas.index');
+    Route::get('/kas/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasCetakPdf'])->name('pb.kas.cetak-pdf');
     Route::post('/kas', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasStore'])->name('pb.kas.store');
     Route::delete('/kas/{id}', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'kasDestroy'])->name('pb.kas.destroy');
 
     Route::get('/biaya-operasional', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaIndex'])->name('pb.biaya.index');
+    Route::get('/biaya-operasional/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaCetakPdf'])->name('pb.biaya.cetak-pdf');
     Route::post('/biaya-operasional', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaStore'])->name('pb.biaya.store');
     Route::delete('/biaya-operasional/{id}', [\App\Http\Controllers\PerdaganganBesar\PbKeuanganController::class, 'biayaDestroy'])->name('pb.biaya.destroy');
 

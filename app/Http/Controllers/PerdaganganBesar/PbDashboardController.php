@@ -92,6 +92,26 @@ class PbDashboardController extends Controller
         $biayaOperasional = PbBiayaOperasional::whereBetween('tanggal', [$start->toDateString(), $end->toDateString()])
             ->sum('nominal');
 
+        // Beban Biaya Admin Bank (Dari Biaya Operasional / Kas Keluar Admin Bank)
+        $bebanAdminBankBiaya = PbBiayaOperasional::whereBetween('tanggal', [$start->toDateString(), $end->toDateString()])
+            ->where(function ($q) {
+                $q->where('kategori_biaya', 'like', '%Bank%')
+                  ->orWhere('uraian', 'like', '%admin bank%')
+                  ->orWhere('uraian', 'like', '%biaya bank%');
+            })
+            ->sum('nominal');
+
+        $bebanAdminBankKas = PbKas::whereBetween('tanggal', [$start->toDateString(), $end->toDateString()])
+            ->where('jenis', 'keluar')
+            ->where(function ($q) {
+                $q->where('kategori_layanan', 'like', '%Bank%')
+                  ->orWhere('keterangan', 'like', '%admin bank%')
+                  ->orWhere('keterangan', 'like', '%biaya bank%');
+            })
+            ->sum('nominal');
+
+        $totalBebanAdminBank = max((float)$bebanAdminBankBiaya, (float)$bebanAdminBankKas);
+
         // Total Agregat
         $totalTransaksi = $lpCount + $samsatCount + $pbbCount + $umumCount;
         $totalPendapatanJasa = $lpTotalJasa + $samsatJasa + $pbbJasa + $umumJasa;
@@ -187,6 +207,7 @@ class PbDashboardController extends Controller
             'total_kas_masuk' => $kasMasuk,
             'total_kas_keluar' => $kasKeluar,
             'biaya_operasional' => $biayaOperasional,
+            'beban_admin_bank' => $totalBebanAdminBank,
             'laba_bersih' => $labaBersih,
             'saldo_cash' => $saldoCashLp,
             'saldo_rekening' => $saldoRekeningLp,

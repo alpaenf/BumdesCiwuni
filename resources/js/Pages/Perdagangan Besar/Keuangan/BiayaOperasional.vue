@@ -11,10 +11,13 @@ const props = defineProps({
 });
 
 const isModalOpen = ref(false);
+const periodMode = ref(props.filters.period_mode || 'month');
+const filterDate = ref(props.filters.date || '');
 const filterMonth = ref(props.filters.month || new Date().toISOString().substring(0, 7));
 const filterKategori = ref(props.filters.kategori || '');
 
 const kategoriOptions = [
+    'Biaya Admin Bank',
     'Administrasi',
     'ATK (Alat Tulis Kantor)',
     'Honor / Insentif Petugas',
@@ -38,12 +41,16 @@ const formatRupiah = (val) => {
 
 const applyFilter = () => {
     router.get(route('pb.biaya.index'), {
-        month: filterMonth.value || undefined,
+        period_mode: periodMode.value,
+        date: periodMode.value === 'date' ? (filterDate.value || undefined) : undefined,
+        month: periodMode.value === 'month' ? (filterMonth.value || undefined) : undefined,
         kategori: filterKategori.value || undefined,
     }, { preserveState: true, preserveScroll: true });
 };
 
 const resetFilter = () => {
+    periodMode.value = 'month';
+    filterDate.value = '';
     filterMonth.value = new Date().toISOString().substring(0, 7);
     filterKategori.value = '';
     applyFilter();
@@ -102,16 +109,52 @@ const deleteBiaya = (id) => {
             <!-- Filter Card -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1 max-w-lg">
+                    <div class="flex flex-wrap items-center gap-2 flex-1 max-w-2xl">
+                        <!-- Toggle Mode Periode -->
+                        <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200">
+                            <button
+                                type="button"
+                                @click="periodMode = 'month'; applyFilter()"
+                                :class="[
+                                    'px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1',
+                                    periodMode === 'month' ? 'bg-white text-rose-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                                ]"
+                            >
+                                <span class="material-symbols-outlined text-sm">calendar_month</span>
+                                <span>Per Bulan</span>
+                            </button>
+                            <button
+                                type="button"
+                                @click="periodMode = 'date'; applyFilter()"
+                                :class="[
+                                    'px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1',
+                                    periodMode === 'date' ? 'bg-white text-rose-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                                ]"
+                            >
+                                <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                <span>Per Tanggal</span>
+                            </button>
+                        </div>
+
+                        <!-- Input Bulan / Tanggal -->
                         <input
+                            v-if="periodMode === 'month'"
                             v-model="filterMonth"
                             type="month"
-                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
                             @change="applyFilter"
                         />
+                        <input
+                            v-else
+                            v-model="filterDate"
+                            type="date"
+                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                            @change="applyFilter"
+                        />
+
                         <select
                             v-model="filterKategori"
-                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
                             @change="applyFilter"
                         >
                             <option value="">Semua Kategori Biaya</option>
@@ -119,6 +162,21 @@ const deleteBiaya = (id) => {
                         </select>
                     </div>
                     <div class="flex items-center gap-2">
+                        <!-- Tombol Cetak PDF -->
+                        <a
+                            :href="route('pb.biaya.cetak-pdf', {
+                                period_mode: periodMode,
+                                date: periodMode === 'date' ? filterDate : undefined,
+                                month: periodMode === 'month' ? filterMonth : undefined,
+                                kategori: filterKategori || undefined
+                            })"
+                            target="_blank"
+                            class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        >
+                            <span class="material-symbols-outlined text-sm">print</span>
+                            <span>Cetak PDF</span>
+                        </a>
+
                         <button
                             @click="applyFilter"
                             class="px-3 py-2 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-700 transition"
@@ -126,7 +184,7 @@ const deleteBiaya = (id) => {
                             Terapkan
                         </button>
                         <button
-                            v-if="filterKategori || filterMonth !== new Date().toISOString().substring(0, 7)"
+                            v-if="filterKategori || filterDate || filterMonth !== new Date().toISOString().substring(0, 7)"
                             @click="resetFilter"
                             class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-200 transition"
                         >

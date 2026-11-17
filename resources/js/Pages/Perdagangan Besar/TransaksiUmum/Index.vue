@@ -14,7 +14,9 @@ const props = defineProps({
 const isModalOpen = ref(false);
 const editingItem = ref(null);
 const search = ref(props.filters.search || '');
+const periodMode = ref(props.filters.period_mode || 'date');
 const filterDate = ref(props.filters.date || '');
+const filterMonth = ref(props.filters.month || new Date().toISOString().substring(0, 7));
 const filterStatus = ref(props.filters.status || '');
 const filterJenis = ref(props.filters.jenis_transaksi || '');
 const selectedNasabahId = ref('');
@@ -116,7 +118,9 @@ const calculatedTotal = computed(() => {
 const applyFilter = () => {
     router.get(route('pb.transaksi-umum.index'), {
         search: search.value || undefined,
-        date: filterDate.value || undefined,
+        period_mode: periodMode.value,
+        date: periodMode.value === 'date' ? (filterDate.value || undefined) : undefined,
+        month: periodMode.value === 'month' ? (filterMonth.value || undefined) : undefined,
         status: filterStatus.value || undefined,
         jenis_transaksi: filterJenis.value || undefined,
     }, { preserveState: true, preserveScroll: true });
@@ -125,6 +129,7 @@ const applyFilter = () => {
 const resetFilter = () => {
     search.value = '';
     filterDate.value = '';
+    filterMonth.value = new Date().toISOString().substring(0, 7);
     filterStatus.value = '';
     filterJenis.value = '';
     applyFilter();
@@ -251,12 +256,38 @@ const getBadgeColor = (jenis) => {
             <!-- Filter & Action Card -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 flex-1">
+                    <div class="flex flex-wrap items-center gap-2 flex-1">
+                        <!-- Toggle Mode Periode -->
+                        <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200">
+                            <button
+                                type="button"
+                                @click="periodMode = 'date'; applyFilter()"
+                                :class="[
+                                    'px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1',
+                                    periodMode === 'date' ? 'bg-white text-blue-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                                ]"
+                            >
+                                <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                <span>Per Tanggal</span>
+                            </button>
+                            <button
+                                type="button"
+                                @click="periodMode = 'month'; applyFilter()"
+                                :class="[
+                                    'px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1',
+                                    periodMode === 'month' ? 'bg-white text-blue-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                                ]"
+                            >
+                                <span class="material-symbols-outlined text-sm">calendar_month</span>
+                                <span>Per Bulan</span>
+                            </button>
+                        </div>
+
                         <input
                             v-model="search"
                             type="text"
                             placeholder="Cari pelanggan / nomor tujuan..."
-                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 w-44"
                             @keyup.enter="applyFilter"
                         />
                         <select
@@ -277,14 +308,41 @@ const getBadgeColor = (jenis) => {
                             <option value="PENDING">PENDING</option>
                             <option value="CANCEL">CANCEL</option>
                         </select>
+
+                        <!-- Input Tanggal / Bulan -->
                         <input
+                            v-if="periodMode === 'date'"
                             v-model="filterDate"
                             type="date"
                             class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             @change="applyFilter"
                         />
+                        <input
+                            v-else
+                            v-model="filterMonth"
+                            type="month"
+                            class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            @change="applyFilter"
+                        />
                     </div>
                     <div class="flex items-center gap-2">
+                        <!-- Tombol Cetak PDF -->
+                        <a
+                            :href="route('pb.transaksi-umum.cetak-pdf', {
+                                period_mode: periodMode,
+                                date: periodMode === 'date' ? filterDate : undefined,
+                                month: periodMode === 'month' ? filterMonth : undefined,
+                                status: filterStatus || undefined,
+                                jenis_transaksi: filterJenis || undefined,
+                                search: search || undefined
+                            })"
+                            target="_blank"
+                            class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        >
+                            <span class="material-symbols-outlined text-sm">print</span>
+                            <span>Cetak PDF</span>
+                        </a>
+
                         <button
                             @click="applyFilter"
                             class="px-3 py-2 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-700 transition"
@@ -300,7 +358,7 @@ const getBadgeColor = (jenis) => {
                         </button>
                         <button
                             @click="openCreateModal"
-                            class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm"
+                            class="px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary/90 transition flex items-center gap-1.5 shadow-sm"
                         >
                             <span class="material-symbols-outlined text-sm">add_circle</span>
                             <span>Tambah Transaksi</span>

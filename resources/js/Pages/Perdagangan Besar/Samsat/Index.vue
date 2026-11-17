@@ -14,7 +14,9 @@ const props = defineProps({
 const isModalOpen = ref(false);
 const editingItem = ref(null);
 const search = ref(props.filters.search || '');
+const periodMode = ref(props.filters.period_mode || 'date');
 const filterDate = ref(props.filters.date || '');
+const filterMonth = ref(props.filters.month || new Date().toISOString().substring(0, 7));
 const filterStatus = ref(props.filters.status || '');
 const filterKendaraan = ref(props.filters.jenis_kendaraan || '');
 
@@ -103,7 +105,9 @@ const onSelectWp = (e) => {
 const applyFilter = () => {
     router.get(route('pb.samsat.index'), {
         search: search.value || undefined,
-        date: filterDate.value || undefined,
+        period_mode: periodMode.value,
+        date: periodMode.value === 'date' ? (filterDate.value || undefined) : undefined,
+        month: periodMode.value === 'month' ? (filterMonth.value || undefined) : undefined,
         status: filterStatus.value || undefined,
         jenis_kendaraan: filterKendaraan.value || undefined,
     }, { preserveState: true, preserveScroll: true });
@@ -112,6 +116,7 @@ const applyFilter = () => {
 const resetFilter = () => {
     search.value = '';
     filterDate.value = '';
+    filterMonth.value = new Date().toISOString().substring(0, 7);
     filterStatus.value = '';
     filterKendaraan.value = '';
     applyFilter();
@@ -213,19 +218,58 @@ const openStruk = (id) => {
             <!-- Action Bar & Filters -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex flex-wrap items-center gap-2 flex-1">
+                    <!-- Toggle Mode Periode -->
+                    <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200">
+                        <button
+                            type="button"
+                            @click="periodMode = 'date'; applyFilter()"
+                            :class="[
+                                'px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1',
+                                periodMode === 'date' ? 'bg-white text-blue-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            <span class="material-symbols-outlined text-sm">calendar_today</span>
+                            <span>Per Tanggal</span>
+                        </button>
+                        <button
+                            type="button"
+                            @click="periodMode = 'month'; applyFilter()"
+                            :class="[
+                                'px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all flex items-center gap-1',
+                                periodMode === 'month' ? 'bg-white text-blue-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                            ]"
+                        >
+                            <span class="material-symbols-outlined text-sm">calendar_month</span>
+                            <span>Per Bulan</span>
+                        </button>
+                    </div>
+
                     <input
                         v-model="search"
                         @keyup.enter="applyFilter"
                         type="text"
                         placeholder="Cari WP, plat nomor, no. trx..."
-                        class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 w-56 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 w-48 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
+
+                    <!-- Filter Tanggal (Jika Mode Per Tanggal) -->
                     <input
+                        v-if="periodMode === 'date'"
                         v-model="filterDate"
                         @change="applyFilter"
                         type="date"
                         class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
+
+                    <!-- Filter Bulan (Jika Mode Per Bulan) -->
+                    <input
+                        v-else
+                        v-model="filterMonth"
+                        @change="applyFilter"
+                        type="month"
+                        class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+
                     <select
                         v-model="filterStatus"
                         @change="applyFilter"
@@ -246,6 +290,23 @@ const openStruk = (id) => {
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <!-- Tombol Cetak PDF -->
+                    <a
+                        :href="route('pb.samsat.cetak-pdf', {
+                            period_mode: periodMode,
+                            date: periodMode === 'date' ? filterDate : undefined,
+                            month: periodMode === 'month' ? filterMonth : undefined,
+                            status: filterStatus || undefined,
+                            jenis_kendaraan: filterKendaraan || undefined,
+                            search: search || undefined
+                        })"
+                        target="_blank"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-sm transition cursor-pointer"
+                    >
+                        <span class="material-symbols-outlined text-base">print</span>
+                        <span>Cetak PDF</span>
+                    </a>
+
                     <Link
                         :href="route('pb.samsat.wajib-pajak.index')"
                         class="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition"

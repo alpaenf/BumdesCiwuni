@@ -8,6 +8,7 @@ use App\Models\PerdaganganBesar\PbNasabahLakuPandai;
 use App\Models\PerdaganganBesar\PbTransaksiSamsat;
 use App\Models\PerdaganganBesar\PbWajibPajakSamsat;
 use App\Models\Unit;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PbSamsatController extends Controller
 {
@@ -30,12 +32,20 @@ class PbSamsatController extends Controller
     {
         $unit = $this->getUnit();
         $search = $request->input('search');
+        $periodMode = $request->input('period_mode', 'date');
         $date = $request->input('date');
+        $month = $request->input('month', Carbon::now()->format('Y-m'));
         $status = $request->input('status');
         $jenisKendaraan = $request->input('jenis_kendaraan');
 
         $query = PbTransaksiSamsat::with('wajibPajak')
-            ->when($date, fn($q) => $q->where('tanggal', $date))
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $q->whereYear('tanggal', substr($month, 0, 4))
+                  ->whereMonth('tanggal', substr($month, 5, 2));
+            })
+            ->when($periodMode === 'date' && $date, function ($q) use ($date) {
+                $q->where('tanggal', $date);
+            })
             ->when($status, fn($q) => $q->where('status_transaksi', $status))
             ->when($jenisKendaraan, fn($q) => $q->where('jenis_kendaraan', $jenisKendaraan))
             ->when($search, function ($q) use ($search) {
@@ -100,11 +110,75 @@ class PbSamsatController extends Controller
             'wp_list' => $wpList,
             'filters' => [
                 'search' => $search,
+                'period_mode' => $periodMode,
                 'date' => $date,
+                'month' => $month,
                 'status' => $status,
                 'jenis_kendaraan' => $jenisKendaraan,
             ],
         ]);
+    }
+
+    /**
+     * Cetak Laporan PDF Transaksi Samsat Budiman
+     */
+    public function cetakPdf(Request $request): SymfonyResponse
+    {
+        $periodMode = $request->input('period_mode', 'date');
+        $date = $request->input('date');
+        $month = $request->input('month', Carbon::now()->format('Y-m'));
+        $status = $request->input('status');
+        $jenisKendaraan = $request->input('jenis_kendaraan');
+        $search = $request->input('search');
+
+        $query = PbTransaksiSamsat::with('wajibPajak')
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $q->whereYear('tanggal', substr($month, 0, 4))
+                  ->whereMonth('tanggal', substr($month, 5, 2));
+            })
+            ->when($periodMode === 'date' && $date, function ($q) use ($date) {
+                $q->where('tanggal', $date);
+            })
+            ->when($status, fn($q) => $q->where('status_transaksi', $status))
+            ->when($jenisKendaraan, fn($q) => $q->where('jenis_kendaraan', $jenisKendaraan))
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('nama_wajib_pajak', 'like', "%{$search}%")
+                        ->orWhere('nomor_polisi', 'like', "%{$search}%")
+                        ->orWhere('nomor_transaksi', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal')
+            ->orderBy('id');
+
+        $transaksi = $query->get();
+
+        if ($periodMode === 'month' && $month) {
+            $periodLabel = Carbon::createFromFormat('Y-m', $month)->translatedFormat('F Y');
+        } elseif ($date) {
+            $periodLabel = Carbon::parse($date)->translatedFormat('d F Y');
+        } else {
+            $periodLabel = 'Semua Periode';
+        }
+
+        $summary = [
+            'total_transaksi' => $transaksi->count(),
+            'total_sukses' => $transaksi->where('status_transaksi', 'SUCCES')->count(),
+            'total_nominal_pajak' => $transaksi->where('status_transaksi', 'SUCCES')->sum('nominal_pajak'),
+            'total_denda' => $transaksi->where('status_transaksi', 'SUCCES')->sum('denda_pajak'),
+            'total_biaya_admin' => $transaksi->where('status_transaksi', 'SUCCES')->sum('biaya_admin'),
+            'total_jasa_bumdes' => $transaksi->where('status_transaksi', 'SUCCES')->sum('biaya_jasa_bumdes'),
+            'total_pembayaran' => $transaksi->where('status_transaksi', 'SUCCES')->sum('total_pembayaran'),
+        ];
+
+        $pdf = Pdf::loadView('perdagangan_besar.samsat_pdf', [
+            'periodMode' => $periodMode,
+            'periodLabel' => $periodLabel,
+            'summary' => $summary,
+            'transaksi' => $transaksi,
+        ]);
+
+        return $pdf->download("Laporan-Samsat-Budiman-{$periodLabel}.pdf");
     }
 
     /**

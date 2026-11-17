@@ -25,7 +25,8 @@
 | 1 | **Sistem Unit Simpan Pinjam** | Digitalisasi keuangan mikro desa: tabungan reguler & sembako, pengajuan dan monitoring pinjaman, kartu angsuran, tutup buku massal, cetak kwitansi otomatis, dan laporan neraca/laba rugi. | Rp 1.000.000 |
 | 2 | **Sistem Unit Layanan Internet Wifi Desa** | Pengelolaan pelanggan internet RT/RW/Gelombang, pencatatan tagihan dan pembayaran bulanan, status isolir/aktif, pembagian hasil BUMDes vs provider, serta integrasi pesan penagihan WhatsApp. | Rp 1.000.000 |
 | 3 | **Sistem Unit Ketahanan Pangan** | Pengelolaan terpadu subunit Hewani (produksi telur, logistik pakan ayam, penjualan telur) dan subunit Nabati (produksi panen sayur/buah), manajemen modal kas, serta laporan laba rugi berkala. | Rp 1.000.000 |
-| 4 | **Sistem Unit Perdagangan Besar** | Loket transaksi terpadu: perbankan Laku Pandai (setor, tarik, transfer), Samsat Budiman (PKB tahunan), Pajak PBB-P2, Transaksi PPOB (PLN, PDAM, BPJS, Pulsa), pembukuan kas, dan cetak PDF laporan. | Rp 1.000.000 |
+| 4 | **Sistem Unit Perdagangan Besar** | Loket transaksi terpadu: perbankan Laku Pandai (setor, tarik, transfer), 
+Samsat Budiman (PKB tahunan), Pajak PBB-P2, Transaksi PPOB (PLN, PDAM, BPJS, Pulsa), pembukuan kas, dan cetak PDF laporan. | Rp 1.000.000 |
 
 ---
 

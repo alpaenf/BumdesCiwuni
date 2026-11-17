@@ -74,8 +74,8 @@ const formatRupiah = (val) => {
                 </select>
             </div>
 
-            <!-- Bento Grid Stats (5 Columns) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Bento Grid Stats (6 Columns) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <!-- Card 1: Total Transaksi -->
                 <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between group hover:border-primary transition-all shadow-sm">
                     <div class="flex justify-between items-start">
@@ -139,7 +139,28 @@ const formatRupiah = (val) => {
                     </div>
                 </div>
 
-                <!-- Card 4: Laba Bersih Unit -->
+                <!-- Card 4: Beban Biaya Admin Bank (Permintaan Klien) -->
+                <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-rose-500 transition-all shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div class="p-2.5 bg-rose-50 rounded-lg text-rose-700">
+                            <span class="material-symbols-outlined">account_balance</span>
+                        </div>
+                        <span class="text-rose-700 font-semibold text-[10px] bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">
+                            Bank
+                        </span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-secondary text-xs font-medium">Beban Admin Bank</p>
+                        <h3 class="text-lg font-bold text-rose-700 font-mono mt-1">
+                            {{ formatRupiah(stats.beban_admin_bank) }}
+                        </h3>
+                        <p class="text-[10px] text-outline mt-1 leading-tight">
+                            Biaya potongan & adm bank
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 5: Laba Bersih Unit -->
                 <div class="bg-white p-4 border border-outline-variant rounded-xl flex flex-col justify-between hover:border-teal-500 transition-all shadow-sm">
                     <div class="flex justify-between items-start">
                         <div class="p-2.5 bg-teal-50 rounded-lg text-teal-700">
@@ -160,7 +181,7 @@ const formatRupiah = (val) => {
                     </div>
                 </div>
 
-                <!-- Card 5: Hero Navy Card (Total Saldo Kas & Rekening) -->
+                <!-- Card 6: Hero Navy Card (Total Saldo Kas & Rekening) -->
                 <div class="bg-primary text-white p-4 rounded-xl flex flex-col justify-between relative overflow-hidden shadow-sm">
                     <div class="absolute -right-4 -bottom-4 opacity-10">
                         <span class="material-symbols-outlined text-[80px]">account_balance_wallet</span>
