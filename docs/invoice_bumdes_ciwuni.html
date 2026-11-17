@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - BUMDes Dammar Wulan Ciwuni - TechSoe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            padding: 30px 15px;
+            color: #1e293b;
+        }
+        .invoice-card {
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        .top-bar {
+            height: 18px;
+            background-color: #0b57d0;
+        }
+        .header {
+            padding: 35px 40px 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .brand-section {
+            max-width: 50%;
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .logo-box {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0b57d0, #0284c7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 24px;
+        }
+        .brand-text h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0b57d0;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .brand-text p {
+            font-size: 9px;
+            color: #64748b;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .client-info h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .client-info p {
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        .meta-section {
+            text-align: right;
+        }
+        .invoice-title {
+            font-size: 38px;
+            font-weight: 900;
+            color: #0b57d0;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .meta-details {
+            font-size: 11px;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .meta-details strong {
+            color: #0f172a;
+        }
+        .payment-box {
+            margin-top: 10px;
+            text-align: right;
+            font-size: 11px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        .payment-box strong {
+            color: #0f172a;
+            font-size: 12px;
+        }
+
+        /* TABLE */
+        .table-container {
+            padding: 10px 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead th {
+            background-color: #0b57d0;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
+            text-align: left;
+        }
+        thead th:first-child {
+            width: 45px;
+            text-align: center;
+        }
+        thead th:nth-child(2) {
+            width: 200px;
+        }
+        thead th:last-child {
+            width: 120px;
+            text-align: right;
+        }
+        tbody td {
+            padding: 16px 14px;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #334155;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        tbody td:first-child {
+            text-align: center;
+            font-weight: 600;
+            color: #64748b;
+        }
+        tbody td.module-name {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 11.5px;
+        }
+        tbody td.amount {
+            text-align: right;
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 12px;
+        }
+
+        /* FOOTER & TOTALS */
+        .footer-section {
+            padding: 25px 40px 45px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .terms {
+            max-width: 58%;
+        }
+        .terms h4 {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        .terms ul {
+            padding-left: 15px;
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        .totals {
+            width: 38%;
+            text-align: right;
+        }
+        .subtotal-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #475569;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        .total-box {
+            background-color: #0b57d0;
+            color: #ffffff;
+            padding: 12px 18px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 800;
+        }
+        .total-box .price {
+            font-size: 16px;
+        }
+        .bottom-bar {
+            height: 25px;
+            background: linear-gradient(to right, #0b57d0, #0369a1);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .invoice-card {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-card">
+    <div class="top-bar"></div>
+
+    <div class="header">
+        <div class="brand-section">
+            <div class="brand-logo">
+                <div class="logo-box">T</div>
+                <div class="brand-text">
+                    <h2>TechSoe</h2>
+                    <p>Teknologi Inovasi Soedirman</p>
+                </div>
+            </div>
+
+            <div class="client-info">
+                <h4>Kepada Yth.</h4>
+                <p><strong>Pemerintah Desa Ciwuni / BUMDes Dammar Wulan</strong></p>
+                <p>Bpk. P Yuliantoro</p>
+                <p>+62 852-2835-7400</p>
+                <p>Di tempat.</p>
+            </div>
+        </div>
+
+        <div class="meta-section">
+            <div class="invoice-title">Invoice</div>
+            <div class="meta-details">
+                <p>No Invoice : <strong>INVTSOE009</strong></p>
+                <p>Tanggal : <strong>16 November 2026</strong></p>
+            </div>
+
+            <div class="payment-box">
+                <p><strong>Metode Pembayaran</strong></p>
+                <p>Bank BCA</p>
+                <p>No. Rekening: <strong>007701138141505</strong></p>
+                <p>a.n <strong>Mukhammad Alfaen Fadillah</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>NO</th>
+                    <th>Modul/Fitur</th>
+                    <th>Deskripsi Singkat</th>
+                    <th>Jumlah</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td class="module-name">Unit Simpan Pinjam</td>
+                    <td>Digitalisasi keuangan mikro desa: tabungan reguler & sembako, pengajuan kredit & angsuran pinjaman, tutup buku massal, cetak kwitansi, dan laporan arus kas/laba rugi.</td>
+                    <td class="amount">Rp1.000.000</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td class="module-name">Unit Layanan Wifi Desa</td>
+                    <td>Manajemen pelanggan internet RT/RW/Gelombang, pencatatan tagihan & pembayaran bulanan, status isolir/aktif real-time, bagi hasil BUMDes vs provider, serta pesan tagihan WhatsApp.</td>
+                    <td class="amount">Rp1.000.000</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td class="module-name">Unit Ketahanan Pangan</td>
+                    <td>Sistem terpadu subunit Hewani (produksi telur, logistik pakan, penjualan telur) dan subunit Nabati (produksi panen sayur/buah), kontrol kas modal, serta laporan laba rugi berkala.</td>
+                    <td class="amount">Rp1.000.000</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td class="module-name">Unit Perdagangan Besar</td>
+                    <td>Loket transaksi digital: agen perbankan Laku Pandai (setor, tarik, transfer), Samsat Budiman (PKB tahunan), Pajak PBB-P2, Transaksi PPOB multi-payment, pembukuan kas, dan cetak PDF laporan.</td>
+                    <td class="amount">Rp1.000.000</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer-section">
+        <div class="terms">
+            <h4>Syarat & Ketentuan</h4>
+            <ul>
+                <li>Pembayaran dapat dilakukan dalam waktu 30 hari setelah tanggal invoice.</li>
+                <li>Lingkup mencakup instalasi sistem, setup basis data 4 unit usaha, penyelarasan UI/UX, dan deployment live server.</li>
+                <li>Garansi perbaikan bug dan pendampingan teknis diberikan selama 30 hari kalender setelah serah terima sistem.</li>
+            </ul>
+        </div>
+
+        <div class="totals">
+            <div class="subtotal-row">
+                <span>Sub total</span>
+                <span>Rp 4.000.000</span>
+            </div>
+            <div class="total-box">
+                <span>Total</span>
+                <span class="price">Rp 4.000.000</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar"></div>
+</div>
+
+</body>
+</html>

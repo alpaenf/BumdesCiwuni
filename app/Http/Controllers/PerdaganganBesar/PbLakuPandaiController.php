@@ -7,6 +7,7 @@ use App\Models\PerdaganganBesar\PbKas;
 use App\Models\PerdaganganBesar\PbNasabahLakuPandai;
 use App\Models\PerdaganganBesar\PbTransaksiLakuPandai;
 use App\Models\Unit;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PbLakuPandaiController extends Controller
 {
@@ -23,18 +25,25 @@ class PbLakuPandaiController extends Controller
     }
 
     /**
-     * Daftar Transaksi Harian Laku Pandai (INPUT TRANS HAR)
+     * Daftar Transaksi Laku Pandai (Mendukung Format Harian / Per Tanggal & Bulanan / Per Bulan)
      */
     public function index(Request $request): Response
     {
         $unit = $this->getUnit();
         $search = $request->input('search');
+        $periodMode = $request->input('period_mode', 'date'); // 'date' atau 'month'
         $date = $request->input('date', Carbon::today()->toDateString());
+        $month = $request->input('month', Carbon::today()->format('Y-m'));
         $jenisTransaksi = $request->input('jenis_transaksi');
         $statusPembayaran = $request->input('status_pembayaran');
 
         $query = PbTransaksiLakuPandai::with('nasabah')
-            ->when($date, fn($q) => $q->where('tanggal', $date))
+            ->when($periodMode === 'date' && $date, fn($q) => $q->where('tanggal', $date))
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $parsed = Carbon::parse($month . '-01');
+                $q->whereYear('tanggal', $parsed->year)
+                  ->whereMonth('tanggal', $parsed->month);
+            })
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('nama_nasabah', 'like', "%{$search}%")
@@ -57,15 +66,29 @@ class PbLakuPandaiController extends Controller
             'total_saldo' => $latest ? (float)$latest->total_saldo : 0,
         ];
 
-        // Ringkasan Hari Ini
+        // Ringkasan Periode Aktif (Harian atau Bulanan)
+        $summaryQuery = PbTransaksiLakuPandai::query()
+            ->when($periodMode === 'date' && $date, fn($q) => $q->where('tanggal', $date))
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $parsed = Carbon::parse($month . '-01');
+                $q->whereYear('tanggal', $parsed->year)
+                  ->whereMonth('tanggal', $parsed->month);
+            });
+
+        $periodLabel = $periodMode === 'month'
+            ? Carbon::parse($month . '-01')->translatedFormat('F Y')
+            : Carbon::parse($date)->translatedFormat('d F Y');
+
         $daySummary = [
-            'rekening_masuk' => PbTransaksiLakuPandai::where('tanggal', $date)->sum('rekening_masuk'),
-            'rekening_keluar' => PbTransaksiLakuPandai::where('tanggal', $date)->sum('rekening_keluar'),
-            'cash_masuk' => PbTransaksiLakuPandai::where('tanggal', $date)->sum('cash_masuk'),
-            'cash_keluar' => PbTransaksiLakuPandai::where('tanggal', $date)->sum('cash_keluar'),
-            'pendapatan_cash' => PbTransaksiLakuPandai::where('tanggal', $date)->sum('pendapatan_jasa_cash'),
-            'pendapatan_rekening' => PbTransaksiLakuPandai::where('tanggal', $date)->sum('pendapatan_jasa_rekening'),
-            'total_transaksi' => PbTransaksiLakuPandai::where('tanggal', $date)->count(),
+            'period_mode' => $periodMode,
+            'period_label' => $periodLabel,
+            'rekening_masuk' => (clone $summaryQuery)->sum('rekening_masuk'),
+            'rekening_keluar' => (clone $summaryQuery)->sum('rekening_keluar'),
+            'cash_masuk' => (clone $summaryQuery)->sum('cash_masuk'),
+            'cash_keluar' => (clone $summaryQuery)->sum('cash_keluar'),
+            'pendapatan_cash' => (clone $summaryQuery)->sum('pendapatan_jasa_cash'),
+            'pendapatan_rekening' => (clone $summaryQuery)->sum('pendapatan_jasa_rekening'),
+            'total_transaksi' => (clone $summaryQuery)->count(),
         ];
 
         // Nasabah list for selector dropdown
@@ -76,7 +99,9 @@ class PbLakuPandaiController extends Controller
             'transaksi' => $transaksi,
             'filters' => [
                 'search' => $search,
+                'period_mode' => $periodMode,
                 'date' => $date,
+                'month' => $month,
                 'jenis_transaksi' => $jenisTransaksi,
                 'status_pembayaran' => $statusPembayaran,
             ],
@@ -84,6 +109,77 @@ class PbLakuPandaiController extends Controller
             'day_summary' => $daySummary,
             'nasabah_list' => $nasabahList,
         ]);
+    }
+
+    /**
+     * Cetak Laporan PDF Transaksi Laku Pandai (Per Tanggal atau Per Bulan)
+     */
+    public function cetakPdf(Request $request): SymfonyResponse
+    {
+        $unit = $this->getUnit();
+        $search = $request->input('search');
+        $periodMode = $request->input('period_mode', 'date');
+        $date = $request->input('date', Carbon::today()->toDateString());
+        $month = $request->input('month', Carbon::today()->format('Y-m'));
+        $jenisTransaksi = $request->input('jenis_transaksi');
+        $statusPembayaran = $request->input('status_pembayaran');
+
+        $query = PbTransaksiLakuPandai::with('nasabah')
+            ->when($periodMode === 'date' && $date, fn($q) => $q->where('tanggal', $date))
+            ->when($periodMode === 'month' && $month, function ($q) use ($month) {
+                $parsed = Carbon::parse($month . '-01');
+                $q->whereYear('tanggal', $parsed->year)
+                  ->whereMonth('tanggal', $parsed->month);
+            })
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('nama_nasabah', 'like', "%{$search}%")
+                        ->orWhere('nomor_transaksi', 'like', "%{$search}%")
+                        ->orWhere('keterangan', 'like', "%{$search}%");
+                });
+            })
+            ->when($jenisTransaksi, fn($q) => $q->where('jenis_transaksi', $jenisTransaksi))
+            ->when($statusPembayaran, fn($q) => $q->where('status_pembayaran', $statusPembayaran))
+            ->orderBy('tanggal')
+            ->orderBy('id');
+
+        $transaksi = $query->get();
+
+        $latest = PbTransaksiLakuPandai::orderByDesc('tanggal')->orderByDesc('id')->first();
+        $saldoSnapshot = [
+            'saldo_rekening' => $latest ? (float)$latest->saldo_rekening : 0,
+            'saldo_cash' => $latest ? (float)$latest->saldo_cash : 0,
+            'total_saldo' => $latest ? (float)$latest->total_saldo : 0,
+        ];
+
+        $periodLabel = $periodMode === 'month'
+            ? Carbon::parse($month . '-01')->translatedFormat('F Y')
+            : Carbon::parse($date)->translatedFormat('d F Y');
+
+        $summary = [
+            'period_mode' => $periodMode,
+            'period_label' => $periodLabel,
+            'rekening_masuk' => $transaksi->sum('rekening_masuk'),
+            'rekening_keluar' => $transaksi->sum('rekening_keluar'),
+            'cash_masuk' => $transaksi->sum('cash_masuk'),
+            'cash_keluar' => $transaksi->sum('cash_keluar'),
+            'pendapatan_cash' => $transaksi->sum('pendapatan_jasa_cash'),
+            'pendapatan_rekening' => $transaksi->sum('pendapatan_jasa_rekening'),
+            'total_pendapatan' => $transaksi->sum('pendapatan_jasa_cash') + $transaksi->sum('pendapatan_jasa_rekening'),
+            'total_transaksi' => $transaksi->count(),
+        ];
+
+        $pdf = Pdf::loadView('perdagangan_besar.laku_pandai_pdf', [
+            'unit' => $unit,
+            'transaksi' => $transaksi,
+            'periodMode' => $periodMode,
+            'periodLabel' => $periodLabel,
+            'summary' => $summary,
+            'saldo' => $saldoSnapshot,
+        ])->setPaper('a4', 'landscape');
+
+        $cleanLabel = str_replace(' ', '-', $periodLabel);
+        return $pdf->stream("Laporan-Laku-Pandai-{$cleanLabel}.pdf");
     }
 
     /**

@@ -15,7 +15,9 @@ const props = defineProps({
 const isModalOpen = ref(false);
 const editingItem = ref(null);
 const search = ref(props.filters.search || '');
-const filterDate = ref(props.filters.date || '');
+const periodMode = ref(props.filters.period_mode || 'date'); // 'date' atau 'month'
+const filterDate = ref(props.filters.date || new Date().toISOString().split('T')[0]);
+const filterMonth = ref(props.filters.month || new Date().toISOString().slice(0, 7));
 const filterJenis = ref(props.filters.jenis_transaksi || '');
 const filterStatus = ref(props.filters.status_pembayaran || '');
 const selectedNasabahId = ref('');
@@ -120,18 +122,44 @@ const onSelectAccount = (e) => {
 const applyFilter = () => {
     router.get(route('pb.laku-pandai.index'), {
         search: search.value || undefined,
-        date: filterDate.value || undefined,
+        period_mode: periodMode.value,
+        date: periodMode.value === 'date' ? filterDate.value : undefined,
+        month: periodMode.value === 'month' ? filterMonth.value : undefined,
         jenis_transaksi: filterJenis.value || undefined,
         status_pembayaran: filterStatus.value || undefined,
     }, { preserveState: true, preserveScroll: true });
 };
 
+const switchPeriodMode = (mode) => {
+    if (periodMode.value === mode) return;
+    periodMode.value = mode;
+    applyFilter();
+};
+
 const resetFilter = () => {
     search.value = '';
-    filterDate.value = '';
+    periodMode.value = 'date';
+    filterDate.value = new Date().toISOString().split('T')[0];
+    filterMonth.value = new Date().toISOString().slice(0, 7);
     filterJenis.value = '';
     filterStatus.value = '';
     applyFilter();
+};
+
+const cetakLaporanPdf = () => {
+    const params = new URLSearchParams();
+    params.append('period_mode', periodMode.value);
+    if (periodMode.value === 'date' && filterDate.value) {
+        params.append('date', filterDate.value);
+    }
+    if (periodMode.value === 'month' && filterMonth.value) {
+        params.append('month', filterMonth.value);
+    }
+    if (search.value) params.append('search', search.value);
+    if (filterJenis.value) params.append('jenis_transaksi', filterJenis.value);
+    if (filterStatus.value) params.append('status_pembayaran', filterStatus.value);
+
+    window.open(`${route('pb.laku-pandai.cetak-pdf')}?${params.toString()}`, '_blank');
 };
 
 const openCreateModal = () => {
@@ -219,7 +247,14 @@ const openStruk = (id) => {
                     <p class="text-[10px] text-slate-400 mt-0.5">Saldo Tunai + Saldo Rekening</p>
                 </div>
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                    <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pendapatan Jasa Tanggal Ini</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            Pendapatan Jasa {{ day_summary.period_mode === 'month' ? 'Bulan Ini' : 'Tanggal Ini' }}
+                        </p>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" :class="day_summary.period_mode === 'month' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-blue-50 text-blue-700 border border-blue-200'">
+                            {{ day_summary.period_label }}
+                        </span>
+                    </div>
                     <h4 class="text-xl font-black text-emerald-600 mt-1">
                         {{ formatRupiah((day_summary.pendapatan_cash || 0) + (day_summary.pendapatan_rekening || 0)) }}
                     </h4>
@@ -232,19 +267,54 @@ const openStruk = (id) => {
             <!-- Action Bar & Filters -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex flex-wrap items-center gap-2 flex-1">
+                    <!-- Toggle Format: Per Tanggal vs Per Bulan -->
+                    <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200">
+                        <button
+                            type="button"
+                            @click="switchPeriodMode('date')"
+                            :class="periodMode === 'date' ? 'bg-white text-blue-700 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'"
+                            class="px-2.5 py-1.5 text-xs rounded-lg transition inline-flex items-center gap-1.5"
+                        >
+                            <span class="material-symbols-outlined text-sm">calendar_today</span>
+                            Per Tanggal
+                        </button>
+                        <button
+                            type="button"
+                            @click="switchPeriodMode('month')"
+                            :class="periodMode === 'month' ? 'bg-white text-blue-700 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'"
+                            class="px-2.5 py-1.5 text-xs rounded-lg transition inline-flex items-center gap-1.5"
+                        >
+                            <span class="material-symbols-outlined text-sm">calendar_month</span>
+                            Per Bulan
+                        </button>
+                    </div>
+
                     <input
                         v-model="search"
                         @keyup.enter="applyFilter"
                         type="text"
-                        placeholder="Cari nasabah, no. transaksi..."
-                        class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 w-48 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="Cari nasabah, no. trx..."
+                        class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 w-44 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
+
+                    <!-- Filter Tanggal (jika mode 'date') -->
                     <input
+                        v-if="periodMode === 'date'"
                         v-model="filterDate"
                         @change="applyFilter"
                         type="date"
                         class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
+
+                    <!-- Filter Bulan (jika mode 'month') -->
+                    <input
+                        v-else
+                        v-model="filterMonth"
+                        @change="applyFilter"
+                        type="month"
+                        class="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
+                    />
+
                     <select
                         v-model="filterJenis"
                         @change="applyFilter"
@@ -253,6 +323,7 @@ const openStruk = (id) => {
                         <option value="">Semua Layanan</option>
                         <option v-for="j in jenisTransaksiOptions" :key="j" :value="j">{{ j }}</option>
                     </select>
+
                     <select
                         v-model="filterStatus"
                         @change="applyFilter"
@@ -262,6 +333,7 @@ const openStruk = (id) => {
                         <option value="Lunas">Lunas</option>
                         <option value="Hutang">Hutang</option>
                     </select>
+
                     <button
                         @click="resetFilter"
                         class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
@@ -272,6 +344,17 @@ const openStruk = (id) => {
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <!-- Tombol Cetak PDF Laporan Laku Pandai -->
+                    <button
+                        @click="cetakLaporanPdf"
+                        type="button"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-sm transition"
+                        title="Cetak Laporan PDF Transaksi Laku Pandai"
+                    >
+                        <span class="material-symbols-outlined text-base">print</span>
+                        Cetak PDF
+                    </button>
+
                     <Link
                         :href="route('pb.laku-pandai.nasabah.index')"
                         class="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition"
@@ -279,6 +362,7 @@ const openStruk = (id) => {
                         <span class="material-symbols-outlined text-base">group</span>
                         Database Nasabah
                     </Link>
+
                     <button
                         @click="openCreateModal"
                         class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-blue-600/20 transition"

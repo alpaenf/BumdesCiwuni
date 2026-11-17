@@ -249,6 +249,7 @@ Route::middleware(['auth'])->prefix('unit/perdagangan-besar')->group(function ()
 
     // 2. Laku Pandai
     Route::get('/laku-pandai', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'index'])->name('pb.laku-pandai.index');
+    Route::get('/laku-pandai/cetak-pdf', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'cetakPdf'])->name('pb.laku-pandai.cetak-pdf');
     Route::post('/laku-pandai', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'store'])->name('pb.laku-pandai.store');
     Route::put('/laku-pandai/{id}', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'update'])->name('pb.laku-pandai.update');
     Route::delete('/laku-pandai/{id}', [\App\Http\Controllers\PerdaganganBesar\PbLakuPandaiController::class, 'destroy'])->name('pb.laku-pandai.destroy');
