@@ -381,33 +381,40 @@ Route::middleware(['auth'])->prefix('unit/ketahanan-pangan/admin')->group(functi
     // 3. Logistik Pakan (Pemakaian & Pembelian)
     Route::get('/pakan', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'index'])->name('kp.feed.index');
     Route::post('/pakan/pembelian', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'storePurchase'])->name('kp.feed.purchase.store');
+    Route::put('/pakan/pembelian/{id}', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'updatePurchase'])->name('kp.feed.purchase.update');
     Route::delete('/pakan/pembelian/{id}', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'destroyPurchase'])->name('kp.feed.purchase.destroy');
     Route::post('/pakan/pemakaian', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'storeUsage'])->name('kp.feed.usage.store');
+    Route::put('/pakan/pemakaian/{id}', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'updateUsage'])->name('kp.feed.usage.update');
     Route::delete('/pakan/pemakaian/{id}', [\App\Http\Controllers\KetahananPangan\KpFeedController::class, 'destroyUsage'])->name('kp.feed.usage.destroy');
 
     // 4. Produksi Telur Harian
     Route::get('/produksi-telur', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'index'])->name('kp.production.index');
     Route::post('/produksi-telur', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'store'])->name('kp.production.store');
+    Route::put('/produksi-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'update'])->name('kp.production.update');
     Route::delete('/produksi-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpProductionController::class, 'destroy'])->name('kp.production.destroy');
 
     // 4b. Pembelian Rekanan (Telur dari Luar - Tanpa Masuk Stok)
     Route::get('/pembelian-rekanan', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'index'])->name('kp.partner.index');
     Route::post('/pembelian-rekanan', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'store'])->name('kp.partner.store');
+    Route::put('/pembelian-rekanan/{id}', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'update'])->name('kp.partner.update');
     Route::delete('/pembelian-rekanan/{id}', [\App\Http\Controllers\KetahananPangan\KpPartnerPurchaseController::class, 'destroy'])->name('kp.partner.destroy');
 
     // 5. Penjualan Telur & Cetak Struk
     Route::get('/penjualan-telur', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'index'])->name('kp.sale.index');
     Route::post('/penjualan-telur', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'store'])->name('kp.sale.store');
+    Route::put('/penjualan-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'update'])->name('kp.sale.update');
     Route::get('/penjualan-telur/struk/{id}', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'struk'])->name('kp.sale.struk')->withoutMiddleware(['auth']);
     Route::delete('/penjualan-telur/{id}', [\App\Http\Controllers\KetahananPangan\KpSaleController::class, 'destroy'])->name('kp.sale.destroy');
 
     // 6. Keuangan Hewani (Pendapatan & Pengeluaran)
     Route::get('/pengeluaran', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'pengeluaran'])->name('kp.finance.pengeluaran');
     Route::post('/pengeluaran', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'storePengeluaran'])->name('kp.finance.pengeluaran.store');
+    Route::put('/pengeluaran/{id}', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'updatePengeluaran'])->name('kp.finance.pengeluaran.update');
     Route::delete('/pengeluaran/{id}', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'destroyPengeluaran'])->name('kp.finance.pengeluaran.destroy');
 
     Route::get('/pendapatan', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'pendapatan'])->name('kp.finance.pendapatan');
     Route::post('/pendapatan/lain', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'storePendapatanLain'])->name('kp.finance.pendapatan.store');
+    Route::put('/pendapatan/lain/{id}', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'updatePendapatanLain'])->name('kp.finance.pendapatan.update');
     Route::delete('/pendapatan/lain/{id}', [\App\Http\Controllers\KetahananPangan\KpFinanceController::class, 'destroyPendapatanLain'])->name('kp.finance.pendapatan.destroy');
 
     // 7. Laporan-laporan Hewani

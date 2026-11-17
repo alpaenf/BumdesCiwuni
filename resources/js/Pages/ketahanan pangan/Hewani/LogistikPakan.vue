@@ -37,6 +37,7 @@ const applyFilter = () => {
 
 // Modal Pembelian
 const isPurchaseModalOpen = ref(false);
+const editingPurchase = ref(null);
 const purchaseForm = ref({
     tanggal: new Date().toISOString().split('T')[0],
     nama_pakan: 'Pakan Layer SP-100',
@@ -49,19 +50,59 @@ const purchaseForm = ref({
 const isSubmittingPurchase = ref(false);
 const isSubmittingUsage = ref(false);
 
+const openCreatePurchaseModal = () => {
+    editingPurchase.value = null;
+    purchaseForm.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        nama_pakan: 'Pakan Layer SP-100',
+        jumlah_kg: 50,
+        harga_per_kg: 8500,
+        supplier: '',
+        keterangan: '',
+    };
+    isPurchaseModalOpen.value = true;
+};
+
+const openEditPurchaseModal = (pur) => {
+    editingPurchase.value = pur;
+    purchaseForm.value = {
+        tanggal: pur.tanggal,
+        nama_pakan: pur.nama_pakan,
+        jumlah_kg: Number(pur.jumlah_kg),
+        harga_per_kg: Number(pur.harga_per_kg),
+        supplier: pur.supplier || '',
+        keterangan: pur.keterangan || '',
+    };
+    isPurchaseModalOpen.value = true;
+};
+
 const submitPurchase = () => {
     isSubmittingPurchase.value = true;
-    router.post(route('kp.feed.purchase.store'), purchaseForm.value, {
-        onSuccess: () => { 
-            isPurchaseModalOpen.value = false; 
-            isSubmittingPurchase.value = false;
-        },
-        onError: (errs) => {
-            isSubmittingPurchase.value = false;
-            alert(Object.values(errs).join('\n'));
-        },
-        onFinish: () => { isSubmittingPurchase.value = false; }
-    });
+    if (editingPurchase.value) {
+        router.put(route('kp.feed.purchase.update', editingPurchase.value.id), purchaseForm.value, {
+            onSuccess: () => { 
+                isPurchaseModalOpen.value = false; 
+                isSubmittingPurchase.value = false;
+            },
+            onError: (errs) => {
+                isSubmittingPurchase.value = false;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => { isSubmittingPurchase.value = false; }
+        });
+    } else {
+        router.post(route('kp.feed.purchase.store'), purchaseForm.value, {
+            onSuccess: () => { 
+                isPurchaseModalOpen.value = false; 
+                isSubmittingPurchase.value = false;
+            },
+            onError: (errs) => {
+                isSubmittingPurchase.value = false;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => { isSubmittingPurchase.value = false; }
+        });
+    }
 };
 
 const deletePurchase = (id) => {
@@ -72,6 +113,7 @@ const deletePurchase = (id) => {
 
 // Modal Pemakaian Harian
 const isUsageModalOpen = ref(false);
+const editingUsage = ref(null);
 const usageForm = ref({
     tanggal: new Date().toISOString().split('T')[0],
     hari: '',
@@ -84,19 +126,65 @@ const usageForm = ref({
     keterangan: '',
 });
 
+const openCreateUsageModal = () => {
+    editingUsage.value = null;
+    usageForm.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        hari: '',
+        hari_ke: (props.usages.total || 0) + 1,
+        umur_minggu_ke: 24,
+        umur_minggu_hari_ke: 1,
+        populasi_ayam: 1000,
+        kebutuhan_per_ekor_gram: 115,
+        harga_per_kg: 8500,
+        keterangan: '',
+    };
+    isUsageModalOpen.value = true;
+};
+
+const openEditUsageModal = (usage) => {
+    editingUsage.value = usage;
+    usageForm.value = {
+        tanggal: usage.tanggal,
+        hari: usage.hari || '',
+        hari_ke: usage.hari_ke || 1,
+        umur_minggu_ke: usage.umur_minggu_ke || 24,
+        umur_minggu_hari_ke: usage.umur_minggu_hari_ke || 1,
+        populasi_ayam: usage.populasi_ayam || 1000,
+        kebutuhan_per_ekor_gram: Number(usage.kebutuhan_per_ekor_gram) || 115,
+        harga_per_kg: Number(usage.harga_per_kg) || 8500,
+        keterangan: usage.keterangan || '',
+    };
+    isUsageModalOpen.value = true;
+};
+
 const submitUsage = () => {
     isSubmittingUsage.value = true;
-    router.post(route('kp.feed.usage.store'), usageForm.value, {
-        onSuccess: () => { 
-            isUsageModalOpen.value = false; 
-            isSubmittingUsage.value = false;
-        },
-        onError: (errs) => {
-            isSubmittingUsage.value = false;
-            alert(Object.values(errs).join('\n'));
-        },
-        onFinish: () => { isSubmittingUsage.value = false; }
-    });
+    if (editingUsage.value) {
+        router.put(route('kp.feed.usage.update', editingUsage.value.id), usageForm.value, {
+            onSuccess: () => { 
+                isUsageModalOpen.value = false; 
+                isSubmittingUsage.value = false;
+            },
+            onError: (errs) => {
+                isSubmittingUsage.value = false;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => { isSubmittingUsage.value = false; }
+        });
+    } else {
+        router.post(route('kp.feed.usage.store'), usageForm.value, {
+            onSuccess: () => { 
+                isUsageModalOpen.value = false; 
+                isSubmittingUsage.value = false;
+            },
+            onError: (errs) => {
+                isSubmittingUsage.value = false;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => { isSubmittingUsage.value = false; }
+        });
+    }
 };
 
 const deleteUsage = (id) => {
@@ -130,70 +218,67 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <p class="text-xs font-medium text-slate-500">Total Pemakaian (Periode)</p>
-                <h4 class="text-2xl font-bold text-slate-800 mt-1">
+                <h4 class="text-2xl font-bold text-amber-600 mt-1">
                     {{ Number(summary.total_pakai_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
                 </h4>
-                <div class="mt-2 text-[11px] text-amber-600 font-medium">Konsumsi harian populasi</div>
+                <div class="mt-2 text-[11px] text-slate-400">Konsumsi harian populasi</div>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-center items-start gap-2">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-center gap-2">
                 <button 
-                    @click="isUsageModalOpen = true"
-                    class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                    @click="openCreateUsageModal"
+                    class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-colors"
                 >
                     <span class="material-symbols-outlined text-base">edit_calendar</span>
                     Catat Pemakaian Harian
                 </button>
                 <button 
-                    @click="isPurchaseModalOpen = true"
-                    class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                    @click="openCreatePurchaseModal"
+                    class="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-colors"
                 >
-                    <span class="material-symbols-outlined text-base">add_shopping_cart</span>
+                    <span class="material-symbols-outlined text-base">shopping_cart</span>
                     Beli Pakan Baru
                 </button>
             </div>
         </div>
 
-        <!-- Filter & Tab Switcher -->
-        <div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+        <!-- Filter & Tab Nav -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
                 <button 
                     @click="switchTab('pemakaian')"
-                    :class="[
-                        'px-4 py-1.5 text-xs font-bold rounded-lg transition-all',
-                        currentTab === 'pemakaian' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'
-                    ]"
+                    :class="['px-4 py-2 rounded-lg transition-all', currentTab === 'pemakaian' ? 'bg-white text-slate-800 shadow-xs' : 'hover:text-slate-900']"
                 >
                     Catatan Pemakaian Harian
                 </button>
                 <button 
                     @click="switchTab('pembelian')"
-                    :class="[
-                        'px-4 py-1.5 text-xs font-bold rounded-lg transition-all',
-                        currentTab === 'pembelian' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'
-                    ]"
+                    :class="['px-4 py-2 rounded-lg transition-all', currentTab === 'pembelian' ? 'bg-white text-slate-800 shadow-xs' : 'hover:text-slate-900']"
                 >
                     Riwayat Pembelian Pakan
                 </button>
             </div>
 
+            <!-- Date Range Filter -->
             <div class="flex items-center gap-2">
-                <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200" />
+                <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" />
                 <span class="text-xs text-slate-400">s/d</span>
-                <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200" />
-                <button @click="applyFilter" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl">
+                <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" />
+                <button @click="applyFilter" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl">
                     Filter
                 </button>
             </div>
         </div>
 
-        <!-- Tab 1: Pemakaian Harian Sesuai Format PRD BUMDes -->
+        <!-- Tab 1: Pemakaian Pakan Harian -->
         <div v-if="currentTab === 'pemakaian'" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
                     Pencatatan Budidaya Ayam Ras Petelur (Pemakaian Pakan)
                 </h4>
-                <span class="text-xs text-slate-500">Kebutuhan: (Jml Ayam × Kebutuhan/Ekor) / 1000</span>
+                <div class="text-[11px] text-slate-400">
+                    Kebutuhan: (Jml Ayam &times; Kebutuhan/Ekor) / 1000
+                </div>
             </div>
 
             <div class="overflow-x-auto">
@@ -231,18 +316,42 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-right font-bold text-emerald-600">{{ Number(usage.sisa_pakan_kg).toFixed(1) }} kg</td>
                             <td class="p-3 text-right text-emerald-700 font-bold">{{ formatRp(usage.total_biaya_pemakaian) }}</td>
                             <td class="p-3 text-center">
-                                <button @click="deleteUsage(usage.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus">
-                                    <span class="material-symbols-outlined text-base">delete</span>
-                                </button>
+                                <div class="flex items-center justify-center gap-1">
+                                    <button @click="openEditUsageModal(usage)" class="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50" title="Edit Pemakaian">
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button @click="deleteUsage(usage.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="usages.data.length === 0">
-                            <td colspan="10" class="text-center py-8 text-slate-400">
+                            <td colspan="11" class="text-center py-8 text-slate-400">
                                 Belum ada data pemakaian pakan pada rentang tanggal ini.
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination Pemakaian -->
+            <div v-if="usages.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ usages.from || 0 }} - {{ usages.to || 0 }} dari {{ usages.total }} data pemakaian</span>
+                <div v-if="usages.links && usages.links.length > 3" class="flex gap-1">
+                    <button 
+                        v-for="(link, i) in usages.links" 
+                        :key="i"
+                        :disabled="!link.url"
+                        @click="router.visit(link.url)"
+                        v-html="link.label"
+                        :class="[
+                            'px-2.5 py-1 rounded-lg text-xs font-medium',
+                            link.active ? 'bg-emerald-600 text-white' : 'hover:bg-slate-100 text-slate-600',
+                            !link.url ? 'opacity-40 cursor-not-allowed' : ''
+                        ]"
+                    />
+                </div>
             </div>
         </div>
 
@@ -278,9 +387,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-right font-bold text-rose-600">{{ formatRp(pur.total_biaya) }}</td>
                             <td class="p-3 text-slate-500">{{ pur.keterangan || '-' }}</td>
                             <td class="p-3 text-center">
-                                <button @click="deletePurchase(pur.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Batal Pembelian">
-                                    <span class="material-symbols-outlined text-base">delete</span>
-                                </button>
+                                <div class="flex items-center justify-center gap-1">
+                                    <button @click="openEditPurchaseModal(pur)" class="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50" title="Edit Pembelian">
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button @click="deletePurchase(pur.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Batal Pembelian">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="purchases.data.length === 0">
@@ -291,12 +405,38 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Pembelian -->
+            <div v-if="purchases.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ purchases.from || 0 }} - {{ purchases.to || 0 }} dari {{ purchases.total }} data pembelian</span>
+                <div v-if="purchases.links && purchases.links.length > 3" class="flex gap-1">
+                    <button 
+                        v-for="(link, i) in purchases.links" 
+                        :key="i"
+                        :disabled="!link.url"
+                        @click="router.visit(link.url)"
+                        v-html="link.label"
+                        :class="[
+                            'px-2.5 py-1 rounded-lg text-xs font-medium',
+                            link.active ? 'bg-purple-600 text-white' : 'hover:bg-slate-100 text-slate-600',
+                            !link.url ? 'opacity-40 cursor-not-allowed' : ''
+                        ]"
+                    />
+                </div>
+            </div>
         </div>
 
-        <!-- Modal Beli Pakan -->
+        <!-- Modal Beli Pakan (Tambah & Edit) -->
         <div v-if="isPurchaseModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
-                <h4 class="text-sm font-bold text-slate-800 pb-3 border-b border-slate-100">Input Pembelian Pakan Ayam</h4>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-800">
+                        {{ editingPurchase ? 'Edit Pembelian Pakan Ayam' : 'Input Pembelian Pakan Ayam' }}
+                    </h4>
+                    <button @click="isPurchaseModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
                 <form @submit.prevent="submitPurchase" class="mt-4 space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Pembelian</label>
@@ -332,17 +472,24 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <button type="button" @click="isPurchaseModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmittingPurchase">Batal</button>
                         <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmittingPurchase">
                             <span v-if="isSubmittingPurchase" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-                            {{ isSubmittingPurchase ? 'Menyimpan...' : 'Simpan Pembelian' }}
+                            {{ isSubmittingPurchase ? 'Menyimpan...' : (editingPurchase ? 'Simpan Perubahan' : 'Simpan Pembelian') }}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Modal Pemakaian Pakan Harian -->
+        <!-- Modal Pemakaian Pakan Harian (Tambah & Edit) -->
         <div v-if="isUsageModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200">
-                <h4 class="text-sm font-bold text-slate-800 pb-3 border-b border-slate-100">Input Pemakaian Pakan Harian</h4>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-800">
+                        {{ editingUsage ? 'Edit Pemakaian Pakan Harian' : 'Input Pemakaian Pakan Harian' }}
+                    </h4>
+                    <button @click="isUsageModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
                 <form @submit.prevent="submitUsage" class="mt-4 space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -411,7 +558,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         <button type="button" @click="isUsageModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmittingUsage">Batal</button>
                         <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmittingUsage">
                             <span v-if="isSubmittingUsage" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-                            {{ isSubmittingUsage ? 'Menyimpan...' : 'Simpan Pemakaian' }}
+                            {{ isSubmittingUsage ? 'Menyimpan...' : (editingUsage ? 'Simpan Perubahan' : 'Simpan Pemakaian') }}
                         </button>
                     </div>
                 </form>
@@ -419,4 +566,3 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         </div>
     </KetahananPanganLayout>
 </template>
-

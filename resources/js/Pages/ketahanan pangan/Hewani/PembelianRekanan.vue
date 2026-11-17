@@ -24,6 +24,7 @@ const applyFilter = () => {
 };
 
 const isModalOpen = ref(false);
+const editingPurchase = ref(null);
 const form = ref({
     tanggal: new Date().toISOString().split('T')[0],
     nama_rekanan: '',
@@ -37,19 +38,63 @@ const form = ref({
 
 const isSubmitting = ref(false);
 
+const openCreateModal = () => {
+    editingPurchase.value = null;
+    form.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        nama_rekanan: '',
+        no_hp: '',
+        jumlah_kg: 10,
+        harga_per_kg: 22000,
+        status_pembayaran: 'Lunas',
+        metode_pembayaran: 'Tunai',
+        keterangan: '',
+    };
+    isModalOpen.value = true;
+};
+
+const openEditModal = (item) => {
+    editingPurchase.value = item;
+    form.value = {
+        tanggal: item.tanggal,
+        nama_rekanan: item.nama_rekanan,
+        no_hp: item.no_hp || '',
+        jumlah_kg: Number(item.jumlah_kg),
+        harga_per_kg: Number(item.harga_per_kg),
+        status_pembayaran: item.status_pembayaran || 'Lunas',
+        metode_pembayaran: item.metode_pembayaran || 'Tunai',
+        keterangan: item.keterangan || '',
+    };
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
     isSubmitting.value = true;
-    router.post(route('kp.partner.store'), form.value, {
-        onSuccess: () => { 
-            isModalOpen.value = false; 
-            isSubmitting.value = false;
-        },
-        onError: (errs) => {
-            isSubmitting.value = false;
-            alert(Object.values(errs).join('\n'));
-        },
-        onFinish: () => { isSubmitting.value = false; }
-    });
+    if (editingPurchase.value) {
+        router.put(route('kp.partner.update', editingPurchase.value.id), form.value, {
+            onSuccess: () => { 
+                isModalOpen.value = false; 
+                isSubmitting.value = false;
+            },
+            onError: (errs) => {
+                isSubmitting.value = false;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => { isSubmitting.value = false; }
+        });
+    } else {
+        router.post(route('kp.partner.store'), form.value, {
+            onSuccess: () => { 
+                isModalOpen.value = false; 
+                isSubmitting.value = false;
+            },
+            onError: (errs) => {
+                isSubmitting.value = false;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => { isSubmitting.value = false; }
+        });
+    }
 };
 
 const deletePurchase = (id) => {
@@ -70,7 +115,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 <p class="text-xs text-slate-500">Pencatatan riwayat pembayaran pembelian telur dari rekanan luar (tidak menambah stok telur internal)</p>
             </div>
             <button 
-                @click="isModalOpen = true"
+                @click="openCreateModal"
                 class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-2"
             >
                 <span class="material-symbols-outlined text-base">add_shopping_cart</span>
@@ -79,51 +124,53 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         </div>
 
         <!-- Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Total Pembelian Telur Rekanan</p>
-                <h4 class="text-2xl font-bold text-slate-800 mt-1">
-                    {{ Number(summary.total_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
-                </h4>
-                <div class="mt-2 text-[11px] text-amber-600 font-medium">Berasal dari peternak rekanan luar</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Total Beli Rekanan (Periode)</p>
+                    <h4 class="text-2xl font-bold text-slate-800 mt-1">
+                        {{ Number(summary.total_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                    </h4>
+                </div>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+                    <span class="material-symbols-outlined text-2xl">scale</span>
+                </div>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Total Nominal Pembayaran</p>
-                <h4 class="text-2xl font-bold text-emerald-700 mt-1">
-                    {{ formatRp(summary.total_biaya) }}
-                </h4>
-                <div class="mt-2 text-[11px] text-slate-400">Tercatat dalam pengeluaran kas</div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Status Stok</p>
-                <h4 class="text-sm font-bold text-slate-700 mt-2 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-amber-500 text-lg">info</span>
-                    Tanpa Masuk Stok
-                </h4>
-                <div class="mt-2 text-[11px] text-slate-500">Hanya mencatat riwayat transaksi pembayaran</div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Total Biaya Pembelian (Periode)</p>
+                    <h4 class="text-2xl font-bold text-emerald-600 mt-1">
+                        {{ formatRp(summary.total_biaya) }}
+                    </h4>
+                </div>
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
+                    <span class="material-symbols-outlined text-2xl">payments</span>
+                </div>
             </div>
         </div>
 
         <!-- Filter & Search Bar -->
         <div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200" />
-                <span class="text-xs text-slate-400">s/d</span>
-                <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200" />
+            <div class="flex items-center gap-2 flex-1 min-w-[240px] max-w-sm">
                 <input 
                     type="text" 
                     v-model="search" 
-                    @keyup.enter="applyFilter" 
-                    placeholder="Cari rekanan / keterangan..." 
-                    class="text-xs rounded-xl border-slate-200" 
+                    placeholder="Cari rekanan, no hp, keterangan..." 
+                    @keyup.enter="applyFilter"
+                    class="w-full text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" 
                 />
+            </div>
+
+            <div class="flex items-center gap-2">
+                <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" />
+                <span class="text-xs text-slate-400">s/d</span>
+                <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" />
                 <button 
                     @click="applyFilter"
                     class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl transition-colors"
                 >
-                    Terapkan
+                    Filter
                 </button>
             </div>
         </div>
@@ -134,14 +181,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 <table class="w-full text-xs text-left">
                     <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200/80">
                         <tr>
-                            <th class="p-3.5">No.</th>
+                            <th class="p-3.5">No</th>
                             <th class="p-3.5">Tanggal</th>
                             <th class="p-3.5">Nama Rekanan</th>
-                            <th class="p-3.5">No. HP</th>
+                            <th class="p-3.5">Kontak / HP</th>
                             <th class="p-3.5 text-right">Jumlah (kg)</th>
                             <th class="p-3.5 text-right">Harga / kg</th>
                             <th class="p-3.5 text-right">Total Biaya</th>
-                            <th class="p-3.5 text-center">Metode / Status</th>
+                            <th class="p-3.5 text-center">Status</th>
                             <th class="p-3.5 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -163,13 +210,22 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 </span>
                             </td>
                             <td class="p-3.5 text-center">
-                                <button 
-                                    @click="deletePurchase(item.id)" 
-                                    class="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                                    title="Hapus"
-                                >
-                                    <span class="material-symbols-outlined text-base">delete</span>
-                                </button>
+                                <div class="flex items-center justify-center gap-1">
+                                    <button 
+                                        @click="openEditModal(item)" 
+                                        class="p-1 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                                        title="Edit"
+                                    >
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button 
+                                        @click="deletePurchase(item.id)" 
+                                        class="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                                        title="Hapus"
+                                    >
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="purchases.data.length === 0">
@@ -182,9 +238,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
 
             <!-- Pagination -->
-            <div v-if="purchases.links && purchases.links.length > 3" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span>Total {{ purchases.total }} transaksi pembelian rekanan</span>
-                <div class="flex gap-1">
+            <div v-if="purchases.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ purchases.from || 0 }} - {{ purchases.to || 0 }} dari {{ purchases.total }} transaksi pembelian rekanan</span>
+                <div v-if="purchases.links && purchases.links.length > 3" class="flex gap-1">
                     <button 
                         v-for="(link, i) in purchases.links" 
                         :key="i"
@@ -201,12 +257,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
         </div>
 
-        <!-- Modal Catat Pembelian Rekanan -->
+        <!-- Modal Catat / Edit Pembelian Rekanan -->
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">Catat Pembelian Telur Rekanan</h4>
+                        <h4 class="text-sm font-bold text-slate-800">
+                            {{ editingPurchase ? 'Edit Pembelian Telur Rekanan' : 'Catat Pembelian Telur Rekanan' }}
+                        </h4>
                         <p class="text-[11px] text-slate-400">Mencatat pembayaran telur dari luar (tidak menambah stok internal)</p>
                     </div>
                     <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
@@ -248,34 +306,32 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Status Pembayaran</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Status Bayar</label>
                             <select v-model="form.status_pembayaran" class="w-full text-xs rounded-xl border-slate-200">
                                 <option value="Lunas">Lunas</option>
                                 <option value="Hutang / Belum Lunas">Hutang / Belum Lunas</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Metode</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Metode Bayar</label>
                             <select v-model="form.metode_pembayaran" class="w-full text-xs rounded-xl border-slate-200">
                                 <option value="Tunai">Tunai</option>
-                                <option value="Transfer">Transfer</option>
+                                <option value="Transfer">Transfer Bank</option>
                                 <option value="QRIS">QRIS</option>
                             </select>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan</label>
-                        <textarea v-model="form.keterangan" rows="2" placeholder="Catatan pembelian rekanan..." class="w-full text-xs rounded-xl border-slate-200"></textarea>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan (Opsional)</label>
+                        <textarea v-model="form.keterangan" rows="2" placeholder="Catatan tambahan..." class="w-full text-xs rounded-xl border-slate-200"></textarea>
                     </div>
 
                     <div class="pt-2 flex justify-end gap-2">
-                        <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmitting">
-                            Batal
-                        </button>
+                        <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmitting">Batal</button>
                         <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmitting">
                             <span v-if="isSubmitting" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-                            {{ isSubmitting ? 'Menyimpan...' : 'Simpan Transaksi' }}
+                            {{ isSubmitting ? 'Menyimpan...' : (editingPurchase ? 'Simpan Perubahan' : 'Simpan Pembelian') }}
                         </button>
                     </div>
                 </form>
@@ -283,4 +339,3 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         </div>
     </KetahananPanganLayout>
 </template>
-

@@ -24,6 +24,7 @@ const applyFilter = () => {
 };
 
 const isModalOpen = ref(false);
+const editingExpense = ref(null);
 const form = ref({
     tanggal: new Date().toISOString().split('T')[0],
     uraian: '',
@@ -38,10 +39,42 @@ const kategoriOptions = {
     variabel: ['Biaya Bahan Baku Pakan', 'Biaya Vaksin dan Obat', 'Biaya Operasional', 'Biaya Promosi Penjualan', 'Biaya Lain-Lain']
 };
 
+const openCreateModal = () => {
+    editingExpense.value = null;
+    form.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        uraian: '',
+        jenis_biaya: 'variabel',
+        kategori_biaya: 'Biaya Operasional',
+        nominal: 50000,
+        keterangan: '',
+    };
+    isModalOpen.value = true;
+};
+
+const openEditModal = (exp) => {
+    editingExpense.value = exp;
+    form.value = {
+        tanggal: exp.tanggal,
+        uraian: exp.uraian,
+        jenis_biaya: exp.jenis_biaya || 'variabel',
+        kategori_biaya: exp.kategori_biaya || 'Biaya Operasional',
+        nominal: Number(exp.nominal),
+        keterangan: exp.keterangan || '',
+    };
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    router.post(route('kp.finance.pengeluaran.store'), form.value, {
-        onSuccess: () => { isModalOpen.value = false; }
-    });
+    if (editingExpense.value) {
+        router.put(route('kp.finance.pengeluaran.update', editingExpense.value.id), form.value, {
+            onSuccess: () => { isModalOpen.value = false; }
+        });
+    } else {
+        router.post(route('kp.finance.pengeluaran.store'), form.value, {
+            onSuccess: () => { isModalOpen.value = false; }
+        });
+    }
 };
 
 const deleteExpense = (id) => {
@@ -71,32 +104,30 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
 
             <div class="bg-white p-5 rounded-2xl border border-rose-100 shadow-xs bg-gradient-to-br from-rose-50/40 to-white flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-semibold text-rose-800">Total Pengeluaran</p>
+                    <p class="text-xs font-semibold text-rose-800">Total Pengeluaran Unit</p>
                     <h4 class="text-2xl font-extrabold text-rose-600 mt-1">{{ formatRp(summary.total_pengeluaran) }}</h4>
                 </div>
                 <button 
-                    @click="isModalOpen = true"
-                    class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                    @click="openCreateModal"
+                    class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-xs transition-colors"
                 >
-                    <span class="material-symbols-outlined text-base">add</span>
-                    Tambah Biaya
+                    <span class="material-symbols-outlined text-sm">add_circle</span>
+                    Catat Biaya
                 </button>
             </div>
         </div>
 
         <!-- Filter Bar -->
         <div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                    Rekap Beban Pengeluaran Unit Hewani
-                </h4>
-            </div>
             <div class="flex items-center gap-2">
                 <select v-model="jenisBiaya" @change="applyFilter" class="text-xs rounded-xl border-slate-200">
                     <option value="">Semua Jenis Biaya</option>
-                    <option value="tetap">Biaya Tetap</option>
+                    <option value="tetap">Biaya Tetap (Fixed)</option>
                     <option value="variabel">Biaya Variabel</option>
                 </select>
+            </div>
+
+            <div class="flex items-center gap-2">
                 <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200" />
                 <span class="text-xs text-slate-400">s/d</span>
                 <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200" />
@@ -137,14 +168,22 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-right font-bold text-rose-600">{{ formatRp(exp.nominal) }}</td>
                             <td class="p-3 text-slate-400">{{ exp.keterangan || '-' }}</td>
                             <td class="p-3 text-center">
-                                <button 
-                                    v-if="!exp.referensi_tipe" 
-                                    @click="deleteExpense(exp.id)" 
-                                    class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                                    title="Hapus"
-                                >
-                                    <span class="material-symbols-outlined text-base">delete</span>
-                                </button>
+                                <div v-if="!exp.referensi_tipe" class="flex items-center justify-center gap-1">
+                                    <button 
+                                        @click="openEditModal(exp)" 
+                                        class="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                                        title="Edit Pengeluaran"
+                                    >
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button 
+                                        @click="deleteExpense(exp.id)" 
+                                        class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                                        title="Hapus"
+                                    >
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
                                 <span v-else class="text-[10px] text-slate-400 italic">Otomatis Sistem</span>
                             </td>
                         </tr>
@@ -156,12 +195,38 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <div v-if="expenses.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ expenses.from || 0 }} - {{ expenses.to || 0 }} dari {{ expenses.total }} pengeluaran</span>
+                <div v-if="expenses.links && expenses.links.length > 3" class="flex gap-1">
+                    <button 
+                        v-for="(link, i) in expenses.links" 
+                        :key="i"
+                        :disabled="!link.url"
+                        @click="router.visit(link.url)"
+                        v-html="link.label"
+                        :class="[
+                            'px-2.5 py-1 rounded-lg text-xs font-medium',
+                            link.active ? 'bg-rose-600 text-white' : 'hover:bg-slate-100 text-slate-600',
+                            !link.url ? 'opacity-40 cursor-not-allowed' : ''
+                        ]"
+                    />
+                </div>
+            </div>
         </div>
 
-        <!-- Modal Tambah Pengeluaran -->
+        <!-- Modal Tambah / Edit Pengeluaran -->
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
-                <h4 class="text-sm font-bold text-slate-800 pb-3 border-b border-slate-100">Catat Biaya Pengeluaran</h4>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-800">
+                        {{ editingExpense ? 'Edit Biaya Pengeluaran' : 'Catat Biaya Pengeluaran' }}
+                    </h4>
+                    <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
                 <form @submit.prevent="submitForm" class="mt-4 space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal</label>
@@ -196,11 +261,12 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </div>
                     <div class="pt-2 flex justify-end gap-2">
                         <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl">Simpan Pengeluaran</button>
+                        <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl">
+                            {{ editingExpense ? 'Simpan Perubahan' : 'Simpan Pengeluaran' }}
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </KetahananPanganLayout>
 </template>
-

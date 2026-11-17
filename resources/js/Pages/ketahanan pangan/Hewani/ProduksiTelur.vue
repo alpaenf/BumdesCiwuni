@@ -23,6 +23,7 @@ const applyFilter = () => {
 };
 
 const isModalOpen = ref(false);
+const editingProd = ref(null);
 const form = ref({
     tanggal: new Date().toISOString().split('T')[0],
     hari: '',
@@ -65,10 +66,56 @@ const hitungManualDariKg = () => {
     hitungRasioOtomatis();
 };
 
+const openCreateModal = () => {
+    editingProd.value = null;
+    form.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        hari: '',
+        umur_ke: (props.productions.total || 0) + 1,
+        umur_minggu: 24,
+        hari_ke: 1,
+        produksi_butir: 805,
+        butir_per_kg: 17.89,
+        produksi_kg: 45.0,
+        harga_per_kg: props.product.harga_default || 22000,
+        telur_retak_butir: 0,
+        keterangan_retak: '',
+        telur_rusak_butir: 0,
+        keterangan_rusak: '',
+    };
+    isModalOpen.value = true;
+};
+
+const openEditModal = (prod) => {
+    editingProd.value = prod;
+    form.value = {
+        tanggal: prod.tanggal,
+        hari: prod.hari || '',
+        umur_ke: prod.umur_ke || 1,
+        umur_minggu: prod.umur_minggu || 24,
+        hari_ke: prod.hari_ke || 1,
+        produksi_butir: prod.produksi_butir || 0,
+        butir_per_kg: Number(prod.butir_per_kg) || 16,
+        produksi_kg: Number(prod.produksi_kg) || 0,
+        harga_per_kg: Number(prod.harga_per_kg) || props.product.harga_default || 22000,
+        telur_retak_butir: prod.telur_retak_butir || 0,
+        keterangan_retak: prod.keterangan_retak || '',
+        telur_rusak_butir: prod.telur_rusak_butir || 0,
+        keterangan_rusak: prod.keterangan_rusak || '',
+    };
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    router.post(route('kp.production.store'), form.value, {
-        onSuccess: () => { isModalOpen.value = false; }
-    });
+    if (editingProd.value) {
+        router.put(route('kp.production.update', editingProd.value.id), form.value, {
+            onSuccess: () => { isModalOpen.value = false; }
+        });
+    } else {
+        router.post(route('kp.production.store'), form.value, {
+            onSuccess: () => { isModalOpen.value = false; }
+        });
+    }
 };
 
 const deleteProduction = (id) => {
@@ -103,31 +150,33 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
                 <p class="text-xs font-medium text-slate-500">Telur Retak</p>
                 <h4 class="text-2xl font-bold text-amber-600 mt-1">
-                    {{ summary.total_retak_butir }} <span class="text-xs font-normal text-slate-400">butir</span>
+                    {{ (summary.total_retak_butir || 0).toLocaleString('id-ID') }} <span class="text-xs font-normal text-slate-400">butir</span>
                 </h4>
-                <div class="mt-2 text-[11px] text-amber-600 font-medium">Dicatat terpisah dari stok utama</div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-center items-start">
-                <p class="text-xs font-medium text-slate-500">Telur Rusak / Pecah</p>
-                <h4 class="text-2xl font-bold text-rose-600 mt-1">
-                    {{ summary.total_rusak_butir }} <span class="text-xs font-normal text-slate-400">butir</span>
-                </h4>
-                <button 
-                    @click="isModalOpen = true"
-                    class="mt-2 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5"
-                >
-                    <span class="material-symbols-outlined text-base">add_circle</span>
-                    Input Produksi Harian
-                </button>
+                <div class="mt-2 text-[11px] text-amber-500 font-medium">Dicatat terpisah dari stok utama</div>
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Total Produksi (Periode)</p>
-                <h4 class="text-2xl font-bold text-slate-800 mt-1">
-                    {{ Number(summary.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                <p class="text-xs font-medium text-slate-500">Telur Rusak / Pecah</p>
+                <h4 class="text-2xl font-bold text-rose-600 mt-1">
+                    {{ (summary.total_rusak_butir || 0).toLocaleString('id-ID') }} <span class="text-xs font-normal text-slate-400">butir</span>
                 </h4>
-                <div class="mt-2 text-[11px] text-emerald-600 font-semibold">Telur Cokelat/Bagus</div>
+                <div class="mt-2 text-[11px] text-rose-400 font-medium">Kerugian fisik panen</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-xs bg-gradient-to-br from-emerald-50/50 to-white flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-emerald-800">Total Produksi (Periode)</p>
+                    <h4 class="text-2xl font-extrabold text-emerald-700 mt-1">
+                        {{ Number(summary.total_produksi_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
+                    </h4>
+                </div>
+                <button 
+                    @click="openCreateModal"
+                    class="mt-3 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                >
+                    <span class="material-symbols-outlined text-sm">add_circle</span>
+                    Input Produksi Harian
+                </button>
             </div>
         </div>
 
@@ -196,9 +245,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                 <span v-else class="text-slate-300">-</span>
                             </td>
                             <td class="p-3 text-center">
-                                <button @click="deleteProduction(prod.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus">
-                                    <span class="material-symbols-outlined text-base">delete</span>
-                                </button>
+                                <div class="flex items-center justify-center gap-1">
+                                    <button @click="openEditModal(prod)" class="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50" title="Edit Produksi">
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button @click="deleteProduction(prod.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="productions.data.length === 0">
@@ -210,10 +264,10 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div v-if="productions.links && productions.links.length > 3" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span>Total {{ productions.total }} catatan</span>
-                <div class="flex gap-1">
+            <!-- Pagination Produksi -->
+            <div v-if="productions.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ productions.from || 0 }} - {{ productions.to || 0 }} dari {{ productions.total }} catatan</span>
+                <div v-if="productions.links && productions.links.length > 3" class="flex gap-1">
                     <button 
                         v-for="(link, i) in productions.links" 
                         :key="i"
@@ -230,10 +284,17 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
         </div>
 
-        <!-- Modal Input Produksi -->
+        <!-- Modal Input / Edit Produksi -->
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200">
-                <h4 class="text-sm font-bold text-slate-800 pb-3 border-b border-slate-100">Input Produksi Telur Harian</h4>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-800">
+                        {{ editingProd ? 'Edit Catatan Produksi Telur Harian' : 'Input Produksi Telur Harian' }}
+                    </h4>
+                    <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
                 <form @submit.prevent="submitForm" class="mt-4 space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -248,55 +309,43 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     <!-- Kalkulator Manual Butir ke Kg -->
                     <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200/80 space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-blue-900 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">calculate</span>
-                                Hitung Butir, kg & Rasio Otomatis
-                            </span>
-                            <span class="text-[10px] text-blue-600 font-medium">Isi Butir & kg $\rightarrow$ Rasio otomatis</span>
+                            <span class="text-xs font-bold text-blue-900">Perhitungan Rasio Telur (Butir / Kg)</span>
+                            <span class="text-[10px] text-blue-600">Otomatis sinkron</span>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Jumlah Butir</label>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Hasil Butir</label>
                                 <input 
                                     type="number" 
                                     v-model="form.produksi_butir" 
                                     @input="hitungManualDariButir" 
-                                    placeholder="Cth: 805"
-                                    class="w-full text-xs rounded-xl border-slate-200 font-bold text-blue-700" 
+                                    placeholder="Butir"
+                                    class="w-full text-xs rounded-lg border-blue-200 font-bold text-blue-800" 
                                 />
                             </div>
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">
-                                    Rasio (Butir/kg)
-                                </label>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Rasio (btr/kg)</label>
                                 <input 
                                     type="number" 
                                     step="0.01" 
                                     v-model="form.butir_per_kg" 
                                     @input="hitungDariRasio" 
-                                    placeholder="Otomatis"
-                                    class="w-full text-xs rounded-xl border-slate-200 font-bold bg-white text-indigo-700" 
+                                    placeholder="Rasio"
+                                    class="w-full text-xs rounded-lg border-blue-200 text-slate-700" 
                                 />
                             </div>
                             <div>
-                                <label class="block text-[11px] font-semibold text-slate-700 mb-1">Total kg (Masuk Stok)</label>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Produksi (kg)</label>
                                 <input 
                                     type="number" 
-                                    step="0.01" 
+                                    step="0.1" 
                                     v-model="form.produksi_kg" 
                                     @input="hitungManualDariKg" 
-                                    placeholder="Cth: 45"
-                                    class="w-full text-xs rounded-xl border-slate-200 font-bold text-emerald-700" 
+                                    placeholder="Kg"
+                                    class="w-full text-xs rounded-lg border-blue-200 font-bold text-emerald-700" 
                                     required 
                                 />
                             </div>
-                        </div>
-                        <div v-if="form.produksi_butir > 0 && form.produksi_kg > 0" class="text-[11px] text-slate-600 bg-white/70 p-2 rounded-lg border border-blue-100 flex items-center justify-between">
-                            <span>Rata-rata berat per butir:</span>
-                            <span class="font-bold text-indigo-700">
-                                {{ Number((form.produksi_kg * 1000) / form.produksi_butir).toFixed(1) }} gram / butir
-                                ({{ Number(form.butir_per_kg).toFixed(2) }} btr/kg)
-                            </span>
                         </div>
                     </div>
 
@@ -326,11 +375,12 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </div>
                     <div class="pt-2 flex justify-end gap-2">
                         <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl">Simpan Produksi</button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl">
+                            {{ editingProd ? 'Simpan Perubahan' : 'Simpan Produksi' }}
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </KetahananPanganLayout>
 </template>
-

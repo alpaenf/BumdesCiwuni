@@ -196,9 +196,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
 
             <!-- Pagination -->
-            <div v-if="customers.links && customers.links.length > 3" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span>Menampilkan {{ customers.from }} - {{ customers.to }} dari {{ customers.total }} data</span>
-                <div class="flex gap-1">
+            <div v-if="customers.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ customers.from || 0 }} - {{ customers.to || 0 }} dari {{ customers.total }} data</span>
+                <div v-if="customers.links && customers.links.length > 3" class="flex gap-1">
                     <button 
                         v-for="(link, i) in customers.links" 
                         :key="i"

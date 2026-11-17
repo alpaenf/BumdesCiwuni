@@ -122,6 +122,84 @@ class KpPartnerPurchaseController extends Controller
         return redirect()->back()->with('success', 'Riwayat pembelian telur rekanan berhasil disimpan.');
     }
 
+    public function update(Request $request, $id)
+    {
+        $this->authorizeUnit();
+
+        $validated = $request->validate([
+            'tanggal' => 'required|date',
+            'nama_rekanan' => 'required|string|max:255',
+            'no_hp' => 'nullable|string|max:50',
+            'jumlah_kg' => 'required|numeric|min:0.1',
+            'harga_per_kg' => 'required|numeric|min:0',
+            'status_pembayaran' => 'required|in:Lunas,Hutang / Belum Lunas',
+            'metode_pembayaran' => 'required|in:Tunai,Transfer,QRIS',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $purchase = KpPartnerPurchase::findOrFail($id);
+        $totalBiaya = round($validated['jumlah_kg'] * $validated['harga_per_kg'], 2);
+        $validated['total_biaya'] = $totalBiaya;
+
+        DB::transaction(function () use ($purchase, $validated, $totalBiaya) {
+            $purchase->update($validated);
+
+            $expense = KpExpense::where('referensi_tipe', 'partner_purchase')->where('referensi_id', $purchase->id)->first();
+            $cash = KpCashFlow::where('sumber_tipe', 'partner_purchase')->where('sumber_id', $purchase->id)->first();
+
+            if ($validated['status_pembayaran'] === 'Lunas') {
+                if ($expense) {
+                    $expense->update([
+                        'tanggal' => $validated['tanggal'],
+                        'uraian' => 'Pembelian Telur Rekanan: ' . $validated['nama_rekanan'] . ' (' . number_format($validated['jumlah_kg'], 1) . ' kg)',
+                        'nominal' => $totalBiaya,
+                        'keterangan' => $validated['keterangan'] ?? null,
+                    ]);
+                } else {
+                    $expense = KpExpense::create([
+                        'unit_kategori' => 'hewani',
+                        'tanggal' => $validated['tanggal'],
+                        'uraian' => 'Pembelian Telur Rekanan: ' . $validated['nama_rekanan'] . ' (' . number_format($validated['jumlah_kg'], 1) . ' kg)',
+                        'jenis_biaya' => 'variabel',
+                        'kategori_biaya' => 'Biaya Pembelian Telur Rekanan',
+                        'nominal' => $totalBiaya,
+                        'referensi_tipe' => 'partner_purchase',
+                        'referensi_id' => $purchase->id,
+                        'keterangan' => $validated['keterangan'] ?? null,
+                    ]);
+                }
+
+                if ($cash) {
+                    $cash->update([
+                        'tanggal' => $validated['tanggal'],
+                        'uraian' => 'Pembelian Rekanan Luar (' . $validated['nama_rekanan'] . ')',
+                        'kredit' => $totalBiaya,
+                        'keterangan' => $validated['keterangan'] ?? null,
+                    ]);
+                } else {
+                    $lastCash = KpCashFlow::where('unit_kategori', 'hewani')->orderByDesc('id')->first();
+                    $currentSaldo = $lastCash ? (float) $lastCash->saldo_berjalan : 0;
+                    KpCashFlow::create([
+                        'unit_kategori' => 'hewani',
+                        'tanggal' => $validated['tanggal'],
+                        'uraian' => 'Pembelian Rekanan Luar (' . $validated['nama_rekanan'] . ')',
+                        'debit' => 0,
+                        'kredit' => $totalBiaya,
+                        'saldo_berjalan' => $currentSaldo - $totalBiaya,
+                        'sumber_tipe' => 'partner_purchase',
+                        'sumber_id' => $purchase->id,
+                        'keterangan' => $validated['keterangan'] ?? null,
+                    ]);
+                }
+            } else {
+                if ($expense) $expense->delete();
+                if ($cash) $cash->delete();
+            }
+        });
+
+        return redirect()->back()->with('success', 'Data pembelian rekanan berhasil diperbarui.');
+    }
+
     public function destroy($id)
     {
         $this->authorizeUnit();
@@ -139,4 +217,3 @@ class KpPartnerPurchaseController extends Controller
         return redirect()->back()->with('success', 'Data pembelian rekanan berhasil dihapus.');
     }
 }
-

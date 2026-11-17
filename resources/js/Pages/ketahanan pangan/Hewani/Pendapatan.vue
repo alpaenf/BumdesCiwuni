@@ -22,6 +22,7 @@ const applyFilter = () => {
 };
 
 const isModalOpen = ref(false);
+const editingIncome = ref(null);
 const form = ref({
     tanggal: new Date().toISOString().split('T')[0],
     uraian: '',
@@ -30,10 +31,40 @@ const form = ref({
     keterangan: '',
 });
 
+const openCreateModal = () => {
+    editingIncome.value = null;
+    form.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        uraian: '',
+        kategori: 'Penjualan Kotoran/Pupuk Kandang',
+        nominal: 50000,
+        keterangan: '',
+    };
+    isModalOpen.value = true;
+};
+
+const openEditModal = (inc) => {
+    editingIncome.value = inc;
+    form.value = {
+        tanggal: inc.tanggal,
+        uraian: inc.uraian,
+        kategori: inc.kategori || 'Penjualan Kotoran/Pupuk Kandang',
+        nominal: Number(inc.nominal),
+        keterangan: inc.keterangan || '',
+    };
+    isModalOpen.value = true;
+};
+
 const submitForm = () => {
-    router.post(route('kp.finance.pendapatan.store'), form.value, {
-        onSuccess: () => { isModalOpen.value = false; }
-    });
+    if (editingIncome.value) {
+        router.put(route('kp.finance.pendapatan.update', editingIncome.value.id), form.value, {
+            onSuccess: () => { isModalOpen.value = false; }
+        });
+    } else {
+        router.post(route('kp.finance.pendapatan.store'), form.value, {
+            onSuccess: () => { isModalOpen.value = false; }
+        });
+    }
 };
 
 const deleteIncome = (id) => {
@@ -67,11 +98,11 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     <h4 class="text-2xl font-extrabold text-emerald-600 mt-1">{{ formatRp(summary.total_pendapatan_rp) }}</h4>
                 </div>
                 <button 
-                    @click="isModalOpen = true"
-                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                    @click="openCreateModal"
+                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow-xs transition-colors"
                 >
-                    <span class="material-symbols-outlined text-base">add</span>
-                    Tambah Lain-Lain
+                    <span class="material-symbols-outlined text-sm">add_circle</span>
+                    Catat Pendapatan
                 </button>
             </div>
         </div>
@@ -80,10 +111,10 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         <div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                    Daftar Pendapatan Lain-Lain
+                    Daftar Pendapatan Tambahan / Lain-Lain (Non-Telur)
                 </h4>
-                <p class="text-[11px] text-slate-500">Tidak termasuk penjualan telur untuk mencegah pencatatan ganda</p>
             </div>
+
             <div class="flex items-center gap-2">
                 <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200" />
                 <span class="text-xs text-slate-400">s/d</span>
@@ -94,14 +125,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
         </div>
 
-        <!-- Tabel Pendapatan Lain -->
+        <!-- Tabel Pendapatan Lain-Lain -->
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
                     <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200/80">
                         <tr>
                             <th class="p-3">Tanggal</th>
-                            <th class="p-3">Uraian Pendapatan</th>
+                            <th class="p-3">Uraian Pemasukan</th>
                             <th class="p-3">Kategori</th>
                             <th class="p-3 text-right">Nominal</th>
                             <th class="p-3">Keterangan</th>
@@ -116,9 +147,22 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             <td class="p-3 text-right font-bold text-emerald-600">{{ formatRp(inc.nominal) }}</td>
                             <td class="p-3 text-slate-400">{{ inc.keterangan || '-' }}</td>
                             <td class="p-3 text-center">
-                                <button @click="deleteIncome(inc.id)" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="Hapus">
-                                    <span class="material-symbols-outlined text-base">delete</span>
-                                </button>
+                                <div class="flex items-center justify-center gap-1">
+                                    <button 
+                                        @click="openEditModal(inc)" 
+                                        class="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                                        title="Edit Pendapatan"
+                                    >
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button 
+                                        @click="deleteIncome(inc.id)" 
+                                        class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50" 
+                                        title="Hapus"
+                                    >
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="otherIncomes.data.length === 0">
@@ -129,12 +173,38 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <div v-if="otherIncomes.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ otherIncomes.from || 0 }} - {{ otherIncomes.to || 0 }} dari {{ otherIncomes.total }} pendapatan</span>
+                <div v-if="otherIncomes.links && otherIncomes.links.length > 3" class="flex gap-1">
+                    <button 
+                        v-for="(link, i) in otherIncomes.links" 
+                        :key="i"
+                        :disabled="!link.url"
+                        @click="router.visit(link.url)"
+                        v-html="link.label"
+                        :class="[
+                            'px-2.5 py-1 rounded-lg text-xs font-medium',
+                            link.active ? 'bg-emerald-600 text-white' : 'hover:bg-slate-100 text-slate-600',
+                            !link.url ? 'opacity-40 cursor-not-allowed' : ''
+                        ]"
+                    />
+                </div>
+            </div>
         </div>
 
-        <!-- Modal Tambah Pendapatan Lain -->
+        <!-- Modal Tambah / Edit Pendapatan Lain -->
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
-                <h4 class="text-sm font-bold text-slate-800 pb-3 border-b border-slate-100">Catat Pendapatan Lain-Lain</h4>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-800">
+                        {{ editingIncome ? 'Edit Pendapatan Lain-Lain' : 'Catat Pendapatan Lain-Lain' }}
+                    </h4>
+                    <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
                 <form @submit.prevent="submitForm" class="mt-4 space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal</label>
@@ -163,11 +233,12 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                     </div>
                     <div class="pt-2 flex justify-end gap-2">
                         <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl">Simpan Pemasukan</button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl">
+                            {{ editingIncome ? 'Simpan Perubahan' : 'Simpan Pemasukan' }}
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </KetahananPanganLayout>
 </template>
-

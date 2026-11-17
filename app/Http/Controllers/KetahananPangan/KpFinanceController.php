@@ -110,6 +110,51 @@ class KpFinanceController extends Controller
         return redirect()->back()->with('success', 'Pengeluaran berhasil dicatat.');
     }
 
+    public function updatePengeluaran(Request $request, $id)
+    {
+        $this->authorizeUnit();
+
+        $expense = KpExpense::findOrFail($id);
+
+        if ($expense->referensi_tipe) {
+            return redirect()->back()->withErrors([
+                'uraian' => 'Pengeluaran otomatis sistem tidak dapat diubah di sini. Silakan ubah langsung pada menu transaksi aslinya.'
+            ]);
+        }
+
+        $validated = $request->validate([
+            'tanggal' => 'required|date',
+            'uraian' => 'required|string|max:255',
+            'jenis_biaya' => 'required|in:tetap,variabel',
+            'kategori_biaya' => 'required|string|max:100',
+            'nominal' => 'required|numeric|min:1',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        DB::transaction(function () use ($expense, $validated) {
+            $expense->update([
+                'tanggal' => $validated['tanggal'],
+                'uraian' => $validated['uraian'],
+                'jenis_biaya' => $validated['jenis_biaya'],
+                'kategori_biaya' => $validated['kategori_biaya'],
+                'nominal' => $validated['nominal'],
+                'keterangan' => $validated['keterangan'] ?? null,
+            ]);
+
+            $cash = KpCashFlow::where('sumber_tipe', 'expense')->where('sumber_id', $expense->id)->first();
+            if ($cash) {
+                $cash->update([
+                    'tanggal' => $validated['tanggal'],
+                    'uraian' => $validated['uraian'] . ' (' . $validated['kategori_biaya'] . ')',
+                    'kredit' => $validated['nominal'],
+                    'keterangan' => $validated['keterangan'] ?? null,
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Pengeluaran berhasil diperbarui.');
+    }
+
     public function destroyPengeluaran($id)
     {
         $this->authorizeUnit();
@@ -201,6 +246,43 @@ class KpFinanceController extends Controller
         return redirect()->back()->with('success', 'Pendapatan lain-lain berhasil dicatat.');
     }
 
+    public function updatePendapatanLain(Request $request, $id)
+    {
+        $this->authorizeUnit();
+
+        $validated = $request->validate([
+            'tanggal' => 'required|date',
+            'uraian' => 'required|string|max:255',
+            'kategori' => 'nullable|string|max:100',
+            'nominal' => 'required|numeric|min:1',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $income = KpOtherIncome::findOrFail($id);
+
+        DB::transaction(function () use ($income, $validated) {
+            $income->update([
+                'tanggal' => $validated['tanggal'],
+                'uraian' => $validated['uraian'],
+                'kategori' => $validated['kategori'] ?? 'Pendapatan Lain-Lain',
+                'nominal' => $validated['nominal'],
+                'keterangan' => $validated['keterangan'] ?? null,
+            ]);
+
+            $cash = KpCashFlow::where('sumber_tipe', 'other_income')->where('sumber_id', $income->id)->first();
+            if ($cash) {
+                $cash->update([
+                    'tanggal' => $validated['tanggal'],
+                    'uraian' => $validated['uraian'] . ' (' . ($validated['kategori'] ?? 'Pendapatan Lain') . ')',
+                    'debit' => $validated['nominal'],
+                    'keterangan' => $validated['keterangan'] ?? null,
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Pendapatan lain-lain berhasil diperbarui.');
+    }
+
     public function destroyPendapatanLain($id)
     {
         $this->authorizeUnit();
@@ -214,4 +296,3 @@ class KpFinanceController extends Controller
         return redirect()->back()->with('success', 'Pendapatan lain-lain berhasil dihapus.');
     }
 }
-

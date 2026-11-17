@@ -27,8 +27,9 @@ const applyFilter = () => {
     }, { preserveState: true });
 };
 
-// Modal Penjualan Baru
+// Modal Penjualan Baru / Edit
 const isModalOpen = ref(false);
+const editingSale = ref(null);
 const form = ref({
     tanggal: new Date().toISOString().split('T')[0],
     customer_id: '',
@@ -43,6 +44,44 @@ const form = ref({
     metode_pembayaran: 'Tunai',
     keterangan: '',
 });
+
+const openCreateModal = () => {
+    editingSale.value = null;
+    form.value = {
+        tanggal: new Date().toISOString().split('T')[0],
+        customer_id: '',
+        nama_pelanggan: '',
+        customer_type: 'Eceran',
+        sumber_stok: 'kandang',
+        jumlah_kg: 5.0,
+        ambil_kandang_kg: 5.0,
+        ambil_rekanan_kg: 0,
+        harga_per_kg: props.product.harga_default || 22000,
+        jumlah_pembayaran: 110000,
+        metode_pembayaran: 'Tunai',
+        keterangan: '',
+    };
+    isModalOpen.value = true;
+};
+
+const openEditModal = (sale) => {
+    editingSale.value = sale;
+    form.value = {
+        tanggal: sale.tanggal,
+        customer_id: sale.customer_id || '',
+        nama_pelanggan: sale.nama_pelanggan,
+        customer_type: sale.customer_type || 'Eceran',
+        sumber_stok: sale.sumber_stok || 'kandang',
+        jumlah_kg: Number(sale.jumlah_kg),
+        ambil_kandang_kg: Number(sale.ambil_kandang_kg || 0),
+        ambil_rekanan_kg: Number(sale.ambil_rekanan_kg || 0),
+        harga_per_kg: Number(sale.harga_per_kg),
+        jumlah_pembayaran: Number(sale.jumlah_pembayaran || sale.total_harga),
+        metode_pembayaran: sale.metode_pembayaran || 'Tunai',
+        keterangan: sale.keterangan || '',
+    };
+    isModalOpen.value = true;
+};
 
 const onSelectCustomer = (e) => {
     const custId = e.target.value;
@@ -92,20 +131,37 @@ const formErrors = ref({});
 const submitForm = () => {
     isSubmitting.value = true;
     formErrors.value = {};
-    router.post(route('kp.sale.store'), form.value, {
-        onSuccess: () => { 
-            isModalOpen.value = false; 
-            isSubmitting.value = false;
-        },
-        onError: (errs) => {
-            isSubmitting.value = false;
-            formErrors.value = errs;
-            alert(Object.values(errs).join('\n'));
-        },
-        onFinish: () => {
-            isSubmitting.value = false;
-        }
-    });
+    if (editingSale.value) {
+        router.put(route('kp.sale.update', editingSale.value.id), form.value, {
+            onSuccess: () => { 
+                isModalOpen.value = false; 
+                isSubmitting.value = false;
+            },
+            onError: (errs) => {
+                isSubmitting.value = false;
+                formErrors.value = errs;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => {
+                isSubmitting.value = false;
+            }
+        });
+    } else {
+        router.post(route('kp.sale.store'), form.value, {
+            onSuccess: () => { 
+                isModalOpen.value = false; 
+                isSubmitting.value = false;
+            },
+            onError: (errs) => {
+                isSubmitting.value = false;
+                formErrors.value = errs;
+                alert(Object.values(errs).join('\n'));
+            },
+            onFinish: () => {
+                isSubmitting.value = false;
+            }
+        });
+    }
 };
 
 const deleteSale = (id) => {
@@ -149,42 +205,55 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 <div class="mt-2 text-[11px] text-indigo-500 font-semibold">Siap dijual (Kandang + Rekanan)</div>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
                 <div>
-                    <p class="text-xs font-semibold text-slate-800">Kasir / Buat Nota</p>
-                    <p class="text-[11px] text-slate-400">Otomatis gabung stok kandang & rekanan</p>
+                    <p class="text-xs font-medium text-slate-500">Total Terjual (Periode)</p>
+                    <h4 class="text-xl font-bold text-slate-800 mt-1">
+                        {{ Number(summary.total_terjual_kg).toFixed(1) }} kg
+                    </h4>
+                    <span class="text-xs font-bold text-emerald-600">{{ formatRp(summary.total_pendapatan_rp) }}</span>
                 </div>
                 <button 
-                    @click="isModalOpen = true"
-                    class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                    @click="openCreateModal"
+                    class="mt-2 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
                 >
-                    <span class="material-symbols-outlined text-base">point_of_sale</span>
-                    Transaksi Baru
+                    <span class="material-symbols-outlined text-sm">point_of_sale</span>
+                    Input Penjualan Kasir
                 </button>
             </div>
         </div>
 
         <!-- Filter Bar -->
         <div class="mb-6 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
-            <div class="flex-1 min-w-[200px] relative">
-                <input 
-                    type="text" 
-                    v-model="search"
-                    @keyup.enter="applyFilter"
-                    placeholder="Cari No. Struk atau nama pembeli..."
-                    class="w-full text-xs pl-3 pr-4 py-2 rounded-xl border-slate-200"
-                />
-            </div>
-            <div class="flex items-center gap-2">
-                <select v-model="customerType" @change="applyFilter" class="text-xs rounded-xl border-slate-200">
+            <div class="flex items-center gap-3 flex-1 min-w-[280px]">
+                <div class="w-full max-w-xs">
+                    <input 
+                        type="text" 
+                        v-model="search" 
+                        placeholder="Cari no. struk / customer..." 
+                        @keyup.enter="applyFilter"
+                        class="w-full text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" 
+                    />
+                </div>
+                <select 
+                    v-model="customerType" 
+                    @change="applyFilter"
+                    class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500"
+                >
                     <option value="">Semua Kategori</option>
                     <option value="Eceran">Eceran</option>
                     <option value="Agen">Agen</option>
                 </select>
+            </div>
+
+            <div class="flex items-center gap-2">
                 <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200" />
                 <span class="text-xs text-slate-400">s/d</span>
                 <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200" />
-                <button @click="applyFilter" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl">
+                <button 
+                    @click="applyFilter"
+                    class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl"
+                >
                     Filter
                 </button>
             </div>
@@ -196,7 +265,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                 <table class="w-full text-xs text-left">
                     <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200/80">
                         <tr>
-                            <th class="p-3">No. Struk</th>
+                            <th class="p-3">No Struk</th>
                             <th class="p-3">Tanggal</th>
                             <th class="p-3">Nama Customer</th>
                             <th class="p-3 text-center">Kategori</th>
@@ -266,7 +335,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                                         Struk
                                     </button>
                                     <button 
-                                        @click="deleteSale(sale.id)"
+                                        @click="openEditModal(sale)" 
+                                        class="p-1 rounded text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                                        title="Edit Transaksi"
+                                    >
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button 
+                                        @click="deleteSale(sale.id)" 
                                         class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50"
                                         title="Batalkan Transaksi"
                                     >
@@ -276,7 +352,7 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                             </td>
                         </tr>
                         <tr v-if="sales.data.length === 0">
-                            <td colspan="8" class="text-center py-8 text-slate-400">
+                            <td colspan="10" class="text-center py-8 text-slate-400">
                                 Belum ada riwayat transaksi penjualan pada periode ini.
                             </td>
                         </tr>
@@ -285,9 +361,9 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
 
             <!-- Pagination -->
-            <div v-if="sales.links && sales.links.length > 3" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span>Total {{ sales.total }} transaksi</span>
-                <div class="flex gap-1">
+            <div v-if="sales.total > 0" class="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Menampilkan {{ sales.from || 0 }} - {{ sales.to || 0 }} dari {{ sales.total }} transaksi</span>
+                <div v-if="sales.links && sales.links.length > 3" class="flex gap-1">
                     <button 
                         v-for="(link, i) in sales.links" 
                         :key="i"
@@ -304,12 +380,14 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
         </div>
 
-        <!-- Modal Transaksi Penjualan Baru -->
+        <!-- Modal Transaksi Penjualan Baru / Edit -->
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs overflow-y-auto">
             <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl border border-slate-200 my-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">Kasir Penjualan Telur Ayam</h4>
+                        <h4 class="text-sm font-bold text-slate-800">
+                            {{ editingSale ? 'Edit Penjualan Telur Ayam' : 'Kasir Penjualan Telur Ayam' }}
+                        </h4>
                         <p class="text-xs text-slate-400">
                             Stok Kandang: <span class="font-bold text-emerald-600">{{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</span> | Rekanan: <span class="font-bold text-blue-600">{{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</span>
                         </p>
@@ -348,95 +426,54 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         </div>
                     </div>
 
-                    <!-- Pilihan Sumber Stok (Kandang / Rekanan / Gabungan) -->
-                    <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-200">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="text-xs font-bold text-slate-800">
-                                Sumber Pengambilan Stok Telur
-                            </label>
-                            <span v-if="form.sumber_stok === 'gabungan'" class="text-[11px] text-indigo-600 font-bold">
-                                Alokasi: {{ (Number(form.ambil_kandang_kg || 0) + Number(form.ambil_rekanan_kg || 0)).toFixed(1) }} kg
-                            </span>
-                        </div>
+                    <!-- Pilihan Sumber Stok -->
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700">Sumber Pengambilan Stok Telur:</label>
                         <div class="grid grid-cols-3 gap-2">
-                            <label 
-                                :class="[
-                                    'cursor-pointer border rounded-xl p-2 text-center transition-all',
-                                    form.sumber_stok === 'kandang' 
-                                        ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs' 
-                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                                ]"
-                            >
-                                <input type="radio" value="kandang" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
-                                <div class="text-xs">Kandang BUMDes</div>
-                                <div class="text-[10px] text-slate-400">Sisa: {{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</div>
+                            <label :class="[
+                                'flex flex-col p-2.5 rounded-xl border text-center cursor-pointer transition-all',
+                                form.sumber_stok === 'kandang' ? 'bg-emerald-50 border-emerald-500 text-emerald-800' : 'bg-white border-slate-200 text-slate-600'
+                            ]">
+                                <input type="radio" v-model="form.sumber_stok" value="kandang" @change="onSumberStokChange" class="sr-only" />
+                                <span class="text-xs font-bold">100% Kandang</span>
+                                <span class="text-[10px] mt-0.5">Stok: {{ Number(summary.stok_tersedia_kg).toFixed(1) }} kg</span>
                             </label>
 
-                            <label 
-                                :class="[
-                                    'cursor-pointer border rounded-xl p-2 text-center transition-all',
-                                    form.sumber_stok === 'gabungan' 
-                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-800 font-bold shadow-xs' 
-                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                                ]"
-                            >
-                                <input type="radio" value="gabungan" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
-                                <div class="text-xs">Gabungan (K+R)</div>
-                                <div class="text-[10px] text-indigo-500 font-semibold">Total: {{ Number(summary.total_stok_gabungan_kg || 0).toFixed(1) }} kg</div>
+                            <label :class="[
+                                'flex flex-col p-2.5 rounded-xl border text-center cursor-pointer transition-all',
+                                form.sumber_stok === 'rekanan' ? 'bg-blue-50 border-blue-500 text-blue-800' : 'bg-white border-slate-200 text-slate-600'
+                            ]">
+                                <input type="radio" v-model="form.sumber_stok" value="rekanan" @change="onSumberStokChange" class="sr-only" />
+                                <span class="text-xs font-bold">100% Rekanan</span>
+                                <span class="text-[10px] mt-0.5">Stok: {{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</span>
                             </label>
 
-                            <label 
-                                :class="[
-                                    'cursor-pointer border rounded-xl p-2 text-center transition-all',
-                                    form.sumber_stok === 'rekanan' 
-                                        ? 'bg-blue-50 border-blue-500 text-blue-800 font-bold shadow-xs' 
-                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                                ]"
-                            >
-                                <input type="radio" value="rekanan" v-model="form.sumber_stok" @change="onSumberStokChange" class="sr-only" />
-                                <div class="text-xs">Rekanan Luar</div>
-                                <div class="text-[10px] text-slate-400">Sisa: {{ Number(summary.stok_rekanan_kg || 0).toFixed(1) }} kg</div>
+                            <label :class="[
+                                'flex flex-col p-2.5 rounded-xl border text-center cursor-pointer transition-all',
+                                form.sumber_stok === 'gabungan' ? 'bg-indigo-50 border-indigo-500 text-indigo-800' : 'bg-white border-slate-200 text-slate-600'
+                            ]">
+                                <input type="radio" v-model="form.sumber_stok" value="gabungan" @change="onSumberStokChange" class="sr-only" />
+                                <span class="text-xs font-bold">Gabungan K+R</span>
+                                <span class="text-[10px] mt-0.5">Otomatis Kombinasi</span>
                             </label>
                         </div>
 
-                        <!-- Rincian Alokasi Jika Memilih Gabungan (Compact & Responsive Grid) -->
-                        <div v-if="form.sumber_stok === 'gabungan'" class="mt-2.5 pt-2 border-t border-slate-200/80">
-                            <div class="grid grid-cols-2 gap-3 items-center">
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1">
-                                        <div class="flex justify-between text-[10px] text-slate-600 mb-0.5">
-                                            <span>Kandang BUMDes (kg)</span>
-                                            <span class="text-slate-400">Maks {{ summary.stok_tersedia_kg }}</span>
-                                        </div>
-                                        <input 
-                                            type="number" 
-                                            step="0.1" 
-                                            v-model="form.ambil_kandang_kg" 
-                                            class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold"
-                                        />
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1">
-                                        <div class="flex justify-between text-[10px] text-slate-600 mb-0.5">
-                                            <span>Rekanan Luar (kg)</span>
-                                            <span class="text-slate-400">Maks {{ summary.stok_rekanan_kg || 0 }}</span>
-                                        </div>
-                                        <input 
-                                            type="number" 
-                                            step="0.1" 
-                                            v-model="form.ambil_rekanan_kg" 
-                                            class="w-full text-xs rounded-lg border-slate-300 py-1 font-semibold text-blue-700"
-                                        />
-                                    </div>
-                                </div>
+                        <!-- Info Rincian Ambil Jika Gabungan -->
+                        <div v-if="form.sumber_stok === 'gabungan'" class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200/60 text-xs">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-600 mb-0.5">Ambil dari Kandang (kg):</label>
+                                <input type="number" step="0.1" v-model="form.ambil_kandang_kg" class="w-full text-xs rounded-lg border-slate-200 py-1" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-600 mb-0.5">Ambil dari Rekanan (kg):</label>
+                                <input type="number" step="0.1" v-model="form.ambil_rekanan_kg" class="w-full text-xs rounded-lg border-slate-200 py-1" />
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Pembelian (kg)</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Total Berat / Qty (kg)</label>
                             <input 
                                 type="number" 
                                 step="0.1" 
@@ -484,11 +521,16 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
                         Kembalian: <span class="font-bold text-emerald-600">{{ formatRp(form.jumlah_pembayaran - (form.jumlah_kg * form.harga_per_kg)) }}</span>
                     </div>
 
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan (Opsional)</label>
+                        <input type="text" v-model="form.keterangan" placeholder="Catatan transaksi..." class="w-full text-xs rounded-xl border-slate-200 py-1.5" />
+                    </div>
+
                     <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
                         <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl" :disabled="isSubmitting">Batal</button>
                         <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5" :disabled="isSubmitting">
                             <span v-if="isSubmitting" class="material-symbols-outlined notranslate text-xs animate-spin">progress_activity</span>
-                            {{ isSubmitting ? 'Menyimpan...' : 'Simpan & Cetak Struk' }}
+                            {{ isSubmitting ? 'Menyimpan...' : (editingSale ? 'Simpan Perubahan' : 'Simpan & Cetak Struk') }}
                         </button>
                     </div>
                 </form>
@@ -496,4 +538,3 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
         </div>
     </KetahananPanganLayout>
 </template>
-
