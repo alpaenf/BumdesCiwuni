@@ -45,7 +45,11 @@ class UnitLandingController extends Controller
             'org_pembina_name', 'org_pembina_image', 'org_direktur_name', 'org_direktur_image',
             'org_sekretaris_name', 'org_sekretaris_image', 'org_bendahara_name', 'org_bendahara_image',
             'org_pengawas_name', 'org_pengawas_image', 'org_unit_sp_name', 'org_unit_sp_image',
-            'org_unit_sp_staff_name', 'org_unit_sp_staff_image', 'about_history'
+            'org_unit_sp_staff_name', 'org_unit_sp_staff_image',
+            'org_unit_kp_name', 'org_unit_kp_image', 'org_unit_kp_staff_name', 'org_unit_kp_staff_image',
+            'org_unit_wifi_name', 'org_unit_wifi_image', 'org_unit_wifi_staff_name', 'org_unit_wifi_staff_image',
+            'org_unit_pasar_name', 'org_unit_pasar_image', 'org_unit_pasar_staff_name', 'org_unit_pasar_staff_image',
+            'about_history', 'bank_accounts', 'wa_company_name'
         ];
 
         $settings = [];
@@ -58,11 +62,45 @@ class UnitLandingController extends Controller
                 $value = ''; // No fallback to Simpan Pinjam, let Vue handle placeholders
             }
 
-            if ($key === 'faq_items' || $key === 'news_items') {
+            if ($key === 'faq_items' || $key === 'news_items' || $key === 'bank_accounts') {
                 $settings[$key] = json_decode($value, true) ?: [];
             } else {
                 $settings[$key] = $value;
             }
+        }
+
+        // Resolve aliases for unit organizational roles
+        if ($slug === 'ketahanan-pangan') {
+            $settings['org_unit_kp_name'] = !empty($settings['org_unit_kp_name']) ? $settings['org_unit_kp_name'] : ($settings['org_unit_sp_name'] ?? '');
+            $settings['org_unit_kp_image'] = !empty($settings['org_unit_kp_image']) ? $settings['org_unit_kp_image'] : ($settings['org_unit_sp_image'] ?? '');
+            $settings['org_unit_kp_staff_name'] = !empty($settings['org_unit_kp_staff_name']) ? $settings['org_unit_kp_staff_name'] : ($settings['org_unit_sp_staff_name'] ?? '');
+            $settings['org_unit_kp_staff_image'] = !empty($settings['org_unit_kp_staff_image']) ? $settings['org_unit_kp_staff_image'] : ($settings['org_unit_sp_staff_image'] ?? '');
+            
+            // Mirror back to sp keys
+            $settings['org_unit_sp_name'] = $settings['org_unit_kp_name'];
+            $settings['org_unit_sp_image'] = $settings['org_unit_kp_image'];
+            $settings['org_unit_sp_staff_name'] = $settings['org_unit_kp_staff_name'];
+            $settings['org_unit_sp_staff_image'] = $settings['org_unit_kp_staff_image'];
+        } elseif ($slug === 'wifi') {
+            $settings['org_unit_wifi_name'] = !empty($settings['org_unit_wifi_name']) ? $settings['org_unit_wifi_name'] : ($settings['org_unit_sp_name'] ?? '');
+            $settings['org_unit_wifi_image'] = !empty($settings['org_unit_wifi_image']) ? $settings['org_unit_wifi_image'] : ($settings['org_unit_sp_image'] ?? '');
+            $settings['org_unit_wifi_staff_name'] = !empty($settings['org_unit_wifi_staff_name']) ? $settings['org_unit_wifi_staff_name'] : ($settings['org_unit_sp_staff_name'] ?? '');
+            $settings['org_unit_wifi_staff_image'] = !empty($settings['org_unit_wifi_staff_image']) ? $settings['org_unit_wifi_staff_image'] : ($settings['org_unit_sp_staff_image'] ?? '');
+
+            $settings['org_unit_sp_name'] = $settings['org_unit_wifi_name'];
+            $settings['org_unit_sp_image'] = $settings['org_unit_wifi_image'];
+            $settings['org_unit_sp_staff_name'] = $settings['org_unit_wifi_staff_name'];
+            $settings['org_unit_sp_staff_image'] = $settings['org_unit_wifi_staff_image'];
+        } elseif ($slug === 'perdagangan-besar') {
+            $settings['org_unit_pasar_name'] = !empty($settings['org_unit_pasar_name']) ? $settings['org_unit_pasar_name'] : ($settings['org_unit_sp_name'] ?? '');
+            $settings['org_unit_pasar_image'] = !empty($settings['org_unit_pasar_image']) ? $settings['org_unit_pasar_image'] : ($settings['org_unit_sp_image'] ?? '');
+            $settings['org_unit_pasar_staff_name'] = !empty($settings['org_unit_pasar_staff_name']) ? $settings['org_unit_pasar_staff_name'] : ($settings['org_unit_sp_staff_name'] ?? '');
+            $settings['org_unit_pasar_staff_image'] = !empty($settings['org_unit_pasar_staff_image']) ? $settings['org_unit_pasar_staff_image'] : ($settings['org_unit_sp_staff_image'] ?? '');
+
+            $settings['org_unit_sp_name'] = $settings['org_unit_pasar_name'];
+            $settings['org_unit_sp_image'] = $settings['org_unit_pasar_image'];
+            $settings['org_unit_sp_staff_name'] = $settings['org_unit_pasar_staff_name'];
+            $settings['org_unit_sp_staff_image'] = $settings['org_unit_pasar_staff_image'];
         }
 
         $galeri = \App\Models\GaleriUnit::where('unit', $slug)
@@ -269,8 +307,11 @@ class UnitLandingController extends Controller
             'org_pembina_name', 'org_pembina_image', 'org_direktur_name', 'org_direktur_image',
             'org_sekretaris_name', 'org_sekretaris_image', 'org_bendahara_name', 'org_bendahara_image',
             'org_pengawas_name', 'org_pengawas_image', 'org_unit_sp_name', 'org_unit_sp_image',
-            'org_unit_sp_staff_name', 'org_unit_sp_staff_image', 'about_history',
-            'bank_accounts', 'wa_company_name'
+            'org_unit_sp_staff_name', 'org_unit_sp_staff_image',
+            'org_unit_kp_name', 'org_unit_kp_image', 'org_unit_kp_staff_name', 'org_unit_kp_staff_image',
+            'org_unit_wifi_name', 'org_unit_wifi_image', 'org_unit_wifi_staff_name', 'org_unit_wifi_staff_image',
+            'org_unit_pasar_name', 'org_unit_pasar_image', 'org_unit_pasar_staff_name', 'org_unit_pasar_staff_image',
+            'about_history', 'bank_accounts', 'wa_company_name'
         ];
 
         $settings = [];
@@ -288,6 +329,24 @@ class UnitLandingController extends Controller
             } else {
                 $settings[$key] = $value;
             }
+        }
+
+        // Align organizational keys for the settings editor form
+        if ($slug === 'ketahanan-pangan') {
+            $settings['org_unit_sp_name'] = !empty($settings['org_unit_sp_name']) ? $settings['org_unit_sp_name'] : ($settings['org_unit_kp_name'] ?? '');
+            $settings['org_unit_sp_image'] = !empty($settings['org_unit_sp_image']) ? $settings['org_unit_sp_image'] : ($settings['org_unit_kp_image'] ?? '');
+            $settings['org_unit_sp_staff_name'] = !empty($settings['org_unit_sp_staff_name']) ? $settings['org_unit_sp_staff_name'] : ($settings['org_unit_kp_staff_name'] ?? '');
+            $settings['org_unit_sp_staff_image'] = !empty($settings['org_unit_sp_staff_image']) ? $settings['org_unit_sp_staff_image'] : ($settings['org_unit_kp_staff_image'] ?? '');
+        } elseif ($slug === 'wifi') {
+            $settings['org_unit_sp_name'] = !empty($settings['org_unit_sp_name']) ? $settings['org_unit_sp_name'] : ($settings['org_unit_wifi_name'] ?? '');
+            $settings['org_unit_sp_image'] = !empty($settings['org_unit_sp_image']) ? $settings['org_unit_sp_image'] : ($settings['org_unit_wifi_image'] ?? '');
+            $settings['org_unit_sp_staff_name'] = !empty($settings['org_unit_sp_staff_name']) ? $settings['org_unit_sp_staff_name'] : ($settings['org_unit_wifi_staff_name'] ?? '');
+            $settings['org_unit_sp_staff_image'] = !empty($settings['org_unit_sp_staff_image']) ? $settings['org_unit_sp_staff_image'] : ($settings['org_unit_wifi_staff_image'] ?? '');
+        } elseif ($slug === 'perdagangan-besar') {
+            $settings['org_unit_sp_name'] = !empty($settings['org_unit_sp_name']) ? $settings['org_unit_sp_name'] : ($settings['org_unit_pasar_name'] ?? '');
+            $settings['org_unit_sp_image'] = !empty($settings['org_unit_sp_image']) ? $settings['org_unit_sp_image'] : ($settings['org_unit_pasar_image'] ?? '');
+            $settings['org_unit_sp_staff_name'] = !empty($settings['org_unit_sp_staff_name']) ? $settings['org_unit_sp_staff_name'] : ($settings['org_unit_pasar_staff_name'] ?? '');
+            $settings['org_unit_sp_staff_image'] = !empty($settings['org_unit_sp_staff_image']) ? $settings['org_unit_sp_staff_image'] : ($settings['org_unit_pasar_staff_image'] ?? '');
         }
 
         $galeri = \App\Models\GaleriUnit::where('unit', $slug)
@@ -329,6 +388,48 @@ class UnitLandingController extends Controller
                 $value = json_encode($value);
             }
             \App\Models\LandingPageSetting::setByKey("{$slug}_{$key}", $value);
+        }
+
+        // Mirror save unit-specific keys for 100% synchronization across components
+        if ($slug === 'ketahanan-pangan') {
+            if (isset($data['org_unit_sp_name'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_kp_name", $data['org_unit_sp_name']);
+            }
+            if (isset($data['org_unit_sp_image'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_kp_image", $data['org_unit_sp_image']);
+            }
+            if (isset($data['org_unit_sp_staff_name'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_kp_staff_name", $data['org_unit_sp_staff_name']);
+            }
+            if (isset($data['org_unit_sp_staff_image'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_kp_staff_image", $data['org_unit_sp_staff_image']);
+            }
+        } elseif ($slug === 'wifi') {
+            if (isset($data['org_unit_sp_name'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_wifi_name", $data['org_unit_sp_name']);
+            }
+            if (isset($data['org_unit_sp_image'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_wifi_image", $data['org_unit_sp_image']);
+            }
+            if (isset($data['org_unit_sp_staff_name'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_wifi_staff_name", $data['org_unit_sp_staff_name']);
+            }
+            if (isset($data['org_unit_sp_staff_image'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_wifi_staff_image", $data['org_unit_sp_staff_image']);
+            }
+        } elseif ($slug === 'perdagangan-besar') {
+            if (isset($data['org_unit_sp_name'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_pasar_name", $data['org_unit_sp_name']);
+            }
+            if (isset($data['org_unit_sp_image'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_pasar_image", $data['org_unit_sp_image']);
+            }
+            if (isset($data['org_unit_sp_staff_name'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_pasar_staff_name", $data['org_unit_sp_staff_name']);
+            }
+            if (isset($data['org_unit_sp_staff_image'])) {
+                \App\Models\LandingPageSetting::setByKey("{$slug}_org_unit_pasar_staff_image", $data['org_unit_sp_staff_image']);
+            }
         }
 
         return redirect()->back()->with('success', 'Pengaturan landing page berhasil disimpan.');

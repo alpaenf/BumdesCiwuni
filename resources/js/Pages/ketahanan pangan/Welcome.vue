@@ -106,6 +106,10 @@ onMounted(() => {
                             Portal BUMDes
                         </Link>
                         
+                        <Link v-if="$page.props.auth.user" :href="route('unit.settings.edit', { slug: 'ketahanan-pangan' })" class="inline-flex items-center justify-center px-3 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-lg hover:bg-emerald-700 transition shadow-sm gap-1">
+                            <span class="material-symbols-outlined text-[15px]">edit_note</span>
+                            Edit Web
+                        </Link>
                         <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-lg hover:bg-blue-700 transition shadow-sm">
                             Dashboard
                         </Link>
@@ -147,9 +151,15 @@ onMounted(() => {
                             <span class="material-symbols-outlined text-sm mr-1">home</span>
                             Kembali ke Portal BUMDes
                         </Link>
-                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow-sm">
-                            Dashboard
-                        </Link>
+                        <template v-if="$page.props.auth.user">
+                            <Link :href="route('unit.settings.edit', { slug: 'ketahanan-pangan' })" class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shadow-sm">
+                                <span class="material-symbols-outlined text-sm">edit_note</span>
+                                Edit Halaman & Struktur
+                            </Link>
+                            <Link :href="route('dashboard')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow-sm">
+                                Dashboard
+                            </Link>
+                        </template>
                         <template v-else>
                             <Link :href="route('unit.login', { slug: 'ketahanan-pangan' })" class="w-full inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-700 font-bold text-xs rounded-xl hover:bg-blue-50 transition">
                                 Masuk
@@ -290,6 +300,12 @@ onMounted(() => {
                     <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700">Kepengurusan Unit</span>
                     <h3 class="text-2xl font-bold text-slate-800">Struktur Organisasi Unit Ketahanan Pangan</h3>
                     <p class="text-xs text-[#404940] max-w-md mx-auto">Manajemen pengelola Unit Ketahanan Pangan BUMDES Dammar Wulan.</p>
+                    <div v-if="$page.props.auth?.user" class="pt-1">
+                        <a :href="route('unit.settings.edit', { slug: 'ketahanan-pangan' }) + '#sec-org'" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-full text-xs font-semibold shadow-xs transition">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            Edit Struktur Organisasi
+                        </a>
+                    </div>
                 </div>
                 
                 <!-- Desktop Org Chart Container (Connected Tree) -->
@@ -336,12 +352,12 @@ onMounted(() => {
                             <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 200ms">
                                 <div class="relative group cursor-default">
                                     <div class="w-20 h-20 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-blue-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
-                                        <img v-if="settings.org_unit_kp_image" :src="settings.org_unit_kp_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_unit_kp_name || 'Kepala KP') }}</span>
+                                        <img v-if="settings.org_unit_kp_image || settings.org_unit_sp_image" :src="settings.org_unit_kp_image || settings.org_unit_sp_image" class="w-full h-full object-cover" />
+                                        <span v-else>{{ getInitials(settings.org_unit_kp_name || settings.org_unit_sp_name || 'Kepala Unit') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-3 text-center">
-                                    <p class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_kp_name || 'Kepala Unit KP' }}</p>
+                                    <p class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_kp_name || settings.org_unit_sp_name || 'Kepala Unit Ketahanan Pangan' }}</p>
                                     <span class="mt-1 inline-block px-2.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Kepala Unit Ketahanan Pangan</span>
                                 </div>
                             </div>
@@ -357,12 +373,12 @@ onMounted(() => {
                             <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 350ms">
                                 <div class="relative group cursor-default">
                                     <div class="w-16 h-16 rounded-full border-4 border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow text-white font-extrabold text-lg ring-4 ring-blue-500/10 group-hover:scale-105 transition-all duration-300 overflow-hidden">
-                                        <img v-if="settings.org_unit_kp_staff_image" :src="settings.org_unit_kp_staff_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_unit_kp_staff_name || 'Staf KP') }}</span>
+                                        <img v-if="settings.org_unit_kp_staff_image || settings.org_unit_sp_staff_image" :src="settings.org_unit_kp_staff_image || settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
+                                        <span v-else>{{ getInitials(settings.org_unit_kp_staff_name || settings.org_unit_sp_staff_name || 'Staf KP') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-2 text-center">
-                                    <p class="text-xs font-bold text-slate-800">{{ settings.org_unit_kp_staff_name || 'Nama Staf' }}</p>
+                                    <p class="text-xs font-bold text-slate-800">{{ settings.org_unit_kp_staff_name || settings.org_unit_sp_staff_name || 'Staf Unit Ketahanan Pangan' }}</p>
                                     <span class="mt-0.5 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Staf Unit KP</span>
                                 </div>
                             </div>
@@ -394,11 +410,11 @@ onMounted(() => {
                         <span class="text-[8px] font-bold uppercase tracking-widest text-blue-700 mb-2">Kepala Unit</span>
                         <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
                             <div class="w-12 h-12 rounded-full border-2 border-blue-600 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
-                                <img v-if="settings.org_unit_kp_image" :src="settings.org_unit_kp_image" class="w-full h-full object-cover" />
-                                <span v-else>{{ getInitials(settings.org_unit_kp_name || 'Kepala Unit') }}</span>
+                                <img v-if="settings.org_unit_kp_image || settings.org_unit_sp_image" :src="settings.org_unit_kp_image || settings.org_unit_sp_image" class="w-full h-full object-cover" />
+                                <span v-else>{{ getInitials(settings.org_unit_kp_name || settings.org_unit_sp_name || 'Kepala Unit') }}</span>
                             </div>
                             <div>
-                                <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_kp_name || 'Kepala Unit' }}</h4>
+                                <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_kp_name || settings.org_unit_sp_name || 'Kepala Unit' }}</h4>
                                 <p class="text-[9px] font-bold text-blue-700 mt-0.5">Ka. Unit Pangan</p>
                             </div>
                         </div>
@@ -412,11 +428,11 @@ onMounted(() => {
                         <span class="text-[8px] font-bold uppercase tracking-widest text-blue-700 mb-2">Staf Unit</span>
                         <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center gap-3 w-full max-w-[280px]">
                             <div class="w-12 h-12 rounded-full border-2 border-blue-500 overflow-hidden shrink-0 shadow-sm bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs">
-                                <img v-if="settings.org_unit_kp_staff_image" :src="settings.org_unit_kp_staff_image" class="w-full h-full object-cover" />
-                                <span v-else>{{ getInitials(settings.org_unit_kp_staff_name || 'Staf KP') }}</span>
+                                <img v-if="settings.org_unit_kp_staff_image || settings.org_unit_sp_staff_image" :src="settings.org_unit_kp_staff_image || settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
+                                <span v-else>{{ getInitials(settings.org_unit_kp_staff_name || settings.org_unit_sp_staff_name || 'Staf KP') }}</span>
                             </div>
                             <div>
-                                <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_kp_staff_name || 'Nama Staf' }}</h4>
+                                <h4 class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_kp_staff_name || settings.org_unit_sp_staff_name || 'Nama Staf' }}</h4>
                                 <p class="text-[9px] font-bold text-blue-700 mt-0.5">Staf Unit Pangan</p>
                             </div>
                         </div>

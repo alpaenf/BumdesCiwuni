@@ -300,15 +300,18 @@ const logout = () => {
                 <!-- Unit Settings -->
                 <div>
                     <div v-show="isSidebarOpen" class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Pengaturan
+                        Pengaturan Web
                     </div>
                     <div class="space-y-1">
                         <a 
                             :href="route('unit.settings.edit', { slug: 'ketahanan-pangan' })"
-                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                            class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-emerald-700 bg-emerald-50/80 hover:bg-emerald-100 hover:text-emerald-800 transition-all border border-emerald-200/60"
                         >
-                            <span class="material-symbols-outlined notranslate text-xl">settings</span>
-                            <span v-show="isSidebarOpen">Landing Page</span>
+                            <span class="material-symbols-outlined notranslate text-xl text-emerald-600">tune</span>
+                            <div v-show="isSidebarOpen" class="flex flex-col">
+                                <span class="leading-tight">Edit Web &amp; Struktur</span>
+                                <span class="text-[9.5px] font-normal text-emerald-600">Pengaturan Landing Page</span>
+                            </div>
                         </a>
 
                         <a 
@@ -317,7 +320,7 @@ const logout = () => {
                             class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
                         >
                             <span class="material-symbols-outlined notranslate text-xl">open_in_new</span>
-                            <span v-show="isSidebarOpen">Lihat Publik</span>
+                            <span v-show="isSidebarOpen">Lihat Tampilan Publik</span>
                         </a>
                     </div>
                 </div>
@@ -424,7 +427,25 @@ const logout = () => {
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a 
+                        :href="route('unit.settings.edit', { slug: 'ketahanan-pangan' })"
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg transition-colors shadow-xs"
+                        title="Edit Landing Page & Struktur Organisasi"
+                    >
+                        <span class="material-symbols-outlined notranslate text-[16px]">tune</span>
+                        <span class="hidden sm:inline">Edit Web &amp; Struktur</span>
+                        <span class="sm:hidden">Edit Web</span>
+                    </a>
+                    <a 
+                        :href="route('unit.welcome', { slug: 'ketahanan-pangan' })"
+                        target="_blank"
+                        class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg transition-colors shadow-xs"
+                        title="Lihat Tampilan Publik Landing Page"
+                    >
+                        <span class="material-symbols-outlined notranslate text-[16px]">visibility</span>
+                        <span>Lihat Publik</span>
+                    </a>
                     <a 
                         :href="route('portal.home')"
                         class="text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 px-3 py-1.5 rounded-lg hover:bg-slate-200 transition-colors"

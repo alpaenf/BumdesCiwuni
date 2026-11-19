@@ -40,6 +40,10 @@ const form = useForm({
     contact_email: props.settings.contact_email || '',
     faq_items: props.settings.faq_items || [],
     news_items: props.settings.news_items || [],
+    org_pembina_name: props.settings.org_pembina_name || '',
+    org_pembina_image: props.settings.org_pembina_image || '',
+    org_direktur_name: props.settings.org_direktur_name || '',
+    org_direktur_image: props.settings.org_direktur_image || '',
     org_unit_sp_name: props.settings.org_unit_sp_name || '',
     org_unit_sp_image: props.settings.org_unit_sp_image || '',
     org_unit_sp_staff_name: props.settings.org_unit_sp_staff_name || '',
@@ -47,6 +51,16 @@ const form = useForm({
     wa_company_name: props.settings.wa_company_name || 'PT. MEDIA CEPAT INDONESIA',
     bank_accounts: props.settings.bank_accounts && props.settings.bank_accounts.length ? props.settings.bank_accounts : defaultBankAccounts,
 });
+
+const getDashboardUrl = () => {
+    if (props.unit.slug === 'ketahanan-pangan') {
+        return route('kp.hewani.dashboard');
+    }
+    if (props.unit.slug === 'perdagangan-besar') {
+        return route('pb.dashboard');
+    }
+    return route('unit.dashboard', { slug: props.unit.slug });
+};
 
 const isSuccessMessageVisible = ref(false);
 const uploadingIndices = ref({});
@@ -356,18 +370,36 @@ const deleteGaleri = (id) => {
                         <span class="material-symbols-outlined">menu</span>
                     </button>
                     <div>
-                        <h1 class="text-sm font-bold text-slate-900 leading-tight">Pengaturan Landing Page</h1>
-                        <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-widest hidden sm:block">Manajemen Konten Publik</p>
+                        <h1 class="text-sm font-bold text-slate-900 leading-tight">Pengaturan Landing Page {{ unit.nama_unit }}</h1>
+                        <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-widest hidden sm:block">Manajemen Konten Publik & Struktur Organisasi</p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    <a :href="route('unit.welcome', { slug: unit.slug })" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-lg border border-slate-300 transition">
-                        <span class="material-symbols-outlined text-[14px]">public</span>
-                        Lihat Website
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a :href="getDashboardUrl()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg border border-slate-300 transition shadow-xs">
+                        <span class="material-symbols-outlined text-[15px]">arrow_back</span>
+                        <span class="hidden sm:inline">Kembali ke Dashboard</span>
+                    </a>
+                    <a :href="route('unit.welcome', { slug: unit.slug })" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-lg border border-blue-200 transition shadow-xs">
+                        <span class="material-symbols-outlined text-[15px]">visibility</span>
+                        <span class="hidden sm:inline">Lihat Website</span>
                     </a>
                 </div>
             </header>
+
+            <!-- Quick Subnav Bar (Lompat ke Seksi) -->
+            <div class="sticky top-16 z-20 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 px-4 sm:px-6 py-2 flex items-center gap-2 overflow-x-auto text-xs font-semibold text-slate-600">
+                <span class="text-slate-400 text-[10px] uppercase tracking-wider shrink-0 font-bold">Lompat Ke:</span>
+                <a href="#sec-hero" class="px-2.5 py-1 rounded-lg hover:bg-white hover:text-slate-900 hover:shadow-xs transition shrink-0">Banner Utama</a>
+                <a href="#sec-services" class="px-2.5 py-1 rounded-lg hover:bg-white hover:text-slate-900 hover:shadow-xs transition shrink-0">Layanan</a>
+                <a href="#sec-org" class="px-2.5 py-1 rounded-lg bg-emerald-100/70 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition shrink-0 flex items-center gap-1 font-bold">
+                    <span class="material-symbols-outlined text-[14px]">group</span> Struktur Organisasi
+                </a>
+                <a href="#sec-news" class="px-2.5 py-1 rounded-lg hover:bg-white hover:text-slate-900 hover:shadow-xs transition shrink-0">Berita</a>
+                <a href="#sec-faq" class="px-2.5 py-1 rounded-lg hover:bg-white hover:text-slate-900 hover:shadow-xs transition shrink-0">FAQ</a>
+                <a href="#sec-contact" class="px-2.5 py-1 rounded-lg hover:bg-white hover:text-slate-900 hover:shadow-xs transition shrink-0">Kontak</a>
+                <a href="#sec-galeri" class="px-2.5 py-1 rounded-lg hover:bg-white hover:text-slate-900 hover:shadow-xs transition shrink-0">Galeri</a>
+            </div>
 
             <!-- Content Container -->
             <div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto w-full">
@@ -409,7 +441,7 @@ const deleteGaleri = (id) => {
                 </div>
 
                 <!-- HERO SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                <div id="sec-hero" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
                     <h3 class="text-sm font-bold text-primary flex items-center gap-2 border-b border-slate-100 pb-2">
                         <span class="material-symbols-outlined text-[18px]">photo_library</span>
                         Section Hero (Banner Utama)
@@ -441,7 +473,7 @@ const deleteGaleri = (id) => {
 
 
                 <!-- FEATURES / SERVICES SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-5">
+                <div id="sec-services" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-5">
                     <h3 class="text-sm font-bold text-primary flex items-center gap-2 border-b border-slate-100 pb-2">
                         <span class="material-symbols-outlined text-[18px]">list_alt</span>
                         Section Fitur & Layanan Utama
@@ -500,60 +532,132 @@ const deleteGaleri = (id) => {
                 </div>
 
                 <!-- STRUKTUR ORGANISASI SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-6">
-                    <h3 class="text-sm font-bold text-primary flex items-center gap-2 border-b border-slate-100 pb-2">
-                        <span class="material-symbols-outlined text-[18px]">group</span>
-                        Anggota & Foto Struktur Organisasi
-                    </h3>
-                    <p class="text-[11px] text-slate-500">Ubah nama dan unggah foto untuk masing-masing pengurus BUMDes. Jika foto kosong, inisial nama dengan gradien hijau premium akan ditampilkan sebagai gantinya.</p>
+                <div id="sec-org" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-6">
+                    <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">group</span>
+                                Anggota &amp; Foto Struktur Organisasi
+                            </h3>
+                            <p class="text-[11px] text-slate-500 mt-0.5">
+                                Atur nama dan unggah foto untuk masing-masing posisi bagan organisasi di landing page publik {{ unit.nama_unit }}.
+                            </p>
+                        </div>
+                        <a :href="route('unit.welcome', { slug: unit.slug }) + '#struktur'" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg transition self-start sm:self-auto shadow-xs">
+                            <span class="material-symbols-outlined text-[16px]">visibility</span>
+                            Lihat Bagan di Web
+                        </a>
+                    </div>
 
-                    <div class="grid gap-6 md:grid-cols-2">
-                        <!-- Helper component generator inside form -->
-                        <div v-for="role in [
-                            { label: 'Kepala Unit / Manager', nameKey: 'org_unit_sp_name', imgKey: 'org_unit_sp_image' },
-                            { label: 'Staf Unit', nameKey: 'org_unit_sp_staff_name', imgKey: 'org_unit_sp_staff_image' },
-                        ]" :key="role.nameKey" class="p-4 bg-white border border-outline-variant rounded-xl flex gap-4 items-center">
-                            
-                            <!-- Foto Upload Preview -->
-                            <div class="w-20 h-20 border border-slate-200 rounded-full overflow-hidden bg-slate-50 flex-shrink-0 flex items-center justify-center relative group cursor-pointer" @click="triggerMemberFileInput(role.imgKey)">
-                                <input
-                                    :id="`input-image-${role.imgKey}`"
-                                    type="file"
-                                    accept="image/*"
-                                    class="hidden"
-                                    @change="handleMemberImageUpload($event, role.imgKey)"
-                                />
-                                
-                                <div v-if="uploadingMembers[role.imgKey]" class="flex items-center justify-center text-slate-500">
-                                    <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
-                                </div>
-                                <template v-else>
-                                    <img v-if="form[role.imgKey]" :src="form[role.imgKey]" class="w-full h-full object-cover" />
-                                    <div v-else class="text-center flex flex-col items-center justify-center text-slate-400">
-                                        <span class="material-symbols-outlined text-lg">add_a_photo</span>
-                                        <span class="text-[8px] uppercase font-bold tracking-wider block mt-0.5">Foto</span>
+                    <!-- Level 1: Pimpinan BUMDes (Oversight / Atas) -->
+                    <div class="space-y-3 p-4 bg-slate-50/70 rounded-xl border border-slate-200/80">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                                    Level 1: Manajemen BUMDes (Pimpinan Atas / Oversight)
+                                </span>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Posisi teratas pada pohon bagan organisasi. (Bila nama dikosongkan, menggunakan default BUMDes).</p>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 md:grid-cols-2">
+                            <div v-for="role in [
+                                { label: 'Pembina BUMDes', nameKey: 'org_pembina_name', imgKey: 'org_pembina_image', placeholder: 'Surya Ramdhani (Default)' },
+                                { label: 'Direktur BUMDes', nameKey: 'org_direktur_name', imgKey: 'org_direktur_image', placeholder: 'Ahmad Hidayat (Default)' },
+                            ]" :key="role.nameKey" class="p-3.5 bg-white border border-slate-200 rounded-xl flex gap-3.5 items-center shadow-xs">
+                                <!-- Foto Upload Preview -->
+                                <div class="w-16 h-16 border-2 border-dashed border-slate-300 rounded-full overflow-hidden bg-slate-50 flex-shrink-0 flex items-center justify-center relative group cursor-pointer hover:border-slate-500 transition" @click="triggerMemberFileInput(role.imgKey)">
+                                    <input
+                                        :id="`input-image-${role.imgKey}`"
+                                        type="file"
+                                        accept="image/*"
+                                        class="hidden"
+                                        @change="handleMemberImageUpload($event, role.imgKey)"
+                                    />
+                                    <div v-if="uploadingMembers[role.imgKey]" class="flex items-center justify-center text-slate-500">
+                                        <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
                                     </div>
-                                </template>
-                            </div>
-
-                            <!-- Name input & Delete Image -->
-                            <div class="flex-grow space-y-2">
-                                <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">{{ role.label }}</label>
-                                    <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white py-1 px-2.5" placeholder="Nama Lengkap" />
+                                    <template v-else>
+                                        <img v-if="form[role.imgKey]" :src="form[role.imgKey]" class="w-full h-full object-cover" />
+                                        <div v-else class="text-center flex flex-col items-center justify-center text-slate-400">
+                                            <span class="material-symbols-outlined text-base">add_a_photo</span>
+                                            <span class="text-[7.5px] uppercase font-bold tracking-wider block">Foto</span>
+                                        </div>
+                                    </template>
                                 </div>
-                                <div v-if="form[role.imgKey]" class="flex items-center justify-between">
-                                    <span class="text-[9px] text-blue-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
-                                    <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[9px] font-bold text-rose-600 hover:underline">Hapus Foto</button>
+
+                                <!-- Name input & Delete Image -->
+                                <div class="flex-grow space-y-1.5">
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">{{ role.label }}</label>
+                                        <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white py-1 px-2.5" :placeholder="role.placeholder" />
+                                    </div>
+                                    <div v-if="form[role.imgKey]" class="flex items-center justify-between">
+                                        <span class="text-[9px] text-blue-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
+                                        <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[9px] font-bold text-rose-600 hover:underline">Hapus Foto</button>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
+                    <!-- Level 2 & 3: Pengurus Langsung Unit -->
+                    <div class="space-y-3 p-4 bg-blue-50/40 rounded-xl border border-blue-200/80">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                    Level 2 &amp; 3: Pengurus Unit {{ unit.nama_unit }} (Operasional Langsung)
+                                </span>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Kepala Unit dan Staf yang bertanggung jawab langsung pada aktivitas {{ unit.nama_unit }}.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-4 md:grid-cols-2">
+                            <div v-for="role in [
+                                { label: `Kepala Unit / Manager ${unit.nama_unit}`, nameKey: 'org_unit_sp_name', imgKey: 'org_unit_sp_image', placeholder: 'Nama Kepala Unit' },
+                                { label: `Staf Unit ${unit.nama_unit}`, nameKey: 'org_unit_sp_staff_name', imgKey: 'org_unit_sp_staff_image', placeholder: 'Nama Staf Unit' },
+                            ]" :key="role.nameKey" class="p-3.5 bg-white border border-blue-200 rounded-xl flex gap-3.5 items-center shadow-xs">
+                                <!-- Foto Upload Preview -->
+                                <div class="w-16 h-16 border-2 border-dashed border-blue-300 rounded-full overflow-hidden bg-blue-50/50 flex-shrink-0 flex items-center justify-center relative group cursor-pointer hover:border-blue-600 transition" @click="triggerMemberFileInput(role.imgKey)">
+                                    <input
+                                        :id="`input-image-${role.imgKey}`"
+                                        type="file"
+                                        accept="image/*"
+                                        class="hidden"
+                                        @change="handleMemberImageUpload($event, role.imgKey)"
+                                    />
+                                    <div v-if="uploadingMembers[role.imgKey]" class="flex items-center justify-center text-slate-500">
+                                        <span class="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                                    </div>
+                                    <template v-else>
+                                        <img v-if="form[role.imgKey]" :src="form[role.imgKey]" class="w-full h-full object-cover" />
+                                        <div v-else class="text-center flex flex-col items-center justify-center text-slate-400">
+                                            <span class="material-symbols-outlined text-base">add_a_photo</span>
+                                            <span class="text-[7.5px] uppercase font-bold tracking-wider block">Foto</span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Name input & Delete Image -->
+                                <div class="flex-grow space-y-1.5">
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">{{ role.label }}</label>
+                                        <input v-model="form[role.nameKey]" type="text" class="w-full rounded-lg border-slate-200 text-xs focus:ring-primary focus:border-primary bg-white py-1 px-2.5" :placeholder="role.placeholder" />
+                                    </div>
+                                    <div v-if="form[role.imgKey]" class="flex items-center justify-between">
+                                        <span class="text-[9px] text-blue-600 font-semibold flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">check_circle</span> Terunggah</span>
+                                        <button type="button" @click.stop="removeMemberImage(role.imgKey)" class="text-[9px] font-bold text-rose-600 hover:underline">Hapus Foto</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- BERITA SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                <div id="sec-news" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <h3 class="text-sm font-bold text-primary flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">newspaper</span>
@@ -620,7 +724,7 @@ const deleteGaleri = (id) => {
                 </div>
 
                 <!-- FAQ SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                <div id="sec-faq" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <h3 class="text-sm font-bold text-primary flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">quiz</span>
@@ -658,7 +762,7 @@ const deleteGaleri = (id) => {
 
 
                 <!-- CONTACT & ADDRESS SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                <div id="sec-contact" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
                     <h3 class="text-sm font-bold text-primary flex items-center gap-2 border-b border-slate-100 pb-2">
                         <span class="material-symbols-outlined text-[18px]">contact_support</span>
                         Section Informasi Kontak & Alamat
@@ -683,7 +787,7 @@ const deleteGaleri = (id) => {
                 </div>
 
                 <!-- GALERI SECTION -->
-                <div class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+                <div id="sec-galeri" class="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <h3 class="text-sm font-bold text-primary flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">photo_library</span>

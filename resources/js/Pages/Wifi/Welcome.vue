@@ -336,12 +336,12 @@ onMounted(() => {
                             <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 200ms">
                                 <div class="relative group cursor-default">
                                     <div class="w-20 h-20 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg text-white font-extrabold text-xl ring-4 ring-blue-500/20 group-hover:scale-105 transition-all duration-300 overflow-hidden">
-                                        <img v-if="settings.org_unit_wifi_image" :src="settings.org_unit_wifi_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_unit_wifi_name || 'Kepala Unit') }}</span>
+                                        <img v-if="settings.org_unit_wifi_image || settings.org_unit_sp_image" :src="settings.org_unit_wifi_image || settings.org_unit_sp_image" class="w-full h-full object-cover" />
+                                        <span v-else>{{ getInitials(settings.org_unit_wifi_name || settings.org_unit_sp_name || 'Kepala Unit') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-3 text-center">
-                                    <p class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_wifi_name || 'Kepala Unit' }}</p>
+                                    <p class="text-xs font-extrabold text-slate-800">{{ settings.org_unit_wifi_name || settings.org_unit_sp_name || 'Kepala Unit Wifi' }}</p>
                                     <span class="mt-1 inline-block px-2.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider rounded-full">Kepala Unit Wifi</span>
                                 </div>
                             </div>
@@ -357,12 +357,12 @@ onMounted(() => {
                             <div class="org-node flex flex-col items-center scroll-animate scroll-fade-up" style="transition-delay: 350ms">
                                 <div class="relative group cursor-default">
                                     <div class="w-16 h-16 rounded-full border-4 border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow text-white font-extrabold text-lg ring-4 ring-blue-500/10 group-hover:scale-105 transition-all duration-300 overflow-hidden">
-                                        <img v-if="settings.org_unit_wifi_staff_image" :src="settings.org_unit_wifi_staff_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_unit_wifi_staff_name || 'Staf WF') }}</span>
+                                        <img v-if="settings.org_unit_wifi_staff_image || settings.org_unit_sp_staff_image" :src="settings.org_unit_wifi_staff_image || settings.org_unit_sp_staff_image" class="w-full h-full object-cover" />
+                                        <span v-else>{{ getInitials(settings.org_unit_wifi_staff_name || settings.org_unit_sp_staff_name || 'Staf WF') }}</span>
                                     </div>
                                 </div>
                                 <div class="mt-2 text-center">
-                                    <p class="text-xs font-bold text-slate-800">{{ settings.org_unit_wifi_staff_name || 'Nama Staf' }}</p>
+                                    <p class="text-xs font-bold text-slate-800">{{ settings.org_unit_wifi_staff_name || settings.org_unit_sp_staff_name || 'Nama Staf' }}</p>
                                     <span class="mt-0.5 inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[8px] font-bold uppercase tracking-wider rounded-full">Staf Unit Wifi</span>
                                 </div>
                             </div>
