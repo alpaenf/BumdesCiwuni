@@ -232,6 +232,7 @@ class KpSaleController extends Controller
             }
 
             $this->syncEggStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', "Penjualan berhasil dicatat dengan Nomor Struk: {$nomorTransaksi}");
@@ -358,6 +359,7 @@ class KpSaleController extends Controller
             }
 
             $this->syncEggStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', "Data penjualan {$sale->nomor_transaksi} berhasil diperbarui.");
@@ -387,6 +389,7 @@ class KpSaleController extends Controller
             $sale->delete();
 
             $this->syncEggStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Transaksi penjualan berhasil dibatalkan dan stok dikembalikan.');

@@ -105,6 +105,8 @@ class KpFinanceController extends Controller
                 'sumber_id' => $expense->id,
                 'keterangan' => $validated['keterangan'] ?? null,
             ]);
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pengeluaran berhasil dicatat.');
@@ -150,6 +152,8 @@ class KpFinanceController extends Controller
                     'keterangan' => $validated['keterangan'] ?? null,
                 ]);
             }
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pengeluaran berhasil diperbarui.');
@@ -163,6 +167,8 @@ class KpFinanceController extends Controller
             $expense = KpExpense::findOrFail($id);
             KpCashFlow::where('sumber_tipe', 'expense')->where('sumber_id', $expense->id)->delete();
             $expense->delete();
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pengeluaran berhasil dihapus.');
@@ -241,6 +247,8 @@ class KpFinanceController extends Controller
                 'sumber_id' => $income->id,
                 'keterangan' => $validated['keterangan'] ?? null,
             ]);
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pendapatan lain-lain berhasil dicatat.');
@@ -278,6 +286,8 @@ class KpFinanceController extends Controller
                     'keterangan' => $validated['keterangan'] ?? null,
                 ]);
             }
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pendapatan lain-lain berhasil diperbarui.');
@@ -291,6 +301,8 @@ class KpFinanceController extends Controller
             $income = KpOtherIncome::findOrFail($id);
             KpCashFlow::where('sumber_tipe', 'other_income')->where('sumber_id', $income->id)->delete();
             $income->delete();
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pendapatan lain-lain berhasil dihapus.');

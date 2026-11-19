@@ -156,6 +156,7 @@ class KpFeedController extends Controller
             ]);
 
             $this->syncFeedStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Pembelian pakan berhasil dicatat & stok bertambah.');
@@ -211,6 +212,7 @@ class KpFeedController extends Controller
             }
 
             $this->syncFeedStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Data pembelian pakan berhasil diperbarui.');
@@ -347,8 +349,9 @@ class KpFeedController extends Controller
 
             $purchase->delete();
 
-            // Auto sinkronisasi stok
+            // Auto sinkronisasi stok & kas
             $this->syncFeedStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Data pembelian pakan dibatalkan.');
@@ -362,8 +365,9 @@ class KpFeedController extends Controller
             $usage = KpFeedUsage::findOrFail($id);
             $usage->delete();
 
-            // Auto sinkronisasi stok
+            // Auto sinkronisasi stok & kas
             $this->syncFeedStock();
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Catatan pemakaian pakan berhasil dihapus.');

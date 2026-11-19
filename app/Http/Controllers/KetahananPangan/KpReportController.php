@@ -8,6 +8,7 @@ use App\Models\KetahananPangan\KpEggProduction;
 use App\Models\KetahananPangan\KpEggSale;
 use App\Models\KetahananPangan\KpExpense;
 use App\Models\KetahananPangan\KpOtherIncome;
+use App\Models\LandingPageSetting;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -106,10 +107,15 @@ class KpReportController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
 
+        // Sinkronisasi dan rekalkulasi otomatis
+        KpCashFlow::syncAndRecalculate('hewani');
+
+        $modalAwalSetting = (float) LandingPageSetting::getByKey('kp_hewani_modal_awal', '0');
+
         // Saldo awal sebelum periode
         $debitAwal = (float) KpCashFlow::where('unit_kategori', 'hewani')->where('tanggal', '<', $startDate)->sum('debit');
         $kreditAwal = (float) KpCashFlow::where('unit_kategori', 'hewani')->where('tanggal', '<', $startDate)->sum('kredit');
-        $saldoAwal = $debitAwal - $kreditAwal;
+        $saldoAwal = max(0, $modalAwalSetting + $debitAwal - $kreditAwal);
 
         $flows = KpCashFlow::where('unit_kategori', 'hewani')
             ->whereBetween('tanggal', [$startDate, $endDate])
@@ -121,13 +127,13 @@ class KpReportController extends Controller
         $running = $saldoAwal;
         $flowItems = $flows->map(function ($item) use (&$running) {
             $running = $running + (float) $item->debit - (float) $item->kredit;
-            $item->saldo_berjalan = $running;
+            $item->saldo_berjalan = max(0, $running);
             return $item;
         });
 
         $totalDebit = (float) $flows->sum('debit');
         $totalKredit = (float) $flows->sum('kredit');
-        $saldoAkhir = $saldoAwal + $totalDebit - $totalKredit;
+        $saldoAkhir = max(0, $saldoAwal + $totalDebit - $totalKredit);
 
         return Inertia::render('ketahanan pangan/Hewani/LaporanArusKas', [
             'unit' => $unit,
@@ -142,6 +148,7 @@ class KpReportController extends Controller
                 'total_debit' => $totalDebit,
                 'total_kredit' => $totalKredit,
                 'saldo_akhir' => $saldoAkhir,
+                'modal_awal' => $modalAwalSetting,
             ],
         ]);
     }

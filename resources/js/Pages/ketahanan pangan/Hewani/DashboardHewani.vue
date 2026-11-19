@@ -160,6 +160,62 @@ const savePopulasi = () => {
         }
     });
 };
+
+// Modal Atur & Reset Saldo Kas
+const isSaldoModalOpen = ref(false);
+const inputModalAwal = ref(props.stats.modal_awal || 0);
+const cleanArusKas = ref(true);
+const isUpdatingSaldo = ref(false);
+
+const openSaldoModal = () => {
+    inputModalAwal.value = props.stats.modal_awal || 0;
+    cleanArusKas.value = true;
+    isSaldoModalOpen.value = true;
+};
+
+const saveModalAwal = () => {
+    isUpdatingSaldo.value = true;
+    router.post(route('kp.hewani.saldo.update'), {
+        modal_awal: inputModalAwal.value,
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            isSaldoModalOpen.value = false;
+            isUpdatingSaldo.value = false;
+        },
+        onError: (errs) => {
+            isUpdatingSaldo.value = false;
+            alert(Object.values(errs).join('\n'));
+        },
+        onFinish: () => {
+            isUpdatingSaldo.value = false;
+        }
+    });
+};
+
+const executeResetSaldo = (target = 0) => {
+    if (!confirm(`Konfirmasi: Apakah Anda yakin ingin mereset saldo kas ke Rp ${Number(target).toLocaleString('id-ID')}?`)) {
+        return;
+    }
+    isUpdatingSaldo.value = true;
+    router.post(route('kp.hewani.saldo.reset'), {
+        target_saldo: target,
+        bersihkan_arus_kas: cleanArusKas.value,
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            isSaldoModalOpen.value = false;
+            isUpdatingSaldo.value = false;
+        },
+        onError: (errs) => {
+            isUpdatingSaldo.value = false;
+            alert(Object.values(errs).join('\n'));
+        },
+        onFinish: () => {
+            isUpdatingSaldo.value = false;
+        }
+    });
+};
 </script>
 
 <template>
@@ -314,10 +370,32 @@ const savePopulasi = () => {
                 </span>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs bg-gradient-to-br from-blue-50/40 to-white">
-                <p class="text-xs font-semibold text-blue-800">Saldo Kas Usaha</p>
-                <h4 class="text-xl font-extrabold text-blue-600 mt-1">{{ formatRp(stats.saldo_kas) }}</h4>
-                <p class="mt-2 text-[10px] text-slate-500">Arus kas rill saat ini</p>
+            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-xs bg-gradient-to-br from-blue-50/40 to-white relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-blue-800">Saldo Kas Usaha</p>
+                        <h4 class="text-xl font-extrabold text-blue-600 mt-1">{{ formatRp(stats.saldo_kas) }}</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+                    </div>
+                </div>
+                <div class="mt-2.5 flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">
+                        <span v-if="stats.is_saldo_adjusted" class="text-amber-600 font-semibold flex items-center gap-1">
+                            <span class="material-symbols-outlined notranslate text-xs">info</span>
+                            Kas seimbang
+                        </span>
+                        <span v-else>Arus kas riil saat ini</span>
+                    </span>
+                    <button 
+                        @click="openSaldoModal" 
+                        class="font-bold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                        Atur / Reset
+                        <span class="material-symbols-outlined notranslate text-xs">tune</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -459,6 +537,102 @@ const savePopulasi = () => {
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Modal Atur / Reset Saldo Kas Usaha -->
+        <div v-if="isSaldoModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800">Atur Saldo Kas / Modal Awal</h4>
+                    </div>
+                    <button @click="isSaldoModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <div class="mt-4 space-y-4">
+                    <!-- Info Status Saldo Saat Ini -->
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs">
+                        <div class="flex justify-between text-slate-600">
+                            <span>Saldo Kas Tampil:</span>
+                            <span class="font-bold text-blue-700">{{ formatRp(stats.saldo_kas) }}</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500 text-[11px]">
+                            <span>Modal Awal BUMDes Aktif:</span>
+                            <span class="font-semibold">{{ formatRp(stats.modal_awal) }}</span>
+                        </div>
+                        <div v-if="stats.is_saldo_adjusted" class="mt-2 pt-2 border-t border-slate-200 text-[11px] text-amber-700 bg-amber-50/50 p-2 rounded-lg flex items-start gap-1.5">
+                            <span class="material-symbols-outlined text-sm shrink-0">info</span>
+                            <span>Terdapat riwayat pengeluaran sampel sebelum ada modal awal. Saldo kas telah diamankan agar tidak minus. Anda dapat mengatur Modal Awal atau Reset Kas ke Rp 0 di bawah.</span>
+                        </div>
+                    </div>
+
+                    <!-- Form Tab: Set Modal Awal -->
+                    <form @submit.prevent="saveModalAwal" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Modal Awal Kas BUMDes (Rp)
+                            </label>
+                            <input 
+                                type="number" 
+                                min="0" 
+                                step="1000"
+                                v-model="inputModalAwal" 
+                                class="w-full text-sm font-bold rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500" 
+                                placeholder="Contoh: 100000000"
+                                required 
+                            />
+                            <p class="text-[11px] text-slate-400 mt-1">
+                                Alokasi saldo kas awal yang disediakan BUMDes untuk unit ketahanan pangan.
+                            </p>
+                        </div>
+
+                        <div class="flex justify-end gap-2 pt-1">
+                            <button 
+                                type="submit" 
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5"
+                                :disabled="isUpdatingSaldo"
+                            >
+                                <span v-if="isUpdatingSaldo" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                                Simpan Modal Awal
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="border-t border-slate-100 pt-3">
+                        <p class="text-xs font-semibold text-slate-700 mb-2">Opsi Reset Kas & Pembersihan Sampel</p>
+                        <div class="p-3 rounded-xl bg-rose-50/40 border border-rose-100 space-y-2">
+                            <p class="text-[11px] text-rose-800">
+                                Gunakan tombol ini jika seluruh data sampel telah dihapus dan Anda ingin saldo kas kembali bersih ke <strong>Rp 0</strong>.
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <input 
+                                    type="checkbox" 
+                                    id="cleanCheck" 
+                                    v-model="cleanArusKas" 
+                                    class="rounded border-slate-300 text-rose-600 focus:ring-rose-500 text-xs"
+                                />
+                                <label for="cleanCheck" class="text-[11px] text-slate-600 select-none cursor-pointer">
+                                    Bersihkan seluruh riwayat arus kas sampel lama
+                                </label>
+                            </div>
+                            <button 
+                                type="button" 
+                                @click="executeResetSaldo(0)" 
+                                class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer"
+                                :disabled="isUpdatingSaldo"
+                            >
+                                <span class="material-symbols-outlined text-sm">restart_alt</span>
+                                Reset Saldo Kas Menjadi Rp 0
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </KetahananPanganLayout>

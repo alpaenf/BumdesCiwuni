@@ -117,6 +117,8 @@ class KpPartnerPurchaseController extends Controller
                     'keterangan' => $validated['keterangan'] ?? null,
                 ]);
             }
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Riwayat pembelian telur rekanan berhasil disimpan.');
@@ -195,6 +197,8 @@ class KpPartnerPurchaseController extends Controller
                 if ($expense) $expense->delete();
                 if ($cash) $cash->delete();
             }
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Data pembelian rekanan berhasil diperbarui.');
@@ -212,6 +216,8 @@ class KpPartnerPurchaseController extends Controller
             KpCashFlow::where('sumber_tipe', 'partner_purchase')->where('sumber_id', $purchase->id)->delete();
 
             $purchase->delete();
+
+            KpCashFlow::syncAndRecalculate('hewani');
         });
 
         return redirect()->back()->with('success', 'Data pembelian rekanan berhasil dihapus.');

@@ -71,9 +71,11 @@ class KpHewaniDashboardController extends Controller
         $totalPengeluaran = (float) KpExpense::where('unit_kategori', 'hewani')->whereBetween('tanggal', [$startDate, $endDate])->sum('nominal');
         $labaBersih = $totalPendapatan - $totalPengeluaran;
 
-        // Saldo Kas terakhir
-        $latestCash = KpCashFlow::where('unit_kategori', 'hewani')->orderByDesc('id')->first();
-        $saldoKas = $latestCash ? (float) $latestCash->saldo_berjalan : 0;
+        // Saldo Kas riil tersinkronisasi
+        $realSaldo = KpCashFlow::syncAndRecalculate('hewani');
+        $modalAwal = (float) LandingPageSetting::getByKey('kp_hewani_modal_awal', '0');
+        // Saldo kas aman (tidak minus membingungkan jika ada pengeluaran sampel tanpa modal awal)
+        $saldoKas = max(0, $realSaldo);
 
         // Data Rekanan
         $totalBeliRekananPeriodeKg = (float) KpPartnerPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('jumlah_kg');
@@ -141,6 +143,9 @@ class KpHewaniDashboardController extends Controller
                 'total_pengeluaran' => $totalPengeluaran,
                 'laba_bersih' => $labaBersih,
                 'saldo_kas' => $saldoKas,
+                'raw_saldo_kas' => $realSaldo,
+                'modal_awal' => $modalAwal,
+                'is_saldo_adjusted' => $realSaldo < 0,
                 'total_beli_rekanan_kg' => $totalBeliRekananPeriodeKg,
                 'total_biaya_rekanan' => $totalBiayaRekananPeriode,
                 'sisa_stok_rekanan_kg' => $sisaStokRekanan,
@@ -162,6 +167,63 @@ class KpHewaniDashboardController extends Controller
         LandingPageSetting::setByKey('kp_populasi_ayam', (string) $validated['populasi_ayam']);
 
         return redirect()->back()->with('success', 'Populasi ayam berhasil diperbarui.');
+    }
+
+    public function updateSaldoKas(Request $request)
+    {
+        $this->authorizeUnit();
+
+        $validated = $request->validate([
+            'modal_awal' => 'required|numeric|min:0',
+        ]);
+
+        LandingPageSetting::setByKey('kp_hewani_modal_awal', (string) $validated['modal_awal']);
+        KpCashFlow::syncAndRecalculate('hewani');
+
+        return redirect()->back()->with('success', 'Modal Awal / Saldo Kas berhasil disimpan.');
+    }
+
+    public function resetSaldoKas(Request $request)
+    {
+        $this->authorizeUnit();
+
+        $validated = $request->validate([
+            'target_saldo' => 'nullable|numeric|min:0',
+            'bersihkan_arus_kas' => 'nullable|boolean',
+        ]);
+
+        $targetSaldo = (float) ($validated['target_saldo'] ?? 0);
+        $bersihkanArusKas = (bool) ($validated['bersihkan_arus_kas'] ?? false);
+
+        if ($bersihkanArusKas) {
+            // Hapus paksa data arus kas lama untuk unit hewani
+            KpCashFlow::where('unit_kategori', 'hewani')->forceDelete();
+            LandingPageSetting::setByKey('kp_hewani_modal_awal', (string) $targetSaldo);
+
+            if ($targetSaldo > 0) {
+                KpCashFlow::create([
+                    'unit_kategori' => 'hewani',
+                    'tanggal' => Carbon::now()->toDateString(),
+                    'uraian' => 'Saldo Awal / Modal Kas Usaha BUMDes',
+                    'debit' => $targetSaldo,
+                    'kredit' => 0,
+                    'saldo_berjalan' => $targetSaldo,
+                    'sumber_tipe' => 'saldo_awal',
+                    'sumber_id' => null,
+                    'keterangan' => 'Penyertaan kas modal awal unit hewani',
+                ]);
+            }
+        } else {
+            // Seimbangkan dengan modal awal agar saldo akhir sama dengan targetSaldo
+            $totalDebit = (float) KpCashFlow::where('unit_kategori', 'hewani')->sum('debit');
+            $totalKredit = (float) KpCashFlow::where('unit_kategori', 'hewani')->sum('kredit');
+            $neededModal = max(0, $targetSaldo + $totalKredit - $totalDebit);
+            LandingPageSetting::setByKey('kp_hewani_modal_awal', (string) $neededModal);
+        }
+
+        KpCashFlow::syncAndRecalculate('hewani');
+
+        return redirect()->back()->with('success', 'Saldo kas berhasil disesuaikan ke Rp ' . number_format($targetSaldo, 0, ',', '.'));
     }
 }
 

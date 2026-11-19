@@ -371,6 +371,8 @@ Route::middleware(['auth'])->prefix('unit/ketahanan-pangan/admin')->group(functi
     // 1. Dashboard Utama / Hewani
     Route::get('/dashboard', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'index'])->name('kp.hewani.dashboard');
     Route::post('/dashboard/populasi', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'updatePopulasi'])->name('kp.hewani.populasi.update');
+    Route::post('/dashboard/saldo-kas', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'updateSaldoKas'])->name('kp.hewani.saldo.update');
+    Route::post('/dashboard/saldo-kas/reset', [\App\Http\Controllers\KetahananPangan\KpHewaniDashboardController::class, 'resetSaldoKas'])->name('kp.hewani.saldo.reset');
 
     // 2. Data Pelanggan
     Route::get('/pelanggan', [\App\Http\Controllers\KetahananPangan\KpCustomerController::class, 'index'])->name('kp.customers.index');
