@@ -56,27 +56,63 @@ class KpFeedController extends Controller
         $currentStock = $this->syncFeedStock();
         $feedStock = KpFeedStock::where('nama_pakan', 'Pakan Layer')->first();
 
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
+        $startOfMonth = Carbon::now('Asia/Jakarta')->startOfMonth()->toDateString();
+
+        $isAll = $request->boolean('all', false) || $request->input('filter_preset') === 'all';
+        $filterPreset = $request->input('filter_preset', '');
+
+        // Default startDate and endDate
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Jika tidak dispesifikasikan (default buka halaman pertama kali)
+        if (!$isAll && (empty($startDate) || empty($endDate))) {
+            if ($filterPreset === 'today') {
+                $startDate = $today;
+                $endDate = $today;
+            } else {
+                // Default halaman dibuka: awal bulan s/d HARI INI
+                $startDate = $startOfMonth;
+                $endDate = $today;
+            }
+        }
 
         // Usages
-        $usages = KpFeedUsage::whereBetween('tanggal', [$startDate, $endDate])
+        $usagesQuery = KpFeedUsage::query();
+        if (!$isAll) {
+            $usagesQuery->whereBetween('tanggal', [$startDate, $endDate]);
+        }
+        $usages = $usagesQuery
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
             ->paginate(15, ['*'], 'usage_page')
             ->withQueryString();
 
         // Purchases
-        $purchases = KpFeedPurchase::whereBetween('tanggal', [$startDate, $endDate])
+        $purchasesQuery = KpFeedPurchase::query();
+        if (!$isAll) {
+            $purchasesQuery->whereBetween('tanggal', [$startDate, $endDate]);
+        }
+        $purchases = $purchasesQuery
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
             ->paginate(15, ['*'], 'purchase_page')
             ->withQueryString();
 
         // Aggregations
-        $totalBeliKg = (float) KpFeedPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('jumlah_kg');
-        $totalBiayaBeli = (float) KpFeedPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('total_biaya');
-        $totalPakaiKg = (float) KpFeedUsage::whereBetween('tanggal', [$startDate, $endDate])->sum('total_kebutuhan_kg');
+        if ($isAll) {
+            $totalBeliKg = (float) KpFeedPurchase::sum('jumlah_kg');
+            $totalBiayaBeli = (float) KpFeedPurchase::sum('total_biaya');
+            $totalPakaiKg = (float) KpFeedUsage::sum('total_kebutuhan_kg');
+        } else {
+            $totalBeliKg = (float) KpFeedPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('jumlah_kg');
+            $totalBiayaBeli = (float) KpFeedPurchase::whereBetween('tanggal', [$startDate, $endDate])->sum('total_biaya');
+            $totalPakaiKg = (float) KpFeedUsage::whereBetween('tanggal', [$startDate, $endDate])->sum('total_kebutuhan_kg');
+        }
+
+        // Pemakaian Hari Ini (riil per hari ini)
+        $pemakaianHariIniKg = (float) KpFeedUsage::where('tanggal', $today)->sum('total_kebutuhan_kg');
 
         return Inertia::render('ketahanan pangan/Hewani/LogistikPakan', [
             'unit' => $unit,
@@ -86,15 +122,19 @@ class KpFeedController extends Controller
             'usages' => $usages,
             'purchases' => $purchases,
             'filters' => [
-                'start_date' => $startDate,
-                'end_date' => $endDate,
+                'start_date' => $isAll ? '' : $startDate,
+                'end_date' => $isAll ? '' : $endDate,
                 'tab' => $activeTab,
+                'is_all' => $isAll,
+                'filter_preset' => $filterPreset,
+                'today' => $today,
             ],
             'summary' => [
                 'stok_saat_ini_kg' => (float) $currentStock,
                 'total_beli_kg' => $totalBeliKg,
                 'total_biaya_beli' => $totalBiayaBeli,
                 'total_pakai_kg' => $totalPakaiKg,
+                'pemakaian_hari_ini_kg' => $pemakaianHariIniKg,
             ]
         ]);
     }

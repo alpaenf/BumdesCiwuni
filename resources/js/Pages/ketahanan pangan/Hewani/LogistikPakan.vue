@@ -14,9 +14,48 @@ const props = defineProps({
     summary: Object,
 });
 
+const getLocalDate = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const currentTab = ref(props.activeTab || 'pemakaian');
-const startDate = ref(props.filters.start_date);
-const endDate = ref(props.filters.end_date);
+const startDate = ref(props.filters.start_date || '');
+const endDate = ref(props.filters.end_date || '');
+const activePreset = ref(props.filters.filter_preset || '');
+const isAllData = ref(props.filters.is_all || false);
+
+// Dropdown Bulan & Tahun Picker
+const months = [
+    { value: 1, name: 'Januari' },
+    { value: 2, name: 'Februari' },
+    { value: 3, name: 'Maret' },
+    { value: 4, name: 'April' },
+    { value: 5, name: 'Mei' },
+    { value: 6, name: 'Juni' },
+    { value: 7, name: 'Juli' },
+    { value: 8, name: 'Agustus' },
+    { value: 9, name: 'September' },
+    { value: 10, name: 'Oktober' },
+    { value: 11, name: 'November' },
+    { value: 12, name: 'Desember' },
+];
+
+const selectedMonth = ref('');
+const selectedYear = ref(new Date().getFullYear());
+
+// Inisialisasi selectedMonth jika filter mencocokkan bulan tertentu
+if (props.filters.start_date && props.filters.end_date) {
+    const s = new Date(props.filters.start_date);
+    const e = new Date(props.filters.end_date);
+    if (s.getFullYear() === e.getFullYear() && s.getMonth() === e.getMonth() && s.getDate() === 1) {
+        selectedMonth.value = s.getMonth() + 1;
+        selectedYear.value = s.getFullYear();
+    }
+}
 
 const switchTab = (tab) => {
     currentTab.value = tab;
@@ -24,14 +63,117 @@ const switchTab = (tab) => {
         tab: tab,
         start_date: startDate.value,
         end_date: endDate.value,
+        all: isAllData.value ? 1 : undefined,
+        filter_preset: activePreset.value || undefined,
     }, { preserveState: true });
 };
 
 const applyFilter = () => {
+    isAllData.value = false;
+    activePreset.value = 'custom';
     router.get(route('kp.feed.index'), {
         tab: currentTab.value,
         start_date: startDate.value,
         end_date: endDate.value,
+        filter_preset: 'custom',
+    }, { preserveState: true });
+};
+
+const filterToday = () => {
+    const today = props.filters.today || getLocalDate();
+    startDate.value = today;
+    endDate.value = today;
+    activePreset.value = 'today';
+    isAllData.value = false;
+    selectedMonth.value = '';
+    router.get(route('kp.feed.index'), {
+        tab: currentTab.value,
+        start_date: today,
+        end_date: today,
+        filter_preset: 'today',
+    }, { preserveState: true });
+};
+
+const filterThisMonth = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const today = props.filters.today || getLocalDate();
+    const start = `${year}-${String(month).padStart(2, '0')}-01`;
+    
+    startDate.value = start;
+    endDate.value = today;
+    activePreset.value = 'this_month';
+    isAllData.value = false;
+    selectedMonth.value = month;
+    selectedYear.value = year;
+    
+    router.get(route('kp.feed.index'), {
+        tab: currentTab.value,
+        start_date: start,
+        end_date: today,
+        filter_preset: 'this_month',
+    }, { preserveState: true });
+};
+
+const filterLastMonth = () => {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - 1);
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const start = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const end = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+    
+    startDate.value = start;
+    endDate.value = end;
+    activePreset.value = 'last_month';
+    isAllData.value = false;
+    selectedMonth.value = month;
+    selectedYear.value = year;
+    
+    router.get(route('kp.feed.index'), {
+        tab: currentTab.value,
+        start_date: start,
+        end_date: end,
+        filter_preset: 'last_month',
+    }, { preserveState: true });
+};
+
+const onMonthSelect = () => {
+    if (!selectedMonth.value) return;
+    const year = Number(selectedYear.value) || new Date().getFullYear();
+    const month = Number(selectedMonth.value);
+    
+    const start = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const end = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+    
+    startDate.value = start;
+    endDate.value = end;
+    activePreset.value = 'month_picker';
+    isAllData.value = false;
+    
+    router.get(route('kp.feed.index'), {
+        tab: currentTab.value,
+        start_date: start,
+        end_date: end,
+        filter_preset: 'month_picker',
+    }, { preserveState: true });
+};
+
+const filterAll = () => {
+    startDate.value = '';
+    endDate.value = '';
+    activePreset.value = 'all';
+    isAllData.value = true;
+    selectedMonth.value = '';
+    
+    router.get(route('kp.feed.index'), {
+        tab: currentTab.value,
+        all: 1,
+        filter_preset: 'all',
     }, { preserveState: true });
 };
 
@@ -53,7 +195,7 @@ const isSubmittingUsage = ref(false);
 const openCreatePurchaseModal = () => {
     editingPurchase.value = null;
     purchaseForm.value = {
-        tanggal: new Date().toISOString().split('T')[0],
+        tanggal: getLocalDate(),
         nama_pakan: 'Pakan Layer SP-100',
         jumlah_kg: 50,
         harga_per_kg: 8500,
@@ -129,7 +271,7 @@ const usageForm = ref({
 const openCreateUsageModal = () => {
     editingUsage.value = null;
     usageForm.value = {
-        tanggal: new Date().toISOString().split('T')[0],
+        tanggal: getLocalDate(),
         hari: '',
         hari_ke: (props.usages.total || 0) + 1,
         umur_minggu_ke: 24,
@@ -217,11 +359,22 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-                <p class="text-xs font-medium text-slate-500">Total Pemakaian (Periode)</p>
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-500">Total Pemakaian (Periode)</p>
+                    <span v-if="summary.pemakaian_hari_ini_kg > 0" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                        Hari Ini: {{ Number(summary.pemakaian_hari_ini_kg).toFixed(1) }} kg
+                    </span>
+                    <span v-else class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                        Hari Ini: 0 kg
+                    </span>
+                </div>
                 <h4 class="text-2xl font-bold text-amber-600 mt-1">
                     {{ Number(summary.total_pakai_kg).toFixed(1) }} <span class="text-xs font-normal text-slate-400">kg</span>
                 </h4>
-                <div class="mt-2 text-[11px] text-slate-400">Konsumsi harian populasi</div>
+                <div class="mt-2 text-[11px] text-slate-400 flex items-center justify-between">
+                    <span>Konsumsi harian populasi</span>
+                    <span class="text-slate-500 font-medium text-[10.5px]">Update per hari ini</span>
+                </div>
             </div>
 
             <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-center gap-2">
@@ -242,30 +395,140 @@ const formatRp = (val) => 'Rp ' + Number(val || 0).toLocaleString('id-ID');
             </div>
         </div>
 
-        <!-- Filter & Tab Nav -->
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
-                <button 
-                    @click="switchTab('pemakaian')"
-                    :class="['px-4 py-2 rounded-lg transition-all', currentTab === 'pemakaian' ? 'bg-white text-slate-800 shadow-xs' : 'hover:text-slate-900']"
-                >
-                    Catatan Pemakaian Harian
-                </button>
-                <button 
-                    @click="switchTab('pembelian')"
-                    :class="['px-4 py-2 rounded-lg transition-all', currentTab === 'pembelian' ? 'bg-white text-slate-800 shadow-xs' : 'hover:text-slate-900']"
-                >
-                    Riwayat Pembelian Pakan
-                </button>
+        <!-- Filter & Tab Nav Modern Multi-Tier -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs mb-6 space-y-3.5">
+            <!-- Row 1: Tab Navigation & Quick Presets -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <!-- Tab Buttons -->
+                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
+                    <button 
+                        @click="switchTab('pemakaian')"
+                        :class="['px-4 py-2 rounded-lg transition-all', currentTab === 'pemakaian' ? 'bg-white text-slate-800 shadow-xs font-bold' : 'hover:text-slate-900']"
+                    >
+                        Catatan Pemakaian Harian
+                    </button>
+                    <button 
+                        @click="switchTab('pembelian')"
+                        :class="['px-4 py-2 rounded-lg transition-all', currentTab === 'pembelian' ? 'bg-white text-slate-800 shadow-xs font-bold' : 'hover:text-slate-900']"
+                    >
+                        Riwayat Pembelian Pakan
+                    </button>
+                </div>
+
+                <!-- Tombol Pintas Cepat (Hari Ini, Bulan Ini, Bulan Lalu, Semua) -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="text-slate-400 text-[11px] font-medium mr-1 hidden sm:inline">Pintas:</span>
+                    <button 
+                        @click="filterToday"
+                        :class="['px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 cursor-pointer', activePreset === 'today' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700']"
+                        title="Filter hanya data hari ini"
+                    >
+                        <span class="material-symbols-outlined text-sm">today</span>
+                        Hari Ini
+                    </button>
+                    <button 
+                        @click="filterThisMonth"
+                        :class="['px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 cursor-pointer', activePreset === 'this_month' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700']"
+                        title="Filter data bulan ini sampai hari ini"
+                    >
+                        <span class="material-symbols-outlined text-sm">calendar_month</span>
+                        Bulan Ini
+                    </button>
+                    <button 
+                        @click="filterLastMonth"
+                        :class="['px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 cursor-pointer', activePreset === 'last_month' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700']"
+                        title="Filter data 1 bulan lalu"
+                    >
+                        <span class="material-symbols-outlined text-sm">history</span>
+                        Bulan Lalu
+                    </button>
+                    <button 
+                        @click="filterAll"
+                        :class="['px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1 cursor-pointer', isAllData ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700']"
+                        title="Tampilkan seluruh data tanpa batas tanggal"
+                    >
+                        <span class="material-symbols-outlined text-sm">all_inclusive</span>
+                        Semua
+                    </button>
+                </div>
             </div>
 
-            <!-- Date Range Filter -->
-            <div class="flex items-center gap-2">
-                <input type="date" v-model="startDate" class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" />
-                <span class="text-xs text-slate-400">s/d</span>
-                <input type="date" v-model="endDate" class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500" />
-                <button @click="applyFilter" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl">
-                    Filter
+            <!-- Row 2: Dropdown Pilih Bulan (Solusi 1-Klik untuk Juli, Juni, dll) & Rentang Tanggal Manual -->
+            <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+                <!-- Dropdown Pilih Bulan & Tahun -->
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-500 font-medium text-[11px] flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm text-slate-400">filter_list</span>
+                        Pilih Bulan:
+                    </span>
+                    <select 
+                        v-model="selectedMonth" 
+                        @change="onMonthSelect"
+                        class="text-xs font-semibold rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:ring-emerald-500 focus:border-emerald-500 py-1.5 pl-3 pr-8 cursor-pointer"
+                    >
+                        <option value="">-- Pilih Bulan --</option>
+                        <option v-for="m in months" :key="m.value" :value="m.value">
+                            {{ m.name }}
+                        </option>
+                    </select>
+                    <select 
+                        v-model="selectedYear" 
+                        @change="onMonthSelect"
+                        class="text-xs font-semibold rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:ring-emerald-500 focus:border-emerald-500 py-1.5 pl-3 pr-8 cursor-pointer"
+                    >
+                        <option :value="2024">2024</option>
+                        <option :value="2025">2025</option>
+                        <option :value="2026">2026</option>
+                        <option :value="2027">2027</option>
+                    </select>
+                </div>
+
+                <!-- Rentang Tanggal Manual -->
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400 text-[11px] hidden md:inline">Rentang:</span>
+                    <input 
+                        type="date" 
+                        v-model="startDate" 
+                        class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500 py-1.5 px-2.5" 
+                    />
+                    <span class="text-xs text-slate-400">s/d</span>
+                    <input 
+                        type="date" 
+                        v-model="endDate" 
+                        class="text-xs rounded-xl border-slate-200 focus:ring-emerald-500 focus:border-emerald-500 py-1.5 px-2.5" 
+                    />
+                    <button 
+                        @click="applyFilter" 
+                        class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl transition flex items-center gap-1 cursor-pointer"
+                    >
+                        <span class="material-symbols-outlined text-sm">filter_alt</span>
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Filter Status Bar -->
+            <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-[11px] text-slate-500">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="font-medium text-slate-700">Filter Aktif:</span>
+                    <span v-if="isAllData" class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                        Seluruh Data (Tanpa Batas Tanggal)
+                    </span>
+                    <span v-else-if="activePreset === 'today'" class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                        Hari Ini ({{ startDate }})
+                    </span>
+                    <span v-else class="font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                        {{ startDate || '-' }} s/d {{ endDate || '-' }}
+                    </span>
+                </div>
+                <button 
+                    v-if="activePreset || isAllData || startDate || endDate"
+                    @click="filterThisMonth"
+                    class="text-slate-400 hover:text-emerald-600 hover:underline flex items-center gap-0.5 cursor-pointer text-[10.5px]"
+                >
+                    <span class="material-symbols-outlined text-xs">restart_alt</span>
+                    Reset ke Bulan Ini
                 </button>
             </div>
         </div>
