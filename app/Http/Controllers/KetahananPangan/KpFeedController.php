@@ -74,10 +74,21 @@ class KpFeedController extends Controller
             if ($filterPreset === 'today') {
                 $startDate = $today;
                 $endDate = $today;
-            } else {
-                // Default halaman dibuka: awal bulan s/d HARI INI
+            } elseif ($filterPreset === 'this_month') {
                 $startDate = $startOfMonth;
                 $endDate = $today;
+            } else {
+                $hasDataThisMonth = KpFeedUsage::whereBetween('tanggal', [$startOfMonth, $today])->exists();
+                if ($hasDataThisMonth) {
+                    $startDate = $startOfMonth;
+                    $endDate = $today;
+                    $filterPreset = 'this_month';
+                } else {
+                    $isAll = true;
+                    $filterPreset = 'all';
+                    $startDate = '';
+                    $endDate = '';
+                }
             }
         }
 

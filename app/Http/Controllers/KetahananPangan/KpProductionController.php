@@ -56,31 +56,84 @@ class KpProductionController extends Controller
         $unit = $this->authorizeUnit();
         $user = Auth::user();
 
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
+        $startOfMonth = Carbon::now('Asia/Jakarta')->startOfMonth()->toDateString();
+
+        $isAll = $request->boolean('all', false) || $request->input('filter_preset') === 'all';
+        $filterPreset = $request->input('filter_preset', '');
+
+        // Default startDate and endDate
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Jika tidak dispesifikasikan (default buka halaman pertama kali):
+        if (!$isAll && (empty($startDate) || empty($endDate))) {
+            if ($filterPreset === 'today') {
+                $startDate = $today;
+                $endDate = $today;
+            } elseif ($filterPreset === 'this_month') {
+                $startDate = $startOfMonth;
+                $endDate = $today;
+            } else {
+                $hasDataThisMonth = KpEggProduction::whereBetween('tanggal', [$startOfMonth, $today])->exists();
+                if ($hasDataThisMonth) {
+                    $startDate = $startOfMonth;
+                    $endDate = $today;
+                    $filterPreset = 'this_month';
+                } else {
+                    $isAll = true;
+                    $filterPreset = 'all';
+                    $startDate = '';
+                    $endDate = '';
+                }
+            }
+        }
 
         $currentStock = $this->syncEggStock();
         $product = KpProduct::where('kode', 'TELUR-BGS')->first();
 
-        $productions = KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])
+        $productionsQuery = KpEggProduction::query();
+        if (!$isAll) {
+            $productionsQuery->whereBetween('tanggal', [$startDate, $endDate]);
+        }
+        $productions = $productionsQuery
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
 
-        $totalProduksiKg = (float) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('produksi_kg');
-        $totalProduksiButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('produksi_butir');
-        $totalRetakButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('telur_retak_butir');
-        $totalRusakButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('telur_rusak_butir');
+        if ($isAll) {
+            $totalProduksiKg = (float) KpEggProduction::sum('produksi_kg');
+            $totalProduksiButir = (int) KpEggProduction::sum('produksi_butir');
+            $totalRetakButir = (int) KpEggProduction::sum('telur_retak_butir');
+            $totalRusakButir = (int) KpEggProduction::sum('telur_rusak_butir');
+            $totalEstimasiPendapatan = (float) KpEggProduction::sum('pendapatan_estimasi');
+        } else {
+            $totalProduksiKg = (float) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('produksi_kg');
+            $totalProduksiButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('produksi_butir');
+            $totalRetakButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('telur_retak_butir');
+            $totalRusakButir = (int) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('telur_rusak_butir');
+            $totalEstimasiPendapatan = (float) KpEggProduction::whereBetween('tanggal', [$startDate, $endDate])->sum('pendapatan_estimasi');
+        }
+
+        // Produksi Hari Ini (riil per hari ini)
+        $produksiHariIniKg = (float) KpEggProduction::where('tanggal', $today)->sum('produksi_kg');
+        $produksiHariIniButir = (int) KpEggProduction::where('tanggal', $today)->sum('produksi_butir');
+
+        $latestProduction = KpEggProduction::orderByDesc('tanggal')->orderByDesc('id')->first();
 
         return Inertia::render('ketahanan pangan/Hewani/ProduksiTelur', [
             'unit' => $unit,
             'user' => $user,
             'product' => $product,
             'productions' => $productions,
+            'latestProduction' => $latestProduction,
             'filters' => [
-                'start_date' => $startDate,
-                'end_date' => $endDate,
+                'start_date' => $isAll ? '' : $startDate,
+                'end_date' => $isAll ? '' : $endDate,
+                'is_all' => $isAll,
+                'filter_preset' => $filterPreset,
+                'today' => $today,
             ],
             'summary' => [
                 'stok_saat_ini_kg' => (float) $currentStock,
@@ -88,6 +141,9 @@ class KpProductionController extends Controller
                 'total_produksi_butir' => $totalProduksiButir,
                 'total_retak_butir' => $totalRetakButir,
                 'total_rusak_butir' => $totalRusakButir,
+                'total_estimasi_pendapatan' => $totalEstimasiPendapatan,
+                'produksi_hari_ini_kg' => $produksiHariIniKg,
+                'produksi_hari_ini_butir' => $produksiHariIniButir,
             ]
         ]);
     }
