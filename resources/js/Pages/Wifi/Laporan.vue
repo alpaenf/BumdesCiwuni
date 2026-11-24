@@ -64,30 +64,35 @@ const subtotalIsolir = computed(() => {
         acc.provider += Number(item.calc_total_provider || item.total_provider) || 0;
         return acc;
     }, { tarikan: 0, bumdes: 0, provider: 0 });
+});
 
 // ── Pagination Pelanggan LUNAS & ISOLIR ───────────────────────────
-const perPageLunas = ref(10);
+const perPageLunas = ref(20);
 const pageLunas    = ref(1);
 
-const perPageIsolir = ref(10);
+const perPageIsolir = ref(20);
 const pageIsolir    = ref(1);
 
 const totalLunasPages = computed(() => {
-    return Math.ceil(filteredLunasList.value.length / perPageLunas.value) || 1;
+    return Math.ceil(filteredLunasList.value.length / (Number(perPageLunas.value) || 20)) || 1;
 });
 
 const totalIsolirPages = computed(() => {
-    return Math.ceil(filteredIsolirList.value.length / perPageIsolir.value) || 1;
+    return Math.ceil(filteredIsolirList.value.length / (Number(perPageIsolir.value) || 20)) || 1;
 });
 
 const paginatedLunasList = computed(() => {
-    const start = (pageLunas.value - 1) * perPageLunas.value;
-    return filteredLunasList.value.slice(start, start + perPageLunas.value);
+    const perPage = Number(perPageLunas.value) || 20;
+    const page = Number(pageLunas.value) || 1;
+    const start = (page - 1) * perPage;
+    return filteredLunasList.value.slice(start, start + perPage);
 });
 
 const paginatedIsolirList = computed(() => {
-    const start = (pageIsolir.value - 1) * perPageIsolir.value;
-    return filteredIsolirList.value.slice(start, start + perPageIsolir.value);
+    const perPage = Number(perPageIsolir.value) || 20;
+    const page = Number(pageIsolir.value) || 1;
+    const start = (page - 1) * perPage;
+    return filteredIsolirList.value.slice(start, start + perPage);
 });
 
 watch([searchQuery, activeTabStatus, selectedProvider, selectedBulan, selectedTahun, perPageLunas, perPageIsolir], () => {
@@ -96,6 +101,8 @@ watch([searchQuery, activeTabStatus, selectedProvider, selectedBulan, selectedTa
 });
 
 const getPageNumbers = (currentPage, totalPages) => {
+    currentPage = Number(currentPage) || 1;
+    totalPages = Number(totalPages) || 1;
     if (totalPages <= 7) {
         return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
@@ -109,8 +116,6 @@ const getPageNumbers = (currentPage, totalPages) => {
     }
     return pages;
 };
-
-});
 
 const applyFilters = () => {
     router.get(route('wifi.laporan.index'), {
@@ -692,9 +697,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                             <div class="flex items-center gap-3 text-xs text-slate-500">
                                 <span>
                                     Menampilkan 
-                                    <strong class="text-slate-800">{{ (pageLunas - 1) * perPageLunas + 1 }}</strong> 
+                                    <strong class="text-slate-800">{{ (Number(pageLunas) - 1) * Number(perPageLunas) + 1 }}</strong> 
                                     - 
-                                    <strong class="text-slate-800">{{ Math.min(pageLunas * perPageLunas, filteredLunasList.length) }}</strong> 
+                                    <strong class="text-slate-800">{{ Math.min(Number(pageLunas) * Number(perPageLunas), filteredLunasList.length) }}</strong> 
                                     dari 
                                     <strong class="text-emerald-700">{{ filteredLunasList.length }}</strong> 
                                     warga lunas
@@ -702,30 +707,30 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                 <span class="text-slate-300">|</span>
                                 <label class="flex items-center gap-1.5 text-slate-600">
                                     <span>Tampilkan:</span>
-                                    <select v-model="perPageLunas" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
-                                        <option :value="10">10</option>
-                                        <option :value="25">25</option>
-                                        <option :value="50">50</option>
-                                        <option :value="100">100</option>
+                                    <select v-model.number="perPageLunas" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
+                                        <option :value="10">10 baris</option>
+                                        <option :value="20">20 baris</option>
+                                        <option :value="50">50 baris</option>
+                                        <option :value="100">100 baris</option>
                                     </select>
                                 </label>
                             </div>
 
                             <!-- Page Buttons LUNAS -->
                             <div v-if="totalLunasPages > 1" class="flex items-center gap-1">
-                                <button @click="pageLunas--" :disabled="pageLunas === 1"
+                                <button @click="pageLunas--" :disabled="Number(pageLunas) === 1"
                                         class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
                                     &laquo; Prev
                                 </button>
                                 <template v-for="p in getPageNumbers(pageLunas, totalLunasPages)" :key="'lunas-p-' + p">
                                     <span v-if="p === '...'" class="px-2 text-slate-400 text-xs">...</span>
                                     <button v-else @click="pageLunas = p"
-                                            :class="pageLunas === p ? 'bg-emerald-600 text-white border-emerald-600 font-black' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-bold'"
+                                            :class="Number(pageLunas) === Number(p) ? 'bg-emerald-600 text-white border-emerald-600 font-black' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-bold'"
                                             class="min-w-8 px-2 py-1 text-xs rounded-lg border transition">
                                         {{ p }}
                                     </button>
                                 </template>
-                                <button @click="pageLunas++" :disabled="pageLunas === totalLunasPages"
+                                <button @click="pageLunas++" :disabled="Number(pageLunas) === Number(totalLunasPages)"
                                         class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
                                     Next &raquo;
                                 </button>
@@ -871,9 +876,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                             <div class="flex items-center gap-3 text-xs text-slate-500">
                                 <span>
                                     Menampilkan 
-                                    <strong class="text-slate-800">{{ (pageIsolir - 1) * perPageIsolir + 1 }}</strong> 
+                                    <strong class="text-slate-800">{{ (Number(pageIsolir) - 1) * Number(perPageIsolir) + 1 }}</strong> 
                                     - 
-                                    <strong class="text-slate-800">{{ Math.min(pageIsolir * perPageIsolir, filteredIsolirList.length) }}</strong> 
+                                    <strong class="text-slate-800">{{ Math.min(Number(pageIsolir) * Number(perPageIsolir), filteredIsolirList.length) }}</strong> 
                                     dari 
                                     <strong class="text-rose-700">{{ filteredIsolirList.length }}</strong> 
                                     warga isolir/belum bayar
@@ -881,30 +886,30 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                 <span class="text-slate-300">|</span>
                                 <label class="flex items-center gap-1.5 text-slate-600">
                                     <span>Tampilkan:</span>
-                                    <select v-model="perPageIsolir" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-700 focus:outline-none focus:border-rose-500">
-                                        <option :value="10">10</option>
-                                        <option :value="25">25</option>
-                                        <option :value="50">50</option>
-                                        <option :value="100">100</option>
+                                    <select v-model.number="perPageIsolir" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-700 focus:outline-none focus:border-rose-500">
+                                        <option :value="10">10 baris</option>
+                                        <option :value="20">20 baris</option>
+                                        <option :value="50">50 baris</option>
+                                        <option :value="100">100 baris</option>
                                     </select>
                                 </label>
                             </div>
 
                             <!-- Page Buttons ISOLIR -->
                             <div v-if="totalIsolirPages > 1" class="flex items-center gap-1">
-                                <button @click="pageIsolir--" :disabled="pageIsolir === 1"
+                                <button @click="pageIsolir--" :disabled="Number(pageIsolir) === 1"
                                         class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
                                     &laquo; Prev
                                 </button>
                                 <template v-for="p in getPageNumbers(pageIsolir, totalIsolirPages)" :key="'isolir-p-' + p">
                                     <span v-if="p === '...'" class="px-2 text-slate-400 text-xs">...</span>
                                     <button v-else @click="pageIsolir = p"
-                                            :class="pageIsolir === p ? 'bg-rose-600 text-white border-rose-600 font-black' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-bold'"
+                                            :class="Number(pageIsolir) === Number(p) ? 'bg-rose-600 text-white border-rose-600 font-black' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-bold'"
                                             class="min-w-8 px-2 py-1 text-xs rounded-lg border transition">
                                         {{ p }}
                                     </button>
                                 </template>
-                                <button @click="pageIsolir++" :disabled="pageIsolir === totalIsolirPages"
+                                <button @click="pageIsolir++" :disabled="Number(pageIsolir) === Number(totalIsolirPages)"
                                         class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
                                     Next &raquo;
                                 </button>
