@@ -24,6 +24,7 @@ class PortalController extends Controller
             'about_title', 'about_description', 'about_history',
             'visi', 'misi',
             'org_bumdes_pembina_name', 'org_bumdes_pembina_image',
+            'org_bumdes_pengawas_name', 'org_bumdes_pengawas_image',
             'org_bumdes_direktur_name', 'org_bumdes_direktur_image',
             'org_bumdes_sekretaris_name', 'org_bumdes_sekretaris_image',
             'org_bumdes_bendahara_name', 'org_bumdes_bendahara_image',
@@ -31,11 +32,19 @@ class PortalController extends Controller
             'org_bumdes_unit_wifi_name', 'org_bumdes_unit_wifi_image',
             'org_bumdes_unit_pangan_name', 'org_bumdes_unit_pangan_image',
             'org_bumdes_unit_pasar_name', 'org_bumdes_unit_pasar_image',
+            'org_bumdes_custom_members',
             'contact_address', 'contact_phone', 'contact_email', 'google_maps_embed',
             'footer_text', 'social_facebook', 'social_instagram', 'social_youtube',
         ];
 
         $settings = WebsiteSetting::getMany($settingKeys);
+
+        if (!empty($settings['org_bumdes_custom_members']) && is_string($settings['org_bumdes_custom_members'])) {
+            $decoded = json_decode($settings['org_bumdes_custom_members'], true);
+            $settings['org_bumdes_custom_members'] = is_array($decoded) ? $decoded : [];
+        } else if (empty($settings['org_bumdes_custom_members']) || !is_array($settings['org_bumdes_custom_members'])) {
+            $settings['org_bumdes_custom_members'] = [];
+        }
 
         $allowedSlugs = ['simpan-pinjam', 'wifi', 'ketahanan-pangan', 'perdagangan-besar'];
 

@@ -41,6 +41,7 @@ class CmsController extends Controller
             'about_title', 'about_description', 'about_history',
             'visi', 'misi',
             'org_bumdes_pembina_name', 'org_bumdes_pembina_image',
+            'org_bumdes_pengawas_name', 'org_bumdes_pengawas_image',
             'org_bumdes_direktur_name', 'org_bumdes_direktur_image',
             'org_bumdes_sekretaris_name', 'org_bumdes_sekretaris_image',
             'org_bumdes_bendahara_name', 'org_bumdes_bendahara_image',
@@ -48,12 +49,22 @@ class CmsController extends Controller
             'org_bumdes_unit_wifi_name', 'org_bumdes_unit_wifi_image',
             'org_bumdes_unit_pangan_name', 'org_bumdes_unit_pangan_image',
             'org_bumdes_unit_pasar_name', 'org_bumdes_unit_pasar_image',
+            'org_bumdes_custom_members',
             'contact_address', 'contact_phone', 'contact_email', 'google_maps_embed',
             'footer_text', 'social_facebook', 'social_instagram', 'social_youtube',
         ];
 
+        $settings = WebsiteSetting::getMany($settingKeys);
+
+        if (!empty($settings['org_bumdes_custom_members']) && is_string($settings['org_bumdes_custom_members'])) {
+            $decoded = json_decode($settings['org_bumdes_custom_members'], true);
+            $settings['org_bumdes_custom_members'] = is_array($decoded) ? $decoded : [];
+        } else if (empty($settings['org_bumdes_custom_members']) || !is_array($settings['org_bumdes_custom_members'])) {
+            $settings['org_bumdes_custom_members'] = [];
+        }
+
         return Inertia::render('Portal/Cms/ProfilBumdes', [
-            'settings' => WebsiteSetting::getMany($settingKeys),
+            'settings' => $settings,
         ]);
     }
 
@@ -73,6 +84,8 @@ class CmsController extends Controller
             'misi' => 'nullable|string',
             'org_bumdes_pembina_name' => 'nullable|string|max:255',
             'org_bumdes_pembina_image' => 'nullable|string',
+            'org_bumdes_pengawas_name' => 'nullable|string|max:255',
+            'org_bumdes_pengawas_image' => 'nullable|string',
             'org_bumdes_direktur_name' => 'nullable|string|max:255',
             'org_bumdes_direktur_image' => 'nullable|string',
             'org_bumdes_sekretaris_name' => 'nullable|string|max:255',
@@ -87,6 +100,7 @@ class CmsController extends Controller
             'org_bumdes_unit_pangan_image' => 'nullable|string',
             'org_bumdes_unit_pasar_name' => 'nullable|string|max:255',
             'org_bumdes_unit_pasar_image' => 'nullable|string',
+            'org_bumdes_custom_members' => 'nullable',
             'contact_address' => 'nullable|string',
             'contact_phone' => 'nullable|string|max:50',
             'contact_email' => 'nullable|email|max:100',
@@ -96,6 +110,11 @@ class CmsController extends Controller
             'social_instagram' => 'nullable|string|max:255',
             'social_youtube' => 'nullable|string|max:255',
         ]);
+
+        if (isset($validated['org_bumdes_custom_members'])) {
+            $custom = $validated['org_bumdes_custom_members'];
+            $validated['org_bumdes_custom_members'] = is_array($custom) ? json_encode($custom) : $custom;
+        }
         if ($request->hasFile('bumdes_logo')) {
             $path = $request->file('bumdes_logo')->store('portal/logos', 'public');
             $validated['bumdes_logo'] = '/storage/' . $path;

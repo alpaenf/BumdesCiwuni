@@ -263,8 +263,8 @@ onUnmounted(() => {
                     <!-- Desktop Org Chart Container (Connected Tree) -->
                     <div class="hidden md:block overflow-x-auto pb-4">
                         <div class="relative min-w-[800px] max-w-4xl mx-auto">
-                            <!-- Level 1: Pembina & Direktur -->
-                            <div class="flex justify-center gap-16 mb-0">
+                            <!-- Level 1: Pembina, Pengawas (jika ada), & Direktur -->
+                            <div class="flex justify-center flex-wrap gap-12 sm:gap-16 mb-0">
                                 <!-- Pembina -->
                                 <div class="flex flex-col items-center portal-animate">
                                     <div class="w-20 h-20 rounded-full border-4 border-slate-200 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center shadow-md text-slate-700 font-extrabold text-xl overflow-hidden z-10 bg-white">
@@ -274,6 +274,18 @@ onUnmounted(() => {
                                     <div class="mt-3 text-center">
                                         <p class="text-sm font-bold text-slate-800">{{ settings.org_bumdes_pembina_name || 'Pembina BUMDes' }}</p>
                                         <span class="mt-1 inline-block px-3 py-0.5 bg-slate-100 text-slate-600 text-[9px] font-bold uppercase tracking-wider rounded-full border border-slate-200">Pembina</span>
+                                    </div>
+                                </div>
+
+                                <!-- Pengawas (jika terisi) -->
+                                <div v-if="settings.org_bumdes_pengawas_name" class="flex flex-col items-center portal-animate">
+                                    <div class="w-20 h-20 rounded-full border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md text-white font-extrabold text-xl ring-4 ring-amber-500/10 overflow-hidden z-10 bg-white">
+                                        <img v-if="settings.org_bumdes_pengawas_image" :src="settings.org_bumdes_pengawas_image" class="w-full h-full object-cover" />
+                                        <span v-else>{{ getInitials(settings.org_bumdes_pengawas_name || 'Pengawas') }}</span>
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <p class="text-sm font-extrabold text-slate-800">{{ settings.org_bumdes_pengawas_name }}</p>
+                                        <span class="mt-1 inline-block px-3 py-0.5 bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider rounded-full border border-amber-200">Pengawas</span>
                                     </div>
                                 </div>
 
@@ -355,27 +367,54 @@ onUnmounted(() => {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Anggota & Pengurus Tambahan (Desktop View) -->
+                            <div v-if="settings.org_bumdes_custom_members && settings.org_bumdes_custom_members.length > 0" class="mt-12 portal-animate">
+                                <div class="text-center mb-6">
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">Pengurus & Anggota Tambahan</span>
+                                </div>
+                                <div class="flex flex-wrap justify-center gap-6">
+                                    <div v-for="member in settings.org_bumdes_custom_members" :key="member.id || member.name" class="flex flex-col items-center w-40">
+                                        <div class="w-16 h-16 rounded-full border-2 border-blue-200 bg-slate-50 flex items-center justify-center shadow-sm text-blue-700 font-bold text-sm overflow-hidden bg-white">
+                                            <img v-if="member.image" :src="member.image" class="w-full h-full object-cover" />
+                                            <span v-else>{{ getInitials(member.name || member.role) }}</span>
+                                        </div>
+                                        <div class="mt-2.5 bg-slate-50 border border-slate-200 rounded-xl p-2.5 w-full text-center shadow-sm">
+                                            <p class="text-xs font-bold text-slate-800 leading-tight">{{ member.name }}</p>
+                                            <p class="text-[8px] font-bold text-blue-600 uppercase tracking-wider mt-1">{{ member.role }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Mobile Org Chart View -->
                     <div class="md:hidden space-y-8 portal-animate">
-                        <div class="flex justify-center gap-4">
-                            <div class="text-center w-32">
+                        <div class="flex justify-center flex-wrap gap-4">
+                            <div class="text-center w-28">
                                 <div class="w-16 h-16 mx-auto rounded-full bg-slate-200 overflow-hidden border-2 border-slate-300 mb-2 flex items-center justify-center text-slate-500 font-bold">
                                     <img v-if="settings.org_bumdes_pembina_image" :src="settings.org_bumdes_pembina_image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(settings.org_bumdes_pembina_name || 'Pembina') }}</span>
                                 </div>
                                 <h5 class="text-xs font-bold">{{ settings.org_bumdes_pembina_name || 'Pembina' }}</h5>
-                                <span class="text-[8px] text-slate-500">PEMBINA</span>
+                                <span class="text-[8px] text-slate-500 font-bold uppercase">PEMBINA</span>
                             </div>
-                            <div class="text-center w-32">
+                            <div v-if="settings.org_bumdes_pengawas_name" class="text-center w-28">
+                                <div class="w-16 h-16 mx-auto rounded-full bg-amber-600 overflow-hidden border-2 border-amber-300 mb-2 flex items-center justify-center text-white font-bold">
+                                    <img v-if="settings.org_bumdes_pengawas_image" :src="settings.org_bumdes_pengawas_image" class="w-full h-full object-cover" />
+                                    <span v-else>{{ getInitials(settings.org_bumdes_pengawas_name || 'Pengawas') }}</span>
+                                </div>
+                                <h5 class="text-xs font-bold">{{ settings.org_bumdes_pengawas_name }}</h5>
+                                <span class="text-[8px] text-amber-700 font-bold uppercase">PENGAWAS</span>
+                            </div>
+                            <div class="text-center w-28">
                                 <div class="w-16 h-16 mx-auto rounded-full bg-blue-600 overflow-hidden border-2 border-blue-300 mb-2 flex items-center justify-center text-white font-bold">
                                     <img v-if="settings.org_bumdes_direktur_image" :src="settings.org_bumdes_direktur_image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(settings.org_bumdes_direktur_name || 'Direktur') }}</span>
                                 </div>
                                 <h5 class="text-xs font-bold">{{ settings.org_bumdes_direktur_name || 'Direktur' }}</h5>
-                                <span class="text-[8px] text-blue-600">DIREKTUR</span>
+                                <span class="text-[8px] text-blue-600 font-bold uppercase">DIREKTUR</span>
                             </div>
                         </div>
 
@@ -413,6 +452,21 @@ onUnmounted(() => {
                                 <div>
                                     <h6 class="text-xs font-extrabold text-slate-800">{{ role.name }}</h6>
                                     <p class="text-[9px] text-blue-600 font-bold uppercase mt-0.5">{{ role.label }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Anggota & Pengurus Tambahan (Mobile View) -->
+                        <div v-if="settings.org_bumdes_custom_members && settings.org_bumdes_custom_members.length > 0" class="space-y-3 border-t border-slate-100 pt-6">
+                            <h5 class="text-center text-[10px] font-bold uppercase text-blue-600 mb-4">Pengurus & Anggota Tambahan</h5>
+                            <div v-for="member in settings.org_bumdes_custom_members" :key="member.id || member.name" class="bg-blue-50/40 border border-blue-100 rounded-xl p-3 flex items-center gap-3">
+                                <div class="w-12 h-12 shrink-0 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold overflow-hidden border-2 border-blue-300">
+                                    <img v-if="member.image" :src="member.image" class="w-full h-full object-cover" />
+                                    <span v-else>{{ getInitials(member.name || member.role) }}</span>
+                                </div>
+                                <div>
+                                    <h6 class="text-xs font-bold text-slate-800">{{ member.name }}</h6>
+                                    <p class="text-[9px] text-blue-600 font-bold uppercase mt-0.5">{{ member.role }}</p>
                                 </div>
                             </div>
                         </div>
