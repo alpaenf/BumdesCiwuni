@@ -62,5 +62,49 @@ class PbTransaksiLakuPandai extends Model
     {
         return (float)$this->pendapatan_jasa_cash + (float)$this->pendapatan_jasa_rekening;
     }
+
+    /**
+     * Sinkronisasi dan Rekalkulasi Saldo Berjalan (Rekening, Cash, dan Total)
+     * Menjamin integritas saldo kapan pun ada create, update, delete, atau restore transaksi.
+     */
+    public static function syncAndRecalculate(): array
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () {
+            $transactions = self::orderBy('tanggal')
+                ->orderBy('id')
+                ->get();
+
+            $runningRek = 0;
+            $runningCash = 0;
+
+            foreach ($transactions as $trx) {
+                $runningRek += ((float)$trx->rekening_masuk - (float)$trx->rekening_keluar);
+                $runningCash += ((float)$trx->cash_masuk - (float)$trx->cash_keluar);
+                $runningTotal = $runningRek + $runningCash;
+
+                $newRek = round($runningRek, 2);
+                $newCash = round($runningCash, 2);
+                $newTotal = round($runningTotal, 2);
+
+                if (
+                    (float)$trx->saldo_rekening !== $newRek ||
+                    (float)$trx->saldo_cash !== $newCash ||
+                    (float)$trx->total_saldo !== $newTotal
+                ) {
+                    $trx->updateQuietly([
+                        'saldo_rekening' => $newRek,
+                        'saldo_cash' => $newCash,
+                        'total_saldo' => $newTotal,
+                    ]);
+                }
+            }
+
+            return [
+                'saldo_rekening' => round($runningRek, 2),
+                'saldo_cash' => round($runningCash, 2),
+                'total_saldo' => round($runningRek + $runningCash, 2),
+            ];
+        });
+    }
 }
 

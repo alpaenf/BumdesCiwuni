@@ -60,7 +60,8 @@ const form = useForm({
 });
 
 const formatRupiah = (val) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+    const num = Number(val);
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(isNaN(num) ? 0 : num);
 };
 
 const jenisTransaksiOptions = [
@@ -256,7 +257,7 @@ const openStruk = (id) => {
                         </span>
                     </div>
                     <h4 class="text-xl font-black text-emerald-600 mt-1">
-                        {{ formatRupiah((day_summary.pendapatan_cash || 0) + (day_summary.pendapatan_rekening || 0)) }}
+                        {{ formatRupiah((Number(day_summary.pendapatan_cash) || 0) + (Number(day_summary.pendapatan_rekening) || 0)) }}
                     </h4>
                     <p class="text-[10px] text-slate-500 mt-0.5">
                         Cash: {{ formatRupiah(day_summary.pendapatan_cash) }} | Rek: {{ formatRupiah(day_summary.pendapatan_rekening) }}

@@ -58,13 +58,8 @@ class PbLakuPandaiController extends Controller
 
         $transaksi = $query->paginate(15)->withQueryString();
 
-        // Saldo Terakhir Keseluruhan
-        $latest = PbTransaksiLakuPandai::orderByDesc('tanggal')->orderByDesc('id')->first();
-        $saldoSnapshot = [
-            'saldo_rekening' => $latest ? (float)$latest->saldo_rekening : 0,
-            'saldo_cash' => $latest ? (float)$latest->saldo_cash : 0,
-            'total_saldo' => $latest ? (float)$latest->total_saldo : 0,
-        ];
+        // Saldo Terakhir Keseluruhan (Tersinkronisasi Otomatis)
+        $saldoSnapshot = PbTransaksiLakuPandai::syncAndRecalculate();
 
         // Ringkasan Periode Aktif (Harian atau Bulanan)
         $summaryQuery = PbTransaksiLakuPandai::query()
@@ -82,13 +77,13 @@ class PbLakuPandaiController extends Controller
         $daySummary = [
             'period_mode' => $periodMode,
             'period_label' => $periodLabel,
-            'rekening_masuk' => (clone $summaryQuery)->sum('rekening_masuk'),
-            'rekening_keluar' => (clone $summaryQuery)->sum('rekening_keluar'),
-            'cash_masuk' => (clone $summaryQuery)->sum('cash_masuk'),
-            'cash_keluar' => (clone $summaryQuery)->sum('cash_keluar'),
-            'pendapatan_cash' => (clone $summaryQuery)->sum('pendapatan_jasa_cash'),
-            'pendapatan_rekening' => (clone $summaryQuery)->sum('pendapatan_jasa_rekening'),
-            'total_transaksi' => (clone $summaryQuery)->count(),
+            'rekening_masuk' => (float)(clone $summaryQuery)->sum('rekening_masuk'),
+            'rekening_keluar' => (float)(clone $summaryQuery)->sum('rekening_keluar'),
+            'cash_masuk' => (float)(clone $summaryQuery)->sum('cash_masuk'),
+            'cash_keluar' => (float)(clone $summaryQuery)->sum('cash_keluar'),
+            'pendapatan_cash' => (float)(clone $summaryQuery)->sum('pendapatan_jasa_cash'),
+            'pendapatan_rekening' => (float)(clone $summaryQuery)->sum('pendapatan_jasa_rekening'),
+            'total_transaksi' => (int)(clone $summaryQuery)->count(),
         ];
 
         // Nasabah list for selector dropdown
@@ -145,12 +140,7 @@ class PbLakuPandaiController extends Controller
 
         $transaksi = $query->get();
 
-        $latest = PbTransaksiLakuPandai::orderByDesc('tanggal')->orderByDesc('id')->first();
-        $saldoSnapshot = [
-            'saldo_rekening' => $latest ? (float)$latest->saldo_rekening : 0,
-            'saldo_cash' => $latest ? (float)$latest->saldo_cash : 0,
-            'total_saldo' => $latest ? (float)$latest->total_saldo : 0,
-        ];
+        $saldoSnapshot = PbTransaksiLakuPandai::syncAndRecalculate();
 
         $periodLabel = $periodMode === 'month'
             ? Carbon::parse($month . '-01')->translatedFormat('F Y')
@@ -159,14 +149,14 @@ class PbLakuPandaiController extends Controller
         $summary = [
             'period_mode' => $periodMode,
             'period_label' => $periodLabel,
-            'rekening_masuk' => $transaksi->sum('rekening_masuk'),
-            'rekening_keluar' => $transaksi->sum('rekening_keluar'),
-            'cash_masuk' => $transaksi->sum('cash_masuk'),
-            'cash_keluar' => $transaksi->sum('cash_keluar'),
-            'pendapatan_cash' => $transaksi->sum('pendapatan_jasa_cash'),
-            'pendapatan_rekening' => $transaksi->sum('pendapatan_jasa_rekening'),
-            'total_pendapatan' => $transaksi->sum('pendapatan_jasa_cash') + $transaksi->sum('pendapatan_jasa_rekening'),
-            'total_transaksi' => $transaksi->count(),
+            'rekening_masuk' => (float)$transaksi->sum('rekening_masuk'),
+            'rekening_keluar' => (float)$transaksi->sum('rekening_keluar'),
+            'cash_masuk' => (float)$transaksi->sum('cash_masuk'),
+            'cash_keluar' => (float)$transaksi->sum('cash_keluar'),
+            'pendapatan_cash' => (float)$transaksi->sum('pendapatan_jasa_cash'),
+            'pendapatan_rekening' => (float)$transaksi->sum('pendapatan_jasa_rekening'),
+            'total_pendapatan' => (float)($transaksi->sum('pendapatan_jasa_cash') + $transaksi->sum('pendapatan_jasa_rekening')),
+            'total_transaksi' => (int)$transaksi->count(),
         ];
 
         $pdf = Pdf::loadView('perdagangan_besar.laku_pandai_pdf', [
@@ -228,19 +218,10 @@ class PbLakuPandaiController extends Controller
                 $pendapatanRekening = $selisih;
             }
 
-            // Dapatkan Saldo Terakhir sebelum transaksi ini
-            $lastTrx = PbTransaksiLakuPandai::orderByDesc('tanggal')->orderByDesc('id')->first();
-            $prevSaldoRek = $lastTrx ? (float)$lastTrx->saldo_rekening : 0;
-            $prevSaldoCash = $lastTrx ? (float)$lastTrx->saldo_cash : 0;
-
             $rekMasuk = (float)($validated['rekening_masuk'] ?? 0);
             $rekKeluar = (float)($validated['rekening_keluar'] ?? 0);
             $cashMasuk = (float)($validated['cash_masuk'] ?? 0);
             $cashKeluar = (float)($validated['cash_keluar'] ?? 0);
-
-            $currentSaldoRek = $prevSaldoRek + $rekMasuk - $rekKeluar;
-            $currentSaldoCash = $prevSaldoCash + $cashMasuk - $cashKeluar;
-            $currentTotalSaldo = $currentSaldoRek + $currentSaldoCash;
 
             PbTransaksiLakuPandai::create([
                 'nomor_transaksi' => $nomorTransaksi,
@@ -259,9 +240,9 @@ class PbLakuPandaiController extends Controller
                 'pendapatan_jasa_rekening' => $pendapatanRekening,
                 'status_pembayaran' => $validated['status_pembayaran'],
                 'jenis_pembayaran' => $validated['jenis_pembayaran'],
-                'saldo_rekening' => $currentSaldoRek,
-                'saldo_cash' => $currentSaldoCash,
-                'total_saldo' => $currentTotalSaldo,
+                'saldo_rekening' => 0,
+                'saldo_cash' => 0,
+                'total_saldo' => 0,
                 'keterangan' => $validated['keterangan'] ?? null,
             ]);
 
@@ -288,6 +269,9 @@ class PbLakuPandaiController extends Controller
                     'keterangan' => 'Kas Keluar Laku Pandai (' . $nomorTransaksi . ' - ' . $validated['nama_nasabah'] . ')',
                 ]);
             }
+
+            // Selalu sinkronisasi dan rekalkulasi saldo berjalan
+            PbTransaksiLakuPandai::syncAndRecalculate();
         });
 
         return back()->with('success', 'Transaksi Laku Pandai berhasil dicatat!');
@@ -317,45 +301,76 @@ class PbLakuPandaiController extends Controller
             'keterangan' => ['nullable', 'string'],
         ]);
 
-        $adminName = !empty($validated['nama_admin']) 
-            ? trim($validated['nama_admin']) 
-            : ($trx->nama_admin ?: 'Admin');
+        DB::transaction(function () use ($trx, $validated) {
+            $adminName = !empty($validated['nama_admin']) 
+                ? trim($validated['nama_admin']) 
+                : ($trx->nama_admin ?: 'Admin');
 
-        $hargaAgen = (float)($validated['harga_agen'] ?? 0);
-        $hargaKonsumen = (float)($validated['harga_konsumen'] ?? 0);
-        $selisih = max(0, $hargaKonsumen - $hargaAgen);
+            $hargaAgen = (float)($validated['harga_agen'] ?? 0);
+            $hargaKonsumen = (float)($validated['harga_konsumen'] ?? 0);
+            $selisih = max(0, $hargaKonsumen - $hargaAgen);
 
-        $pendapatanCash = 0;
-        $pendapatanRekening = 0;
-        if ($validated['jenis_pembayaran'] === 'Cash') {
-            $pendapatanCash = $selisih;
-        } else {
-            $pendapatanRekening = $selisih;
-        }
+            $pendapatanCash = 0;
+            $pendapatanRekening = 0;
+            if ($validated['jenis_pembayaran'] === 'Cash') {
+                $pendapatanCash = $selisih;
+            } else {
+                $pendapatanRekening = $selisih;
+            }
 
-        $rekMasuk = (float)($validated['rekening_masuk'] ?? 0);
-        $rekKeluar = (float)($validated['rekening_keluar'] ?? 0);
-        $cashMasuk = (float)($validated['cash_masuk'] ?? 0);
-        $cashKeluar = (float)($validated['cash_keluar'] ?? 0);
+            $rekMasuk = (float)($validated['rekening_masuk'] ?? 0);
+            $rekKeluar = (float)($validated['rekening_keluar'] ?? 0);
+            $cashMasuk = (float)($validated['cash_masuk'] ?? 0);
+            $cashKeluar = (float)($validated['cash_keluar'] ?? 0);
 
-        $trx->update([
-            'tanggal' => $validated['tanggal'],
-            'nama_admin' => $adminName,
-            'nasabah_id' => $validated['nasabah_id'] ?? null,
-            'nama_nasabah' => $validated['nama_nasabah'],
-            'jenis_transaksi' => $validated['jenis_transaksi'],
-            'rekening_masuk' => $rekMasuk,
-            'rekening_keluar' => $rekKeluar,
-            'cash_masuk' => $cashMasuk,
-            'cash_keluar' => $cashKeluar,
-            'harga_agen' => $hargaAgen,
-            'harga_konsumen' => $hargaKonsumen,
-            'pendapatan_jasa_cash' => $pendapatanCash,
-            'pendapatan_jasa_rekening' => $pendapatanRekening,
-            'status_pembayaran' => $validated['status_pembayaran'],
-            'jenis_pembayaran' => $validated['jenis_pembayaran'],
-            'keterangan' => $validated['keterangan'] ?? null,
-        ]);
+            $trx->update([
+                'tanggal' => $validated['tanggal'],
+                'nama_admin' => $adminName,
+                'nasabah_id' => $validated['nasabah_id'] ?? null,
+                'nama_nasabah' => $validated['nama_nasabah'],
+                'jenis_transaksi' => $validated['jenis_transaksi'],
+                'rekening_masuk' => $rekMasuk,
+                'rekening_keluar' => $rekKeluar,
+                'cash_masuk' => $cashMasuk,
+                'cash_keluar' => $cashKeluar,
+                'harga_agen' => $hargaAgen,
+                'harga_konsumen' => $hargaKonsumen,
+                'pendapatan_jasa_cash' => $pendapatanCash,
+                'pendapatan_jasa_rekening' => $pendapatanRekening,
+                'status_pembayaran' => $validated['status_pembayaran'],
+                'jenis_pembayaran' => $validated['jenis_pembayaran'],
+                'keterangan' => $validated['keterangan'] ?? null,
+            ]);
+
+            // Sync PbKas: perbarui kas jika ada pergerakan kas tunai
+            PbKas::where('keterangan', 'like', "%{$trx->nomor_transaksi}%")->delete();
+
+            if ($cashMasuk > 0) {
+                PbKas::create([
+                    'tanggal' => $validated['tanggal'],
+                    'kategori_layanan' => 'Laku Pandai',
+                    'jenis' => 'masuk',
+                    'nominal' => $cashMasuk,
+                    'tipe_kas' => 'Tunai',
+                    'nama_admin' => $adminName,
+                    'keterangan' => 'Kas Masuk Laku Pandai (' . $trx->nomor_transaksi . ' - ' . $validated['nama_nasabah'] . ')',
+                ]);
+            }
+            if ($cashKeluar > 0) {
+                PbKas::create([
+                    'tanggal' => $validated['tanggal'],
+                    'kategori_layanan' => 'Laku Pandai',
+                    'jenis' => 'keluar',
+                    'nominal' => $cashKeluar,
+                    'tipe_kas' => 'Tunai',
+                    'nama_admin' => $adminName,
+                    'keterangan' => 'Kas Keluar Laku Pandai (' . $trx->nomor_transaksi . ' - ' . $validated['nama_nasabah'] . ')',
+                ]);
+            }
+
+            // Selalu rekalkulasi running balance
+            PbTransaksiLakuPandai::syncAndRecalculate();
+        });
 
         return back()->with('success', 'Transaksi Laku Pandai berhasil diperbarui!');
     }
@@ -365,8 +380,13 @@ class PbLakuPandaiController extends Controller
      */
     public function destroy($id): RedirectResponse
     {
-        $trx = PbTransaksiLakuPandai::findOrFail($id);
-        $trx->delete();
+        DB::transaction(function () use ($id) {
+            $trx = PbTransaksiLakuPandai::findOrFail($id);
+            PbKas::where('keterangan', 'like', "%{$trx->nomor_transaksi}%")->delete();
+            $trx->delete();
+            PbTransaksiLakuPandai::syncAndRecalculate();
+        });
+
         return back()->with('success', 'Transaksi Laku Pandai berhasil dihapus!');
     }
 
