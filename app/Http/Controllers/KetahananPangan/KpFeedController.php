@@ -44,6 +44,9 @@ class KpFeedController extends Controller
             $feedStock->save();
         }
 
+        // Sinkronkan juga varian nama pakan lainnya jika ada di tabel kp_feed_stocks
+        KpFeedStock::where('nama_pakan', '!=', 'Pakan Layer')->update(['stok_tersedia_kg' => $calculatedStock]);
+
         return $calculatedStock;
     }
 
@@ -114,6 +117,9 @@ class KpFeedController extends Controller
         // Pemakaian Hari Ini (riil per hari ini)
         $pemakaianHariIniKg = (float) KpFeedUsage::where('tanggal', $today)->sum('total_kebutuhan_kg');
 
+        $latestUsage = KpFeedUsage::orderByDesc('tanggal')->orderByDesc('id')->first();
+        $latestPurchase = KpFeedPurchase::orderByDesc('tanggal')->orderByDesc('id')->first();
+
         return Inertia::render('ketahanan pangan/Hewani/LogistikPakan', [
             'unit' => $unit,
             'user' => $user,
@@ -121,6 +127,8 @@ class KpFeedController extends Controller
             'feedStock' => $feedStock,
             'usages' => $usages,
             'purchases' => $purchases,
+            'latestUsage' => $latestUsage,
+            'latestPurchase' => $latestPurchase,
             'filters' => [
                 'start_date' => $isAll ? '' : $startDate,
                 'end_date' => $isAll ? '' : $endDate,

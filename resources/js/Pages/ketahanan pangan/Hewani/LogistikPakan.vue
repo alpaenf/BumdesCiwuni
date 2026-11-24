@@ -12,6 +12,8 @@ const props = defineProps({
     purchases: Object,
     filters: Object,
     summary: Object,
+    latestUsage: Object,
+    latestPurchase: Object,
 });
 
 const getLocalDate = () => {
@@ -194,12 +196,24 @@ const isSubmittingUsage = ref(false);
 
 const openCreatePurchaseModal = () => {
     editingPurchase.value = null;
+    let defaultNamaPakan = 'Pakan Layer SP-100';
+    let defaultHargaPerKg = 7300;
+    let defaultJumlahKg = 850;
+    let defaultSupplier = '';
+
+    if (props.latestPurchase) {
+        defaultNamaPakan = props.latestPurchase.nama_pakan || defaultNamaPakan;
+        defaultHargaPerKg = Number(props.latestPurchase.harga_per_kg) || defaultHargaPerKg;
+        defaultJumlahKg = Number(props.latestPurchase.jumlah_kg) || defaultJumlahKg;
+        defaultSupplier = props.latestPurchase.supplier || '';
+    }
+
     purchaseForm.value = {
         tanggal: getLocalDate(),
-        nama_pakan: 'Pakan Layer SP-100',
-        jumlah_kg: 50,
-        harga_per_kg: 8500,
-        supplier: '',
+        nama_pakan: defaultNamaPakan,
+        jumlah_kg: defaultJumlahKg,
+        harga_per_kg: defaultHargaPerKg,
+        supplier: defaultSupplier,
         keterangan: '',
     };
     isPurchaseModalOpen.value = true;
@@ -270,15 +284,50 @@ const usageForm = ref({
 
 const openCreateUsageModal = () => {
     editingUsage.value = null;
+
+    let defaultHariKe = 1;
+    let defaultUmurMgg = 24;
+    let defaultUmurHr = 1;
+    let defaultPopulasi = 1000;
+    let defaultGr = 120;
+    let defaultHarga = 7300;
+    let defaultTanggal = getLocalDate();
+
+    if (props.latestUsage) {
+        defaultHariKe = (props.latestUsage.hari_ke || 0) + 1;
+        const lastMgg = props.latestUsage.umur_minggu_ke || 24;
+        const lastHr = props.latestUsage.umur_minggu_hari_ke || 1;
+        if (lastHr >= 7) {
+            defaultUmurMgg = lastMgg + 1;
+            defaultUmurHr = 1;
+        } else {
+            defaultUmurMgg = lastMgg;
+            defaultUmurHr = lastHr + 1;
+        }
+        defaultPopulasi = props.latestUsage.populasi_ayam || 1000;
+        defaultGr = Number(props.latestUsage.kebutuhan_per_ekor_gram) || 120;
+        defaultHarga = Number(props.latestUsage.harga_per_kg) || 7300;
+
+        // Auto-increment tanggal berdasarkan tanggal terakhir jika ada
+        if (props.latestUsage.tanggal) {
+            const nextDate = new Date(props.latestUsage.tanggal);
+            nextDate.setDate(nextDate.getDate() + 1);
+            const year = nextDate.getFullYear();
+            const month = String(nextDate.getMonth() + 1).padStart(2, '0');
+            const day = String(nextDate.getDate()).padStart(2, '0');
+            defaultTanggal = `${year}-${month}-${day}`;
+        }
+    }
+
     usageForm.value = {
-        tanggal: getLocalDate(),
+        tanggal: defaultTanggal,
         hari: '',
-        hari_ke: (props.usages.total || 0) + 1,
-        umur_minggu_ke: 24,
-        umur_minggu_hari_ke: 1,
-        populasi_ayam: 1000,
-        kebutuhan_per_ekor_gram: 115,
-        harga_per_kg: 8500,
+        hari_ke: defaultHariKe,
+        umur_minggu_ke: defaultUmurMgg,
+        umur_minggu_hari_ke: defaultUmurHr,
+        populasi_ayam: defaultPopulasi,
+        kebutuhan_per_ekor_gram: defaultGr,
+        harga_per_kg: defaultHarga,
         keterangan: '',
     };
     isUsageModalOpen.value = true;
