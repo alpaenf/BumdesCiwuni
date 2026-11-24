@@ -209,15 +209,15 @@ const removeCustomMemberImage = (member) => {
 };
 
 const standardRoles = [
-    { label: 'Pembina BUMDes', nameKey: 'org_bumdes_pembina_name', imgKey: 'org_bumdes_pembina_image' },
+    { label: 'Komisaris (Kepala Desa)', nameKey: 'org_bumdes_pembina_name', imgKey: 'org_bumdes_pembina_image' },
     { label: 'Pengawas BUMDes', nameKey: 'org_bumdes_pengawas_name', imgKey: 'org_bumdes_pengawas_image' },
     { label: 'Direktur BUMDes', nameKey: 'org_bumdes_direktur_name', imgKey: 'org_bumdes_direktur_image' },
     { label: 'Sekretaris', nameKey: 'org_bumdes_sekretaris_name', imgKey: 'org_bumdes_sekretaris_image' },
     { label: 'Bendahara', nameKey: 'org_bumdes_bendahara_name', imgKey: 'org_bumdes_bendahara_image' },
-    { label: 'Ka. Unit Simpan Pinjam', nameKey: 'org_bumdes_unit_sp_name', imgKey: 'org_bumdes_unit_sp_image' },
-    { label: 'Ka. Unit Pemasangan Wifi', nameKey: 'org_bumdes_unit_wifi_name', imgKey: 'org_bumdes_unit_wifi_image' },
     { label: 'Ka. Unit Ketahanan Pangan', nameKey: 'org_bumdes_unit_pangan_name', imgKey: 'org_bumdes_unit_pangan_image' },
     { label: 'Ka. Unit Perdagangan', nameKey: 'org_bumdes_unit_pasar_name', imgKey: 'org_bumdes_unit_pasar_image' },
+    { label: 'Ka. Unit Simpan Pinjam', nameKey: 'org_bumdes_unit_sp_name', imgKey: 'org_bumdes_unit_sp_image' },
+    { label: 'Ka. Unit Internet (Wifi)', nameKey: 'org_bumdes_unit_wifi_name', imgKey: 'org_bumdes_unit_wifi_image' },
 ];
 
 const submit = () => {

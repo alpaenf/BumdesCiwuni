@@ -260,128 +260,180 @@ onUnmounted(() => {
                         <p class="text-xs text-[#404940] max-w-md mx-auto">Susunan kepengurusan BUMDES Dammar Wulan yang menaungi 4 unit usaha produktif.</p>
                     </div>
                     
-                    <!-- Desktop Org Chart Container (Connected Tree) -->
-                    <div class="hidden md:block overflow-x-auto pb-4">
-                        <div class="relative min-w-[800px] max-w-4xl mx-auto">
-                            <!-- Level 1: Pembina, Pengawas (jika ada), & Direktur -->
-                            <div class="flex justify-center flex-wrap gap-12 sm:gap-16 mb-0">
-                                <!-- Pembina -->
-                                <div class="flex flex-col items-center portal-animate">
-                                    <div class="w-20 h-20 rounded-full border-4 border-slate-200 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center shadow-md text-slate-700 font-extrabold text-xl overflow-hidden z-10 bg-white">
-                                        <img v-if="settings.org_bumdes_pembina_image" :src="settings.org_bumdes_pembina_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_bumdes_pembina_name || 'Pembina') }}</span>
-                                    </div>
-                                    <div class="mt-3 text-center">
-                                        <p class="text-sm font-bold text-slate-800">{{ settings.org_bumdes_pembina_name || 'Pembina BUMDes' }}</p>
-                                        <span class="mt-1 inline-block px-3 py-0.5 bg-slate-100 text-slate-600 text-[9px] font-bold uppercase tracking-wider rounded-full border border-slate-200">Pembina</span>
-                                    </div>
+                    <!-- Desktop Org Chart Container (Connected Tree matching official banner) -->
+                    <div class="hidden md:block overflow-x-auto pb-8">
+                        <div class="relative min-w-[860px] max-w-5xl mx-auto flex flex-col items-center">
+                            
+                            <!-- Root: MUSYAWARAH DESA -->
+                            <div class="flex flex-col items-center portal-animate z-20">
+                                <div class="px-6 py-2.5 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    <span class="text-xs font-black uppercase tracking-widest text-slate-100">MUSYAWARAH DESA</span>
                                 </div>
+                                <!-- Vertical stem from Musyawarah Desa -->
+                                <div class="w-0.5 h-10 bg-slate-300"></div>
+                            </div>
 
-                                <!-- Pengawas (jika terisi) -->
-                                <div v-if="settings.org_bumdes_pengawas_name" class="flex flex-col items-center portal-animate">
-                                    <div class="w-20 h-20 rounded-full border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md text-white font-extrabold text-xl ring-4 ring-amber-500/10 overflow-hidden z-10 bg-white">
-                                        <img v-if="settings.org_bumdes_pengawas_image" :src="settings.org_bumdes_pengawas_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_bumdes_pengawas_name || 'Pengawas') }}</span>
-                                    </div>
-                                    <div class="mt-3 text-center">
-                                        <p class="text-sm font-extrabold text-slate-800">{{ settings.org_bumdes_pengawas_name }}</p>
-                                        <span class="mt-1 inline-block px-3 py-0.5 bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider rounded-full border border-amber-200">Pengawas</span>
-                                    </div>
-                                </div>
+                            <!-- Level 1: Komisaris (Left) - Direktur (Center) - Pengawas (Right) -->
+                            <div class="relative w-full max-w-4xl px-4">
+                                <!-- Horizontal branch line from Musyawarah Desa stem to Komisaris & Pengawas -->
+                                <div class="absolute -top-5 left-1/2 -translate-x-1/2 w-[620px] h-0.5 bg-slate-300 -z-10"></div>
+                                <!-- Vertical drops from horizontal branch down to Komisaris and Pengawas -->
+                                <div class="absolute -top-5 left-[calc(50%-310px)] w-0.5 h-5 bg-slate-300 -z-10"></div>
+                                <div class="absolute -top-5 right-[calc(50%-310px)] w-0.5 h-5 bg-slate-300 -z-10"></div>
 
-                                <!-- Direktur -->
-                                <div class="flex flex-col items-center portal-animate">
-                                    <div class="w-20 h-20 rounded-full border-4 border-blue-600 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md text-white font-extrabold text-xl ring-4 ring-blue-500/10 overflow-hidden z-10 bg-white">
-                                        <img v-if="settings.org_bumdes_direktur_image" :src="settings.org_bumdes_direktur_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_bumdes_direktur_name || 'Direktur') }}</span>
+                                <!-- Horizontal dashed coordinator/supervisory line between Komisaris <-> Direktur <-> Pengawas -->
+                                <div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-[560px] border-t-2 border-dashed border-rose-300/80 -z-10"></div>
+
+                                <div class="grid grid-cols-3 items-center gap-6">
+                                    <!-- Left: Komisaris / KEPALA DESA -->
+                                    <div class="flex flex-col items-center portal-animate">
+                                        <div class="w-20 h-20 rounded-full border-4 border-rose-500 bg-white flex items-center justify-center shadow-lg overflow-hidden z-10 ring-4 ring-rose-500/10">
+                                            <img v-if="settings.org_bumdes_pembina_image" :src="settings.org_bumdes_pembina_image" class="w-full h-full object-cover" />
+                                            <span v-else class="text-rose-700 font-extrabold text-xl">{{ getInitials(settings.org_bumdes_pembina_name || 'Komisaris') }}</span>
+                                        </div>
+                                        <div class="mt-3 bg-white border border-rose-200/80 rounded-xl p-2.5 w-48 text-center shadow-sm">
+                                            <span class="inline-block px-2.5 py-0.5 bg-rose-500 text-white text-[9px] font-extrabold uppercase tracking-wider rounded-full shadow-xs mb-1">KOMISARIS</span>
+                                            <p class="text-xs font-black text-slate-800 leading-tight uppercase">{{ settings.org_bumdes_pembina_name || 'NGADIMAN' }}</p>
+                                            <p class="text-[9px] font-bold text-rose-600 mt-0.5 tracking-wide">KEPALA DESA</p>
+                                        </div>
                                     </div>
-                                    <div class="mt-3 text-center">
-                                        <p class="text-sm font-extrabold text-slate-800">{{ settings.org_bumdes_direktur_name || 'Direktur BUMDes' }}</p>
-                                        <span class="mt-1 inline-block px-3 py-0.5 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-wider rounded-full border border-blue-200">Direktur</span>
+
+                                    <!-- Center: Direktur -->
+                                    <div class="flex flex-col items-center portal-animate">
+                                        <div class="w-22 h-22 rounded-full border-4 border-blue-600 bg-white flex items-center justify-center shadow-xl overflow-hidden z-10 ring-4 ring-blue-500/15 scale-105">
+                                            <img v-if="settings.org_bumdes_direktur_image" :src="settings.org_bumdes_direktur_image" class="w-full h-full object-cover" />
+                                            <span v-else class="text-blue-700 font-extrabold text-2xl">{{ getInitials(settings.org_bumdes_direktur_name || 'Direktur') }}</span>
+                                        </div>
+                                        <div class="mt-3 bg-white border-2 border-blue-500/80 rounded-xl p-2.5 w-52 text-center shadow-md">
+                                            <span class="inline-block px-3 py-0.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider rounded-full shadow-xs mb-1">DIREKTUR</span>
+                                            <p class="text-xs font-black text-slate-900 leading-tight">{{ settings.org_bumdes_direktur_name || 'P. YULIANTORO, S.E.' }}</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right: Pengawas -->
+                                    <div class="flex flex-col items-center portal-animate">
+                                        <div class="w-20 h-20 rounded-full border-4 border-rose-500 bg-white flex items-center justify-center shadow-lg overflow-hidden z-10 ring-4 ring-rose-500/10">
+                                            <img v-if="settings.org_bumdes_pengawas_image" :src="settings.org_bumdes_pengawas_image" class="w-full h-full object-cover" />
+                                            <span v-else class="text-rose-700 font-extrabold text-xl">{{ getInitials(settings.org_bumdes_pengawas_name || 'Pengawas') }}</span>
+                                        </div>
+                                        <div class="mt-3 bg-white border border-rose-200/80 rounded-xl p-2.5 w-48 text-center shadow-sm">
+                                            <span class="inline-block px-2.5 py-0.5 bg-rose-500 text-white text-[9px] font-extrabold uppercase tracking-wider rounded-full shadow-xs mb-1">PENGAWAS</span>
+                                            <p class="text-xs font-black text-slate-800 leading-tight uppercase">{{ settings.org_bumdes_pengawas_name || 'SUBARKAH' }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Connector down from Level 1 to Level 2 -->
-                            <div class="flex justify-center portal-animate relative">
-                                <div class="w-[200px] h-0.5 bg-slate-300 absolute -top-14 -z-10"></div> <!-- Horizontal connect Pembina & Direktur -->
-                                <div class="w-0.5 h-12 bg-blue-500/60 ml-[64px]"></div> <!-- Down from Direktur, slightly shifted right -->
-                            </div>
+                            <!-- Vertical Connector down from Direktur to Level 2 (Sekretaris & Bendahara) -->
+                            <div class="w-0.5 h-10 bg-slate-300"></div>
 
-                            <!-- Level 2: Sekretaris & Bendahara -->
-                            <div class="flex justify-center gap-16 mb-0 relative portal-animate ml-[64px]">
+                            <!-- Level 2: Sekretaris (Left) & Bendahara (Right) -->
+                            <div class="relative w-full max-w-md px-4">
                                 <!-- Horizontal branch for Sek/Ben -->
-                                <div class="absolute top-8 left-1/2 -translate-x-1/2 w-48 h-0.5 bg-blue-500/60 -z-10"></div>
-                                
-                                <div class="flex flex-col items-center w-32 relative">
-                                    <div class="w-0.5 h-8 bg-blue-500/60 absolute -top-8 left-1/2 -translate-x-1/2 -z-10"></div>
-                                    <div class="w-16 h-16 rounded-full border-4 border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-800 font-bold text-sm overflow-hidden z-10 bg-white">
-                                        <img v-if="settings.org_bumdes_sekretaris_image" :src="settings.org_bumdes_sekretaris_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_bumdes_sekretaris_name || 'Sekretaris') }}</span>
-                                    </div>
-                                    <div class="mt-2 text-center">
-                                        <p class="text-xs font-bold text-slate-800 leading-tight">{{ settings.org_bumdes_sekretaris_name || 'Sekretaris' }}</p>
-                                        <span class="mt-0.5 inline-block text-[8px] text-blue-600 font-bold uppercase tracking-wider">Sekretaris</span>
-                                    </div>
-                                </div>
+                                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-0.5 bg-slate-300 -z-10"></div>
+                                <div class="absolute top-0 left-[calc(50%-128px)] w-0.5 h-5 bg-slate-300 -z-10"></div>
+                                <div class="absolute top-0 right-[calc(50%-128px)] w-0.5 h-5 bg-slate-300 -z-10"></div>
 
-                                <div class="flex flex-col items-center w-32 relative">
-                                    <div class="w-0.5 h-8 bg-blue-500/60 absolute -top-8 left-1/2 -translate-x-1/2 -z-10"></div>
-                                    <div class="w-16 h-16 rounded-full border-4 border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow text-blue-800 font-bold text-sm overflow-hidden z-10 bg-white">
-                                        <img v-if="settings.org_bumdes_bendahara_image" :src="settings.org_bumdes_bendahara_image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(settings.org_bumdes_bendahara_name || 'Bendahara') }}</span>
+                                <div class="flex justify-between items-center pt-5">
+                                    <!-- Sekretaris -->
+                                    <div class="flex flex-col items-center portal-animate w-40">
+                                        <div class="w-16 h-16 rounded-full border-3 border-rose-400 bg-white flex items-center justify-center shadow-md overflow-hidden z-10 ring-3 ring-rose-400/15">
+                                            <img v-if="settings.org_bumdes_sekretaris_image" :src="settings.org_bumdes_sekretaris_image" class="w-full h-full object-cover" />
+                                            <span v-else class="text-rose-700 font-bold text-sm">{{ getInitials(settings.org_bumdes_sekretaris_name || 'Sekretaris') }}</span>
+                                        </div>
+                                        <div class="mt-2.5 bg-white border border-rose-200 rounded-xl p-2 w-full text-center shadow-sm">
+                                            <span class="inline-block px-2 py-0.5 bg-rose-50 text-rose-600 text-[8px] font-bold uppercase tracking-wider rounded-full mb-0.5">SEKRETARIS</span>
+                                            <p class="text-[11px] font-bold text-slate-800 leading-tight">{{ settings.org_bumdes_sekretaris_name || 'SALSA DETRIANI' }}</p>
+                                        </div>
                                     </div>
-                                    <div class="mt-2 text-center">
-                                        <p class="text-xs font-bold text-slate-800 leading-tight">{{ settings.org_bumdes_bendahara_name || 'Bendahara' }}</p>
-                                        <span class="mt-0.5 inline-block text-[8px] text-blue-600 font-bold uppercase tracking-wider">Bendahara</span>
+
+                                    <!-- Bendahara -->
+                                    <div class="flex flex-col items-center portal-animate w-40">
+                                        <div class="w-16 h-16 rounded-full border-3 border-rose-400 bg-white flex items-center justify-center shadow-md overflow-hidden z-10 ring-3 ring-rose-400/15">
+                                            <img v-if="settings.org_bumdes_bendahara_image" :src="settings.org_bumdes_bendahara_image" class="w-full h-full object-cover" />
+                                            <span v-else class="text-rose-700 font-bold text-sm">{{ getInitials(settings.org_bumdes_bendahara_name || 'Bendahara') }}</span>
+                                        </div>
+                                        <div class="mt-2.5 bg-white border border-rose-200 rounded-xl p-2 w-full text-center shadow-sm">
+                                            <span class="inline-block px-2 py-0.5 bg-rose-50 text-rose-600 text-[8px] font-bold uppercase tracking-wider rounded-full mb-0.5">BENDAHARA</span>
+                                            <p class="text-[11px] font-bold text-slate-800 leading-tight">{{ settings.org_bumdes_bendahara_name || 'DWI GUNAWAN' }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Connector down from Direktur (Center) to Level 3 -->
-                            <div class="flex justify-center portal-animate relative">
-                                <div class="w-0.5 h-16 bg-blue-500/60 ml-[64px] relative -top-4"></div>
-                            </div>
+                            <!-- Vertical stem down from Level 2 to Level 3 (The 4 Unit Heads) -->
+                            <div class="w-0.5 h-12 bg-slate-300"></div>
 
-                            <!-- Level 3: 4 Unit Heads -->
-                            <div class="flex justify-center gap-6 relative portal-animate ml-[64px]">
-                                <!-- Main Horizontal Line for the 4 units -->
-                                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-[540px] h-0.5 bg-blue-500/60 -z-10"></div>
+                            <!-- Level 3: 4 Business Unit Heads (Left to Right matching physical banner) -->
+                            <div class="relative w-full max-w-4xl px-4">
+                                <!-- Horizontal branch line across the 4 units -->
+                                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-0.5 bg-slate-300 -z-10"></div>
                                 
-                                <div v-for="role in [
-                                    { label: 'Unit Simpan Pinjam', name: settings.org_bumdes_unit_sp_name || 'Ka. Unit SP', image: settings.org_bumdes_unit_sp_image },
-                                    { label: 'Unit Wifi', name: settings.org_bumdes_unit_wifi_name || 'Ka. Unit Wifi', image: settings.org_bumdes_unit_wifi_image },
-                                    { label: 'Unit Ketahanan Pangan', name: settings.org_bumdes_unit_pangan_name || 'Ka. Unit Pangan', image: settings.org_bumdes_unit_pangan_image },
-                                    { label: 'Unit Perdagangan', name: settings.org_bumdes_unit_pasar_name || 'Ka. Unit Dagang', image: settings.org_bumdes_unit_pasar_image },
-                                ]" :key="role.label" class="flex flex-col items-center w-40 relative">
-                                    <!-- Drops down from horizontal -->
-                                    <div class="w-0.5 h-6 bg-blue-500/60 absolute -top-4 left-1/2 -translate-x-1/2 -z-10"></div>
-                                    
-                                    <div class="w-[4.5rem] h-[4.5rem] rounded-full border-[3px] border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md text-white font-extrabold text-lg ring-4 ring-blue-500/10 overflow-hidden z-10 bg-white">
-                                        <img v-if="role.image" :src="role.image" class="w-full h-full object-cover" />
-                                        <span v-else>{{ getInitials(role.name) }}</span>
-                                    </div>
-                                    <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-2.5 w-full text-center shadow-sm">
-                                        <p class="text-[11px] font-extrabold text-slate-800 leading-tight">{{ role.name }}</p>
-                                        <p class="text-[8px] font-bold text-blue-600 uppercase tracking-widest mt-1">{{ role.label }}</p>
+                                <div class="grid grid-cols-4 gap-4 pt-5">
+                                    <div v-for="unit in [
+                                        { 
+                                            label: 'Ka. Unit Ketahanan Pangan', 
+                                            name: settings.org_bumdes_unit_pangan_name || 'BUDIMAN', 
+                                            image: settings.org_bumdes_unit_pangan_image,
+                                            borderCol: 'border-emerald-500',
+                                            badgeCol: 'bg-emerald-600 text-white',
+                                            bgCard: 'border-emerald-200'
+                                        },
+                                        { 
+                                            label: 'Ka. Unit Perdagangan', 
+                                            name: settings.org_bumdes_unit_pasar_name || 'SUSANTI', 
+                                            image: settings.org_bumdes_unit_pasar_image,
+                                            borderCol: 'border-amber-500',
+                                            badgeCol: 'bg-amber-500 text-white',
+                                            bgCard: 'border-amber-200'
+                                        },
+                                        { 
+                                            label: 'Ka. Unit Simpan Pinjam', 
+                                            name: settings.org_bumdes_unit_sp_name || 'PIPIT DAIKHOTUL KH.', 
+                                            image: settings.org_bumdes_unit_sp_image,
+                                            borderCol: 'border-sky-500',
+                                            badgeCol: 'bg-sky-600 text-white',
+                                            bgCard: 'border-sky-200'
+                                        },
+                                        { 
+                                            label: 'Ka. Unit Internet (Wifi)', 
+                                            name: settings.org_bumdes_unit_wifi_name || 'SITI MARFUAH', 
+                                            image: settings.org_bumdes_unit_wifi_image,
+                                            borderCol: 'border-slate-600',
+                                            badgeCol: 'bg-slate-700 text-white',
+                                            bgCard: 'border-slate-200'
+                                        },
+                                    ]" :key="unit.label" class="flex flex-col items-center relative portal-animate">
+                                        <!-- Vertical drop from horizontal line -->
+                                        <div class="w-0.5 h-5 bg-slate-300 absolute -top-5 left-1/2 -translate-x-1/2 -z-10"></div>
+
+                                        <div class="w-16 h-16 rounded-full border-3 bg-white flex items-center justify-center shadow-md overflow-hidden z-10" :class="unit.borderCol">
+                                            <img v-if="unit.image" :src="unit.image" class="w-full h-full object-cover" />
+                                            <span v-else class="font-extrabold text-sm text-slate-700">{{ getInitials(unit.name) }}</span>
+                                        </div>
+                                        <div class="mt-2.5 bg-white border rounded-xl p-2.5 w-full text-center shadow-sm" :class="unit.bgCard">
+                                            <span class="inline-block px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-md mb-1 shadow-xs" :class="unit.badgeCol">{{ unit.label }}</span>
+                                            <p class="text-xs font-bold text-slate-800 leading-tight">{{ unit.name }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Anggota & Pengurus Tambahan (Desktop View) -->
-                            <div v-if="settings.org_bumdes_custom_members && settings.org_bumdes_custom_members.length > 0" class="mt-12 portal-animate">
+                            <div v-if="settings.org_bumdes_custom_members && settings.org_bumdes_custom_members.length > 0" class="mt-12 w-full portal-animate border-t border-slate-200/80 pt-8">
                                 <div class="text-center mb-6">
-                                    <span class="text-[9px] font-bold uppercase tracking-widest text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">Pengurus & Anggota Tambahan</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">Pengurus & Anggota Tambahan</span>
                                 </div>
                                 <div class="flex flex-wrap justify-center gap-6">
                                     <div v-for="member in settings.org_bumdes_custom_members" :key="member.id || member.name" class="flex flex-col items-center w-40">
-                                        <div class="w-16 h-16 rounded-full border-2 border-blue-200 bg-slate-50 flex items-center justify-center shadow-sm text-blue-700 font-bold text-sm overflow-hidden bg-white">
+                                        <div class="w-14 h-14 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center shadow-sm text-slate-700 font-bold text-sm overflow-hidden">
                                             <img v-if="member.image" :src="member.image" class="w-full h-full object-cover" />
                                             <span v-else>{{ getInitials(member.name || member.role) }}</span>
                                         </div>
-                                        <div class="mt-2.5 bg-slate-50 border border-slate-200 rounded-xl p-2.5 w-full text-center shadow-sm">
+                                        <div class="mt-2 bg-white border border-slate-200 rounded-xl p-2 w-full text-center shadow-sm">
                                             <p class="text-xs font-bold text-slate-800 leading-tight">{{ member.name }}</p>
-                                            <p class="text-[8px] font-bold text-blue-600 uppercase tracking-wider mt-1">{{ member.role }}</p>
+                                            <p class="text-[8px] font-bold text-blue-600 uppercase tracking-wider mt-0.5">{{ member.role }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -390,77 +442,98 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Mobile Org Chart View -->
-                    <div class="md:hidden space-y-8 portal-animate">
-                        <div class="flex justify-center flex-wrap gap-4">
-                            <div class="text-center w-28">
-                                <div class="w-16 h-16 mx-auto rounded-full bg-slate-200 overflow-hidden border-2 border-slate-300 mb-2 flex items-center justify-center text-slate-500 font-bold">
+                    <div class="md:hidden space-y-6 portal-animate">
+                        <!-- Musyawarah Desa -->
+                        <div class="flex justify-center">
+                            <div class="px-5 py-2 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl shadow border border-slate-700 flex items-center gap-2">
+                                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <span class="text-[11px] font-black uppercase tracking-widest text-slate-100">MUSYAWARAH DESA</span>
+                            </div>
+                        </div>
+
+                        <!-- Level 1: Komisaris, Direktur, Pengawas -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <!-- Komisaris -->
+                            <div class="bg-white border border-rose-200 rounded-xl p-2.5 text-center shadow-xs flex flex-col items-center">
+                                <div class="w-14 h-14 rounded-full border-2 border-rose-500 overflow-hidden bg-white mb-2 flex items-center justify-center text-rose-700 font-bold shadow-xs">
                                     <img v-if="settings.org_bumdes_pembina_image" :src="settings.org_bumdes_pembina_image" class="w-full h-full object-cover" />
-                                    <span v-else>{{ getInitials(settings.org_bumdes_pembina_name || 'Pembina') }}</span>
+                                    <span v-else>{{ getInitials(settings.org_bumdes_pembina_name || 'Komisaris') }}</span>
                                 </div>
-                                <h5 class="text-xs font-bold">{{ settings.org_bumdes_pembina_name || 'Pembina' }}</h5>
-                                <span class="text-[8px] text-slate-500 font-bold uppercase">PEMBINA</span>
+                                <span class="text-[8px] font-extrabold uppercase px-1.5 py-0.5 bg-rose-500 text-white rounded mb-1">KOMISARIS</span>
+                                <h5 class="text-[11px] font-bold text-slate-800 leading-tight uppercase">{{ settings.org_bumdes_pembina_name || 'NGADIMAN' }}</h5>
+                                <span class="text-[8px] text-rose-600 font-semibold">KEPALA DESA</span>
                             </div>
-                            <div v-if="settings.org_bumdes_pengawas_name" class="text-center w-28">
-                                <div class="w-16 h-16 mx-auto rounded-full bg-amber-600 overflow-hidden border-2 border-amber-300 mb-2 flex items-center justify-center text-white font-bold">
-                                    <img v-if="settings.org_bumdes_pengawas_image" :src="settings.org_bumdes_pengawas_image" class="w-full h-full object-cover" />
-                                    <span v-else>{{ getInitials(settings.org_bumdes_pengawas_name || 'Pengawas') }}</span>
-                                </div>
-                                <h5 class="text-xs font-bold">{{ settings.org_bumdes_pengawas_name }}</h5>
-                                <span class="text-[8px] text-amber-700 font-bold uppercase">PENGAWAS</span>
-                            </div>
-                            <div class="text-center w-28">
-                                <div class="w-16 h-16 mx-auto rounded-full bg-blue-600 overflow-hidden border-2 border-blue-300 mb-2 flex items-center justify-center text-white font-bold">
+
+                            <!-- Direktur -->
+                            <div class="bg-white border-2 border-blue-500 rounded-xl p-2.5 text-center shadow-xs flex flex-col items-center">
+                                <div class="w-14 h-14 rounded-full border-2 border-blue-600 overflow-hidden bg-white mb-2 flex items-center justify-center text-blue-700 font-bold shadow-xs">
                                     <img v-if="settings.org_bumdes_direktur_image" :src="settings.org_bumdes_direktur_image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(settings.org_bumdes_direktur_name || 'Direktur') }}</span>
                                 </div>
-                                <h5 class="text-xs font-bold">{{ settings.org_bumdes_direktur_name || 'Direktur' }}</h5>
-                                <span class="text-[8px] text-blue-600 font-bold uppercase">DIREKTUR</span>
+                                <span class="text-[8px] font-extrabold uppercase px-1.5 py-0.5 bg-blue-600 text-white rounded mb-1">DIREKTUR</span>
+                                <h5 class="text-[11px] font-bold text-slate-900 leading-tight">{{ settings.org_bumdes_direktur_name || 'P. YULIANTORO, S.E.' }}</h5>
+                            </div>
+
+                            <!-- Pengawas -->
+                            <div class="bg-white border border-rose-200 rounded-xl p-2.5 text-center shadow-xs flex flex-col items-center">
+                                <div class="w-14 h-14 rounded-full border-2 border-rose-500 overflow-hidden bg-white mb-2 flex items-center justify-center text-rose-700 font-bold shadow-xs">
+                                    <img v-if="settings.org_bumdes_pengawas_image" :src="settings.org_bumdes_pengawas_image" class="w-full h-full object-cover" />
+                                    <span v-else>{{ getInitials(settings.org_bumdes_pengawas_name || 'Pengawas') }}</span>
+                                </div>
+                                <span class="text-[8px] font-extrabold uppercase px-1.5 py-0.5 bg-rose-500 text-white rounded mb-1">PENGAWAS</span>
+                                <h5 class="text-[11px] font-bold text-slate-800 leading-tight uppercase">{{ settings.org_bumdes_pengawas_name || 'SUBARKAH' }}</h5>
                             </div>
                         </div>
 
-                        <div class="flex justify-center gap-4 border-t border-slate-100 pt-6">
-                            <div class="text-center w-32">
-                                <div class="w-12 h-12 mx-auto rounded-full bg-slate-50 overflow-hidden border border-slate-200 mb-2 flex items-center justify-center text-slate-600 text-xs font-bold">
+                        <!-- Level 2: Sekretaris & Bendahara -->
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div class="bg-white border border-slate-200 rounded-xl p-2.5 flex items-center gap-2.5 shadow-xs">
+                                <div class="w-11 h-11 shrink-0 rounded-full border-2 border-rose-400 overflow-hidden bg-white flex items-center justify-center text-rose-700 text-xs font-bold">
                                     <img v-if="settings.org_bumdes_sekretaris_image" :src="settings.org_bumdes_sekretaris_image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(settings.org_bumdes_sekretaris_name || 'Sekretaris') }}</span>
                                 </div>
-                                <h5 class="text-[11px] font-bold">{{ settings.org_bumdes_sekretaris_name || 'Sekretaris' }}</h5>
-                                <span class="text-[8px] text-slate-500">SEKRETARIS</span>
+                                <div class="min-w-0">
+                                    <span class="text-[8px] font-bold uppercase text-rose-600">SEKRETARIS</span>
+                                    <h5 class="text-[11px] font-bold text-slate-800 leading-tight truncate">{{ settings.org_bumdes_sekretaris_name || 'SALSA DETRIANI' }}</h5>
+                                </div>
                             </div>
-                            <div class="text-center w-32">
-                                <div class="w-12 h-12 mx-auto rounded-full bg-slate-50 overflow-hidden border border-slate-200 mb-2 flex items-center justify-center text-slate-600 text-xs font-bold">
+                            <div class="bg-white border border-slate-200 rounded-xl p-2.5 flex items-center gap-2.5 shadow-xs">
+                                <div class="w-11 h-11 shrink-0 rounded-full border-2 border-rose-400 overflow-hidden bg-white flex items-center justify-center text-rose-700 text-xs font-bold">
                                     <img v-if="settings.org_bumdes_bendahara_image" :src="settings.org_bumdes_bendahara_image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(settings.org_bumdes_bendahara_name || 'Bendahara') }}</span>
                                 </div>
-                                <h5 class="text-[11px] font-bold">{{ settings.org_bumdes_bendahara_name || 'Bendahara' }}</h5>
-                                <span class="text-[8px] text-slate-500">BENDAHARA</span>
+                                <div class="min-w-0">
+                                    <span class="text-[8px] font-bold uppercase text-rose-600">BENDAHARA</span>
+                                    <h5 class="text-[11px] font-bold text-slate-800 leading-tight truncate">{{ settings.org_bumdes_bendahara_name || 'DWI GUNAWAN' }}</h5>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="space-y-3 border-t border-slate-100 pt-6">
-                            <h5 class="text-center text-[10px] font-bold uppercase text-blue-600 mb-4">Kepala Unit Usaha</h5>
+                        <!-- Level 3: 4 Business Units -->
+                        <div class="space-y-2.5 pt-2">
+                            <h5 class="text-center text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-2">Kepala Unit Usaha</h5>
                             <div v-for="role in [
-                                { label: 'Ka. Unit Simpan Pinjam', name: settings.org_bumdes_unit_sp_name || 'Ka. Unit SP', image: settings.org_bumdes_unit_sp_image },
-                                { label: 'Ka. Unit Wifi', name: settings.org_bumdes_unit_wifi_name || 'Ka. Unit Wifi', image: settings.org_bumdes_unit_wifi_image },
-                                { label: 'Ka. Unit Ketahanan Pangan', name: settings.org_bumdes_unit_pangan_name || 'Ka. Unit Pangan', image: settings.org_bumdes_unit_pangan_image },
-                                { label: 'Ka. Unit Perdagangan', name: settings.org_bumdes_unit_pasar_name || 'Ka. Unit Dagang', image: settings.org_bumdes_unit_pasar_image },
-                            ]" :key="role.label" class="bg-blue-50/50 border border-blue-100 rounded-xl p-3 flex items-center gap-4">
-                                <div class="w-12 h-12 shrink-0 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold overflow-hidden border-2 border-blue-300">
+                                { label: 'Ka. Unit Ketahanan Pangan', name: settings.org_bumdes_unit_pangan_name || 'BUDIMAN', image: settings.org_bumdes_unit_pangan_image, badge: 'bg-emerald-600 text-white', border: 'border-emerald-200' },
+                                { label: 'Ka. Unit Perdagangan', name: settings.org_bumdes_unit_pasar_name || 'SUSANTI', image: settings.org_bumdes_unit_pasar_image, badge: 'bg-amber-500 text-white', border: 'border-amber-200' },
+                                { label: 'Ka. Unit Simpan Pinjam', name: settings.org_bumdes_unit_sp_name || 'PIPIT DAIKHOTUL KH.', image: settings.org_bumdes_unit_sp_image, badge: 'bg-sky-600 text-white', border: 'border-sky-200' },
+                                { label: 'Ka. Unit Internet (Wifi)', name: settings.org_bumdes_unit_wifi_name || 'SITI MARFUAH', image: settings.org_bumdes_unit_wifi_image, badge: 'bg-slate-700 text-white', border: 'border-slate-200' },
+                            ]" :key="role.label" class="bg-white border rounded-xl p-3 flex items-center gap-3 shadow-xs" :class="role.border">
+                                <div class="w-12 h-12 shrink-0 rounded-full border-2 overflow-hidden bg-slate-50 flex items-center justify-center font-bold text-slate-700">
                                     <img v-if="role.image" :src="role.image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(role.name) }}</span>
                                 </div>
-                                <div>
-                                    <h6 class="text-xs font-extrabold text-slate-800">{{ role.name }}</h6>
-                                    <p class="text-[9px] text-blue-600 font-bold uppercase mt-0.5">{{ role.label }}</p>
+                                <div class="min-w-0 flex-1">
+                                    <span class="inline-block px-2 py-0.5 text-[8px] font-bold uppercase rounded" :class="role.badge">{{ role.label }}</span>
+                                    <h6 class="text-xs font-bold text-slate-800 mt-1 leading-tight">{{ role.name }}</h6>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Anggota & Pengurus Tambahan (Mobile View) -->
-                        <div v-if="settings.org_bumdes_custom_members && settings.org_bumdes_custom_members.length > 0" class="space-y-3 border-t border-slate-100 pt-6">
-                            <h5 class="text-center text-[10px] font-bold uppercase text-blue-600 mb-4">Pengurus & Anggota Tambahan</h5>
-                            <div v-for="member in settings.org_bumdes_custom_members" :key="member.id || member.name" class="bg-blue-50/40 border border-blue-100 rounded-xl p-3 flex items-center gap-3">
-                                <div class="w-12 h-12 shrink-0 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold overflow-hidden border-2 border-blue-300">
+                        <div v-if="settings.org_bumdes_custom_members && settings.org_bumdes_custom_members.length > 0" class="space-y-2.5 pt-4 border-t border-slate-200">
+                            <h5 class="text-center text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-2">Pengurus & Anggota Tambahan</h5>
+                            <div v-for="member in settings.org_bumdes_custom_members" :key="member.id || member.name" class="bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-3 shadow-xs">
+                                <div class="w-11 h-11 shrink-0 rounded-full border border-slate-300 overflow-hidden bg-slate-50 flex items-center justify-center font-bold text-slate-700 text-xs">
                                     <img v-if="member.image" :src="member.image" class="w-full h-full object-cover" />
                                     <span v-else>{{ getInitials(member.name || member.role) }}</span>
                                 </div>
