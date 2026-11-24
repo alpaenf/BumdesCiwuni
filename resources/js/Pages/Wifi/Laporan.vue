@@ -21,11 +21,57 @@ const selectedProvider = ref(props.filters.provider_id ?? '');
 const selectedTglDari  = ref(props.filters.tanggal_dari ?? '');
 const selectedTglSampai = ref(props.filters.tanggal_sampai ?? '');
 
+const activeTabStatus = ref(props.filters.status || 'terpisah'); // 'terpisah', 'lunas', 'isolir'
+const searchQuery     = ref('');
+
+const lunasList = computed(() => {
+    return props.pelangganList.filter(p => p.status_bayar === 'LUNAS');
+});
+
+const isolirList = computed(() => {
+    return props.pelangganList.filter(p => p.status_bayar !== 'LUNAS');
+});
+
+const filterByQuery = (list) => {
+    if (!searchQuery.value || !searchQuery.value.trim()) return list;
+    const q = searchQuery.value.toLowerCase().trim();
+    return list.filter(item => {
+        return (item.nama && item.nama.toLowerCase().includes(q)) ||
+               (item.no_id_pel && item.no_id_pel.toLowerCase().includes(q)) ||
+               (item.no_wa && item.no_wa.toLowerCase().includes(q)) ||
+               (item.alamat && item.alamat.toLowerCase().includes(q)) ||
+               (item.paket && item.paket.toLowerCase().includes(q)) ||
+               (item.provider?.nama_provider && item.provider.nama_provider.toLowerCase().includes(q));
+    });
+};
+
+const filteredLunasList = computed(() => filterByQuery(lunasList.value));
+const filteredIsolirList = computed(() => filterByQuery(isolirList.value));
+
+const subtotalLunas = computed(() => {
+    return filteredLunasList.value.reduce((acc, item) => {
+        acc.tarikan  += Number(item.nominal_masuk || item.total_tarikan) || 0;
+        acc.bumdes   += Number(item.bumdes_masuk || item.calc_hasil_bumdes || item.hasil_bumdes) || 0;
+        acc.provider += Number(item.provider_masuk || item.calc_total_provider || item.total_provider) || 0;
+        return acc;
+    }, { tarikan: 0, bumdes: 0, provider: 0 });
+});
+
+const subtotalIsolir = computed(() => {
+    return filteredIsolirList.value.reduce((acc, item) => {
+        acc.tarikan  += Number(item.total_tarikan) || 0;
+        acc.bumdes   += Number(item.calc_hasil_bumdes || item.hasil_bumdes) || 0;
+        acc.provider += Number(item.calc_total_provider || item.total_provider) || 0;
+        return acc;
+    }, { tarikan: 0, bumdes: 0, provider: 0 });
+});
+
 const applyFilters = () => {
     router.get(route('wifi.laporan.index'), {
         bulan:          selectedBulan.value,
         tahun:          selectedTahun.value,
         provider_id:    selectedProvider.value || undefined,
+        status:         activeTabStatus.value !== 'terpisah' ? activeTabStatus.value : undefined,
         tanggal_dari:   selectedTglDari.value || undefined,
         tanggal_sampai: selectedTglSampai.value || undefined,
     }, { preserveScroll: true, replace: true });
@@ -44,6 +90,9 @@ const doExport = () => {
     if (selectedProvider.value)  params.set('provider_id', selectedProvider.value);
     if (selectedTglDari.value)   params.set('tanggal_dari', selectedTglDari.value);
     if (selectedTglSampai.value) params.set('tanggal_sampai', selectedTglSampai.value);
+    if (activeTabStatus.value === 'lunas' || activeTabStatus.value === 'isolir') {
+        params.set('status', activeTabStatus.value);
+    }
     window.location.href = route('wifi.laporan.export') + '?' + params.toString();
 };
 
@@ -54,6 +103,9 @@ const doPrintPDF = () => {
     if (selectedProvider.value)  params.set('provider_id', selectedProvider.value);
     if (selectedTglDari.value)   params.set('tanggal_dari', selectedTglDari.value);
     if (selectedTglSampai.value) params.set('tanggal_sampai', selectedTglSampai.value);
+    if (activeTabStatus.value === 'lunas' || activeTabStatus.value === 'isolir') {
+        params.set('status', activeTabStatus.value);
+    }
     window.open(route('wifi.laporan.cetak-pdf') + '?' + params.toString(), '_blank');
 };
 
@@ -411,140 +463,348 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                     </div>
                 </div>
 
-                <!-- ── SECTION 2: RINCIAN DAFTAR PELANGGAN ────────────────────────── -->
-                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                    <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-                        <div>
-                            <h2 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Rincian Tagihan Pelanggan Per Provider</h2>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Daftar pelanggan dengan pembagian porsi BUMDes &amp; Provider</p>
+                <!-- ── SECTION 2: RINCIAN DAFTAR PELANGGAN TERPISAH (LUNAS & ISOLIR) ── -->
+                <div class="space-y-6">
+                    <!-- Header Bar & Filter Tabs / Search -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-sm font-black text-slate-900 uppercase tracking-wider">Rincian Tagihan Pelanggan Per Provider</h2>
+                                <p class="text-xs text-slate-500 mt-0.5">Daftar pelanggan otomatis terpisah antara yang Lunas dan Isolir / Belum Bayar</p>
+                            </div>
+
+                            <!-- Live Search Input -->
+                            <div class="relative w-full md:w-72">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                                <input v-model="searchQuery" type="text"
+                                       placeholder="Cari nama, ID, WA, alamat..."
+                                       class="w-full text-xs pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition" />
+                                <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tab Switcher -->
+                        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+                            <button @click="activeTabStatus = 'terpisah'"
+                                    :class="activeTabStatus === 'terpisah'
+                                        ? 'bg-slate-900 text-white shadow-sm'
+                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600'"
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition">
+                                <span class="material-symbols-outlined text-base">view_agenda</span>
+                                Semua Terpisah ({{ pelangganList.length }})
+                            </button>
+
+                            <button @click="activeTabStatus = 'lunas'"
+                                    :class="activeTabStatus === 'lunas'
+                                        ? 'bg-emerald-600 text-white shadow-sm'
+                                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'"
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition">
+                                <span class="material-symbols-outlined text-base">check_circle</span>
+                                Hanya Lunas ({{ lunasList.length }})
+                            </button>
+
+                            <button @click="activeTabStatus = 'isolir'"
+                                    :class="activeTabStatus === 'isolir'
+                                        ? 'bg-rose-600 text-white shadow-sm'
+                                        : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'"
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition">
+                                <span class="material-symbols-outlined text-base">warning</span>
+                                Hanya Isolir / Belum Bayar ({{ isolirList.length }})
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Mobile: Card List -->
-                    <div class="md:hidden divide-y divide-slate-100">
-                        <div v-if="pelangganList.length === 0" class="p-6 text-center text-slate-400 text-xs">Tidak ada data pelanggan.</div>
-                        <div v-for="item in pelangganList" :key="item.id" class="p-4 space-y-2 hover:bg-slate-50 transition">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="min-w-0">
-                                    <p class="font-bold text-slate-900 text-xs">{{ item.nama }}</p>
-                                    <p class="text-[10px] text-slate-400">ID: {{ item.no_id_pel || '-' }}</p>
-                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                                        <span v-if="item.provider" class="px-1.5 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">{{ item.provider.nama_provider }}</span>
-                                        <span v-else class="text-[10px] text-slate-400">Umum</span>
-                                        <span v-if="item.paket" class="text-[10px] font-medium text-slate-600">{{ item.paket }}</span>
+                    <!-- ══ II.A. TABEL PELANGGAN LUNAS ══════════════════════════════════ -->
+                    <div v-if="activeTabStatus === 'terpisah' || activeTabStatus === 'lunas'"
+                         class="bg-white border border-emerald-200 rounded-2xl shadow-sm overflow-hidden">
+                        
+                        <!-- Lunas Header & Summary Badges -->
+                        <div class="px-5 py-4 bg-emerald-50/60 border-b border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <div>
+                                    <h3 class="text-xs font-black text-emerald-900 uppercase tracking-wider">II.A. Pelanggan LUNAS (Sudah Membayar)</h3>
+                                    <p class="text-[11px] text-emerald-700">Tagihan periode ini yang telah sukses dibayarkan pelanggan</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-black">
+                                    {{ filteredLunasList.length }} Warga Lunas
+                                </span>
+                                <span class="px-2.5 py-1 bg-white text-slate-800 border border-emerald-200 rounded-lg text-xs font-bold font-mono">
+                                    Tarikan: {{ rupiah(subtotalLunas.tarikan) }}
+                                </span>
+                                <span class="px-2.5 py-1 bg-white text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold font-mono">
+                                    BUMDes: {{ rupiah(subtotalLunas.bumdes) }}
+                                </span>
+                                <span class="px-2.5 py-1 bg-white text-blue-700 border border-emerald-200 rounded-lg text-xs font-bold font-mono">
+                                    Provider: {{ rupiah(subtotalLunas.provider) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Card List LUNAS -->
+                        <div class="md:hidden divide-y divide-slate-100">
+                            <div v-if="filteredLunasList.length === 0" class="p-6 text-center text-slate-400 text-xs">
+                                {{ searchQuery ? 'Tidak ada pelanggan lunas yang cocok dengan pencarian.' : 'Belum ada transaksi pembayaran lunas pada periode ini.' }}
+                            </div>
+                            <div v-for="item in filteredLunasList" :key="item.id" class="p-4 space-y-2 hover:bg-emerald-50/30 transition">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-slate-900 text-xs">{{ item.nama }}</p>
+                                        <p class="text-[10px] text-slate-400">ID: {{ item.no_id_pel || '-' }} &bull; WA: {{ item.no_wa || '-' }}</p>
+                                        <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                            <span v-if="item.provider" class="px-1.5 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">{{ item.provider.nama_provider }}</span>
+                                            <span v-else class="text-[10px] text-slate-400">Umum</span>
+                                            <span v-if="item.paket" class="text-[10px] font-medium text-slate-600">{{ item.paket }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-[11px]">
+                                    <div class="bg-slate-50 rounded-lg p-2">
+                                        <p class="text-slate-400 text-[10px]">Realisasi</p>
+                                        <p class="font-mono font-bold text-slate-900">{{ rupiah(item.nominal_masuk || item.total_tarikan) }}</p>
+                                    </div>
+                                    <div class="bg-emerald-50 rounded-lg p-2">
+                                        <p class="text-slate-400 text-[10px]">BUMDes</p>
+                                        <p class="font-mono font-bold text-emerald-600">{{ rupiah(item.bumdes_masuk || item.calc_hasil_bumdes) }}</p>
+                                    </div>
+                                    <div class="bg-blue-50 rounded-lg p-2">
+                                        <p class="text-slate-400 text-[10px]">Provider</p>
+                                        <p class="font-mono font-bold text-blue-600">{{ rupiah(item.provider_masuk || item.calc_total_provider) }}</p>
                                     </div>
                                 </div>
-                                <span v-if="item.status_bayar === 'LUNAS'"
-                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
-                                </span>
-                                <span v-else-if="item.current_status === 'ISOLIR'"
-                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
-                                </span>
-                                <span v-else
-                                      class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
-                                </span>
-                            </div>
-                            <div class="grid grid-cols-3 gap-2 text-[11px]">
-                                <div class="bg-slate-50 rounded-lg p-2">
-                                    <p class="text-slate-400 text-[10px]">Tarikan</p>
-                                    <p class="font-mono font-bold text-slate-900">{{ rupiah(item.total_tarikan) }}</p>
-                                </div>
-                                <div class="bg-emerald-50 rounded-lg p-2">
-                                    <p class="text-slate-400 text-[10px]">BUMDes</p>
-                                    <p class="font-mono font-bold text-emerald-600">{{ rupiah(item.hasil_bumdes) }}</p>
-                                </div>
-                                <div class="bg-blue-50 rounded-lg p-2">
-                                    <p class="text-slate-400 text-[10px]">Provider</p>
-                                    <p class="font-mono font-bold text-blue-600">{{ rupiah(item.total_provider) }}</p>
-                                </div>
                             </div>
                         </div>
 
-                        <!-- Mobile Total Footer -->
-                        <div v-if="pelangganList.length > 0" class="p-4 bg-slate-100 border-t-2 border-slate-300">
-                            <p class="text-[10px] font-black text-slate-600 uppercase mb-2">Total Keseluruhan</p>
-                            <div class="grid grid-cols-3 gap-2 text-[11px]">
-                                <div>
-                                    <p class="text-slate-400 text-[10px]">Bruto</p>
-                                    <p class="font-mono font-bold text-slate-900">{{ rupiah(stats.total_tarikan_bruto) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-[10px]">BUMDes</p>
-                                    <p class="font-mono font-bold text-emerald-700">{{ rupiah(stats.total_hasil_bumdes) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-[10px]">Provider</p>
-                                    <p class="font-mono font-bold text-blue-700">{{ rupiah(stats.total_hak_provider) }}</p>
-                                </div>
-                            </div>
+                        <!-- Desktop Table LUNAS -->
+                        <div class="hidden md:block overflow-x-auto">
+                            <table class="w-full text-xs text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-emerald-50/70 border-b border-emerald-200 text-[10px] font-bold text-emerald-900 uppercase tracking-wider">
+                                        <th class="p-3.5 text-center w-12">No</th>
+                                        <th class="p-3.5">ID Pelanggan</th>
+                                        <th class="p-3.5">Nama &amp; Kontak</th>
+                                        <th class="p-3.5">Provider</th>
+                                        <th class="p-3.5">Paket</th>
+                                        <th class="p-3.5 text-center">Gelombang</th>
+                                        <th class="p-3.5 text-right">Tarikan Lunas</th>
+                                        <th class="p-3.5 text-right">Hasil BUMDes</th>
+                                        <th class="p-3.5 text-right">Hak Provider</th>
+                                        <th class="p-3.5 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr v-for="(item, idx) in filteredLunasList" :key="item.id" class="hover:bg-emerald-50/30 transition-colors">
+                                        <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? (idx + 1) }}</td>
+                                        <td class="p-3.5 font-mono font-bold text-slate-800">{{ item.no_id_pel || '-' }}</td>
+                                        <td class="p-3.5">
+                                            <p class="font-bold text-slate-900">{{ item.nama }}</p>
+                                            <p class="text-[10px] text-slate-400 font-mono">{{ item.no_wa || '-' }} &bull; RT {{ item.rt || '-' }}/RW {{ item.rw || '-' }}</p>
+                                        </td>
+                                        <td class="p-3.5 whitespace-nowrap">
+                                            <span v-if="item.provider" class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">
+                                                {{ item.provider.nama_provider }}
+                                            </span>
+                                            <span v-else class="text-slate-400">Umum</span>
+                                        </td>
+                                        <td class="p-3.5 whitespace-nowrap font-medium">{{ item.paket || '-' }}</td>
+                                        <td class="p-3.5 text-center whitespace-nowrap">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-extrabold">Tgl 1 - 10</span>
+                                        </td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-slate-900">{{ rupiah(item.nominal_masuk || item.total_tarikan) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.bumdes_masuk || item.calc_hasil_bumdes) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.provider_masuk || item.calc_total_provider) }}</td>
+                                        <td class="p-3.5 text-center whitespace-nowrap">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="filteredLunasList.length === 0">
+                                        <td colspan="10" class="p-8 text-center text-slate-400">
+                                            {{ searchQuery ? 'Tidak ada pelanggan lunas yang cocok dengan pencarian.' : 'Tidak ada data pelanggan lunas pada periode ini.' }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot v-if="filteredLunasList.length > 0" class="bg-emerald-50/80 font-bold border-t-2 border-emerald-300">
+                                    <tr>
+                                        <td colspan="6" class="p-3.5 text-right uppercase text-[10px] font-black text-emerald-900">SUBTOTAL LUNAS ({{ filteredLunasList.length }} Warga):</td>
+                                        <td class="p-3.5 text-right font-mono font-extrabold text-slate-900">{{ rupiah(subtotalLunas.tarikan) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-extrabold text-emerald-700">{{ rupiah(subtotalLunas.bumdes) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-extrabold text-blue-700">{{ rupiah(subtotalLunas.provider) }}</td>
+                                        <td class="p-3.5 text-center text-[10px] text-emerald-800 font-extrabold">{{ filteredLunasList.length }} Lunas</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Desktop: Table -->
-                    <div class="hidden md:block overflow-x-auto">
-                        <table class="w-full text-xs text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                                    <th class="p-3.5 text-center w-12">No</th>
-                                    <th class="p-3.5">Nama Pelanggan</th>
-                                    <th class="p-3.5">Provider</th>
-                                    <th class="p-3.5">Paket</th>
-                                    <th class="p-3.5 text-center">Masa Bayar</th>
-                                    <th class="p-3.5 text-right">Tarikan Warga</th>
-                                    <th class="p-3.5 text-right">Hasil BUMDes</th>
-                                    <th class="p-3.5 text-right">Hak Provider</th>
-                                    <th class="p-3.5 text-center">Status Tagihan</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr v-for="item in pelangganList" :key="item.id" class="hover:bg-slate-50 transition-colors">
-                                    <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? '-' }}</td>
-                                    <td class="p-3.5">
-                                        <p class="font-bold text-slate-900">{{ item.nama }}</p>
-                                        <p class="text-[10px] text-slate-400 font-mono">ID: {{ item.no_id_pel || '-' }}</p>
-                                    </td>
-                                    <td class="p-3.5 whitespace-nowrap">
-                                        <span v-if="item.provider" class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">
-                                            {{ item.provider.nama_provider }}
-                                        </span>
-                                        <span v-else class="text-slate-400">Umum</span>
-                                    </td>
-                                    <td class="p-3.5 whitespace-nowrap font-medium">{{ item.paket || '-' }}</td>
-                                    <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-extrabold">Tgl 1 - 10</span>
-                                    </td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-slate-900">{{ rupiah(item.total_tarikan) }}</td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.calc_hasil_bumdes ?? item.hasil_bumdes) }}</td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.calc_total_provider ?? item.total_provider) }}</td>
-                                    <td class="p-3.5 text-center whitespace-nowrap">
-                                        <span v-if="item.status_bayar === 'LUNAS'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
-                                        </span>
-                                        <span v-else-if="item.current_status === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
-                                        </span>
-                                        <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr v-if="pelangganList.length === 0">
-                                    <td colspan="9" class="p-8 text-center text-slate-400">Tidak ada data pelanggan untuk filter provider ini.</td>
-                                </tr>
-                            </tbody>
-                            <tfoot v-if="pelangganList.length > 0" class="bg-slate-100 font-bold border-t-2 border-slate-300">
-                                <tr>
-                                    <td colspan="5" class="p-3.5 text-right uppercase text-[10px] font-black text-slate-600">Total Realisasi Periode Ini:</td>
-                                    <td class="p-3.5 text-right font-mono text-slate-900">{{ rupiah(stats.total_tarikan_bruto) }}</td>
-                                    <td class="p-3.5 text-right font-mono text-emerald-700">{{ rupiah(stats.total_hasil_bumdes) }}</td>
-                                    <td class="p-3.5 text-right font-mono text-blue-700">{{ rupiah(stats.total_hak_provider) }}</td>
-                                    <td class="p-3.5 text-center text-[10px] text-slate-600 font-bold">{{ stats.lunas_count ?? 0 }} Lunas &bull; {{ stats.belum_bayar_count ?? 0 }} Belum</td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                    <!-- ══ II.B. TABEL PELANGGAN ISOLIR / BELUM BAYAR ═══════════════════ -->
+                    <div v-if="activeTabStatus === 'terpisah' || activeTabStatus === 'isolir'"
+                         class="bg-white border border-rose-200 rounded-2xl shadow-sm overflow-hidden">
+                        
+                        <!-- Isolir Header & Summary Badges -->
+                        <div class="px-5 py-4 bg-rose-50/60 border-b border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                <div>
+                                    <h3 class="text-xs font-black text-rose-900 uppercase tracking-wider">II.B. Pelanggan ISOLIR / BELUM BAYAR (Tunggakan)</h3>
+                                    <p class="text-[11px] text-rose-700">Daftar pelanggan yang belum membayar tagihan / terisolir</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-1 bg-rose-100 text-rose-800 border border-rose-300 rounded-lg text-xs font-black">
+                                    {{ filteredIsolirList.length }} Warga Isolir/Blm Bayar
+                                </span>
+                                <span class="px-2.5 py-1 bg-white text-rose-700 border border-rose-200 rounded-lg text-xs font-bold font-mono">
+                                    Tunggakan: {{ rupiah(subtotalIsolir.tarikan) }}
+                                </span>
+                                <span class="px-2.5 py-1 bg-white text-slate-600 border border-rose-200 rounded-lg text-xs font-bold font-mono">
+                                    Potensi BUMDes: {{ rupiah(subtotalIsolir.bumdes) }}
+                                </span>
+                                <span class="px-2.5 py-1 bg-white text-slate-600 border border-rose-200 rounded-lg text-xs font-bold font-mono">
+                                    Potensi Provider: {{ rupiah(subtotalIsolir.provider) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Card List ISOLIR -->
+                        <div class="md:hidden divide-y divide-slate-100">
+                            <div v-if="filteredIsolirList.length === 0" class="p-6 text-center text-slate-400 text-xs">
+                                {{ searchQuery ? 'Tidak ada pelanggan isolir/belum bayar yang cocok dengan pencarian.' : 'Semua pelanggan telah lunas. Tidak ada data isolir atau tunggakan!' }}
+                            </div>
+                            <div v-for="item in filteredIsolirList" :key="item.id" class="p-4 space-y-2 hover:bg-rose-50/30 transition">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-slate-900 text-xs">{{ item.nama }}</p>
+                                        <p class="text-[10px] text-slate-400">ID: {{ item.no_id_pel || '-' }} &bull; WA: {{ item.no_wa || '-' }}</p>
+                                        <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                            <span v-if="item.provider" class="px-1.5 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">{{ item.provider.nama_provider }}</span>
+                                            <span v-else class="text-[10px] text-slate-400">Umum</span>
+                                            <span v-if="item.paket" class="text-[10px] font-medium text-slate-600">{{ item.paket }}</span>
+                                        </div>
+                                    </div>
+                                    <span v-if="item.current_status === 'ISOLIR'"
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
+                                    </span>
+                                    <span v-else
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-[11px]">
+                                    <div class="bg-rose-50 rounded-lg p-2">
+                                        <p class="text-slate-400 text-[10px]">Tunggakan</p>
+                                        <p class="font-mono font-bold text-rose-600">{{ rupiah(item.total_tarikan) }}</p>
+                                    </div>
+                                    <div class="bg-slate-50 rounded-lg p-2">
+                                        <p class="text-slate-400 text-[10px]">Potensi BUMDes</p>
+                                        <p class="font-mono font-bold text-slate-600">{{ rupiah(item.calc_hasil_bumdes ?? item.hasil_bumdes) }}</p>
+                                    </div>
+                                    <div class="bg-slate-50 rounded-lg p-2">
+                                        <p class="text-slate-400 text-[10px]">Potensi Provider</p>
+                                        <p class="font-mono font-bold text-slate-600">{{ rupiah(item.calc_total_provider ?? item.total_provider) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Desktop Table ISOLIR -->
+                        <div class="hidden md:block overflow-x-auto">
+                            <table class="w-full text-xs text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-rose-50/70 border-b border-rose-200 text-[10px] font-bold text-rose-900 uppercase tracking-wider">
+                                        <th class="p-3.5 text-center w-12">No</th>
+                                        <th class="p-3.5">ID Pelanggan</th>
+                                        <th class="p-3.5">Nama &amp; Kontak</th>
+                                        <th class="p-3.5">Provider</th>
+                                        <th class="p-3.5">Paket</th>
+                                        <th class="p-3.5 text-center">Gelombang</th>
+                                        <th class="p-3.5 text-right">Tagihan Tertunggak</th>
+                                        <th class="p-3.5 text-right">Potensi BUMDes</th>
+                                        <th class="p-3.5 text-right">Potensi Provider</th>
+                                        <th class="p-3.5 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr v-for="(item, idx) in filteredIsolirList" :key="item.id" class="hover:bg-rose-50/30 transition-colors">
+                                        <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? (idx + 1) }}</td>
+                                        <td class="p-3.5 font-mono font-bold text-slate-800">{{ item.no_id_pel || '-' }}</td>
+                                        <td class="p-3.5">
+                                            <p class="font-bold text-slate-900">{{ item.nama }}</p>
+                                            <p class="text-[10px] text-slate-400 font-mono">{{ item.no_wa || '-' }} &bull; RT {{ item.rt || '-' }}/RW {{ item.rw || '-' }}</p>
+                                        </td>
+                                        <td class="p-3.5 whitespace-nowrap">
+                                            <span v-if="item.provider" class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold">
+                                                {{ item.provider.nama_provider }}
+                                            </span>
+                                            <span v-else class="text-slate-400">Umum</span>
+                                        </td>
+                                        <td class="p-3.5 whitespace-nowrap font-medium">{{ item.paket || '-' }}</td>
+                                        <td class="p-3.5 text-center whitespace-nowrap">
+                                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-extrabold">Tgl 1 - 10</span>
+                                        </td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-rose-600">{{ rupiah(item.total_tarikan) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-slate-600">{{ rupiah(item.calc_hasil_bumdes ?? item.hasil_bumdes) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-slate-600">{{ rupiah(item.calc_total_provider ?? item.total_provider) }}</td>
+                                        <td class="p-3.5 text-center whitespace-nowrap">
+                                            <span v-if="item.current_status === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
+                                            </span>
+                                            <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="filteredIsolirList.length === 0">
+                                        <td colspan="10" class="p-8 text-center text-slate-400">
+                                            {{ searchQuery ? 'Tidak ada pelanggan isolir/belum bayar yang cocok dengan pencarian.' : 'Semua pelanggan telah lunas. Tidak ada data isolir atau tunggakan!' }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot v-if="filteredIsolirList.length > 0" class="bg-rose-50/80 font-bold border-t-2 border-rose-300">
+                                    <tr>
+                                        <td colspan="6" class="p-3.5 text-right uppercase text-[10px] font-black text-rose-900">SUBTOTAL ISOLIR / TUNGGAKAN ({{ filteredIsolirList.length }} Warga):</td>
+                                        <td class="p-3.5 text-right font-mono font-extrabold text-rose-700">{{ rupiah(subtotalIsolir.tarikan) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-extrabold text-slate-600">{{ rupiah(subtotalIsolir.bumdes) }}</td>
+                                        <td class="p-3.5 text-right font-mono font-extrabold text-slate-600">{{ rupiah(subtotalIsolir.provider) }}</td>
+                                        <td class="p-3.5 text-center text-[10px] text-rose-800 font-extrabold">{{ filteredIsolirList.length }} Isolir/Blm Bayar</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ══ REKAPITULASI TOTAL GABUNGAN (JIKA MODE SEMUA TERPISAH) ══ -->
+                    <div v-if="activeTabStatus === 'terpisah' && pelangganList.length > 0"
+                         class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Total Realisasi Pelanggan Lunas Periode Ini</span>
+                                <p class="text-sm text-slate-300 mt-0.5">Dari {{ stats.total_pelanggan }} total warga terdaftar ({{ stats.lunas_count }} Lunas, {{ stats.belum_bayar_count }} Isolir/Belum Bayar)</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-4 text-xs font-mono">
+                                <div class="bg-slate-800/80 px-3 py-2 rounded-xl border border-slate-700">
+                                    <span class="text-[10px] text-slate-400 block font-sans">Total Realisasi Tarikan</span>
+                                    <strong class="text-emerald-400 text-sm">{{ rupiah(stats.total_tarikan_bruto) }}</strong>
+                                </div>
+                                <div class="bg-slate-800/80 px-3 py-2 rounded-xl border border-slate-700">
+                                    <span class="text-[10px] text-slate-400 block font-sans">Pendapatan Bersih BUMDes</span>
+                                    <strong class="text-emerald-300 text-sm">{{ rupiah(stats.total_hasil_bumdes) }}</strong>
+                                </div>
+                                <div class="bg-slate-800/80 px-3 py-2 rounded-xl border border-slate-700">
+                                    <span class="text-[10px] text-slate-400 block font-sans">Setoran Hak Provider</span>
+                                    <strong class="text-blue-300 text-sm">{{ rupiah(stats.total_hak_provider) }}</strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

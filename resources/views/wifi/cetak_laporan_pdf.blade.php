@@ -317,27 +317,126 @@
         @endif
     </table>
 
-    <!-- SECTION 2: RINCIAN PELANGGAN LENGKAP -->
-    <div class="section-title">II. Rincian Tagihan Pelanggan Per Provider</div>
+    <!-- SECTION 2: RINCIAN PELANGGAN TERPISAH (LUNAS & ISOLIR) -->
+    @php
+        $showLunas = !isset($statusFilter) || !$statusFilter || $statusFilter === 'lunas' || $statusFilter === 'all';
+        $showIsolir = !isset($statusFilter) || !$statusFilter || $statusFilter === 'isolir' || $statusFilter === 'all';
+        $subtotalLunasTarikan = $lunasList->sum('nominal_masuk');
+        $subtotalLunasBumdes  = $lunasList->sum('bumdes_masuk');
+        $subtotalLunasProvider = $lunasList->sum('provider_masuk');
+        $subtotalIsolirTarikan = $isolirList->sum('total_tarikan');
+        $subtotalIsolirBumdes  = $isolirList->sum('calc_hasil_bumdes');
+        $subtotalIsolirProvider = $isolirList->sum('calc_total_provider');
+    @endphp
+
+    @if($showLunas)
+    <!-- II.A. TABEL PELANGGAN LUNAS -->
+    <div class="section-title" style="border-left-color: #059669; display: flex; justify-content: space-between; align-items: center;">
+        <span>II.A. Rincian Pelanggan LUNAS (Sudah Membayar)</span>
+        <span style="font-size: 7.5pt; font-weight: bold; background: #d1fae5; color: #047857; padding: 2px 8px; border-radius: 9999px;">
+            {{ count($lunasList) }} Warga Lunas
+        </span>
+    </div>
     <table class="data-table">
         <thead>
-            <tr>
-                <th class="text-center" style="width:25px;">No</th>
-                <th style="width:80px;">ID Pelanggan</th>
-                <th>Nama Pelanggan &amp; NIK</th>
-                <th style="width:85px;">No WA</th>
-                <th>Alamat (RT/RW)</th>
-                <th>Provider / ISP</th>
-                <th style="width:70px;">Paket</th>
-                <th class="text-center" style="width:55px;">Gel.</th>
-                <th class="text-right" style="width:105px;">Tarikan (Rp)</th>
-                <th class="text-right" style="width:100px;">Hasil BUMDes</th>
-                <th class="text-right" style="width:100px;">Hak Provider</th>
-                <th class="text-center" style="width:65px;">Status Tagihan</th>
+            <tr style="background-color: #ecfdf5;">
+                <th class="text-center" style="width:25px; border-color: #a7f3d0;">No</th>
+                <th style="width:80px; border-color: #a7f3d0;">ID Pelanggan</th>
+                <th style="border-color: #a7f3d0;">Nama Pelanggan &amp; NIK</th>
+                <th style="width:85px; border-color: #a7f3d0;">No WA</th>
+                <th style="border-color: #a7f3d0;">Alamat (RT/RW)</th>
+                <th style="border-color: #a7f3d0;">Provider / ISP</th>
+                <th style="width:70px; border-color: #a7f3d0;">Paket</th>
+                <th class="text-center" style="width:55px; border-color: #a7f3d0;">Gel.</th>
+                <th class="text-right" style="width:105px; border-color: #a7f3d0;">Tarikan (Rp)</th>
+                <th class="text-right" style="width:100px; border-color: #a7f3d0;">Hasil BUMDes</th>
+                <th class="text-right" style="width:100px; border-color: #a7f3d0;">Hak Provider</th>
+                <th class="text-center" style="width:65px; border-color: #a7f3d0;">Status</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($pelangganList as $index => $p)
+            @forelse($lunasList as $index => $p)
+            <tr>
+                <td class="text-center font-mono">{{ $p->no ?? ($index + 1) }}</td>
+                <td class="font-mono font-bold">{{ $p->no_id_pel ?? '-' }}</td>
+                <td>
+                    <div class="font-bold">{{ $p->nama }}</div>
+                    @if($p->nik)
+                        <div style="font-size:7pt; color:#64748b;" class="font-mono">NIK: {{ $p->nik }}</div>
+                    @endif
+                </td>
+                <td class="font-mono">{{ $p->no_wa ?? '-' }}</td>
+                <td>
+                    <div>{{ $p->alamat ?? '-' }}</div>
+                    <div style="font-size:7.5pt; color:#475569;">RT {{ $p->rt ?? '-' }} / RW {{ $p->rw ?? '-' }}</div>
+                </td>
+                <td>
+                    @if($p->provider)
+                        <div class="font-bold">{{ $p->provider->nama_provider }}</div>
+                    @else
+                        <span style="color:#94a3b8;">Umum</span>
+                    @endif
+                </td>
+                <td class="font-mono font-bold">{{ $p->paket ?? '-' }}</td>
+                <td class="text-center">
+                    <span class="badge" style="background:#e0e7ff; color:#3730a3;">Tgl 1 - 10</span>
+                </td>
+                <td class="text-right font-mono font-bold">Rp {{ number_format($p->nominal_masuk, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->bumdes_masuk, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->provider_masuk, 0, ',', '.') }}</td>
+                <td class="text-center">
+                    <span class="badge badge-lunas">LUNAS</span>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="12" class="text-center" style="padding:15px; color:#94a3b8;">
+                    Tidak ada pelanggan yang berstatus Lunas pada periode ini.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+        @if(count($lunasList) > 0)
+        <tfoot>
+            <tr style="background:#ecfdf5; font-weight:bold; border-top: 2px solid #059669;">
+                <td colspan="8" class="text-right font-bold" style="color:#047857;">SUBTOTAL PELANGGAN LUNAS:</td>
+                <td class="text-right font-mono font-bold">Rp {{ number_format($subtotalLunasTarikan, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($subtotalLunasBumdes, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($subtotalLunasProvider, 0, ',', '.') }}</td>
+                <td class="text-center"><span class="badge badge-lunas">{{ count($lunasList) }} Lunas</span></td>
+            </tr>
+        </tfoot>
+        @endif
+    </table>
+    @endif
+
+    @if($showIsolir)
+    <!-- II.B. TABEL PELANGGAN ISOLIR / BELUM BAYAR -->
+    <div class="section-title" style="border-left-color: #dc2626; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span>II.B. Rincian Pelanggan ISOLIR / BELUM BAYAR (Tunggakan)</span>
+        <span style="font-size: 7.5pt; font-weight: bold; background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 9999px;">
+            {{ count($isolirList) }} Warga Belum Bayar / Isolir
+        </span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr style="background-color: #fef2f2;">
+                <th class="text-center" style="width:25px; border-color: #fecaca;">No</th>
+                <th style="width:80px; border-color: #fecaca;">ID Pelanggan</th>
+                <th style="border-color: #fecaca;">Nama Pelanggan &amp; NIK</th>
+                <th style="width:85px; border-color: #fecaca;">No WA</th>
+                <th style="border-color: #fecaca;">Alamat (RT/RW)</th>
+                <th style="border-color: #fecaca;">Provider / ISP</th>
+                <th style="width:70px; border-color: #fecaca;">Paket</th>
+                <th class="text-center" style="width:55px; border-color: #fecaca;">Gel.</th>
+                <th class="text-right" style="width:105px; border-color: #fecaca;">Tagihan (Rp)</th>
+                <th class="text-right" style="width:100px; border-color: #fecaca;">Potensi BUMDes</th>
+                <th class="text-right" style="width:100px; border-color: #fecaca;">Potensi Provider</th>
+                <th class="text-center" style="width:65px; border-color: #fecaca;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($isolirList as $index => $p)
             @php $stVal = $p->current_status ?? $p->status_1_15; @endphp
             <tr>
                 <td class="text-center font-mono">{{ $p->no ?? ($index + 1) }}</td>
@@ -364,13 +463,11 @@
                 <td class="text-center">
                     <span class="badge" style="background:#e0e7ff; color:#3730a3;">Tgl 1 - 10</span>
                 </td>
-                <td class="text-right font-mono font-bold">Rp {{ number_format($p->total_tarikan, 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($p->calc_hasil_bumdes ?? $p->hasil_bumdes, 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($p->calc_total_provider ?? $p->total_provider, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#b91c1c;">Rp {{ number_format($p->total_tarikan, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#64748b;">Rp {{ number_format($p->calc_hasil_bumdes ?? $p->hasil_bumdes, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#64748b;">Rp {{ number_format($p->calc_total_provider ?? $p->total_provider, 0, ',', '.') }}</td>
                 <td class="text-center">
-                    @if(($p->status_bayar ?? '') === 'LUNAS')
-                        <span class="badge badge-lunas">LUNAS</span>
-                    @elseif(($p->current_status ?? '') === 'ISOLIR')
+                    @if(($p->current_status ?? '') === 'ISOLIR')
                         <span class="badge badge-isolir">ISOLIR</span>
                     @else
                         <span class="badge" style="background:#fef3c7; color:#92400e;">BLM BAYAR</span>
@@ -380,23 +477,39 @@
             @empty
             <tr>
                 <td colspan="12" class="text-center" style="padding:15px; color:#94a3b8;">
-                    Tidak ada data pelanggan untuk provider yang dipilih.
+                    Tidak ada pelanggan berstatus Isolir atau Belum Bayar. Semua tagihan telah lunas!
                 </td>
             </tr>
             @endforelse
         </tbody>
-        @if(count($pelangganList) > 0)
+        @if(count($isolirList) > 0)
         <tfoot>
-            <tr style="background:#f1f5f9; font-weight:bold;">
-                <td colspan="8" class="text-right font-bold">TOTAL KESELURUHAN:</td>
-                <td class="text-right font-mono font-bold">Rp {{ number_format($stats['total_tarikan_bruto'], 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#047857;">Rp {{ number_format($stats['total_hasil_bumdes'], 0, ',', '.') }}</td>
-                <td class="text-right font-mono font-bold" style="color:#1d4ed8;">Rp {{ number_format($stats['total_hak_provider'], 0, ',', '.') }}</td>
-                <td></td>
+            <tr style="background:#fef2f2; font-weight:bold; border-top: 2px solid #dc2626;">
+                <td colspan="8" class="text-right font-bold" style="color:#b91c1c;">SUBTOTAL ISOLIR / TUNGGAKAN:</td>
+                <td class="text-right font-mono font-bold" style="color:#b91c1c;">Rp {{ number_format($subtotalIsolirTarikan, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#64748b;">Rp {{ number_format($subtotalIsolirBumdes, 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="color:#64748b;">Rp {{ number_format($subtotalIsolirProvider, 0, ',', '.') }}</td>
+                <td class="text-center"><span class="badge badge-isolir">{{ count($isolirList) }} Isolir</span></td>
             </tr>
         </tfoot>
         @endif
     </table>
+    @endif
+
+    @if($showLunas && $showIsolir && count($pelangganList) > 0)
+    <!-- REKAPITULASI TOTAL AKHIR -->
+    <table class="data-table" style="margin-top: 15px;">
+        <tbody>
+            <tr style="background:#0f172a; color:#ffffff; font-weight:bold; font-size: 8.5pt;">
+                <td colspan="8" class="text-right font-bold" style="border:none; padding: 8px 10px; color:#ffffff;">TOTAL REALISASI PEMBAYARAN (LUNAS):</td>
+                <td class="text-right font-mono font-bold" style="border:none; padding: 8px 10px; color:#34d399;">Rp {{ number_format($stats['total_tarikan_bruto'], 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="border:none; padding: 8px 10px; color:#a7f3d0;">Rp {{ number_format($stats['total_hasil_bumdes'], 0, ',', '.') }}</td>
+                <td class="text-right font-mono font-bold" style="border:none; padding: 8px 10px; color:#93c5fd;">Rp {{ number_format($stats['total_hak_provider'], 0, ',', '.') }}</td>
+                <td class="text-center" style="border:none; padding: 8px 10px; color:#cbd5e1; font-size:7.5pt;">{{ $stats['lunas_count'] }} Lunas / {{ $stats['belum_bayar_count'] }} Isolir</td>
+            </tr>
+        </tbody>
+    </table>
+    @endif
 
     <!-- LEMBAR PENGESAHAN TANDA TANGAN -->
     <div class="ttd-section">

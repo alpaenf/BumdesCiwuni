@@ -99,32 +99,47 @@
         <tr><td colspan="14"></td></tr>
         <tr><td colspan="14"></td></tr>
 
-        <!-- TABEL 2: RINCIAN TAGIHAN PELANGGAN -->
+        <!-- TABEL 2: RINCIAN TAGIHAN PELANGGAN TERPISAH (LUNAS & ISOLIR) -->
+        @php
+            $showLunas = !isset($statusFilter) || !$statusFilter || $statusFilter === 'lunas' || $statusFilter === 'all';
+            $showIsolir = !isset($statusFilter) || !$statusFilter || $statusFilter === 'isolir' || $statusFilter === 'all';
+            $lunasItems = $lunasList ?? $pelangganList->where('status_bayar', 'LUNAS')->values();
+            $isolirItems = $isolirList ?? $pelangganList->where('status_bayar', '!=', 'LUNAS')->values();
+            $subLunasTarikan = $lunasItems->sum('nominal_masuk');
+            $subLunasDasar = $lunasItems->sum('dasar_masuk');
+            $subLunasBumdes = $lunasItems->sum('bumdes_masuk');
+            $subLunasProvider = $lunasItems->sum('provider_masuk');
+            $subIsolirTarikan = $isolirItems->sum('total_tarikan');
+            $subIsolirDasar = $isolirItems->sum(function($i) { return $i->dasar_provider ?? $i->total_provider; });
+            $subIsolirBumdes = $isolirItems->sum(function($i) { return $i->calc_hasil_bumdes ?? $i->hasil_bumdes; });
+            $subIsolirProvider = $isolirItems->sum(function($i) { return $i->calc_total_provider ?? $i->total_provider; });
+        @endphp
+
+        @if($showLunas)
         <tr>
-            <th colspan="14" style="font-size:10pt; font-weight:bold; text-align:left; color:#0F172A; background-color:#E2E8F0;">II. RINCIAN TAGIHAN PELANGGAN PER PROVIDER</th>
+            <th colspan="14" style="font-size:10pt; font-weight:bold; text-align:left; color:#FFFFFF; background-color:#059669;">II.A. RINCIAN PELANGGAN LUNAS (SUDAH MEMBAYAR) — {{ count($lunasItems) }} WARGA</th>
         </tr>
         <thead>
-            <tr style="background-color:#1E293B; color:#FFFFFF; font-weight:bold;">
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:40px;">No</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">ID Pelanggan</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; width:180px;">Nama Pelanggan</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; width:160px;">Provider / ISP</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:90px;">Paket Speed</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:80px;">Gelombang</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">No WhatsApp</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; width:200px;">Alamat (RT/RW)</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Tarikan Warga (Rp)</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Dasar Non PPN (Rp)</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Hasil BUMDes (Rp)</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Hak Provider (Rp)</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:100px;">Status Tagihan</th>
-                <th style="background-color:#1E293B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">Metode Bayar</th>
+            <tr style="background-color:#064E3B; color:#FFFFFF; font-weight:bold;">
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:40px;">No</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">ID Pelanggan</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; width:180px;">Nama Pelanggan</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; width:160px;">Provider / ISP</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:90px;">Paket Speed</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:80px;">Gelombang</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">No WhatsApp</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; width:200px;">Alamat (RT/RW)</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Tarikan Lunas (Rp)</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Dasar Non PPN (Rp)</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Hasil BUMDes (Rp)</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Hak Provider (Rp)</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:100px;">Status</th>
+                <th style="background-color:#064E3B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">Metode Bayar</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($pelangganList as $idx => $p)
-            @php $st = $p->current_status ?? $p->status_1_15; @endphp
-            <tr style="{{ $idx % 2 === 1 ? 'background-color:#F8FAFC;' : '' }}">
+            @forelse($lunasItems as $idx => $p)
+            <tr style="{{ $idx % 2 === 1 ? 'background-color:#F0FDF4;' : '' }}">
                 <td style="text-align:center;">{{ $p->no ?? ($idx + 1) }}</td>
                 <td style="mso-number-format:'\@'; text-align:center; font-weight:bold;">{{ $p->no_id_pel ?? '-' }}</td>
                 <td style="font-weight:bold;">{{ $p->nama }}</td>
@@ -133,40 +148,119 @@
                 <td style="text-align:center;">Tgl 1 - 10</td>
                 <td style="mso-number-format:'\@'; text-align:center;">{{ $p->no_wa ?? '-' }}</td>
                 <td>{{ $p->alamat }} (RT {{ $p->rt }}/RW {{ $p->rw }})</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $p->total_tarikan }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $p->dasar_provider ?? $p->total_provider }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $p->calc_hasil_bumdes ?? $p->hasil_bumdes }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $p->calc_total_provider ?? $p->total_provider }}</td>
-                <td style="text-align:center; font-weight:bold;">{{ $p->status_bayar === 'LUNAS' ? 'LUNAS' : ($st === 'ISOLIR' ? 'ISOLIR' : 'BELUM BAYAR') }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $p->nominal_masuk }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $p->dasar_masuk ?? $p->dasar_provider }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $p->bumdes_masuk ?? $p->calc_hasil_bumdes }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $p->provider_masuk ?? $p->calc_total_provider }}</td>
+                <td style="text-align:center; font-weight:bold; color:#047857;">LUNAS</td>
                 <td style="text-align:center; font-weight:bold;">
                     @php
                         $metode = $p->pembayaran_periode ? strtoupper(trim($p->pembayaran_periode->metode_pembayaran ?? 'TUNAI')) : null;
                     @endphp
-                    @if($p->status_bayar === 'LUNAS')
-                        {{ in_array($metode, ['TRANSFER', 'BANK', 'QRIS']) ? 'TRANSFER' : 'TUNAI' }}
-                    @else
-                        -
-                    @endif
+                    {{ in_array($metode, ['TRANSFER', 'BANK', 'QRIS']) ? 'TRANSFER' : 'TUNAI' }}
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="14" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada data rincian pelanggan.</td>
+                <td colspan="14" style="text-align:center; color:#94A3B8; padding:15px;">Tidak ada pelanggan yang lunas pada periode ini.</td>
             </tr>
             @endforelse
         </tbody>
+        @if(count($lunasItems) > 0)
         <tfoot>
-            <tr style="background-color:#E2E8F0; font-weight:bold;">
-                <td colspan="8" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN:</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $stats['total_tarikan_bruto'] }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $stats['total_dasar_non_ppn'] ?? 0 }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $stats['total_hasil_bumdes'] }}</td>
-                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $stats['total_hak_provider'] }}</td>
-                <td colspan="2" style="text-align:center;">
-                    Tunai: Rp {{ number_format($stats['total_tunai'] ?? 0, 0, ',', '.') }} | Transfer: Rp {{ number_format($stats['total_transfer'] ?? 0, 0, ',', '.') }}
+            <tr style="background-color:#D1FAE5; font-weight:bold;">
+                <td colspan="8" style="text-align:right; font-weight:bold; color:#047857;">SUBTOTAL PELANGGAN LUNAS:</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $subLunasTarikan }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $subLunasDasar }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#047857;">{{ $subLunasBumdes }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#1D4ED8;">{{ $subLunasProvider }}</td>
+                <td colspan="2" style="text-align:center; font-weight:bold; color:#047857;">{{ count($lunasItems) }} Warga Lunas</td>
+            </tr>
+        </tfoot>
+        @endif
+        @endif
+
+        @if($showLunas && $showIsolir)
+        <tr><td colspan="14"></td></tr>
+        <tr><td colspan="14"></td></tr>
+        @endif
+
+        @if($showIsolir)
+        <tr>
+            <th colspan="14" style="font-size:10pt; font-weight:bold; text-align:left; color:#FFFFFF; background-color:#DC2626;">II.B. RINCIAN PELANGGAN ISOLIR / BELUM BAYAR (TUNGGAKAN) — {{ count($isolirItems) }} WARGA</th>
+        </tr>
+        <thead>
+            <tr style="background-color:#991B1B; color:#FFFFFF; font-weight:bold;">
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:40px;">No</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">ID Pelanggan</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; width:180px;">Nama Pelanggan</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; width:160px;">Provider / ISP</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:90px;">Paket Speed</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:80px;">Gelombang</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">No WhatsApp</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; width:200px;">Alamat (RT/RW)</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Tagihan Tertunggak (Rp)</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Dasar Non PPN (Rp)</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Potensi BUMDes (Rp)</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:right; width:130px;">Potensi Provider (Rp)</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:100px;">Status</th>
+                <th style="background-color:#991B1B; color:#FFFFFF; font-weight:bold; text-align:center; width:110px;">Metode Bayar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($isolirItems as $idx => $p)
+            @php $st = $p->current_status ?? $p->status_1_15; @endphp
+            <tr style="{{ $idx % 2 === 1 ? 'background-color:#FEF2F2;' : '' }}">
+                <td style="text-align:center;">{{ $p->no ?? ($idx + 1) }}</td>
+                <td style="mso-number-format:'\@'; text-align:center; font-weight:bold;">{{ $p->no_id_pel ?? '-' }}</td>
+                <td style="font-weight:bold;">{{ $p->nama }}</td>
+                <td>{{ $p->provider ? $p->provider->nama_provider : 'Umum' }}</td>
+                <td style="text-align:center; font-weight:bold;">{{ $p->paket ?? '-' }}</td>
+                <td style="text-align:center;">Tgl 1 - 10</td>
+                <td style="mso-number-format:'\@'; text-align:center;">{{ $p->no_wa ?? '-' }}</td>
+                <td>{{ $p->alamat }} (RT {{ $p->rt }}/RW {{ $p->rw }})</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#B91C1C;">{{ $p->total_tarikan }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $p->dasar_provider ?? $p->total_provider }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#64748B;">{{ $p->calc_hasil_bumdes ?? $p->hasil_bumdes }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#64748B;">{{ $p->calc_total_provider ?? $p->total_provider }}</td>
+                <td style="text-align:center; font-weight:bold; color:#B91C1C;">{{ $st === 'ISOLIR' ? 'ISOLIR' : 'BELUM BAYAR' }}</td>
+                <td style="text-align:center; font-weight:bold; color:#94A3B8;">-</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="14" style="text-align:center; color:#94A3B8; padding:15px;">Semua pelanggan telah lunas. Tidak ada data isolir atau tunggakan!</td>
+            </tr>
+            @endforelse
+        </tbody>
+        @if(count($isolirItems) > 0)
+        <tfoot>
+            <tr style="background-color:#FEE2E2; font-weight:bold;">
+                <td colspan="8" style="text-align:right; font-weight:bold; color:#B91C1C;">SUBTOTAL ISOLIR / TUNGGAKAN:</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#B91C1C;">{{ $subIsolirTarikan }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#475569;">{{ $subIsolirDasar }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#64748B;">{{ $subIsolirBumdes }}</td>
+                <td style="mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold; color:#64748B;">{{ $subIsolirProvider }}</td>
+                <td colspan="2" style="text-align:center; font-weight:bold; color:#B91C1C;">{{ count($isolirItems) }} Warga Isolir/Blm Bayar</td>
+            </tr>
+        </tfoot>
+        @endif
+        @endif
+
+        @if($showLunas && $showIsolir)
+        <tr><td colspan="14"></td></tr>
+        <tfoot>
+            <tr style="background-color:#0F172A; color:#FFFFFF; font-weight:bold;">
+                <td colspan="8" style="background-color:#0F172A; color:#FFFFFF; text-align:right; font-weight:bold;">TOTAL REALISASI KESELURUHAN (LUNAS):</td>
+                <td style="background-color:#0F172A; color:#34D399; mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $stats['total_tarikan_bruto'] }}</td>
+                <td style="background-color:#0F172A; color:#E2E8F0; mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $stats['total_dasar_non_ppn'] ?? 0 }}</td>
+                <td style="background-color:#0F172A; color:#A7F3D0; mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $stats['total_hasil_bumdes'] }}</td>
+                <td style="background-color:#0F172A; color:#93C5FD; mso-number-format:'\#\,\#\#0'; text-align:right; font-weight:bold;">{{ $stats['total_hak_provider'] }}</td>
+                <td colspan="2" style="background-color:#0F172A; color:#FFFFFF; text-align:center; font-size:9pt;">
+                    {{ $stats['lunas_count'] }} Lunas &bull; {{ $stats['belum_bayar_count'] }} Isolir
                 </td>
             </tr>
         </tfoot>
+        @endif
     </table>
 </body>
 </html>

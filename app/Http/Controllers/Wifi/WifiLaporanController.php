@@ -38,6 +38,7 @@ class WifiLaporanController extends Controller
         $bulan      = (int) $request->input('bulan', now()->month);
         $tahun      = (int) $request->input('tahun', now()->year);
         $providerId = $request->input('provider_id');
+        $statusFilter = $request->input('status'); // 'lunas', 'isolir', or null
         $tglDari    = $request->input('tanggal_dari');
         $tglSampai  = $request->input('tanggal_sampai');
 
@@ -195,6 +196,7 @@ class WifiLaporanController extends Controller
                 'bulan'          => $bulan,
                 'tahun'          => $tahun,
                 'provider_id'    => $providerId,
+                'status'         => $statusFilter,
                 'tanggal_dari'   => $tglDari,
                 'tanggal_sampai' => $tglSampai,
             ],
@@ -224,6 +226,7 @@ class WifiLaporanController extends Controller
         $bulan      = (int) $request->input('bulan', now()->month);
         $tahun      = (int) $request->input('tahun', now()->year);
         $providerId = $request->input('provider_id');
+        $statusFilter = $request->input('status'); // 'lunas', 'isolir', or null
         $tglDari    = $request->input('tanggal_dari');
         $tglSampai  = $request->input('tanggal_sampai');
 
@@ -363,9 +366,13 @@ class WifiLaporanController extends Controller
             })->values();
         }
 
+        $lunasList = $pelangganList->where('status_bayar', 'LUNAS')->values();
+        $isolirList = $pelangganList->where('status_bayar', '!=', 'LUNAS')->values();
+
         $stats = [
             'total_pelanggan'     => $totalPelanggan,
             'total_tarikan_bruto' => $totalTarikanRealisasi,
+            'total_dasar_non_ppn' => $totalDasarRealisasi,
             'potensi_tarikan'     => $pelangganList->sum('total_tarikan'),
             'total_hasil_bumdes'  => $totalHasilBumdes,
             'total_hak_provider'  => $totalHakProvider,
@@ -375,7 +382,7 @@ class WifiLaporanController extends Controller
             'belum_bayar_count'   => $belumBayarCount,
         ];
 
-        return view('wifi.cetak_laporan_pdf', compact('unit', 'user', 'pelangganList', 'rekapPerProvider', 'stats', 'bulan', 'tahun', 'providerId', 'tglDari', 'tglSampai'));
+        return view('wifi.cetak_laporan_pdf', compact('unit', 'user', 'pelangganList', 'lunasList', 'isolirList', 'rekapPerProvider', 'stats', 'bulan', 'tahun', 'providerId', 'statusFilter', 'tglDari', 'tglSampai'));
     }
 
     /**

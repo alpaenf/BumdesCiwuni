@@ -22,19 +22,23 @@ class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithT
     }
 
     private $pelangganList;
+    private $lunasList;
+    private $isolirList;
     private $rekapPerProvider;
     private $filters;
     private $stats;
     private $bulan;
     private $tahun;
+    private $statusFilter;
 
     public function __construct(Request $request)
     {
-        $this->bulan      = (int) $request->input('bulan', now()->month);
-        $this->tahun      = (int) $request->input('tahun', now()->year);
-        $providerId = $request->input('provider_id');
-        $tglDari    = $request->input('tanggal_dari');
-        $tglSampai  = $request->input('tanggal_sampai');
+        $this->bulan        = (int) $request->input('bulan', now()->month);
+        $this->tahun        = (int) $request->input('tahun', now()->year);
+        $providerId         = $request->input('provider_id');
+        $this->statusFilter = $request->input('status');
+        $tglDari            = $request->input('tanggal_dari');
+        $tglSampai          = $request->input('tanggal_sampai');
 
         $query = PelangganWifi::with(['provider']);
 
@@ -173,10 +177,14 @@ class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithT
 
         $this->rekapPerProvider = $rekap;
 
+        $this->lunasList  = $this->pelangganList->where('status_bayar', 'LUNAS')->values();
+        $this->isolirList = $this->pelangganList->where('status_bayar', '!=', 'LUNAS')->values();
+
         $this->filters = [
             'bulan'          => $this->bulan,
             'tahun'          => $this->tahun,
             'provider_id'    => $providerId,
+            'status'         => $this->statusFilter,
             'tanggal_dari'   => $tglDari,
             'tanggal_sampai' => $tglSampai,
         ];
@@ -199,11 +207,14 @@ class WifiLaporanExport implements FromView, ShouldAutoSize, WithDrawings, WithT
     {
         return view('exports.wifi.laporan_excel', [
             'pelangganList'    => $this->pelangganList,
+            'lunasList'        => $this->lunasList,
+            'isolirList'       => $this->isolirList,
             'rekapPerProvider' => $this->rekapPerProvider,
             'filters'          => $this->filters,
             'stats'            => $this->stats,
             'bulan'            => $this->bulan,
             'tahun'            => $this->tahun,
+            'statusFilter'     => $this->statusFilter,
             'isExcel'          => true,
         ]);
     }
