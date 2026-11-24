@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     unit:             { type: Object, required: true },
@@ -64,6 +64,52 @@ const subtotalIsolir = computed(() => {
         acc.provider += Number(item.calc_total_provider || item.total_provider) || 0;
         return acc;
     }, { tarikan: 0, bumdes: 0, provider: 0 });
+
+// ── Pagination Pelanggan LUNAS & ISOLIR ───────────────────────────
+const perPageLunas = ref(10);
+const pageLunas    = ref(1);
+
+const perPageIsolir = ref(10);
+const pageIsolir    = ref(1);
+
+const totalLunasPages = computed(() => {
+    return Math.ceil(filteredLunasList.value.length / perPageLunas.value) || 1;
+});
+
+const totalIsolirPages = computed(() => {
+    return Math.ceil(filteredIsolirList.value.length / perPageIsolir.value) || 1;
+});
+
+const paginatedLunasList = computed(() => {
+    const start = (pageLunas.value - 1) * perPageLunas.value;
+    return filteredLunasList.value.slice(start, start + perPageLunas.value);
+});
+
+const paginatedIsolirList = computed(() => {
+    const start = (pageIsolir.value - 1) * perPageIsolir.value;
+    return filteredIsolirList.value.slice(start, start + perPageIsolir.value);
+});
+
+watch([searchQuery, activeTabStatus, selectedProvider, selectedBulan, selectedTahun, perPageLunas, perPageIsolir], () => {
+    pageLunas.value = 1;
+    pageIsolir.value = 1;
+});
+
+const getPageNumbers = (currentPage, totalPages) => {
+    if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages = [];
+    if (currentPage <= 4) {
+        pages.push(1, 2, 3, 4, 5, '...', totalPages);
+    } else if (currentPage >= totalPages - 3) {
+        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    } else {
+        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+    }
+    return pages;
+};
+
 });
 
 const applyFilters = () => {
@@ -522,12 +568,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         
                         <!-- Lunas Header & Summary Badges -->
                         <div class="px-5 py-4 bg-emerald-50/60 border-b border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <div>
-                                    <h3 class="text-xs font-black text-emerald-900 uppercase tracking-wider">II.A. Pelanggan LUNAS (Sudah Membayar)</h3>
-                                    <p class="text-[11px] text-emerald-700">Tagihan periode ini yang telah sukses dibayarkan pelanggan</p>
-                                </div>
+                            <div>
+                                <h3 class="text-xs font-black text-emerald-900 uppercase tracking-wider">II.A. Pelanggan LUNAS (Sudah Membayar)</h3>
+                                <p class="text-[11px] text-emerald-700">Tagihan periode ini yang telah sukses dibayarkan pelanggan</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-black">
@@ -550,7 +593,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                             <div v-if="filteredLunasList.length === 0" class="p-6 text-center text-slate-400 text-xs">
                                 {{ searchQuery ? 'Tidak ada pelanggan lunas yang cocok dengan pencarian.' : 'Belum ada transaksi pembayaran lunas pada periode ini.' }}
                             </div>
-                            <div v-for="item in filteredLunasList" :key="item.id" class="p-4 space-y-2 hover:bg-emerald-50/30 transition">
+                            <div v-for="(item, idx) in paginatedLunasList" :key="item.id" class="p-4 space-y-2 hover:bg-emerald-50/30 transition">
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="min-w-0">
                                         <p class="font-bold text-slate-900 text-xs">{{ item.nama }}</p>
@@ -561,8 +604,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                             <span v-if="item.paket" class="text-[10px] font-medium text-slate-600">{{ item.paket }}</span>
                                         </div>
                                     </div>
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                    <span class="inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                        LUNAS
                                     </span>
                                 </div>
                                 <div class="grid grid-cols-3 gap-2 text-[11px]">
@@ -600,8 +643,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr v-for="(item, idx) in filteredLunasList" :key="item.id" class="hover:bg-emerald-50/30 transition-colors">
-                                        <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? (idx + 1) }}</td>
+                                    <tr v-for="(item, idx) in paginatedLunasList" :key="item.id" class="hover:bg-emerald-50/30 transition-colors">
+                                        <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? ((pageLunas - 1) * perPageLunas + idx + 1) }}</td>
                                         <td class="p-3.5 font-mono font-bold text-slate-800">{{ item.no_id_pel || '-' }}</td>
                                         <td class="p-3.5">
                                             <p class="font-bold text-slate-900">{{ item.nama }}</p>
@@ -621,8 +664,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                         <td class="p-3.5 text-right font-mono font-bold text-emerald-600">{{ rupiah(item.bumdes_masuk || item.calc_hasil_bumdes) }}</td>
                                         <td class="p-3.5 text-right font-mono font-bold text-blue-600">{{ rupiah(item.provider_masuk || item.calc_total_provider) }}</td>
                                         <td class="p-3.5 text-center whitespace-nowrap">
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>LUNAS
+                                            <span class="inline-flex items-center px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase">
+                                                LUNAS
                                             </span>
                                         </td>
                                     </tr>
@@ -634,7 +677,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                 </tbody>
                                 <tfoot v-if="filteredLunasList.length > 0" class="bg-emerald-50/80 font-bold border-t-2 border-emerald-300">
                                     <tr>
-                                        <td colspan="6" class="p-3.5 text-right uppercase text-[10px] font-black text-emerald-900">SUBTOTAL LUNAS ({{ filteredLunasList.length }} Warga):</td>
+                                        <td colspan="6" class="p-3.5 text-right uppercase text-[10px] font-black text-emerald-900">TOTAL SELURUH LUNAS ({{ filteredLunasList.length }} Warga):</td>
                                         <td class="p-3.5 text-right font-mono font-extrabold text-slate-900">{{ rupiah(subtotalLunas.tarikan) }}</td>
                                         <td class="p-3.5 text-right font-mono font-extrabold text-emerald-700">{{ rupiah(subtotalLunas.bumdes) }}</td>
                                         <td class="p-3.5 text-right font-mono font-extrabold text-blue-700">{{ rupiah(subtotalLunas.provider) }}</td>
@@ -642,6 +685,51 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+
+                        <!-- Pagination Controls LUNAS -->
+                        <div v-if="filteredLunasList.length > 0" class="px-5 py-3.5 bg-slate-50 border-t border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 text-xs text-slate-500">
+                                <span>
+                                    Menampilkan 
+                                    <strong class="text-slate-800">{{ (pageLunas - 1) * perPageLunas + 1 }}</strong> 
+                                    - 
+                                    <strong class="text-slate-800">{{ Math.min(pageLunas * perPageLunas, filteredLunasList.length) }}</strong> 
+                                    dari 
+                                    <strong class="text-emerald-700">{{ filteredLunasList.length }}</strong> 
+                                    warga lunas
+                                </span>
+                                <span class="text-slate-300">|</span>
+                                <label class="flex items-center gap-1.5 text-slate-600">
+                                    <span>Tampilkan:</span>
+                                    <select v-model="perPageLunas" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
+                                        <option :value="10">10</option>
+                                        <option :value="25">25</option>
+                                        <option :value="50">50</option>
+                                        <option :value="100">100</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <!-- Page Buttons LUNAS -->
+                            <div v-if="totalLunasPages > 1" class="flex items-center gap-1">
+                                <button @click="pageLunas--" :disabled="pageLunas === 1"
+                                        class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                                    &laquo; Prev
+                                </button>
+                                <template v-for="p in getPageNumbers(pageLunas, totalLunasPages)" :key="'lunas-p-' + p">
+                                    <span v-if="p === '...'" class="px-2 text-slate-400 text-xs">...</span>
+                                    <button v-else @click="pageLunas = p"
+                                            :class="pageLunas === p ? 'bg-emerald-600 text-white border-emerald-600 font-black' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-bold'"
+                                            class="min-w-8 px-2 py-1 text-xs rounded-lg border transition">
+                                        {{ p }}
+                                    </button>
+                                </template>
+                                <button @click="pageLunas++" :disabled="pageLunas === totalLunasPages"
+                                        class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                                    Next &raquo;
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -651,12 +739,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         
                         <!-- Isolir Header & Summary Badges -->
                         <div class="px-5 py-4 bg-rose-50/60 border-b border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                                <div>
-                                    <h3 class="text-xs font-black text-rose-900 uppercase tracking-wider">II.B. Pelanggan ISOLIR / BELUM BAYAR (Tunggakan)</h3>
-                                    <p class="text-[11px] text-rose-700">Daftar pelanggan yang belum membayar tagihan / terisolir</p>
-                                </div>
+                            <div>
+                                <h3 class="text-xs font-black text-rose-900 uppercase tracking-wider">II.B. Pelanggan ISOLIR / BELUM BAYAR (Tunggakan)</h3>
+                                <p class="text-[11px] text-rose-700">Daftar pelanggan yang belum membayar tagihan / terisolir</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="px-2.5 py-1 bg-rose-100 text-rose-800 border border-rose-300 rounded-lg text-xs font-black">
@@ -677,9 +762,9 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                         <!-- Mobile Card List ISOLIR -->
                         <div class="md:hidden divide-y divide-slate-100">
                             <div v-if="filteredIsolirList.length === 0" class="p-6 text-center text-slate-400 text-xs">
-                                {{ searchQuery ? 'Tidak ada pelanggan isolir/belum bayar yang cocok dengan pencarian.' : 'Semua pelanggan telah lunas. Tidak ada data isolir atau tunggakan!' }}
+                                {{ searchQuery ? 'Tidak ada pelanggan isolir/belum bayar yang cocok dengan pencarian.' : 'Semua tagihan telah lunas. Tidak ada yang isolir/menunggak!' }}
                             </div>
-                            <div v-for="item in filteredIsolirList" :key="item.id" class="p-4 space-y-2 hover:bg-rose-50/30 transition">
+                            <div v-for="(item, idx) in paginatedIsolirList" :key="item.id" class="p-4 space-y-2 hover:bg-rose-50/30 transition">
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="min-w-0">
                                         <p class="font-bold text-slate-900 text-xs">{{ item.nama }}</p>
@@ -691,12 +776,12 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                         </div>
                                     </div>
                                     <span v-if="item.current_status === 'ISOLIR'"
-                                          class="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
+                                          class="inline-flex items-center px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                        ISOLIR
                                     </span>
                                     <span v-else
-                                          class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
+                                          class="inline-flex items-center px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase shrink-0">
+                                        BELUM BAYAR
                                     </span>
                                 </div>
                                 <div class="grid grid-cols-3 gap-2 text-[11px]">
@@ -734,8 +819,8 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr v-for="(item, idx) in filteredIsolirList" :key="item.id" class="hover:bg-rose-50/30 transition-colors">
-                                        <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? (idx + 1) }}</td>
+                                    <tr v-for="(item, idx) in paginatedIsolirList" :key="item.id" class="hover:bg-rose-50/30 transition-colors">
+                                        <td class="p-3.5 text-center font-mono text-slate-400">{{ item.no ?? ((pageIsolir - 1) * perPageIsolir + idx + 1) }}</td>
                                         <td class="p-3.5 font-mono font-bold text-slate-800">{{ item.no_id_pel || '-' }}</td>
                                         <td class="p-3.5">
                                             <p class="font-bold text-slate-900">{{ item.nama }}</p>
@@ -755,11 +840,11 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                         <td class="p-3.5 text-right font-mono font-bold text-slate-600">{{ rupiah(item.calc_hasil_bumdes ?? item.hasil_bumdes) }}</td>
                                         <td class="p-3.5 text-right font-mono font-bold text-slate-600">{{ rupiah(item.calc_total_provider ?? item.total_provider) }}</td>
                                         <td class="p-3.5 text-center whitespace-nowrap">
-                                            <span v-if="item.current_status === 'ISOLIR'" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>ISOLIR
+                                            <span v-if="item.current_status === 'ISOLIR'" class="inline-flex items-center px-2.5 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase">
+                                                ISOLIR
                                             </span>
-                                            <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>BELUM BAYAR
+                                            <span v-else class="inline-flex items-center px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase">
+                                                BELUM BAYAR
                                             </span>
                                         </td>
                                     </tr>
@@ -771,7 +856,7 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                 </tbody>
                                 <tfoot v-if="filteredIsolirList.length > 0" class="bg-rose-50/80 font-bold border-t-2 border-rose-300">
                                     <tr>
-                                        <td colspan="6" class="p-3.5 text-right uppercase text-[10px] font-black text-rose-900">SUBTOTAL ISOLIR / TUNGGAKAN ({{ filteredIsolirList.length }} Warga):</td>
+                                        <td colspan="6" class="p-3.5 text-right uppercase text-[10px] font-black text-rose-900">TOTAL SELURUH ISOLIR ({{ filteredIsolirList.length }} Warga):</td>
                                         <td class="p-3.5 text-right font-mono font-extrabold text-rose-700">{{ rupiah(subtotalIsolir.tarikan) }}</td>
                                         <td class="p-3.5 text-right font-mono font-extrabold text-slate-600">{{ rupiah(subtotalIsolir.bumdes) }}</td>
                                         <td class="p-3.5 text-right font-mono font-extrabold text-slate-600">{{ rupiah(subtotalIsolir.provider) }}</td>
@@ -779,6 +864,51 @@ const getBulanName = (id) => namaBulanMap.find(b => b.id === id)?.name ?? id;
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+
+                        <!-- Pagination Controls ISOLIR -->
+                        <div v-if="filteredIsolirList.length > 0" class="px-5 py-3.5 bg-slate-50 border-t border-rose-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 text-xs text-slate-500">
+                                <span>
+                                    Menampilkan 
+                                    <strong class="text-slate-800">{{ (pageIsolir - 1) * perPageIsolir + 1 }}</strong> 
+                                    - 
+                                    <strong class="text-slate-800">{{ Math.min(pageIsolir * perPageIsolir, filteredIsolirList.length) }}</strong> 
+                                    dari 
+                                    <strong class="text-rose-700">{{ filteredIsolirList.length }}</strong> 
+                                    warga isolir/belum bayar
+                                </span>
+                                <span class="text-slate-300">|</span>
+                                <label class="flex items-center gap-1.5 text-slate-600">
+                                    <span>Tampilkan:</span>
+                                    <select v-model="perPageIsolir" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-700 focus:outline-none focus:border-rose-500">
+                                        <option :value="10">10</option>
+                                        <option :value="25">25</option>
+                                        <option :value="50">50</option>
+                                        <option :value="100">100</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <!-- Page Buttons ISOLIR -->
+                            <div v-if="totalIsolirPages > 1" class="flex items-center gap-1">
+                                <button @click="pageIsolir--" :disabled="pageIsolir === 1"
+                                        class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                                    &laquo; Prev
+                                </button>
+                                <template v-for="p in getPageNumbers(pageIsolir, totalIsolirPages)" :key="'isolir-p-' + p">
+                                    <span v-if="p === '...'" class="px-2 text-slate-400 text-xs">...</span>
+                                    <button v-else @click="pageIsolir = p"
+                                            :class="pageIsolir === p ? 'bg-rose-600 text-white border-rose-600 font-black' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-bold'"
+                                            class="min-w-8 px-2 py-1 text-xs rounded-lg border transition">
+                                        {{ p }}
+                                    </button>
+                                </template>
+                                <button @click="pageIsolir++" :disabled="pageIsolir === totalIsolirPages"
+                                        class="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                                    Next &raquo;
+                                </button>
+                            </div>
                         </div>
                     </div>
 
